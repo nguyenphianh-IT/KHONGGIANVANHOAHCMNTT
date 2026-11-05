@@ -63,6 +63,9 @@ export const ActivityModal: React.FC<ActivityModalProps> = ({ activity, onClose 
             src={activity.imageUrl}
             alt={activity.title}
             className="w-full h-full object-cover"
+            onError={(e) => {
+              (e.target as HTMLImageElement).src = '/images/ho-chi-minh-tp-hcm.png';
+            }}
           />
         </div>
 
@@ -83,7 +86,7 @@ export const ActivityModal: React.FC<ActivityModalProps> = ({ activity, onClose 
             <h4 className="text-xs sm:text-sm uppercase tracking-wider font-bold text-heritage-red-700 mb-2">
               Diễn biến hoạt động
             </h4>
-            <p className="text-sm sm:text-base text-heritage-ink-800 leading-relaxed bg-heritage-ivory-50 p-4 sm:p-5 rounded-xl border border-heritage-ivory-200">
+            <p className="text-sm sm:text-base text-heritage-ink-800 leading-relaxed bg-heritage-ivory-50 p-4 sm:p-5 rounded-xl border border-heritage-ivory-200 whitespace-pre-line">
               {activity.fullDetail}
             </p>
           </div>

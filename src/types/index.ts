@@ -7,6 +7,8 @@ export interface TimelineEvent {
   significance: string;
   location?: string;
   imageUrl?: string;
+  imageCaption?: string;
+  imagePosition?: string;
   category: 'tuoi-tre' | 'cuu-nuoc' | 'lanh-dao' | 'di-chuc';
   isMemorial?: boolean;
 }

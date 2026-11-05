@@ -1,11 +1,69 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { activitiesData } from '../data/activitiesData';
 import { SchoolActivity } from '../types';
 import { ActivityModal } from './ActivityModal';
-import { Calendar, Users, ChevronRight, Award, AlertCircle } from 'lucide-react';
+import { Calendar, Users, ChevronRight, Award, AlertCircle, Sparkles } from 'lucide-react';
+import { getPublishedArticles, EVENT_ARTICLES_CHANGED, ArticleData } from '../lib/cmsStore';
+
+const mapArticleToActivity = (art: ArticleData): SchoolActivity => {
+  return {
+    id: art.id || `act-${art.slug}`,
+    title: art.title,
+    date: art.created_at ? art.created_at.split(' ')[0] : 'Vừa đăng',
+    academicYear: 'Năm học 2024 - 2025',
+    organizer: art.author_name || 'Trường THCS Nguyễn Trung Trực',
+    summary: art.summary,
+    fullDetail: art.content,
+    imageUrl: art.featured_image || '/images/ho-chi-minh-tp-hcm.png',
+    participants: 'Cán bộ, giáo viên và học sinh trường THCS Nguyễn Trung Trực',
+    isSampleData: false,
+    highlights: [
+      'Tin bài hoạt động chính thức từ Không gian văn hóa Hồ Chí Minh',
+      'Đã qua quy trình thẩm định 4 mắt của Ban Giám Hiệu nhà trường',
+      art.references ? `Xuất xứ tư liệu: ${art.references}` : 'Hoạt động phong trào giáo dục truyền thống học đường'
+    ]
+  };
+};
 
 export const Activities: React.FC = () => {
   const [selectedActivity, setSelectedActivity] = useState<SchoolActivity | null>(null);
+  const [activitiesList, setActivitiesList] = useState<SchoolActivity[]>(activitiesData);
+
+  useEffect(() => {
+    const loadActivities = () => {
+      const cmsPublished = getPublishedArticles();
+      // Tự động nhận diện các bài viết thuộc chuyên mục Hoạt động phong trào hoặc chủ đề trường học
+      const activityArticles = cmsPublished.filter(
+        (art) =>
+          art.category === 'activity' ||
+          art.topic === 'Hoạt động phong trào nhà trường' ||
+          art.topic === 'Hoạt động & Phong trào học đường' ||
+          art.topic === 'Trường THCS Nguyễn Trung Trực Làm theo Bác' ||
+          art.topic?.toLowerCase().includes('hoạt động') ||
+          art.topic?.toLowerCase().includes('phong trào') ||
+          art.title?.toLowerCase().includes('hội thi') ||
+          art.title?.toLowerCase().includes('hành trình') ||
+          art.title?.toLowerCase().includes('kết nạp') ||
+          art.title?.toLowerCase().includes('ra mắt') ||
+          art.title?.toLowerCase().includes('phong trào')
+      );
+
+      const mappedFromCms = activityArticles.map(mapArticleToActivity);
+      // Đưa các bài viết thực tế vừa đăng lên đầu danh sách
+      setActivitiesList([...mappedFromCms, ...activitiesData]);
+    };
+
+    loadActivities();
+    window.addEventListener(EVENT_ARTICLES_CHANGED, loadActivities);
+    window.addEventListener('storage', loadActivities);
+
+    return () => {
+      window.removeEventListener(EVENT_ARTICLES_CHANGED, loadActivities);
+      window.removeEventListener('storage', loadActivities);
+    };
+  }, []);
+
+  const hasCmsArticles = activitiesList.some((a) => !a.isSampleData);
 
   return (
     <section id="activities" className="py-16 md:py-24 bg-heritage-ivory-100 border-b border-heritage-ivory-300">
@@ -25,15 +83,24 @@ export const Activities: React.FC = () => {
             của thầy và trò Trường THCS Nguyễn Trung Trực (Phường Thới An).
           </p>
 
-          <div className="mt-3 inline-flex items-center space-x-1.5 text-xs text-amber-800 bg-amber-50 px-3 py-1 rounded-full border border-amber-200">
-            <AlertCircle className="w-3.5 h-3.5 text-amber-600 flex-shrink-0" />
-            <span>Dữ liệu dưới đây là nội dung mẫu minh họa cho mô hình hoạt động thực tế tại nhà trường.</span>
+          <div className="mt-3 inline-flex items-center space-x-1.5 text-xs text-amber-800 bg-amber-50 px-3.5 py-1 rounded-full border border-amber-200">
+            {hasCmsArticles ? (
+              <>
+                <Sparkles className="w-3.5 h-3.5 text-emerald-600 flex-shrink-0" />
+                <span className="text-emerald-900 font-medium">Bao gồm các tin bài hoạt động thực tế cập nhật từ Ban Giám Hiệu và dữ liệu mô phỏng.</span>
+              </>
+            ) : (
+              <>
+                <AlertCircle className="w-3.5 h-3.5 text-amber-600 flex-shrink-0" />
+                <span>Dữ liệu dưới đây là nội dung mẫu minh họa cho mô hình hoạt động thực tế tại nhà trường.</span>
+              </>
+            )}
           </div>
         </div>
 
         {/* Activities Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {activitiesData.map((activity) => (
+          {activitiesList.map((activity) => (
             <div
               key={activity.id}
               onClick={() => setSelectedActivity(activity)}
@@ -44,16 +111,25 @@ export const Activities: React.FC = () => {
                 <div className="relative h-48 sm:h-52 overflow-hidden bg-heritage-ivory-200">
                   <img
                     src={activity.imageUrl}
-                    alt={activity.title}
+                    alt=""
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                     loading="lazy"
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).src = '/images/ho-chi-minh-tp-hcm.png';
+                    }}
                   />
                   <div className="absolute top-2.5 left-2.5">
                     <span className="px-2.5 py-1 bg-heritage-red-700 text-white font-semibold text-xs rounded shadow">
                       {activity.academicYear}
                     </span>
                   </div>
-                  {activity.isSampleData && (
+                  {!activity.isSampleData ? (
+                    <div className="absolute bottom-2 left-2 right-2">
+                      <span className="px-2.5 py-1 bg-emerald-800/95 text-white text-xs font-semibold rounded backdrop-blur-sm block truncate shadow">
+                        ⭐ Hoạt động chính thức (CMS)
+                      </span>
+                    </div>
+                  ) : (
                     <div className="absolute bottom-2 left-2 right-2">
                       <span className="px-2.5 py-1 bg-black/80 text-amber-300 text-xs font-medium rounded backdrop-blur-sm block truncate shadow">
                         Nội dung minh họa mô phỏng

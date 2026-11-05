@@ -1,11 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { Menu, X, BookOpen, Compass, Award, Calendar, Phone, Home, Sparkles } from 'lucide-react';
+import { Menu, X, BookOpen, Compass, Award, Calendar, Phone, Home, Sparkles, Shield, LogIn, Flame } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
 
 interface HeaderProps {
   onOpenChatbotPreview: () => void;
+  onOpenAuthModal: () => void;
+  onOpenCmsDashboard: () => void;
 }
 
-export const Header: React.FC<HeaderProps> = ({ onOpenChatbotPreview }) => {
+export const Header: React.FC<HeaderProps> = ({ onOpenChatbotPreview, onOpenAuthModal, onOpenCmsDashboard }) => {
+  const { user, profile } = useAuth();
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState('hero');
@@ -14,7 +18,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenChatbotPreview }) => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 30);
 
-      const sections = ['hero', 'about', 'timeline', 'resources', 'learning', 'activities', 'contact'];
+      const sections = ['hero', 'spotlight', 'timeline', 'resources', 'learning', 'activities', 'about', 'contact'];
       const scrollPosition = window.scrollY + 120;
 
       for (const sectionId of sections) {
@@ -36,11 +40,12 @@ export const Header: React.FC<HeaderProps> = ({ onOpenChatbotPreview }) => {
 
   const navItems = [
     { id: 'hero', label: 'Trang chủ', icon: Home },
-    { id: 'about', label: 'Giới thiệu', icon: Sparkles },
+    { id: 'spotlight', label: 'Tiêu điểm', icon: Flame },
     { id: 'timeline', label: 'Chủ tịch Hồ Chí Minh', icon: Compass },
     { id: 'resources', label: 'Kho tư liệu', icon: BookOpen },
     { id: 'learning', label: 'Góc học tập', icon: Award },
     { id: 'activities', label: 'Hoạt động', icon: Calendar },
+    { id: 'about', label: 'Giới thiệu', icon: Sparkles },
     { id: 'contact', label: 'Liên hệ', icon: Phone },
   ];
 
@@ -112,27 +117,70 @@ export const Header: React.FC<HeaderProps> = ({ onOpenChatbotPreview }) => {
               <Sparkles className="w-3.5 h-3.5 text-heritage-red-950 flex-shrink-0" />
               <span>Trợ lý AI (GĐ2)</span>
             </button>
+
+            {/* Nút Đăng nhập / Vào CMS Quản trị */}
+            {user ? (
+              <button
+                onClick={onOpenCmsDashboard}
+                className="ml-1.5 2xl:ml-2.5 px-3 py-1.5 bg-heritage-red-700 hover:bg-heritage-red-800 text-white font-bold text-xs rounded-full shadow-sm flex items-center space-x-1.5 transition-all whitespace-nowrap flex-shrink-0 border border-heritage-gold-400/50"
+                title="Mở Bảng điều khiển Quản trị CMS"
+              >
+                <Shield className="w-3.5 h-3.5 text-heritage-gold-300" />
+                <span>CMS: {profile?.full_name ? profile.full_name.split(' ').slice(-1)[0] : 'Quản trị'}</span>
+              </button>
+            ) : (
+              <button
+                onClick={onOpenAuthModal}
+                className="ml-1.5 2xl:ml-2.5 px-3 py-1.5 bg-heritage-ivory-200 hover:bg-heritage-ivory-300 text-heritage-red-900 border border-heritage-gold-300/80 font-bold text-xs rounded-full shadow-sm flex items-center space-x-1.5 transition-all whitespace-nowrap flex-shrink-0"
+                title="Đăng nhập Cán bộ / Ban Quản trị"
+              >
+                <LogIn className="w-3.5 h-3.5 text-heritage-red-700" />
+                <span>Đăng Nhập</span>
+              </button>
+            )}
           </nav>
 
           {/* Mobile & Tablet (< 1280px) Toggle Button */}
           <div className="flex items-center space-x-1.5 sm:space-x-2 xl:hidden flex-shrink-0">
+            {user ? (
+              <button
+                onClick={onOpenCmsDashboard}
+                className="w-9 h-9 sm:w-auto sm:px-2.5 sm:py-1.5 bg-heritage-red-700 hover:bg-heritage-red-800 text-white rounded-full sm:rounded-lg text-xs font-semibold flex items-center justify-center space-x-1 flex-shrink-0 shadow-sm border border-heritage-gold-400/40"
+                aria-label="Vào CMS Quản trị"
+                title="Bảng điều khiển CMS"
+              >
+                <Shield className="w-4 h-4 text-heritage-gold-300 flex-shrink-0" />
+                <span className="hidden sm:inline text-[11px] sm:text-xs">CMS</span>
+              </button>
+            ) : (
+              <button
+                onClick={onOpenAuthModal}
+                className="w-9 h-9 sm:w-auto sm:px-2.5 sm:py-1.5 bg-heritage-ivory-200 hover:bg-heritage-ivory-300 text-heritage-red-900 rounded-full sm:rounded-lg border border-heritage-gold-300 text-xs font-semibold flex items-center justify-center space-x-1 flex-shrink-0 shadow-sm"
+                aria-label="Đăng nhập Quản trị"
+                title="Đăng nhập cán bộ"
+              >
+                <LogIn className="w-4 h-4 text-heritage-red-700 flex-shrink-0" />
+                <span className="hidden sm:inline text-[11px] sm:text-xs">Đăng nhập</span>
+              </button>
+            )}
+
             <button
               onClick={onOpenChatbotPreview}
-              className="p-1.5 sm:px-2.5 sm:py-1.5 bg-heritage-gold-100 text-heritage-red-900 rounded-md border border-heritage-gold-300 text-xs font-semibold flex items-center space-x-1 flex-shrink-0"
+              className="w-9 h-9 sm:w-auto sm:px-2.5 sm:py-1.5 bg-heritage-gold-100 hover:bg-heritage-gold-200 text-heritage-red-900 rounded-full sm:rounded-lg border border-heritage-gold-400 text-xs font-semibold flex items-center justify-center space-x-1 flex-shrink-0 shadow-sm"
               aria-label="Thông tin Trợ lý AI"
+              title="Trợ lý ảo AI giáo dục"
             >
               <Sparkles className="w-4 h-4 text-heritage-gold-600 flex-shrink-0" />
-              <span className="hidden sm:inline text-[11px] sm:text-xs">AI Sắp ra mắt</span>
-              <span className="sm:hidden text-[10px] font-bold">AI</span>
+              <span className="hidden sm:inline text-[11px] sm:text-xs font-bold">AI</span>
             </button>
 
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="p-1.5 sm:p-2 rounded-md text-heritage-ink-700 hover:text-heritage-red-700 hover:bg-heritage-ivory-200 focus:outline-none focus:ring-2 focus:ring-heritage-red-600 flex-shrink-0"
+              className="w-9 h-9 sm:w-auto p-1.5 sm:p-2 rounded-full sm:rounded-md text-heritage-ink-700 hover:text-heritage-red-700 hover:bg-heritage-ivory-200 focus:outline-none focus:ring-2 focus:ring-heritage-red-600 flex items-center justify-center flex-shrink-0"
               aria-expanded={mobileMenuOpen}
               aria-label="Mở thực đơn điều hướng"
             >
-              {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+              {mobileMenuOpen ? <X className="w-5 h-5 sm:w-6 sm:h-6" /> : <Menu className="w-5 h-5 sm:w-6 sm:h-6" />}
             </button>
           </div>
         </div>
@@ -140,34 +188,42 @@ export const Header: React.FC<HeaderProps> = ({ onOpenChatbotPreview }) => {
 
       {/* Mobile & Tablet Drawer Navigation */}
       {mobileMenuOpen && (
-        <div className="xl:hidden fixed inset-x-0 top-[60px] bg-heritage-ivory-100/98 backdrop-blur-md border-b border-heritage-gold-300/50 shadow-xl px-4 pt-3 pb-6 animate-fadeIn transition-all max-h-[85vh] overflow-y-auto">
-          <div className="space-y-1">
-            {navItems.map((item) => {
-              const Icon = item.icon;
-              const isActive = activeSection === item.id;
-              return (
-                <button
-                  key={item.id}
-                  onClick={() => handleNavClick(item.id)}
-                  className={`w-full flex items-center space-x-3 px-3.5 py-3 rounded-lg text-sm sm:text-base font-medium text-left transition-all ${
-                    isActive
-                      ? 'bg-heritage-red-700 text-white font-semibold shadow-sm'
-                      : 'text-heritage-ink-800 hover:bg-heritage-red-50 hover:text-heritage-red-700'
-                  }`}
-                >
-                  <Icon className={`w-5 h-5 ${isActive ? 'text-heritage-gold-300' : 'text-heritage-red-600'}`} />
-                  <span>{item.label}</span>
-                </button>
-              );
-            })}
-          </div>
+        <>
+          {/* Backdrop Overlay */}
+          <div
+            className="xl:hidden fixed inset-0 top-[60px] bg-black/40 backdrop-blur-sm z-30"
+            onClick={() => setMobileMenuOpen(false)}
+            aria-hidden="true"
+          />
+          <div className="xl:hidden fixed inset-x-0 top-[60px] z-40 bg-heritage-ivory-100/98 backdrop-blur-md border-b-2 border-heritage-gold-400 shadow-2xl px-4 pt-3 pb-6 animate-fadeIn transition-all max-h-[80vh] overflow-y-auto">
+            <div className="space-y-1">
+              {navItems.map((item) => {
+                const Icon = item.icon;
+                const isActive = activeSection === item.id;
+                return (
+                  <button
+                    key={item.id}
+                    onClick={() => handleNavClick(item.id)}
+                    className={`w-full flex items-center space-x-3 px-3.5 py-3 rounded-xl text-sm sm:text-base font-medium text-left transition-all ${
+                      isActive
+                        ? 'bg-heritage-red-700 text-white font-semibold shadow-sm'
+                        : 'text-heritage-ink-800 hover:bg-heritage-red-50 hover:text-heritage-red-700'
+                    }`}
+                  >
+                    <Icon className={`w-5 h-5 ${isActive ? 'text-heritage-gold-300' : 'text-heritage-red-600'}`} />
+                    <span>{item.label}</span>
+                  </button>
+                );
+              })}
+            </div>
 
-          <div className="mt-4 pt-3 border-t border-heritage-ivory-300 text-center">
-            <p className="text-xs text-heritage-ink-500 font-medium">
-              Không gian văn hóa Hồ Chí Minh • Trường THCS Nguyễn Trung Trực
-            </p>
+            <div className="mt-4 pt-3 border-t border-heritage-ivory-300 text-center">
+              <p className="text-xs text-heritage-ink-500 font-medium">
+                Không gian văn hóa Hồ Chí Minh • Trường THCS Nguyễn Trung Trực
+              </p>
+            </div>
           </div>
-        </div>
+        </>
       )}
     </header>
   );

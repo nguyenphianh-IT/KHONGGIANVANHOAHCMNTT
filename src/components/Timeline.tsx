@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { timelineData } from '../data/timelineData';
 import { TimelineEvent } from '../types';
-import { Calendar, MapPin, Sparkles, ChevronRight, CheckCircle2, X, Star } from 'lucide-react';
+import { Calendar, MapPin, Sparkles, ChevronRight, CheckCircle2, X, Star, BookOpen, ShieldCheck, Printer } from 'lucide-react';
 
 export const Timeline: React.FC = () => {
   const [filter, setFilter] = useState<string>('all');
   const [selectedEvent, setSelectedEvent] = useState<TimelineEvent | null>(null);
+  const [fontSize, setFontSize] = useState<'normal' | 'large'>('normal');
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -69,60 +70,86 @@ export const Timeline: React.FC = () => {
         </div>
 
         {/* Timeline Stream */}
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-5xl mx-auto">
           <div className="relative">
-            {/* Vertical Center Line */}
-            <div className="hidden md:block absolute left-1/2 -ml-0.5 top-0 bottom-0 w-1 bg-heritage-red-200" />
+            {/* Desktop Vertical Center Line */}
+            <div className="hidden md:block absolute left-1/2 -ml-0.5 top-0 bottom-0 w-1 bg-gradient-to-b from-heritage-red-400 via-heritage-gold-400 to-heritage-red-400 shadow-sm" />
 
-            <div className="space-y-8 md:space-y-12">
+            {/* Mobile Vertical Left Line (Trục lịch sử xuyên suốt trên di động) */}
+            <div className="md:hidden absolute left-[1.35rem] sm:left-[1.65rem] top-3 bottom-3 w-0.5 bg-gradient-to-b from-heritage-gold-400 via-heritage-red-400 to-heritage-gold-500 shadow-sm" />
+
+            <div className="space-y-6 md:space-y-7">
             {filteredEvents.map((event, idx) => {
               const isEven = idx % 2 === 0;
               const isMemorialEvent = event.isMemorial || !event.year;
               return (
                 <div
                   key={event.year || `event-${idx}`}
-                  className={`relative flex flex-col md:flex-row items-center ${
-                    isEven ? 'md:flex-row-reverse' : ''
-                  }`}
+                  className="relative flex flex-col md:flex-row items-start pl-11 sm:pl-14 md:pl-0"
                 >
-                  {/* Timeline Badge in Center */}
+                  {/* Desktop Timeline Badge in Center */}
                   <div
-                    className={`hidden md:flex absolute left-1/2 -ml-6 w-12 h-12 rounded-full border-4 shadow-md items-center justify-center font-serif font-black text-xs z-10 ${
+                    className={`hidden md:flex absolute left-1/2 -ml-5 top-5 w-10 h-10 rounded-full border-2 shadow-md items-center justify-center font-serif font-black text-xs z-10 ${
                       isMemorialEvent
-                        ? 'bg-gradient-to-br from-heritage-red-700 to-heritage-red-900 text-heritage-gold-300 border-heritage-gold-400 shadow-gold-glow'
-                        : 'bg-heritage-red-700 text-heritage-gold-300 border-white'
+                        ? 'bg-gradient-to-br from-heritage-red-700 to-heritage-red-900 text-heritage-gold-300 border-heritage-gold-400 shadow-gold-glow ring-2 ring-heritage-gold-400/40'
+                        : 'bg-heritage-red-700 text-heritage-gold-300 border-heritage-gold-300'
                     }`}
                   >
                     {isMemorialEvent ? (
-                      <Star className="w-5 h-5 text-heritage-gold-300 fill-heritage-gold-400 drop-shadow" />
+                      <Star className="w-4 h-4 text-heritage-gold-300 fill-heritage-gold-400 drop-shadow" />
                     ) : (
                       event.year
                     )}
                   </div>
 
+                  {/* Mobile Timeline Node on the Left Track */}
+                  <div
+                    className={`md:hidden absolute left-2.5 sm:left-3.5 top-4 w-6 h-6 sm:w-7 sm:h-7 rounded-full border-2 shadow-sm flex items-center justify-center z-10 ${
+                      isMemorialEvent
+                        ? 'bg-gradient-to-br from-heritage-red-700 to-heritage-red-900 text-heritage-gold-300 border-heritage-gold-400 ring-2 ring-heritage-gold-400/40'
+                        : 'bg-heritage-red-700 text-heritage-gold-300 border-heritage-gold-300 text-[10px] font-black font-serif'
+                    }`}
+                    title={event.year ? `Năm ${event.year}` : 'Mốc son lịch sử'}
+                  >
+                    {isMemorialEvent ? (
+                      <Star className="w-3 h-3 text-heritage-gold-300 fill-heritage-gold-400" />
+                    ) : (
+                      <span className="text-[9px] sm:text-[10px] font-bold">{event.year ? event.year.slice(-2) : '•'}</span>
+                    )}
+                  </div>
+
+                  {/* Horizontal Connector Arm linking Badge to Card */}
+                  <div
+                    className={`hidden md:block absolute top-[2.1rem] h-0.5 z-0 ${
+                      isEven
+                        ? 'left-1/2 ml-5 w-6 bg-gradient-to-r from-heritage-gold-400 to-heritage-red-300'
+                        : 'right-1/2 mr-5 w-6 bg-gradient-to-l from-heritage-gold-400 to-heritage-red-300'
+                    }`}
+                  />
+
                   {/* Content Box */}
-                  <div className={`w-full md:w-1/2 ${isEven ? 'md:pl-10' : 'md:pr-10'}`}>
+                  <div className={`w-full md:w-[calc(50%-1.75rem)] ${isEven ? 'md:ml-auto' : 'md:mr-auto'}`}>
                     <div
                       onClick={() => setSelectedEvent(event)}
-                      className={`group cursor-pointer rounded-xl p-5 sm:p-6 border transition-all duration-200 ${
+                      className={`group cursor-pointer rounded-2xl p-4 sm:p-5 border transition-all duration-200 ${
                         isMemorialEvent
-                          ? 'bg-heritage-ivory-100 hover:bg-white border-heritage-gold-400/60 hover:border-heritage-gold-500 shadow-sm hover:shadow-heritage-hover ring-1 ring-heritage-gold-300/30'
+                          ? 'bg-heritage-ivory-100 hover:bg-white border-heritage-gold-400/70 hover:border-heritage-gold-500 shadow-sm hover:shadow-heritage-hover ring-1 ring-heritage-gold-300/40'
                           : 'bg-heritage-ivory-100 hover:bg-white border-heritage-ivory-300 hover:border-heritage-gold-400 shadow-sm hover:shadow-heritage-hover'
                       }`}
                     >
                       {/* Mobile year / memorial badge */}
                       {isMemorialEvent ? (
-                        <div className="md:hidden inline-flex items-center space-x-1.5 px-2.5 py-1 bg-gradient-to-r from-heritage-red-800 to-heritage-red-700 text-heritage-gold-300 font-serif font-bold text-xs rounded border border-heritage-gold-400/40 mb-3">
+                        <div className="md:hidden inline-flex items-center space-x-1.5 px-2.5 py-1 bg-gradient-to-r from-heritage-red-800 to-heritage-red-700 text-heritage-gold-300 font-serif font-bold text-xs rounded border border-heritage-gold-400/40 mb-2.5">
                           <Star className="w-3.5 h-3.5 fill-heritage-gold-400 text-heritage-gold-300 flex-shrink-0" />
                           <span>Thông điệp tưởng niệm</span>
                         </div>
                       ) : (
-                        <div className="md:hidden inline-block px-2.5 py-1 bg-heritage-red-700 text-heritage-gold-300 font-serif font-bold text-xs rounded mb-3">
+                        <div className="md:hidden inline-block px-2.5 py-1 bg-heritage-red-700 text-heritage-gold-300 font-serif font-bold text-xs rounded mb-2.5">
                           Năm {event.year} • {event.exactDate}
                         </div>
                       )}
 
-                      <div className="hidden md:flex items-center space-x-2 text-xs font-semibold text-heritage-red-700 mb-1.5">
+                      <div className="hidden md:flex items-center space-x-2 text-xs font-semibold text-heritage-red-700 mb-1">
                         {isMemorialEvent ? (
                           <>
                             <Star className="w-3.5 h-3.5 text-heritage-gold-600 fill-heritage-gold-500 flex-shrink-0" />
@@ -136,15 +163,27 @@ export const Timeline: React.FC = () => {
                         )}
                       </div>
 
-                      <h3 className="font-serif text-base sm:text-lg font-bold text-heritage-ink-900 group-hover:text-heritage-red-700 transition-colors">
+                      <h3 className="font-serif text-base sm:text-lg font-bold text-heritage-ink-900 group-hover:text-heritage-red-700 transition-colors leading-snug">
                         {event.title}
                       </h3>
+
+                      {/* Thumbnail preview with smart framing preventing face crop */}
+                      {event.imageUrl && (
+                        <div className="mt-2.5 mb-2 rounded-xl overflow-hidden aspect-[16/10] sm:aspect-[16/9] max-h-52 w-full relative border border-heritage-gold-300/60 bg-heritage-ivory-200 shadow-inner">
+                          <img
+                            src={event.imageUrl}
+                            alt={event.title}
+                            className={`w-full h-full object-cover ${event.imagePosition || 'object-top'} group-hover:scale-105 transition-transform duration-500`}
+                            loading="lazy"
+                          />
+                        </div>
+                      )}
 
                       <p className="mt-2 text-xs sm:text-sm text-heritage-ink-700 leading-relaxed line-clamp-2">
                         {event.shortDescription}
                       </p>
 
-                      <div className="mt-4 pt-3 border-t border-heritage-ivory-200 flex items-center justify-between gap-2 sm:gap-3 text-xs">
+                      <div className="mt-3.5 pt-2.5 border-t border-heritage-ivory-200 flex items-center justify-between gap-2 sm:gap-3 text-xs">
                         {event.location ? (
                           <span className="flex items-center text-heritage-ink-500 min-w-0 flex-1 mr-2">
                             <MapPin className="w-3.5 h-3.5 mr-1 text-heritage-red-600 flex-shrink-0" />
@@ -190,83 +229,205 @@ export const Timeline: React.FC = () => {
         </div>
       </div>
 
-        {/* Selected Event Detail Modal */}
+        {/* Selected Event Detail Modal (Wide Museum-Grade Canvas matching ResourceModal) */}
         {selectedEvent && (
           <div
-            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fadeIn"
+            className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 md:p-6 bg-heritage-ink-950/85 backdrop-blur-md animate-fadeIn select-text"
             onClick={() => setSelectedEvent(null)}
           >
             <div
-              className="bg-white rounded-2xl max-w-2xl w-full p-6 sm:p-8 shadow-2xl border border-heritage-gold-400 max-h-[90vh] overflow-y-auto"
+              className="bg-heritage-ivory-50 rounded-3xl max-w-5xl xl:max-w-6xl w-full shadow-2xl border-2 border-heritage-gold-400/80 max-h-[95vh] flex flex-col overflow-hidden animate-slideUp text-heritage-ink-900"
               onClick={(e) => e.stopPropagation()}
               role="dialog"
               aria-modal="true"
               aria-labelledby="timeline-event-title"
             >
-              <div className="flex items-start justify-between pb-4 border-b border-heritage-ivory-300">
-                <div>
-                  <div className="inline-flex items-center space-x-2 px-2.5 py-1 bg-heritage-red-100 text-heritage-red-800 rounded font-semibold text-xs mb-1">
+              {/* Top Sticky Heritage Header Bar */}
+              <header className="bg-gradient-to-r from-heritage-red-900 via-heritage-red-800 to-heritage-red-900 px-4 sm:px-6 py-3 text-white flex items-center justify-between border-b border-heritage-gold-400/40 flex-shrink-0 z-20 shadow-md">
+                <div className="flex items-center space-x-2.5 min-w-0">
+                  <img
+                    src="/images/logo-bieu-tuong.png"
+                    alt="Logo Trường THCS Nguyễn Trung Trực"
+                    className="w-8 h-8 rounded-full border border-heritage-gold-300 shadow-sm flex-shrink-0 object-contain bg-white/10"
+                  />
+                  <div className="min-w-0">
+                    <span className="font-serif font-bold text-xs sm:text-sm text-heritage-gold-300 block truncate">
+                      KHÔNG GIAN VĂN HÓA HỒ CHÍ MINH
+                    </span>
+                    <span className="text-[10px] text-white/80 block truncate">
+                      Trường THCS Nguyễn Trung Trực • Dấu ấn lịch sử vẻ vang
+                    </span>
+                  </div>
+                </div>
+
+                <div className="flex items-center space-x-2 sm:space-x-3 flex-shrink-0">
+                  {/* Font size toggle */}
+                  <div className="flex items-center bg-black/25 rounded-lg p-0.5 border border-heritage-gold-400/30 text-xs">
+                    <button
+                      onClick={() => setFontSize('normal')}
+                      className={`px-2 py-1 rounded text-[11px] font-bold transition ${
+                        fontSize === 'normal'
+                          ? 'bg-heritage-gold-400 text-heritage-red-950'
+                          : 'text-white/80 hover:text-white'
+                      }`}
+                      title="Cỡ chữ chuẩn"
+                    >
+                      A
+                    </button>
+                    <button
+                      onClick={() => setFontSize('large')}
+                      className={`px-2 py-1 rounded text-[11px] font-bold transition ${
+                        fontSize === 'large'
+                          ? 'bg-heritage-gold-400 text-heritage-red-950'
+                          : 'text-white/80 hover:text-white'
+                      }`}
+                      title="Cỡ chữ lớn"
+                    >
+                      A+
+                    </button>
+                  </div>
+
+                  {/* Print Button */}
+                  <button
+                    onClick={() => window.print()}
+                    className="p-1.5 text-white/80 hover:text-white hover:bg-white/10 rounded-lg transition"
+                    title="In tư liệu hoặc Lưu PDF"
+                  >
+                    <Printer className="w-5 h-5" />
+                  </button>
+
+                  {/* Close Button */}
+                  <button
+                    onClick={() => setSelectedEvent(null)}
+                    className="p-1.5 text-white/80 hover:text-white hover:bg-white/10 rounded-lg transition"
+                    aria-label="Đóng cửa sổ"
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
+                </div>
+              </header>
+
+              {/* Scrollable Body Content */}
+              <div className="flex-1 overflow-y-auto px-6 sm:px-10 md:px-12 py-7">
+                {/* Meta Badges */}
+                <div className="flex flex-wrap items-center gap-2 mb-3">
+                  <span className="inline-flex items-center space-x-1.5 px-3 py-1 bg-heritage-red-800 text-white font-serif font-bold text-xs rounded-full shadow-sm">
                     {selectedEvent.isMemorial || !selectedEvent.year ? (
                       <>
-                        <Star className="w-3.5 h-3.5 text-heritage-gold-600 fill-heritage-gold-500 flex-shrink-0" />
-                        <span>Thông điệp tưởng niệm thiêng liêng</span>
+                        <Star className="w-3.5 h-3.5 text-heritage-gold-300 fill-heritage-gold-400" />
+                        <span>Mốc Tưởng Niệm Thiêng Liêng</span>
                       </>
                     ) : (
                       <>
-                        <Calendar className="w-3.5 h-3.5 text-heritage-red-700" />
+                        <Calendar className="w-3.5 h-3.5 text-heritage-gold-300" />
                         <span>Năm {selectedEvent.year} • {selectedEvent.exactDate}</span>
                       </>
                     )}
-                  </div>
-                  <h3 id="timeline-event-title" className="font-serif text-xl sm:text-2xl font-bold text-heritage-ink-900 mt-1">
-                    {selectedEvent.title}
-                  </h3>
-                </div>
-                <button
-                  onClick={() => setSelectedEvent(null)}
-                  className="p-1.5 rounded-full text-heritage-ink-500 hover:text-heritage-ink-900 hover:bg-heritage-ivory-200 transition-colors"
-                  aria-label="Đóng cửa sổ chi tiết mốc lịch sử"
-                >
-                  <X className="w-6 h-6" />
-                </button>
-              </div>
+                  </span>
 
-              <div className="mt-5 space-y-4 text-heritage-ink-800 text-sm sm:text-base leading-relaxed">
-                <div>
-                  <h4 className="text-xs uppercase tracking-wider font-bold text-heritage-red-700 mb-1">
-                    {selectedEvent.isMemorial ? 'Nội dung thông điệp giáo dục' : 'Diễn biến lịch sử'}
-                  </h4>
-                  <p className="bg-heritage-ivory-100 p-4 rounded-xl border border-heritage-ivory-200 text-heritage-ink-800">
-                    {selectedEvent.fullDetail}
-                  </p>
+                  <span className="inline-flex items-center space-x-1 text-xs font-semibold px-2.5 py-1 rounded-full bg-heritage-gold-100 text-heritage-red-900 border border-heritage-gold-300/60">
+                    <ShieldCheck className="w-3.5 h-3.5 text-heritage-gold-600" />
+                    <span>Tư liệu lịch sử Đảng & Bảo tàng HCM</span>
+                  </span>
+
+                  {selectedEvent.location && (
+                    <span className="inline-flex items-center space-x-1 text-xs text-heritage-ink-600 px-2.5 py-1 rounded-full bg-heritage-ivory-200">
+                      <MapPin className="w-3.5 h-3.5 text-heritage-red-700" />
+                      <span>{selectedEvent.location}</span>
+                    </span>
+                  )}
                 </div>
 
-                <div>
-                  <h4 className="text-xs uppercase tracking-wider font-bold text-heritage-gold-600 mb-1 flex items-center space-x-1">
-                    <CheckCircle2 className="w-4 h-4 text-heritage-gold-500" />
-                    <span>{selectedEvent.isMemorial ? 'Ý nghĩa & Trách nhiệm thế hệ trẻ' : 'Ý nghĩa lịch sử'}</span>
-                  </h4>
-                  <p className="p-3 bg-heritage-gold-50/70 border border-heritage-gold-200 rounded-lg text-heritage-ink-900 font-medium text-xs sm:text-sm">
-                    {selectedEvent.significance}
-                  </p>
-                </div>
+                {/* Event Title */}
+                <h2 id="timeline-event-title" className="font-serif text-2xl sm:text-3xl lg:text-4xl font-extrabold text-heritage-red-950 leading-tight mb-5">
+                  {selectedEvent.title}
+                </h2>
 
-                {selectedEvent.location && (
-                  <div className="flex items-center text-xs text-heritage-ink-500 pt-2 border-t border-heritage-ivory-200">
-                    <MapPin className="w-4 h-4 text-heritage-red-600 mr-1.5 flex-shrink-0" />
-                    <span>Địa điểm lịch sử: <strong>{selectedEvent.location}</strong></span>
+                {/* Sapo / Lead Summary */}
+                {selectedEvent.shortDescription && (
+                  <div className="relative bg-gradient-to-r from-heritage-gold-100/70 via-heritage-gold-50/50 to-transparent p-4 sm:p-5 rounded-2xl border-l-4 border-heritage-gold-500 mb-6 shadow-sm">
+                    <p className={`font-serif italic font-medium text-heritage-red-950 leading-relaxed ${
+                      fontSize === 'large' ? 'text-base sm:text-lg' : 'text-sm sm:text-base'
+                    }`}>
+                      {selectedEvent.shortDescription}
+                    </p>
                   </div>
                 )}
+
+                {/* Grand Photo Showcase (Clean museum frame, high-definition, caption placed beneath so faces are 100% visible) */}
+                {selectedEvent.imageUrl && (
+                  <figure className="my-6 rounded-2xl overflow-hidden border-2 border-heritage-gold-300 shadow-md bg-white p-2.5 sm:p-3 max-w-4xl mx-auto">
+                    <div className="overflow-hidden rounded-xl bg-heritage-ivory-200 flex items-center justify-center">
+                      <img
+                        src={selectedEvent.imageUrl}
+                        alt={selectedEvent.title}
+                        className={`w-full max-h-[460px] object-cover sm:object-contain ${selectedEvent.imagePosition || 'object-top'} mx-auto hover:scale-[1.01] transition-transform duration-500`}
+                      />
+                    </div>
+                    {selectedEvent.imageCaption && (
+                      <figcaption className="text-center text-xs sm:text-sm font-sans italic text-heritage-ink-700 mt-2.5 px-3 py-1.5 bg-heritage-gold-50/70 rounded-lg border border-heritage-gold-200/50">
+                        {selectedEvent.imageCaption}
+                      </figcaption>
+                    )}
+                  </figure>
+                )}
+
+                {/* Detailed Historical Narrative */}
+                <div className="space-y-5 my-6">
+                  {/* Diễn biến lịch sử */}
+                  <div className="bg-white p-5 sm:p-7 rounded-2xl border border-heritage-ivory-300 shadow-sm">
+                    <div className="flex items-center space-x-2 pb-3 mb-3 border-b border-heritage-ivory-200">
+                      <BookOpen className="w-5 h-5 text-heritage-red-700" />
+                      <h3 className="font-serif font-bold text-base sm:text-lg text-heritage-red-900 uppercase tracking-wide">
+                        {selectedEvent.isMemorial ? 'Nội dung thông điệp giáo dục' : 'Diễn biến lịch sử trọng đại'}
+                      </h3>
+                    </div>
+                    <p className={`font-serif text-justify text-heritage-ink-900 leading-relaxed ${
+                      fontSize === 'large' ? 'text-base sm:text-lg' : 'text-sm sm:text-base'
+                    }`}>
+                      {selectedEvent.fullDetail}
+                    </p>
+                  </div>
+
+                  {/* Ý nghĩa lịch sử & Trách nhiệm thế hệ trẻ */}
+                  <div className="bg-gradient-to-br from-heritage-gold-50 via-white to-heritage-gold-50/40 p-5 sm:p-7 rounded-2xl border-2 border-heritage-gold-300 shadow-sm">
+                    <div className="flex items-center space-x-2 pb-3 mb-3 border-b border-heritage-gold-200">
+                      <CheckCircle2 className="w-5 h-5 text-heritage-gold-600" />
+                      <h3 className="font-serif font-bold text-base sm:text-lg text-heritage-red-950 uppercase tracking-wide">
+                        {selectedEvent.isMemorial ? 'Ý nghĩa & Trách nhiệm thế hệ trẻ' : 'Ý nghĩa lịch sử đối với dân tộc'}
+                      </h3>
+                    </div>
+                    <p className={`font-serif text-justify text-heritage-ink-950 font-medium leading-relaxed ${
+                      fontSize === 'large' ? 'text-base sm:text-lg' : 'text-sm sm:text-base'
+                    }`}>
+                      {selectedEvent.significance}
+                    </p>
+                  </div>
+                </div>
               </div>
 
-              <div className="mt-6 pt-4 border-t border-heritage-ivory-300 flex justify-end">
-                <button
-                  onClick={() => setSelectedEvent(null)}
-                  className="px-5 py-2 bg-heritage-red-700 hover:bg-heritage-red-800 text-white rounded-lg font-medium text-sm transition-colors"
-                >
-                  Đóng lại
-                </button>
-              </div>
+              {/* Bottom Sticky Footer */}
+              <footer className="bg-heritage-ivory-100 px-6 py-3.5 border-t border-heritage-ivory-300 flex items-center justify-between flex-shrink-0">
+                <div className="hidden sm:flex items-center space-x-2 text-xs text-heritage-ink-600">
+                  <CheckCircle2 className="w-4 h-4 text-heritage-gold-600 flex-shrink-0" />
+                  <span>Tư liệu chính thức phục vụ học tập & giáo dục truyền thống THCS Nguyễn Trung Trực</span>
+                </div>
+                <div className="flex items-center space-x-3 ml-auto">
+                  <button
+                    onClick={() => window.print()}
+                    className="px-4 py-2 bg-heritage-ivory-200 hover:bg-heritage-ivory-300 text-heritage-ink-800 rounded-xl font-medium text-xs sm:text-sm border border-heritage-ivory-300 flex items-center space-x-1.5 transition"
+                  >
+                    <Printer className="w-4 h-4" />
+                    <span>In tư liệu</span>
+                  </button>
+                  <button
+                    onClick={() => setSelectedEvent(null)}
+                    className="px-5 py-2 bg-heritage-red-800 hover:bg-heritage-red-900 text-white rounded-xl font-semibold text-xs sm:text-sm shadow-sm transition"
+                  >
+                    Đóng lại
+                  </button>
+                </div>
+              </footer>
             </div>
           </div>
         )}

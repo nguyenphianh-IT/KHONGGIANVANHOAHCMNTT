@@ -28,7 +28,13 @@ Thumbs.db
 
 # Antigravity local workspace
 .agent/
+.vercel/
+scratch/
+$RECYCLE.BIN/
+*.zip
 
 # Local backup / unreferenced original assets
 public/images/timeline-ngoi-sao-original.png
 
+
+.vercel

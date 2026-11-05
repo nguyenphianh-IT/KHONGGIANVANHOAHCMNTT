@@ -41,7 +41,7 @@ export const ChatbotPreview: React.FC<ChatbotPreviewProps> = ({ isOpen, onClose,
   return (
     <>
       {/* Floating Action Button */}
-      <div className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-40">
+      <div className="fixed bottom-[4.25rem] right-3.5 xl:bottom-6 xl:right-6 z-40">
         <button
           onClick={onOpen}
           className="group relative flex items-center space-x-2.5 px-3.5 py-2.5 sm:px-4 sm:py-3 rounded-full bg-gradient-to-r from-heritage-red-700 to-heritage-red-900 text-white shadow-xl hover:shadow-heritage-gold-400/30 border-2 border-heritage-gold-400 hover:scale-105 active:scale-95 transition-all duration-300"

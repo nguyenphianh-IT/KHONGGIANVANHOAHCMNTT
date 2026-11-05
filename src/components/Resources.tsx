@@ -1,13 +1,100 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { resourcesData } from '../data/resourcesData';
 import { ResourceCategory, ResourceItem } from '../types';
 import { ResourceModal } from './ResourceModal';
 import { Search, Filter, BookOpen, FileText, Image as ImageIcon, Video, Book, X, AlertCircle } from 'lucide-react';
+import { supabase } from '../lib/supabase';
+import {
+  getPublishedArticles,
+  EVENT_ARTICLES_CHANGED,
+  ArticleData,
+  normalizeCategoryToHomepage,
+  getCategoryLabel
+} from '../lib/cmsStore';
+
+const mapArticleToResource = (art: ArticleData): ResourceItem => {
+  const normCat = normalizeCategoryToHomepage(art.category);
+  const label = getCategoryLabel(art.category);
+
+  return {
+    id: art.id || `art-${art.slug}`,
+    title: art.title,
+    category: normCat,
+    categoryLabel: label,
+    description: art.summary,
+    fullContent: `${art.content}${art.references ? `\n\n---\n**Nguồn trích dẫn & Tham khảo:** ${art.references}` : ''}`,
+    authorOrSource: art.author_name || 'Trường THCS Nguyễn Trung Trực',
+    dateOrEra: art.updated_at || art.created_at || 'Mới xuất bản',
+    thumbnail: art.featured_image || (normCat === 'video' ? '/images/timeline-ngoi-sao.png' : '/images/ho-chi-minh-tp-hcm.png'),
+    badgeText: art.topic ? `⭐ ${art.topic}` : '⭐ Đã duyệt 4 Mắt (CMS)',
+    isMockData: false,
+    tags: [normCat, '4-eyes-approved', 'chinh-thuc', art.topic || '', art.category],
+  };
+};
 
 export const Resources: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState<ResourceCategory>('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [activeModalItem, setActiveModalItem] = useState<ResourceItem | null>(null);
+  const [liveResources, setLiveResources] = useState<ResourceItem[]>([]);
+
+  useEffect(() => {
+    // 1. Tải các bài viết đã duyệt 4 mắt & xuất bản từ CMS Store (Đồng bộ thời gian thực)
+    const loadPublishedResources = () => {
+      const cmsPublished = getPublishedArticles();
+      const mapped = cmsPublished.map(mapArticleToResource);
+      setLiveResources(mapped);
+    };
+
+    loadPublishedResources();
+
+    // Lắng nghe sự kiện cập nhật tức thời khi Ban Giám Hiệu phê duyệt bài viết trong CMS
+    window.addEventListener(EVENT_ARTICLES_CHANGED, loadPublishedResources);
+    window.addEventListener('storage', loadPublishedResources);
+
+    // 2. Dự phòng kết nối thêm từ Supabase nếu có
+    const fetchSupabase = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('content_revisions')
+          .select('id, title, summary, data, created_at, author_id')
+          .eq('status', 'published')
+          .order('created_at', { ascending: false });
+
+        if (!error && data && data.length > 0) {
+          const supabaseItems: ResourceItem[] = data.map((d: any) => ({
+            id: d.id,
+            title: d.title,
+            category: 'article',
+            categoryLabel: 'Văn kiện số hóa',
+            description: d.summary || '',
+            fullContent: d.data?.content || d.summary || '',
+            authorOrSource: 'Trường THCS Nguyễn Trung Trực',
+            dateOrEra: new Date(d.created_at).toLocaleDateString('vi-VN'),
+            thumbnail: d.data?.featured_image || '/images/ho-chi-minh-tp-hcm.png',
+            badgeText: 'Đã xuất bản (Cloud)',
+            isMockData: false,
+            tags: d.data?.tags || ['lich-su', 'tu-lieu-so'],
+          }));
+
+          setLiveResources((prev) => {
+            const existingIds = new Set(prev.map((p) => p.id));
+            const fresh = supabaseItems.filter((item) => !existingIds.has(item.id));
+            return [...prev, ...fresh];
+          });
+        }
+      } catch {
+        // Fallback nhẹ nhàng về local store
+      }
+    };
+
+    fetchSupabase();
+
+    return () => {
+      window.removeEventListener(EVENT_ARTICLES_CHANGED, loadPublishedResources);
+      window.removeEventListener('storage', loadPublishedResources);
+    };
+  }, []);
 
   const categories = [
     { id: 'all' as ResourceCategory, label: 'Tất cả tư liệu', icon: Filter },
@@ -17,8 +104,13 @@ export const Resources: React.FC = () => {
     { id: 'video' as ResourceCategory, label: 'Phim tư liệu', icon: Video },
   ];
 
+  const allCombinedResources = useMemo(() => {
+    // Đưa các bài viết thực tế vừa xuất bản lên vị trí đầu tiên
+    return [...liveResources, ...resourcesData];
+  }, [liveResources]);
+
   const filteredResources = useMemo(() => {
-    return resourcesData.filter((item) => {
+    return allCombinedResources.filter((item) => {
       const matchCategory = selectedCategory === 'all' || item.category === selectedCategory;
       const q = searchQuery.toLowerCase().trim();
       const matchSearch = !q ||
@@ -28,7 +120,7 @@ export const Resources: React.FC = () => {
         item.authorOrSource.toLowerCase().includes(q);
       return matchCategory && matchSearch;
     });
-  }, [selectedCategory, searchQuery]);
+  }, [allCombinedResources, selectedCategory, searchQuery]);
 
   const resetFilters = () => {
     setSelectedCategory('all');
@@ -79,8 +171,8 @@ export const Resources: React.FC = () => {
             )}
           </div>
 
-          {/* Category Filter Tabs */}
-          <div className="flex flex-wrap items-center justify-center gap-2">
+          {/* Category Filter Tabs (Thanh trượt ngang mượt mà trên di động) */}
+          <div className="flex items-center overflow-x-auto scrollbar-none py-1.5 gap-2 sm:flex-wrap sm:justify-center -mx-4 sm:mx-0 px-4 sm:px-0 select-none">
             {categories.map((cat) => {
               const Icon = cat.icon;
               const isActive = selectedCategory === cat.id;
@@ -88,13 +180,13 @@ export const Resources: React.FC = () => {
                 <button
                   key={cat.id}
                   onClick={() => setSelectedCategory(cat.id)}
-                  className={`flex items-center space-x-1.5 px-3.5 py-2 rounded-lg text-xs sm:text-sm font-medium transition-all ${
+                  className={`flex items-center space-x-1.5 px-3.5 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all whitespace-nowrap flex-shrink-0 shadow-sm ${
                     isActive
-                      ? 'bg-heritage-red-700 text-white font-semibold shadow-sm'
+                      ? 'bg-heritage-red-700 text-white font-semibold shadow-sm ring-1 ring-heritage-gold-400'
                       : 'bg-white text-heritage-ink-700 border border-heritage-ivory-300 hover:bg-heritage-red-50 hover:text-heritage-red-700'
                   }`}
                 >
-                  <Icon className={`w-3.5 h-3.5 ${isActive ? 'text-heritage-gold-300' : 'text-heritage-red-700'}`} />
+                  <Icon className={`w-3.5 h-3.5 flex-shrink-0 ${isActive ? 'text-heritage-gold-300' : 'text-heritage-red-700'}`} />
                   <span>{cat.label}</span>
                 </button>
               );

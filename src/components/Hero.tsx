@@ -82,9 +82,9 @@ export const Hero: React.FC<HeroProps> = ({ onExplore, onViewResources }) => {
             </button>
           </div>
 
-          {/* 3 Pillars Quick Strip */}
-          <div className="mt-9 sm:mt-11 grid grid-cols-1 md:grid-cols-3 gap-4 text-left">
-            <div className="group relative p-4 sm:p-5 rounded-xl bg-heritage-red-950/85 hover:bg-gradient-to-br hover:from-heritage-red-900/90 hover:via-heritage-red-950/90 hover:to-heritage-red-900/75 backdrop-blur-md border border-heritage-red-700/70 hover:border-heritage-gold-300/80 shadow-lg hover:shadow-xl hover:shadow-black/60 hover:-translate-y-1.5 transition-all duration-[250ms] ease-out motion-reduce:transform-none cursor-default select-none">
+          {/* 3 Pillars Quick Strip (Vuốt ngang linh hoạt trên Mobile, hiển thị 3 cột trên Desktop) */}
+          <div className="mt-8 sm:mt-11 flex md:grid md:grid-cols-3 overflow-x-auto md:overflow-visible scrollbar-none snap-x snap-mandatory gap-3.5 -mx-4 md:mx-0 px-4 md:px-0 pb-2 md:pb-0 text-left select-none">
+            <div className="w-[82vw] sm:w-[65vw] md:w-auto flex-shrink-0 snap-center group relative p-4 sm:p-5 rounded-xl bg-heritage-red-950/85 hover:bg-gradient-to-br hover:from-heritage-red-900/90 hover:via-heritage-red-950/90 hover:to-heritage-red-900/75 backdrop-blur-md border border-heritage-red-700/70 hover:border-heritage-gold-300/80 shadow-lg hover:shadow-xl hover:shadow-black/60 hover:-translate-y-1.5 transition-all duration-[250ms] ease-out motion-reduce:transform-none cursor-default">
               <div className="flex items-center space-x-2 text-heritage-gold-300 group-hover:text-heritage-gold-200 transition-colors duration-200 mb-1.5">
                 <Compass className="w-4 h-4 flex-shrink-0 group-hover:scale-110 transition-transform duration-200" />
                 <h2 className="text-sm sm:text-base font-bold tracking-wide uppercase group-hover:text-heritage-gold-200 transition-colors duration-200">
@@ -96,7 +96,7 @@ export const Hero: React.FC<HeroProps> = ({ onExplore, onViewResources }) => {
               </p>
             </div>
 
-            <div className="group relative p-4 sm:p-5 rounded-xl bg-heritage-red-950/85 hover:bg-gradient-to-br hover:from-heritage-red-900/90 hover:via-heritage-red-950/90 hover:to-heritage-red-900/75 backdrop-blur-md border border-heritage-red-700/70 hover:border-heritage-gold-300/80 shadow-lg hover:shadow-xl hover:shadow-black/60 hover:-translate-y-1.5 transition-all duration-[250ms] ease-out motion-reduce:transform-none cursor-default select-none">
+            <div className="w-[82vw] sm:w-[65vw] md:w-auto flex-shrink-0 snap-center group relative p-4 sm:p-5 rounded-xl bg-heritage-red-950/85 hover:bg-gradient-to-br hover:from-heritage-red-900/90 hover:via-heritage-red-950/90 hover:to-heritage-red-900/75 backdrop-blur-md border border-heritage-red-700/70 hover:border-heritage-gold-300/80 shadow-lg hover:shadow-xl hover:shadow-black/60 hover:-translate-y-1.5 transition-all duration-[250ms] ease-out motion-reduce:transform-none cursor-default">
               <div className="flex items-center space-x-2 text-heritage-gold-300 group-hover:text-heritage-gold-200 transition-colors duration-200 mb-1.5">
                 <BookOpen className="w-4 h-4 flex-shrink-0 group-hover:scale-110 transition-transform duration-200" />
                 <h2 className="text-sm sm:text-base font-bold tracking-wide uppercase group-hover:text-heritage-gold-200 transition-colors duration-200">
@@ -108,7 +108,7 @@ export const Hero: React.FC<HeroProps> = ({ onExplore, onViewResources }) => {
               </p>
             </div>
 
-            <div className="group relative p-4 sm:p-5 rounded-xl bg-heritage-red-950/85 hover:bg-gradient-to-br hover:from-heritage-red-900/90 hover:via-heritage-red-950/90 hover:to-heritage-red-900/75 backdrop-blur-md border border-heritage-red-700/70 hover:border-heritage-gold-300/80 shadow-lg hover:shadow-xl hover:shadow-black/60 hover:-translate-y-1.5 transition-all duration-[250ms] ease-out motion-reduce:transform-none cursor-default select-none">
+            <div className="w-[82vw] sm:w-[65vw] md:w-auto flex-shrink-0 snap-center group relative p-4 sm:p-5 rounded-xl bg-heritage-red-950/85 hover:bg-gradient-to-br hover:from-heritage-red-900/90 hover:via-heritage-red-950/90 hover:to-heritage-red-900/75 backdrop-blur-md border border-heritage-red-700/70 hover:border-heritage-gold-300/80 shadow-lg hover:shadow-xl hover:shadow-black/60 hover:-translate-y-1.5 transition-all duration-[250ms] ease-out motion-reduce:transform-none cursor-default">
               <div className="flex items-center space-x-2 text-heritage-gold-300 group-hover:text-heritage-gold-200 transition-colors duration-200 mb-1.5">
                 <ShieldCheck className="w-4 h-4 flex-shrink-0 group-hover:scale-110 transition-transform duration-200" />
                 <h2 className="text-sm sm:text-base font-bold tracking-wide uppercase group-hover:text-heritage-gold-200 transition-colors duration-200">
