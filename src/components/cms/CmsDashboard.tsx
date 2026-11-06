@@ -4,7 +4,7 @@ import {
   ShieldCheck, Shield, X, Plus, Search,
   CheckCircle2, AlertCircle, Send,
   ExternalLink, Sparkles, ArrowRight,
-  Upload, Copy, Check, Trash2, Trophy, GraduationCap, LogOut
+  Upload, Copy, Check, Trash2, Trophy, GraduationCap, LogOut, Cloud
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { FullScreenEditor } from './FullScreenEditor';
@@ -19,7 +19,8 @@ import {
   getStoredMedia, saveStoredMedia,
   getStoredAuditLogs, addStoredAuditLog,
   EVENT_ARTICLES_CHANGED, EVENT_MEDIA_CHANGED,
-  CMS_CATEGORIES, getCategoryLabel, normalizeCategoryToHomepage
+  CMS_CATEGORIES, getCategoryLabel, normalizeCategoryToHomepage,
+  fetchArticlesFromSupabase
 } from '../../lib/cmsStore';
 
 interface CmsDashboardProps {
@@ -106,6 +107,22 @@ export const CmsDashboard: React.FC<CmsDashboardProps> = ({ isOpen, onClose }) =
 
   // Media Library modal state (for picking from editor)
   const [mediaLibraryOpen, setMediaLibraryOpen] = useState(false);
+  const [isCloudSynced, setIsCloudSynced] = useState<boolean>(true);
+
+  // Kéo toàn bộ bài viết từ Supabase Cloud khi mở CMS Dashboard
+  useEffect(() => {
+    if (!isOpen) return;
+    let isMounted = true;
+    fetchArticlesFromSupabase().then((res) => {
+      if (isMounted && res.success && res.articles) {
+        setArticles(res.articles);
+        setIsCloudSynced(true);
+      }
+    });
+    return () => {
+      isMounted = false;
+    };
+  }, [isOpen]);
 
   // Sync with cmsStore events
   useEffect(() => {
@@ -413,6 +430,12 @@ export const CmsDashboard: React.FC<CmsDashboardProps> = ({ isOpen, onClose }) =
                 <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-emerald-500/20 text-emerald-300 border border-emerald-400/40 hidden md:inline">
                   Chế Độ Vận Hành Sản Xuất (Gate G4)
                 </span>
+                {isCloudSynced && (
+                  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-500/20 text-blue-300 border border-blue-400/40 hidden md:inline-flex items-center space-x-1">
+                    <Cloud className="w-3 h-3 text-blue-300" />
+                    <span>Supabase Cloud Live</span>
+                  </span>
+                )}
               </div>
               <p className="text-[11px] text-white/80 font-medium">
                 Không gian văn hóa Hồ Chí Minh • Trường THCS Nguyễn Trung Trực

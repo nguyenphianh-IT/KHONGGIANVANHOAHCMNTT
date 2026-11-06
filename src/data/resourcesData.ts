@@ -1,4 +1,5 @@
 import { ResourceItem } from '../types';
+import { supabase, isSupabaseConfigured } from '../lib/supabase';
 
 export const resourcesData: ResourceItem[] = [
   {
@@ -273,3 +274,26 @@ Sáng ngày 17 tháng 7 năm 1966, trên làn sóng Đài Tiếng nói Việt Na
     tags: ['Ghi âm lời Bác', 'Thơ chúc Tết', 'Kỷ Dậu 1969', 'Bắc Nam sum họp']
   }
 ];
+
+// ------------------------------------------------------------------------------
+// ĐỒNG BỘ KHO TƯ LIỆU SỐ HÓA TỪ SUPABASE CLOUD
+// ------------------------------------------------------------------------------
+export async function fetchResourcesFromSupabase(): Promise<ResourceItem[]> {
+  try {
+    if (!isSupabaseConfigured) return resourcesData;
+
+    const { data } = await supabase
+      .from('content_revisions')
+      .select('id, title, data')
+      .eq('item_id', 'a0000000-0000-0000-0000-000000000002')
+      .eq('status', 'published')
+      .maybeSingle();
+
+    if (data?.data && Array.isArray((data.data as any).resources)) {
+      return (data.data as any).resources as ResourceItem[];
+    }
+  } catch (err) {
+    console.warn('[Supabase resources fetch warning]', err);
+  }
+  return resourcesData;
+}

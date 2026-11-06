@@ -4,6 +4,8 @@
 // TUÂN THỦ: QUY CHUẨN KIỂM DUYỆT 4 MẮT (FOUR-EYES GOVERNANCE G4)
 // ==============================================================================
 
+import { supabase, isSupabaseConfigured } from './supabase';
+
 export interface ArticleData {
   id?: string;
   title: string;
@@ -710,4 +712,77 @@ export function cleanBase64FromContent(
   }
 
   return { cleanedText: result, hasChanges };
+}
+
+// ------------------------------------------------------------------------------
+// ĐỒNG BỘ BÀI VIẾT TỪ SUPABASE CLOUD DATABASE
+// ------------------------------------------------------------------------------
+export async function fetchArticlesFromSupabase(): Promise<{
+  success: boolean;
+  articles?: ArticleData[];
+  error?: string;
+}> {
+  if (!isSupabaseConfigured) {
+    return { success: false, error: 'Chưa cấu hình Supabase URL & Anon Key' };
+  }
+
+  try {
+    const { data, error } = await supabase
+      .from('content_revisions')
+      .select('id, item_id, title, summary, data, status, created_at, updated_at')
+      .eq('status', 'published');
+
+    if (error) {
+      console.warn('[Supabase Articles Warning]', error.message);
+      return { success: false, error: error.message };
+    }
+
+    if (data && data.length > 0) {
+      // Lọc các bản ghi là bài viết (loại trừ hội thi và kho tư liệu tập trung)
+      const postRevs = data.filter((d) => {
+        const title = d.title || '';
+        return (
+          !title.includes('Hồ Sơ Hội Thi') &&
+          !title.includes('Kho Tư Liệu Số Hóa') &&
+          d.data &&
+          (d.data.content || d.data.category)
+        );
+      });
+
+      if (postRevs.length > 0) {
+        const mappedArticles: ArticleData[] = postRevs.map((rev) => {
+          const revData = rev.data || {};
+          return {
+            id: rev.item_id || rev.id,
+            title: rev.title,
+            slug: revData.slug || rev.title.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-'),
+            summary: rev.summary || '',
+            content: revData.content || '',
+            category: revData.category || 'article',
+            topic: revData.topic || 'Không gian văn hóa Hồ Chí Minh',
+            featured_image: revData.featured_image || '',
+            references: revData.references || '',
+            status: 'published',
+            author_id: revData.author_id || '',
+            author_name: revData.author_name || 'Ban Biên Tập THCS Nguyễn Trung Trực',
+            created_at: rev.created_at || '',
+            updated_at: rev.updated_at || rev.created_at || '',
+          };
+        });
+
+        // Kết hợp với các bài nháp nội bộ nếu có
+        const currentLocal = getStoredArticles();
+        const nonPublishedLocal = currentLocal.filter((a) => a.status !== 'published');
+        const merged = [...mappedArticles, ...nonPublishedLocal];
+
+        saveStoredArticles(merged);
+        return { success: true, articles: merged };
+      }
+    }
+
+    return { success: false, error: 'Không tìm thấy bài viết xuất bản trên Cloud' };
+  } catch (err: any) {
+    console.warn('[Supabase Articles Exception]', err);
+    return { success: false, error: err?.message || 'Lỗi mạng khi tải bài viết' };
+  }
 }
