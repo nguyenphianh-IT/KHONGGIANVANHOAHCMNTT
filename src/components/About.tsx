@@ -1,5 +1,6 @@
 import React from 'react';
-import { Target, Users, Laptop, HeartHandshake, BookMarked, Landmark } from 'lucide-react';
+import { Target, Laptop, HeartHandshake, BookMarked, Landmark } from 'lucide-react';
+import { UncleHoQuotes } from './UncleHoQuotes';
 
 export const About: React.FC = () => {
   const pillars = [
@@ -73,32 +74,9 @@ export const About: React.FC = () => {
           })}
         </div>
 
-        {/* Visual Callout Box: School Context */}
-        <div className="mt-14 bg-gradient-to-r from-heritage-red-800 to-heritage-red-900 rounded-2xl p-6 sm:p-10 text-white shadow-xl relative overflow-hidden">
-          <div className="relative z-10 max-w-4xl">
-            <span className="text-xs font-bold uppercase tracking-wider text-heritage-gold-300 block mb-2">
-              Sứ mệnh giáo dục của nhà trường
-            </span>
-            <h3 className="font-serif text-xl sm:text-3xl font-bold leading-snug">
-              "Học tập và làm theo Bác từ những việc nhỏ nhất mỗi ngày"
-            </h3>
-            <p className="mt-3 text-sm sm:text-base text-heritage-ivory-100/90 leading-relaxed">
-              Không gian văn hóa số không chỉ dừng lại ở các bài giảng lý thuyết mà còn là nơi các em học sinh
-              tìm thấy động lực phấn đấu, tự giác rèn luyện nề nếp, bảo vệ môi trường, yêu thương bạn bè và bồi
-              đắp ước mơ xây dựng quê hương Thới An, Thành phố Hồ Chí Minh ngày càng giàu đẹp, văn minh.
-            </p>
-
-            <div className="mt-6 flex flex-wrap items-center gap-6 text-xs sm:text-sm text-heritage-gold-200">
-              <div className="flex items-center space-x-2">
-                <Users className="w-4 h-4 text-heritage-gold-400" />
-                <span>Toàn thể cán bộ, giáo viên, nhân viên & học sinh</span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <Landmark className="w-4 h-4 text-heritage-gold-400" />
-                <span>Đồng hành cùng nhân dân Phường Thới An</span>
-              </div>
-            </div>
-          </div>
+        {/* Dynamic Uncle Ho's Teachings & Quotes Box */}
+        <div className="mt-14">
+          <UncleHoQuotes />
         </div>
       </div>
     </section>
