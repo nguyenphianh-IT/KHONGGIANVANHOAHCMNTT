@@ -19,6 +19,32 @@ interface HorizontalTimelineRailProps {
   onOpenDetailModal: (event: TimelineEvent) => void;
 }
 
+const getMilestoneShortLabel = (event: TimelineEvent): string => {
+  if (event.isMemorial || !event.year) return 'Sống mãi';
+  switch (event.year) {
+    case '1890':
+      return 'Làng Sen';
+    case '1911':
+      return 'Bến Nhà Rồng';
+    case '1920':
+      return 'Đại hội Tours';
+    case '1930':
+      return 'Thành lập Đảng';
+    case '1941':
+      return 'Về Pác Bó';
+    case '1945':
+      return 'Tuyên ngôn';
+    case '1954':
+      return 'Điện Biên Phủ';
+    case '1969':
+      return 'Di chúc';
+    case '1975':
+      return 'Toàn thắng';
+    default:
+      return event.title.split(' ').slice(0, 2).join(' ');
+  }
+};
+
 export const HorizontalTimelineRail: React.FC<HorizontalTimelineRailProps> = ({
   events,
   onOpenDetailModal
@@ -104,8 +130,8 @@ export const HorizontalTimelineRail: React.FC<HorizontalTimelineRailProps> = ({
             <span className="text-xs sm:text-sm font-bold text-heritage-ink-800 uppercase tracking-wider">
               Thước đo các mốc son lịch sử
             </span>
-            <span className="text-[11px] bg-heritage-red-100 text-heritage-red-800 font-semibold px-2 py-0.5 rounded-full border border-heritage-red-200">
-              Phương án 4 (Interactive Rail)
+            <span className="text-[11px] bg-heritage-gold-100 text-heritage-ink-800 font-semibold px-2.5 py-0.5 rounded-full border border-heritage-gold-300">
+              Tiến trình lịch sử
             </span>
           </div>
 
@@ -118,17 +144,17 @@ export const HorizontalTimelineRail: React.FC<HorizontalTimelineRailProps> = ({
                   ? 'bg-heritage-red-700 text-white shadow-heritage-red-700/30 ring-2 ring-heritage-gold-400'
                   : 'bg-white text-heritage-ink-700 border border-heritage-ivory-300 hover:border-heritage-gold-400 hover:text-heritage-red-700'
               }`}
-              title="Tự động chuyển mốc (Phù hợp Smart TV / Kiosk)"
+              title="Tự động chuyển mốc thời gian"
             >
               {isPlaying ? (
                 <>
                   <Pause className="w-3.5 h-3.5 fill-current animate-pulse" />
-                  <span>Dừng tự chiếu</span>
+                  <span>Tạm dừng</span>
                 </>
               ) : (
                 <>
                   <Play className="w-3.5 h-3.5 fill-current" />
-                  <span>Tự động chiếu (TV)</span>
+                  <span>Tự động chuyển</span>
                 </>
               )}
             </button>
@@ -227,14 +253,14 @@ export const HorizontalTimelineRail: React.FC<HorizontalTimelineRailProps> = ({
 
                   {/* Milestone Micro-Label below the button */}
                   <div
-                    className={`mt-2 text-center transition-all duration-200 pointer-events-none max-w-[75px] sm:max-w-[85px] ${
+                    className={`mt-2 text-center transition-all duration-200 pointer-events-none max-w-[85px] ${
                       isActive
                         ? 'opacity-100 font-bold text-heritage-red-800 scale-105'
                         : 'opacity-70 text-heritage-ink-600'
                     }`}
                   >
                     <span className="block text-[10px] sm:text-[11px] leading-tight truncate">
-                      {isMemorial ? 'Tưởng niệm' : event.title.split(' ')[0] + ' ' + (event.title.split(' ')[1] || '')}
+                      {getMilestoneShortLabel(event)}
                     </span>
                   </div>
                 </div>

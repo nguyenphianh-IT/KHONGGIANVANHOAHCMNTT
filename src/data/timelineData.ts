@@ -4,7 +4,7 @@ export const timelineData: TimelineEvent[] = [
   {
     year: '1890',
     exactDate: '19/05/1890',
-    title: 'Cậu bé Nguyễn Sinh Cung cất tiếng khóc chào đời',
+    title: 'Nguyễn Sinh Cung cất tiếng khóc chào đời',
     shortDescription: 'Sinh ra tại quê ngoại làng Hoàng Trù và lớn lên tại làng Sen, xã Kim Liên, huyện Nam Đàn, tỉnh Nghệ An.',
     fullDetail: 'Chủ tịch Hồ Chí Minh (tên khai sinh là Nguyễn Sinh Cung) sinh ra trong một gia đình nhà nho yêu nước. Thân phụ là cụ Phó bảng Nguyễn Sinh Sắc, thân mẫu là bà Hoàng Thị Loan. Vùng đất Lam Hồng giàu truyền thống yêu nước và bất khuất đã sớm hun đúc nên tâm hồn, chí hướng cứu nước, cứu dân của Người ngay từ thuở thiếu thời.',
     significance: 'Khởi đầu cuộc đời một bậc vĩ nhân của dân tộc Việt Nam và danh nhân văn hóa thế giới.',
@@ -17,7 +17,7 @@ export const timelineData: TimelineEvent[] = [
   {
     year: '1911',
     exactDate: '05/06/1911',
-    title: 'Rời bến cảng Nhà Rồng ra đi tìm con đường cứu nước',
+    title: 'Ra đi tìm đường cứu nước tại Bến cảng Nhà Rồng',
     shortDescription: 'Người thanh niên Nguyễn Tất Thành với tên Văn Ba bước lên tàu Amiral Latouche-Tréville bắt đầu hành trình vĩ đại.',
     fullDetail: 'Không đi theo con đường Đông du của các bậc tiền bối, người thanh niên Nguyễn Tất Thành quyết định đi sang phương Tây - nơi có nguồn gốc của khẩu hiệu "Tự do - Bình đẳng - Bác ái" để xem họ làm thế nào, rồi trở về giúp đồng bào mình. Quyết định dũng cảm và sáng suốt này đã mở ra bước ngoặt quyết định cho vận mệnh dân tộc.',
     significance: 'Mở đầu cuộc trường chinh 30 năm bôn ba khắp bốn biển năm châu tìm con đường giải phóng cho Tổ quốc.',
