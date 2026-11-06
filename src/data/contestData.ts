@@ -21,6 +21,7 @@ export interface ContestInfo {
   totalQuestions: number;  // 10 câu
   organizer: string;
   bannerTag: string;
+  isOpen?: boolean; // Trạng thái mở/đóng cổng thi
 }
 
 export interface ContestSubmission {
@@ -42,6 +43,7 @@ export const CURRENT_CONTEST: ContestInfo = {
   totalQuestions: 10,
   organizer: 'Liên đội & Chi đoàn Giáo viên Trường THCS Nguyễn Trung Trực (Phường Thới An)',
   bannerTag: '⭐ HỘI THI TRỰC TUYẾN HỌC ĐƯỜNG CHÍNH THỨC',
+  isOpen: true,
 };
 
 export const CONTEST_QUESTIONS_BANK: ContestQuestion[] = [
@@ -274,7 +276,92 @@ const DEFAULT_SUBMISSIONS: ContestSubmission[] = [
 ];
 
 const STORAGE_KEY_CONTEST = 'hcm_contest_submissions_v1';
+const STORAGE_KEY_CONTEST_INFO = 'hcm_contest_info_v1';
+const STORAGE_KEY_CONTEST_QUESTIONS = 'hcm_contest_questions_v1';
+export const EVENT_CONTEST_DATA_CHANGED = 'hcm_contest_data_changed';
 
+// ==============================================================================
+// 1. QUẢN TRỊ CẤU HÌNH HỘI THI (CONTEST INFO)
+// ==============================================================================
+export function getStoredContestInfo(): ContestInfo {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY_CONTEST_INFO);
+    if (!raw) {
+      localStorage.setItem(STORAGE_KEY_CONTEST_INFO, JSON.stringify(CURRENT_CONTEST));
+      return CURRENT_CONTEST;
+    }
+    return JSON.parse(raw);
+  } catch {
+    return CURRENT_CONTEST;
+  }
+}
+
+export function saveStoredContestInfo(info: ContestInfo): ContestInfo {
+  try {
+    localStorage.setItem(STORAGE_KEY_CONTEST_INFO, JSON.stringify(info));
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new Event(EVENT_CONTEST_DATA_CHANGED));
+    }
+    return info;
+  } catch (err) {
+    console.error('Lỗi lưu cấu hình hội thi:', err);
+    return info;
+  }
+}
+
+// ==============================================================================
+// 2. QUẢN TRỊ NGÂN HÀNG CÂU HỎI TRẮC NGHIỆM (QUESTIONS BANK)
+// ==============================================================================
+export function getStoredContestQuestions(): ContestQuestion[] {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY_CONTEST_QUESTIONS);
+    if (!raw) {
+      localStorage.setItem(STORAGE_KEY_CONTEST_QUESTIONS, JSON.stringify(CONTEST_QUESTIONS_BANK));
+      return CONTEST_QUESTIONS_BANK;
+    }
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) && parsed.length > 0 ? parsed : CONTEST_QUESTIONS_BANK;
+  } catch {
+    return CONTEST_QUESTIONS_BANK;
+  }
+}
+
+export function saveStoredContestQuestions(questions: ContestQuestion[]): ContestQuestion[] {
+  try {
+    localStorage.setItem(STORAGE_KEY_CONTEST_QUESTIONS, JSON.stringify(questions));
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new Event(EVENT_CONTEST_DATA_CHANGED));
+    }
+    return questions;
+  } catch (err) {
+    console.error('Lỗi lưu ngân hàng câu hỏi:', err);
+    return questions;
+  }
+}
+
+export function addContestQuestion(q: Omit<ContestQuestion, 'id'>): ContestQuestion[] {
+  const current = getStoredContestQuestions();
+  const nextId = current.length > 0 ? Math.max(...current.map((item) => item.id)) + 1 : 1;
+  const newQuestion: ContestQuestion = { ...q, id: nextId };
+  const updated = [...current, newQuestion];
+  return saveStoredContestQuestions(updated);
+}
+
+export function updateContestQuestion(q: ContestQuestion): ContestQuestion[] {
+  const current = getStoredContestQuestions();
+  const updated = current.map((item) => (item.id === q.id ? q : item));
+  return saveStoredContestQuestions(updated);
+}
+
+export function deleteContestQuestion(id: number): ContestQuestion[] {
+  const current = getStoredContestQuestions();
+  const updated = current.filter((item) => item.id !== id);
+  return saveStoredContestQuestions(updated);
+}
+
+// ==============================================================================
+// 3. QUẢN TRỊ BÀI THI & BẢNG ĐIỂM HỌC SINH (SUBMISSIONS)
+// ==============================================================================
 export function getContestSubmissions(): ContestSubmission[] {
   try {
     const raw = localStorage.getItem(STORAGE_KEY_CONTEST);
@@ -292,13 +379,42 @@ export function getContestSubmissions(): ContestSubmission[] {
 export function saveContestSubmission(submission: ContestSubmission): ContestSubmission[] {
   try {
     const current = getContestSubmissions();
-    // Thêm lượt thi mới lên đầu
     const updated = [submission, ...current];
     localStorage.setItem(STORAGE_KEY_CONTEST, JSON.stringify(updated));
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new Event(EVENT_CONTEST_DATA_CHANGED));
+    }
     return updated;
   } catch (err) {
     console.error('Lỗi lưu kết quả thi:', err);
     return getContestSubmissions();
+  }
+}
+
+export function deleteContestSubmission(id: string): ContestSubmission[] {
+  try {
+    const current = getContestSubmissions();
+    const updated = current.filter((item) => item.id !== id);
+    localStorage.setItem(STORAGE_KEY_CONTEST, JSON.stringify(updated));
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new Event(EVENT_CONTEST_DATA_CHANGED));
+    }
+    return updated;
+  } catch (err) {
+    console.error('Lỗi xóa kết quả thi:', err);
+    return getContestSubmissions();
+  }
+}
+
+export function resetContestSubmissions(): ContestSubmission[] {
+  try {
+    localStorage.setItem(STORAGE_KEY_CONTEST, JSON.stringify(DEFAULT_SUBMISSIONS));
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new Event(EVENT_CONTEST_DATA_CHANGED));
+    }
+    return DEFAULT_SUBMISSIONS;
+  } catch {
+    return DEFAULT_SUBMISSIONS;
   }
 }
 

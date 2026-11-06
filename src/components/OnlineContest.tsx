@@ -1,25 +1,40 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import {
   SCHOOL_CLASSES,
-  SAMPLE_STUDENTS_BY_CLASS,
+  getStoredStudentsByClass,
   validateStudentName,
+  EVENT_STUDENTS_ROSTER_CHANGED,
 } from '../data/studentsData';
 import {
-  CURRENT_CONTEST,
-  CONTEST_QUESTIONS_BANK,
+  ContestInfo,
+  ContestQuestion,
   ContestSubmission,
+  getStoredContestInfo,
+  getStoredContestQuestions,
   getContestSubmissions,
   saveContestSubmission,
   formatTime,
+  EVENT_CONTEST_DATA_CHANGED,
 } from '../data/contestData';
 import {
   Trophy, Award, Clock, CheckCircle2, AlertTriangle, ChevronRight,
-  User, Printer
+  User, Printer, Settings, BookOpen, Layers
 } from 'lucide-react';
+import { ContestManagerModal } from './cms/ContestManagerModal';
 
 export const OnlineContest: React.FC = () => {
   // Trạng thái màn hình: 'intro' | 'register' | 'exam' | 'result' | 'leaderboard'
   const [screen, setScreen] = useState<'intro' | 'register' | 'exam' | 'result' | 'leaderboard'>('intro');
+
+  // Trạng thái modal Quản trị Ban Giám Khảo & Giáo Viên
+  const [isManagerOpen, setIsManagerOpen] = useState<boolean>(false);
+  const [managerInitialTab, setManagerInitialTab] = useState<'questions' | 'contest' | 'students' | 'roster'>('questions');
+
+  // Dữ liệu quản trị động (đồng bộ qua LocalStorage và sự kiện hệ thống)
+  const [contestInfo, setContestInfo] = useState<ContestInfo>(getStoredContestInfo);
+  const [questions, setQuestions] = useState<ContestQuestion[]>(getStoredContestQuestions);
+  const [roster, setRoster] = useState<Record<string, string[]>>(getStoredStudentsByClass);
+  const [submissions, setSubmissions] = useState<ContestSubmission[]>(getContestSubmissions);
 
   // Thông tin đăng ký dự thi
   const [selectedClass, setSelectedClass] = useState<string>('8A1');
@@ -34,7 +49,7 @@ export const OnlineContest: React.FC = () => {
   // Trạng thái bài thi
   const [currentQuestionIdx, setCurrentQuestionIdx] = useState<number>(0);
   const [answers, setAnswers] = useState<Record<number, number>>({});
-  const [timeLeftSeconds, setTimeLeftSeconds] = useState<number>(CURRENT_CONTEST.durationMinutes * 60);
+  const [timeLeftSeconds, setTimeLeftSeconds] = useState<number>(contestInfo.durationMinutes * 60);
   const [timeSpentSeconds, setTimeSpentSeconds] = useState<number>(0);
   const [isExamCompleted, setIsExamCompleted] = useState<boolean>(false);
 
@@ -43,24 +58,38 @@ export const OnlineContest: React.FC = () => {
   const [showCertificate, setShowCertificate] = useState<boolean>(false);
 
   // Bảng xếp hạng
-  const [submissions, setSubmissions] = useState<ContestSubmission[]>([]);
   const [leaderboardTab, setLeaderboardTab] = useState<'individual' | 'class'>('individual');
 
-  // Nạp danh sách bảng xếp hạng ban đầu
+  // Lắng nghe sự kiện đồng bộ dữ liệu từ Modal Quản trị hoặc Tab khác
   useEffect(() => {
-    setSubmissions(getContestSubmissions());
+    const handleSync = () => {
+      setContestInfo(getStoredContestInfo());
+      setQuestions(getStoredContestQuestions());
+      setSubmissions(getContestSubmissions());
+      setRoster(getStoredStudentsByClass());
+    };
+
+    window.addEventListener(EVENT_CONTEST_DATA_CHANGED, handleSync);
+    window.addEventListener(EVENT_STUDENTS_ROSTER_CHANGED, handleSync);
+    window.addEventListener('storage', handleSync);
+
+    return () => {
+      window.removeEventListener(EVENT_CONTEST_DATA_CHANGED, handleSync);
+      window.removeEventListener(EVENT_STUDENTS_ROSTER_CHANGED, handleSync);
+      window.removeEventListener('storage', handleSync);
+    };
   }, []);
 
-  // Đặt tên mặc định khi đổi lớp
+  // Đặt tên mặc định khi đổi lớp hoặc khi danh sách lớp cập nhật
   useEffect(() => {
-    const list = SAMPLE_STUDENTS_BY_CLASS[selectedClass];
+    const list = roster[selectedClass] || [];
     if (list && list.length > 0) {
       setSelectedPresetName(list[0]);
     } else {
       setSelectedPresetName('');
     }
     setValidationError(null);
-  }, [selectedClass]);
+  }, [selectedClass, roster]);
 
   // Đồng hồ đếm ngược phòng thi
   useEffect(() => {
@@ -83,6 +112,16 @@ export const OnlineContest: React.FC = () => {
 
   // Xác thực và bắt đầu thi (KẾT HỢP GIẢI PHÁP 1 & GIẢI PHÁP 2)
   const handleStartExam = () => {
+    if (contestInfo.isOpen === false) {
+      alert('Cổng thi hiện đang tạm đóng theo thông báo của Ban Tổ Chức!');
+      return;
+    }
+
+    if (questions.length === 0) {
+      alert('Ngân hàng câu hỏi hiện chưa có câu hỏi nào. Vui lòng liên hệ Thầy/Cô Quản Trị!');
+      return;
+    }
+
     setValidationError(null);
 
     let finalName = '';
@@ -111,7 +150,7 @@ export const OnlineContest: React.FC = () => {
     // Reset thông số bài thi
     setCurrentQuestionIdx(0);
     setAnswers({});
-    setTimeLeftSeconds(CURRENT_CONTEST.durationMinutes * 60);
+    setTimeLeftSeconds(contestInfo.durationMinutes * 60);
     setTimeSpentSeconds(0);
     setIsExamCompleted(false);
     setScreen('exam');
@@ -124,9 +163,9 @@ export const OnlineContest: React.FC = () => {
 
   // Nộp bài thi
   const handleSubmitExam = () => {
-    if (Object.keys(answers).length < CONTEST_QUESTIONS_BANK.length) {
+    if (Object.keys(answers).length < questions.length) {
       const confirmSubmit = window.confirm(
-        `Em mới làm ${Object.keys(answers).length}/${CONTEST_QUESTIONS_BANK.length} câu. Em có chắc chắn muốn nộp bài sớm không?`
+        `Em mới làm ${Object.keys(answers).length}/${questions.length} câu. Em có chắc chắn muốn nộp bài sớm không?`
       );
       if (!confirmSubmit) return;
     }
@@ -144,7 +183,7 @@ export const OnlineContest: React.FC = () => {
     setIsExamCompleted(true);
 
     let correctCount = 0;
-    CONTEST_QUESTIONS_BANK.forEach((q, idx) => {
+    questions.forEach((q, idx) => {
       if (answers[idx] === q.correctIndex) {
         correctCount += 1;
       }
@@ -155,7 +194,7 @@ export const OnlineContest: React.FC = () => {
       studentName: currentCandidate?.name || 'Học sinh',
       studentClass: currentCandidate?.className || '8A1',
       score: correctCount,
-      totalQuestions: CONTEST_QUESTIONS_BANK.length,
+      totalQuestions: questions.length,
       timeSpentSeconds: timeSpentSeconds,
       submittedAt: new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }),
     };
@@ -186,7 +225,7 @@ export const OnlineContest: React.FC = () => {
       }
       classMap[sub.studentClass].totalScore += sub.score;
       classMap[sub.studentClass].count += 1;
-      if (sub.score === 10) {
+      if (sub.score === sub.totalQuestions && sub.totalQuestions > 0) {
         classMap[sub.studentClass].perfectCount += 1;
       }
     });
@@ -215,37 +254,121 @@ export const OnlineContest: React.FC = () => {
 
   return (
     <div className="w-full">
+      {/* ========================================================================= */}
+      {/* 0. THANH ĐIỀU HÀNH DÀNH RIÊNG CHO BAN TỔ CHỨC, BAN GIÁM KHẢO & GIÁO VIÊN   */}
+      {/* ========================================================================= */}
+      <div className="mb-5 bg-gradient-to-r from-heritage-ivory-100 via-amber-50 to-heritage-ivory-100 border-2 border-heritage-gold-400/80 rounded-2xl p-3 sm:px-5 sm:py-3.5 flex flex-wrap items-center justify-between gap-3 shadow-md">
+        <div className="flex items-center space-x-3">
+          <div className="w-9 h-9 rounded-xl bg-heritage-red-700 text-white flex items-center justify-center flex-shrink-0 shadow-sm border border-heritage-gold-400">
+            <Trophy className="w-5 h-5 text-heritage-gold-400" />
+          </div>
+          <div>
+            <div className="flex items-center space-x-2">
+              <span className="font-serif font-black text-xs sm:text-sm text-heritage-red-950 uppercase tracking-tight">
+                Ban Giám Khảo & Quản Trị Hội Thi
+              </span>
+              <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
+                contestInfo.isOpen !== false
+                  ? 'bg-emerald-100 text-emerald-800 border border-emerald-300'
+                  : 'bg-red-100 text-red-800 border border-red-300'
+              }`}>
+                {contestInfo.isOpen !== false ? '🟢 Cổng thi mở' : '🔴 Cổng thi đóng'}
+              </span>
+            </div>
+            <p className="text-[11px] text-heritage-ink-600 mt-0.5">
+              Ngân hàng: <strong>{questions.length} câu hỏi</strong> • Đã nộp: <strong>{submissions.length} bài thi</strong> • 24 lớp THCS
+            </p>
+          </div>
+        </div>
+
+        <div className="flex items-center flex-wrap gap-2">
+          <button
+            onClick={() => {
+              setManagerInitialTab('questions');
+              setIsManagerOpen(true);
+            }}
+            className="px-3.5 py-1.5 bg-heritage-red-700 hover:bg-heritage-red-800 text-white font-bold text-xs rounded-xl shadow-xs transition flex items-center space-x-1.5 border border-heritage-gold-400/40"
+            title="Mở Quản lý ngân hàng câu hỏi trắc nghiệm"
+          >
+            <BookOpen className="w-3.5 h-3.5 text-heritage-gold-300" />
+            <span>Ngân hàng câu hỏi</span>
+          </button>
+
+          <button
+            onClick={() => {
+              setManagerInitialTab('students');
+              setIsManagerOpen(true);
+            }}
+            className="px-3.5 py-1.5 bg-heritage-gold-400 hover:bg-heritage-gold-300 text-heritage-red-950 font-black text-xs rounded-xl shadow-xs transition flex items-center space-x-1.5 border border-heritage-gold-500"
+            title="Xem danh sách bài thi, chấm điểm và xuất file Excel CSV"
+          >
+            <Printer className="w-3.5 h-3.5 text-heritage-red-900" />
+            <span>Bảng điểm & Xuất Excel</span>
+          </button>
+
+          <button
+            onClick={() => {
+              setManagerInitialTab('roster');
+              setIsManagerOpen(true);
+            }}
+            className="px-3 py-1.5 bg-white hover:bg-heritage-ivory-200 text-heritage-ink-800 font-bold text-xs rounded-xl shadow-xs transition border border-heritage-ivory-300 flex items-center space-x-1"
+            title="Quản lý danh sách học sinh theo 24 lớp"
+          >
+            <Layers className="w-3.5 h-3.5 text-heritage-red-700" />
+            <span>24 Lớp</span>
+          </button>
+
+          <button
+            onClick={() => {
+              setManagerInitialTab('contest');
+              setIsManagerOpen(true);
+            }}
+            className="p-1.5 bg-white hover:bg-heritage-ivory-200 text-heritage-ink-700 border border-heritage-ivory-300 rounded-xl transition shadow-xs"
+            title="Cấu hình thông tin hội thi & Mở/Đóng cổng"
+          >
+            <Settings className="w-4 h-4 text-heritage-red-700" />
+          </button>
+        </div>
+      </div>
+
       {/* 1. MÀN HÌNH GIỚI THIỆU HỘI THI (INTRO) */}
       {screen === 'intro' && (
         <div className="bg-gradient-to-br from-heritage-red-900 via-heritage-red-800 to-heritage-red-950 text-white rounded-3xl p-6 sm:p-10 border border-heritage-gold-400/50 shadow-xl relative overflow-hidden">
           <div className="absolute -right-10 -bottom-10 w-72 h-72 rounded-full bg-heritage-gold-400/10 pointer-events-none blur-2xl" />
           
           <div className="relative z-10 max-w-3xl">
-            <div className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-heritage-gold-400/20 text-heritage-gold-300 border border-heritage-gold-400/40 text-xs font-bold uppercase tracking-wider mb-4">
-              <Trophy className="w-3.5 h-3.5 text-heritage-gold-400" />
-              <span>{CURRENT_CONTEST.bannerTag}</span>
+            <div className="flex flex-wrap items-center gap-2 mb-4">
+              <div className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-heritage-gold-400/20 text-heritage-gold-300 border border-heritage-gold-400/40 text-xs font-bold uppercase tracking-wider">
+                <Trophy className="w-3.5 h-3.5 text-heritage-gold-400" />
+                <span>{contestInfo.bannerTag}</span>
+              </div>
+              {contestInfo.isOpen === false && (
+                <span className="px-3 py-1 rounded-full bg-red-500/20 text-red-300 border border-red-400/40 text-xs font-bold">
+                  🔒 Cổng thi đang tạm đóng
+                </span>
+              )}
             </div>
 
             <h3 className="font-serif text-2xl sm:text-4xl font-black text-heritage-ivory-50 tracking-tight leading-tight mb-3">
-              {CURRENT_CONTEST.title}
+              {contestInfo.title}
             </h3>
 
             <p className="text-heritage-gold-200 font-medium text-sm sm:text-base mb-6 leading-relaxed">
-              {CURRENT_CONTEST.subtitle}
+              {contestInfo.subtitle}
             </p>
 
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 mb-8">
               <div className="bg-black/25 backdrop-blur-sm p-3.5 rounded-xl border border-white/10">
                 <span className="text-[11px] text-heritage-gold-300 uppercase block font-semibold">Thời lượng thi</span>
-                <span className="font-serif text-lg sm:text-xl font-bold text-white">10 Phút</span>
+                <span className="font-serif text-lg sm:text-xl font-bold text-white">{contestInfo.durationMinutes} Phút</span>
               </div>
               <div className="bg-black/25 backdrop-blur-sm p-3.5 rounded-xl border border-white/10">
                 <span className="text-[11px] text-heritage-gold-300 uppercase block font-semibold">Số lượng câu hỏi</span>
-                <span className="font-serif text-lg sm:text-xl font-bold text-white">10 Câu trắc nghiệm</span>
+                <span className="font-serif text-lg sm:text-xl font-bold text-white">{questions.length} Câu trắc nghiệm</span>
               </div>
               <div className="bg-black/25 backdrop-blur-sm p-3.5 rounded-xl border border-white/10">
                 <span className="text-[11px] text-heritage-gold-300 uppercase block font-semibold">Đơn vị tổ chức</span>
-                <span className="font-serif text-xs sm:text-sm font-bold text-white truncate block" title={CURRENT_CONTEST.organizer}>
+                <span className="font-serif text-xs sm:text-sm font-bold text-white truncate block" title={contestInfo.organizer}>
                   Liên đội trường
                 </span>
               </div>
@@ -257,10 +380,33 @@ export const OnlineContest: React.FC = () => {
               </div>
             </div>
 
+            {contestInfo.isOpen === false && (
+              <div className="mb-6 p-4 rounded-2xl bg-amber-500/20 border border-amber-400/50 text-amber-200 text-xs sm:text-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                <div className="flex items-center space-x-2">
+                  <span className="text-lg">🔒</span>
+                  <span>Cổng thi trực tuyến hiện đang tạm đóng để Ban Giám Khảo tổng kết điểm và xếp hạng.</span>
+                </div>
+                <button
+                  onClick={() => {
+                    setManagerInitialTab('contest');
+                    setIsManagerOpen(true);
+                  }}
+                  className="px-3 py-1 bg-amber-400 text-amber-950 font-bold text-xs rounded-lg hover:bg-amber-300 transition whitespace-nowrap"
+                >
+                  Mở cổng thi
+                </button>
+              </div>
+            )}
+
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3.5">
               <button
                 onClick={() => setScreen('register')}
-                className="px-8 py-3.5 bg-gradient-to-r from-heritage-gold-400 to-heritage-gold-500 hover:brightness-110 text-heritage-red-950 font-black text-sm sm:text-base rounded-xl shadow-lg transition-all transform active:scale-95 flex items-center justify-center space-x-2"
+                disabled={contestInfo.isOpen === false}
+                className={`px-8 py-3.5 font-black text-sm sm:text-base rounded-xl shadow-lg transition-all transform active:scale-95 flex items-center justify-center space-x-2 ${
+                  contestInfo.isOpen !== false
+                    ? 'bg-gradient-to-r from-heritage-gold-400 to-heritage-gold-500 hover:brightness-110 text-heritage-red-950'
+                    : 'bg-white/20 text-white/50 cursor-not-allowed'
+                }`}
               >
                 <span>Tham Gia Dự Thi Ngay</span>
                 <ChevronRight className="w-5 h-5" />
@@ -272,6 +418,18 @@ export const OnlineContest: React.FC = () => {
               >
                 <Trophy className="w-4 h-4 text-heritage-gold-300" />
                 <span>Xem Bảng Xếp Hạng ({submissions.length} Lượt thi)</span>
+              </button>
+
+              <button
+                onClick={() => {
+                  setManagerInitialTab('questions');
+                  setIsManagerOpen(true);
+                }}
+                className="px-5 py-3.5 bg-black/30 hover:bg-black/50 text-heritage-gold-300 font-bold text-xs sm:text-sm rounded-xl border border-heritage-gold-400/40 transition-all flex items-center justify-center space-x-1.5"
+                title="Bảng điều khiển dành cho Giáo viên & Ban Tổ Chức"
+              >
+                <Settings className="w-4 h-4" />
+                <span>Quản Trị Toàn Diện</span>
               </button>
             </div>
           </div>
@@ -339,7 +497,7 @@ export const OnlineContest: React.FC = () => {
                     onChange={(e) => setSelectedPresetName(e.target.value)}
                     className="w-full px-4 py-3 bg-white border border-heritage-gold-400 rounded-xl text-sm font-bold text-heritage-ink-900 outline-none focus:ring-2 focus:ring-heritage-red-600 shadow-sm"
                   >
-                    {(SAMPLE_STUDENTS_BY_CLASS[selectedClass] || []).map((name) => (
+                    {(roster[selectedClass] || []).map((name) => (
                       <option key={name} value={name}>
                         {name} ({selectedClass})
                       </option>
@@ -425,7 +583,7 @@ export const OnlineContest: React.FC = () => {
 
           {/* Bản đồ câu hỏi (Question Navigation Rail) */}
           <div className="flex items-center gap-1.5 overflow-x-auto pb-3 mb-6 scrollbar-none">
-            {CONTEST_QUESTIONS_BANK.map((_, idx) => {
+            {questions.map((_, idx) => {
               const isAnswered = answers[idx] !== undefined;
               const isCurrent = currentQuestionIdx === idx;
               return (
@@ -448,47 +606,49 @@ export const OnlineContest: React.FC = () => {
           </div>
 
           {/* Câu hỏi hiện tại */}
-          <div className="bg-white rounded-2xl p-5 sm:p-7 border border-heritage-ivory-300 shadow-sm mb-6">
-            <div className="flex items-center justify-between text-xs font-semibold text-heritage-red-700 mb-3">
-              <span>Câu hỏi {currentQuestionIdx + 1} / {CONTEST_QUESTIONS_BANK.length}</span>
-              <span className="text-heritage-ink-500 font-normal">
-                {answers[currentQuestionIdx] !== undefined ? '✓ Đã chọn đáp án' : 'Chưa chọn'}
-              </span>
-            </div>
+          {questions[currentQuestionIdx] && (
+            <div className="bg-white rounded-2xl p-5 sm:p-7 border border-heritage-ivory-300 shadow-sm mb-6">
+              <div className="flex items-center justify-between text-xs font-semibold text-heritage-red-700 mb-3">
+                <span>Câu hỏi {currentQuestionIdx + 1} / {questions.length}</span>
+                <span className="text-heritage-ink-500 font-normal">
+                  {answers[currentQuestionIdx] !== undefined ? '✓ Đã chọn đáp án' : 'Chưa chọn'}
+                </span>
+              </div>
 
-            <h3 className="font-serif text-base sm:text-xl font-bold text-heritage-ink-900 leading-relaxed mb-6">
-              {CONTEST_QUESTIONS_BANK[currentQuestionIdx].question}
-            </h3>
+              <h3 className="font-serif text-base sm:text-xl font-bold text-heritage-ink-900 leading-relaxed mb-6">
+                {questions[currentQuestionIdx].question}
+              </h3>
 
-            {/* Lựa chọn A, B, C, D */}
-            <div className="space-y-3">
-              {CONTEST_QUESTIONS_BANK[currentQuestionIdx].options.map((opt, optIdx) => {
-                const isSelected = answers[currentQuestionIdx] === optIdx;
-                return (
-                  <button
-                    key={optIdx}
-                    onClick={() => handleSelectOption(currentQuestionIdx, optIdx)}
-                    className={`w-full text-left p-3.5 sm:p-4 rounded-xl border text-xs sm:text-sm transition-all flex items-center justify-between ${
-                      isSelected
-                        ? 'bg-heritage-red-50 border-heritage-red-700 text-heritage-red-950 font-bold shadow-sm ring-1 ring-heritage-red-700'
-                        : 'bg-heritage-ivory-50 border-heritage-ivory-300 text-heritage-ink-800 hover:bg-white hover:border-heritage-gold-400'
-                    }`}
-                  >
-                    <div className="flex items-center space-x-3">
-                      <span className={`w-7 h-7 rounded-full flex items-center justify-center font-bold text-xs flex-shrink-0 border ${
+              {/* Lựa chọn A, B, C, D */}
+              <div className="space-y-3">
+                {questions[currentQuestionIdx].options.map((opt, optIdx) => {
+                  const isSelected = answers[currentQuestionIdx] === optIdx;
+                  return (
+                    <button
+                      key={optIdx}
+                      onClick={() => handleSelectOption(currentQuestionIdx, optIdx)}
+                      className={`w-full text-left p-3.5 sm:p-4 rounded-xl border text-xs sm:text-sm transition-all flex items-center justify-between ${
                         isSelected
-                          ? 'bg-heritage-red-700 text-white border-heritage-red-700'
-                          : 'bg-white text-heritage-ink-700 border-heritage-ivory-300'
-                      }`}>
-                        {String.fromCharCode(65 + optIdx)}
-                      </span>
-                      <span className="leading-relaxed">{opt}</span>
-                    </div>
-                  </button>
-                );
-              })}
+                          ? 'bg-heritage-red-50 border-heritage-red-700 text-heritage-red-950 font-bold shadow-sm ring-1 ring-heritage-red-700'
+                          : 'bg-heritage-ivory-50 border-heritage-ivory-300 text-heritage-ink-800 hover:bg-white hover:border-heritage-gold-400'
+                      }`}
+                    >
+                      <div className="flex items-center space-x-3">
+                        <span className={`w-7 h-7 rounded-full flex items-center justify-center font-bold text-xs flex-shrink-0 border ${
+                          isSelected
+                            ? 'bg-heritage-red-700 text-white border-heritage-red-700'
+                            : 'bg-white text-heritage-ink-700 border-heritage-ivory-300'
+                        }`}>
+                          {String.fromCharCode(65 + optIdx)}
+                        </span>
+                        <span className="leading-relaxed">{opt}</span>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
             </div>
-          </div>
+          )}
 
           {/* Điều khiển chân trang */}
           <div className="flex items-center justify-between gap-3">
@@ -501,9 +661,9 @@ export const OnlineContest: React.FC = () => {
             </button>
 
             <div className="flex items-center space-x-2">
-              {currentQuestionIdx < CONTEST_QUESTIONS_BANK.length - 1 ? (
+              {currentQuestionIdx < questions.length - 1 ? (
                 <button
-                  onClick={() => setCurrentQuestionIdx((p) => Math.min(CONTEST_QUESTIONS_BANK.length - 1, p + 1))}
+                  onClick={() => setCurrentQuestionIdx((p) => Math.min(questions.length - 1, p + 1))}
                   className="px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-heritage-ivory-200 hover:bg-heritage-ivory-300 text-heritage-ink-900 transition flex items-center space-x-1"
                 >
                   <span>Câu tiếp theo</span>
@@ -627,6 +787,17 @@ export const OnlineContest: React.FC = () => {
                 }`}
               >
                 Thi Đua Chi Đội Lớp
+              </button>
+              <button
+                onClick={() => {
+                  setManagerInitialTab('students');
+                  setIsManagerOpen(true);
+                }}
+                className="px-3.5 py-2 bg-heritage-gold-400 hover:bg-heritage-gold-300 text-heritage-ink-950 font-bold text-xs rounded-xl shadow-xs transition flex items-center space-x-1 border border-heritage-gold-500/50"
+                title="Quản lý toàn bộ danh sách điểm thi & Xuất Excel"
+              >
+                <Settings className="w-3.5 h-3.5 text-heritage-red-800" />
+                <span>Quản trị điểm thi</span>
               </button>
             </div>
           </div>
@@ -817,6 +988,15 @@ export const OnlineContest: React.FC = () => {
           </div>
         </div>
       )}
+
+      {/* ========================================================================= */}
+      {/* 7. MODAL HỆ QUẢN TRỊ CÂU HỎI, HỘI THI & HỌC SINH (CHO GIÁO VIÊN / ADMIN)   */}
+      {/* ========================================================================= */}
+      <ContestManagerModal
+        isOpen={isManagerOpen}
+        onClose={() => setIsManagerOpen(false)}
+        initialTab={managerInitialTab}
+      />
     </div>
   );
 };

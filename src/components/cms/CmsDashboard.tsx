@@ -4,11 +4,13 @@ import {
   ShieldCheck, Shield, X, Plus, Search,
   CheckCircle2, AlertCircle, Send,
   ExternalLink, Sparkles, ArrowRight,
-  Upload, Copy, Check, Trash2
+  Upload, Copy, Check, Trash2, Trophy, GraduationCap
 } from 'lucide-react';
 import { FullScreenEditor } from './FullScreenEditor';
 import { ReviewModal } from './ReviewModal';
 import { MediaLibraryModal } from './MediaLibraryModal';
+import { ContestManagerModal } from './ContestManagerModal';
+import { getStoredContestQuestions, getContestSubmissions, EVENT_CONTEST_DATA_CHANGED } from '../../data/contestData';
 import { optimizeImageFile } from '../../lib/imageOptimizer';
 import {
   ArticleData, MediaAsset, AuditLogItem,
@@ -26,12 +28,14 @@ interface CmsDashboardProps {
 
 export const CmsDashboard: React.FC<CmsDashboardProps> = ({ isOpen, onClose }) => {
   // Active View Navigation
-  const [activeNav, setActiveNav] = useState<'overview' | 'articles' | 'pending' | 'published' | 'media' | 'audit' | 'security'>('overview');
+  const [activeNav, setActiveNav] = useState<'overview' | 'articles' | 'pending' | 'published' | 'media' | 'audit' | 'security' | 'contest'>('overview');
 
   // Articles, Audit & Media state synchronized with cmsStore
   const [articles, setArticles] = useState<ArticleData[]>(getStoredArticles);
   const [auditLogs, setAuditLogs] = useState<AuditLogItem[]>(getStoredAuditLogs);
   const [mediaAssets, setMediaAssets] = useState<MediaAsset[]>(getStoredMedia);
+  const [contestQuestionsCount, setContestQuestionsCount] = useState<number>(() => getStoredContestQuestions().length);
+  const [contestSubmissionsCount, setContestSubmissionsCount] = useState<number>(() => getContestSubmissions().length);
 
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
@@ -70,19 +74,27 @@ export const CmsDashboard: React.FC<CmsDashboardProps> = ({ isOpen, onClose }) =
     const syncArticles = () => setArticles(getStoredArticles());
     const syncMedia = () => setMediaAssets(getStoredMedia());
     const syncAudit = () => setAuditLogs(getStoredAuditLogs());
+    const syncContest = () => {
+      setContestQuestionsCount(getStoredContestQuestions().length);
+      setContestSubmissionsCount(getContestSubmissions().length);
+    };
 
     window.addEventListener(EVENT_ARTICLES_CHANGED, syncArticles);
     window.addEventListener(EVENT_MEDIA_CHANGED, syncMedia);
+    window.addEventListener(EVENT_CONTEST_DATA_CHANGED, syncContest);
     window.addEventListener('storage', syncArticles);
     window.addEventListener('storage', syncMedia);
     window.addEventListener('storage', syncAudit);
+    window.addEventListener('storage', syncContest);
 
     return () => {
       window.removeEventListener(EVENT_ARTICLES_CHANGED, syncArticles);
       window.removeEventListener(EVENT_MEDIA_CHANGED, syncMedia);
+      window.removeEventListener(EVENT_CONTEST_DATA_CHANGED, syncContest);
       window.removeEventListener('storage', syncArticles);
       window.removeEventListener('storage', syncMedia);
       window.removeEventListener('storage', syncAudit);
+      window.removeEventListener('storage', syncContest);
     };
   }, []);
 
@@ -606,6 +618,30 @@ export const CmsDashboard: React.FC<CmsDashboardProps> = ({ isOpen, onClose }) =
                 <Shield className="w-4 h-4 flex-shrink-0" />
                 <span>8. An Ninh & Chốt Chặn</span>
               </button>
+
+              <div className="my-2 border-t border-heritage-gold-300/40" />
+
+              <div className="px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-heritage-ink-500 select-none">
+                Hội Thi & Phong Trào
+              </div>
+
+              {/* 9. Quản trị Hội thi, Câu hỏi & Học sinh */}
+              <button
+                onClick={() => setActiveNav('contest')}
+                className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold transition text-left ${
+                  activeNav === 'contest'
+                    ? 'bg-heritage-red-700 text-white shadow-sm'
+                    : 'text-heritage-ink-800 hover:bg-heritage-red-50 hover:text-heritage-red-700'
+                }`}
+              >
+                <div className="flex items-center space-x-3">
+                  <Trophy className="w-4 h-4 flex-shrink-0 text-heritage-gold-600" />
+                  <span>9. Quản Trị Hội Thi & Đề Thi</span>
+                </div>
+                <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-900 border border-amber-300">
+                  {contestQuestionsCount} câu
+                </span>
+              </button>
             </div>
 
             {/* Sidebar Bottom Status */}
@@ -739,6 +775,30 @@ export const CmsDashboard: React.FC<CmsDashboardProps> = ({ isOpen, onClose }) =
                   >
                     <PenTool className="w-4 h-4" />
                     <span>Soạn bài mới ngay</span>
+                  </button>
+                </div>
+
+                {/* Contest & Student Management Banner */}
+                <div className="p-5 bg-gradient-to-r from-amber-500/15 via-heritage-gold-400/20 to-amber-600/10 border-2 border-heritage-gold-400/80 rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-4 shadow-sm">
+                  <div className="flex items-center space-x-3.5">
+                    <div className="w-12 h-12 rounded-2xl bg-heritage-red-700 text-white flex items-center justify-center flex-shrink-0 shadow-sm border border-heritage-gold-400">
+                      <Trophy className="w-6 h-6 text-heritage-gold-400" />
+                    </div>
+                    <div>
+                      <h3 className="font-serif font-bold text-base sm:text-lg text-heritage-red-950">
+                        Quản Trị Hội Thi Trực Tuyến & Học Sinh 24 Lớp
+                      </h3>
+                      <p className="text-xs text-heritage-ink-700 mt-0.5">
+                        Ngân hàng <strong>{contestQuestionsCount} câu hỏi</strong> • Đã nộp <strong>{contestSubmissionsCount} bài thi</strong> • Bảng điểm Excel • Danh sách học sinh theo 24 lớp
+                      </p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => setActiveNav('contest')}
+                    className="px-5 py-2.5 bg-heritage-red-700 hover:bg-heritage-red-800 text-white font-bold text-xs sm:text-sm rounded-xl shadow transition flex items-center space-x-2 flex-shrink-0"
+                  >
+                    <GraduationCap className="w-4 h-4 text-heritage-gold-300" />
+                    <span>Mở bảng quản trị hội thi</span>
                   </button>
                 </div>
 
@@ -1329,6 +1389,16 @@ export const CmsDashboard: React.FC<CmsDashboardProps> = ({ isOpen, onClose }) =
         <MediaLibraryModal
           isOpen={mediaLibraryOpen}
           onClose={() => setMediaLibraryOpen(false)}
+        />
+      )}
+
+      {/* ========================================================================= */}
+      {/* CONTEST & QUESTION MANAGER MODAL (Khi người dùng chọn tab Hội thi)         */}
+      {/* ========================================================================= */}
+      {activeNav === 'contest' && (
+        <ContestManagerModal
+          isOpen={true}
+          onClose={() => setActiveNav('overview')}
         />
       )}
     </>

@@ -212,3 +212,62 @@ export function validateStudentName(rawName: string): NameValidationResult {
     sanitizedName: capitalized,
   };
 }
+
+// ==============================================================================
+// 6. QUẢN LÝ DANH SÁCH HỌC SINH MẪU THEO LỚP (PERSISTENCE)
+// ==============================================================================
+const STORAGE_KEY_STUDENTS_ROSTER = 'hcm_students_roster_v1';
+export const EVENT_STUDENTS_ROSTER_CHANGED = 'hcm_students_roster_changed';
+
+export function getStoredStudentsByClass(): Record<string, string[]> {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY_STUDENTS_ROSTER);
+    if (!raw) {
+      localStorage.setItem(STORAGE_KEY_STUDENTS_ROSTER, JSON.stringify(SAMPLE_STUDENTS_BY_CLASS));
+      return SAMPLE_STUDENTS_BY_CLASS;
+    }
+    return JSON.parse(raw);
+  } catch {
+    return SAMPLE_STUDENTS_BY_CLASS;
+  }
+}
+
+export function saveStoredStudentsByClass(roster: Record<string, string[]>): Record<string, string[]> {
+  try {
+    localStorage.setItem(STORAGE_KEY_STUDENTS_ROSTER, JSON.stringify(roster));
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new Event(EVENT_STUDENTS_ROSTER_CHANGED));
+    }
+    return roster;
+  } catch (err) {
+    console.error('Lỗi lưu danh sách học sinh:', err);
+    return roster;
+  }
+}
+
+export function addStudentToClassRoster(className: string, studentName: string): Record<string, string[]> {
+  const current = getStoredStudentsByClass();
+  const classList = current[className] || [];
+  if (!classList.includes(studentName)) {
+    const updated = {
+      ...current,
+      [className]: [...classList, studentName]
+    };
+    return saveStoredStudentsByClass(updated);
+  }
+  return current;
+}
+
+export function removeStudentFromClassRoster(className: string, studentName: string): Record<string, string[]> {
+  const current = getStoredStudentsByClass();
+  const classList = current[className] || [];
+  const updated = {
+    ...current,
+    [className]: classList.filter(s => s !== studentName)
+  };
+  return saveStoredStudentsByClass(updated);
+}
+
+export function resetStudentsRoster(): Record<string, string[]> {
+  return saveStoredStudentsByClass(SAMPLE_STUDENTS_BY_CLASS);
+}
