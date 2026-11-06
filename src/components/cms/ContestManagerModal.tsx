@@ -52,7 +52,14 @@ import {
   fetchSupabaseContestData
 } from '../../data/contestData';
 import {
-  SCHOOL_CLASSES,
+  ClassInfo,
+  getStoredClasses,
+  addClass,
+  deleteClass,
+  resetClasses,
+  parseBulkStudentNames,
+  bulkAddStudentsToClass,
+  clearClassRoster,
   getStoredStudentsByClass,
   addStudentToClassRoster,
   removeStudentFromClassRoster,
@@ -81,6 +88,7 @@ export const ContestManagerModal: React.FC<ContestManagerModalProps> = ({
   const [contestInfo, setContestInfo] = useState<ContestInfo>(getStoredContestInfo);
   const [questions, setQuestions] = useState<ContestQuestion[]>(getStoredContestQuestions);
   const [submissions, setSubmissions] = useState<ContestSubmission[]>(getContestSubmissions);
+  const [classesList, setClassesList] = useState<ClassInfo[]>(getStoredClasses);
   const [roster, setRoster] = useState<Record<string, string[]>>(getStoredStudentsByClass);
 
   // 2. Feedback Toast & Cloud Sync State
@@ -184,10 +192,25 @@ export const ContestManagerModal: React.FC<ContestManagerModalProps> = ({
   const [submissionSearch, setSubmissionSearch] = useState('');
   const [submissionClassFilter, setSubmissionClassFilter] = useState('all');
 
-  // 7. Roster Tab State
+  // 7. Roster & Class Management State
   const [selectedRosterClass, setSelectedRosterClass] = useState('8A1');
+  const [selectedGradeFilter, setSelectedGradeFilter] = useState<'all' | '6' | '7' | '8' | '9'>('all');
   const [newStudentNameInput, setNewStudentNameInput] = useState('');
   const [rosterError, setRosterError] = useState<string | null>(null);
+
+  // Modal Thêm Lớp Học Mới
+  const [isAddClassModalOpen, setIsAddClassModalOpen] = useState(false);
+  const [classFormData, setClassFormData] = useState<{ id: string; name: string; grade: '6' | '7' | '8' | '9' }>({
+    id: '',
+    name: '',
+    grade: '8',
+  });
+  const [newClassInitialStudentsText, setNewClassInitialStudentsText] = useState('');
+
+  // Khu vực Dán Nhanh Danh Sách Học Sinh (Bulk Import)
+  const [isBulkImportOpen, setIsBulkImportOpen] = useState(false);
+  const [bulkImportText, setBulkImportText] = useState('');
+  const [bulkImportReplace, setBulkImportReplace] = useState(false);
 
   // Sync with changes
   useEffect(() => {
@@ -197,6 +220,7 @@ export const ContestManagerModal: React.FC<ContestManagerModalProps> = ({
       setContestInfo(getStoredContestInfo());
       setQuestions(getStoredContestQuestions());
       setSubmissions(getContestSubmissions());
+      setClassesList(getStoredClasses());
       setRoster(getStoredStudentsByClass());
     };
     window.addEventListener(EVENT_CONTEST_DATA_CHANGED, handleSync);
@@ -596,6 +620,19 @@ export const ContestManagerModal: React.FC<ContestManagerModalProps> = ({
   // ─── ROSTER MANAGEMENT HANDLERS ───────────────────────────────────
   const currentClassStudents = roster[selectedRosterClass] || [];
 
+  const currentClassObj = useMemo(() => {
+    return classesList.find((c) => c.id === selectedRosterClass) || null;
+  }, [classesList, selectedRosterClass]);
+
+  const filteredClasses = useMemo(() => {
+    if (selectedGradeFilter === 'all') return classesList;
+    return classesList.filter((c) => c.grade === selectedGradeFilter);
+  }, [classesList, selectedGradeFilter]);
+
+  const parsedBulkNames = useMemo(() => {
+    return parseBulkStudentNames(bulkImportText);
+  }, [bulkImportText]);
+
   const handleAddStudentToRoster = (e: React.FormEvent) => {
     e.preventDefault();
     setRosterError(null);
@@ -620,6 +657,90 @@ export const ContestManagerModal: React.FC<ContestManagerModalProps> = ({
       const updated = removeStudentFromClassRoster(selectedRosterClass, studentName);
       setRoster(updated);
       showToast('info', `Đã xóa học sinh ${studentName}`);
+    }
+  };
+
+  // ─── CLASS & BULK ROSTER HANDLERS ─────────────────────────────────
+  const handleOpenAddClassModal = () => {
+    setClassFormData({
+      id: '',
+      name: '',
+      grade: '8',
+    });
+    setNewClassInitialStudentsText('');
+    setIsAddClassModalOpen(true);
+  };
+
+  const handleSaveNewClass = (e: React.FormEvent) => {
+    e.preventDefault();
+    const id = classFormData.id.trim().toUpperCase().replace(/\s+/g, '');
+    if (!id) {
+      showToast('error', 'Vui lòng nhập mã lớp (ví dụ: 6A7, 8A7, 6/1)!');
+      return;
+    }
+    const name = classFormData.name.trim() || `Lớp ${id}`;
+    try {
+      const updatedClasses = addClass({
+        id,
+        name,
+        grade: classFormData.grade,
+      });
+      setClassesList(updatedClasses);
+
+      // Nếu có dán danh sách học sinh ban đầu
+      if (newClassInitialStudentsText.trim()) {
+        const parsed = parseBulkStudentNames(newClassInitialStudentsText);
+        if (parsed.length > 0) {
+          const updatedRoster = bulkAddStudentsToClass(id, parsed, true);
+          setRoster(updatedRoster);
+        }
+      }
+
+      setSelectedRosterClass(id);
+      setIsAddClassModalOpen(false);
+      showToast('success', `Đã thêm thành công lớp "${name}" vào danh mục nhà trường!`);
+    } catch (err: any) {
+      showToast('error', err?.message || 'Lỗi khi thêm lớp học');
+    }
+  };
+
+  const handleDeleteClass = (classId: string, className: string) => {
+    if (classesList.length <= 1) {
+      showToast('error', 'Hệ thống yêu cầu duy trì ít nhất 01 lớp học!');
+      return;
+    }
+    if (confirm(`Thầy/Cô có chắc chắn muốn xóa lớp "${className}" khỏi danh mục nhà trường?`)) {
+      try {
+        const updated = deleteClass(classId);
+        setClassesList(updated);
+        if (selectedRosterClass === classId) {
+          setSelectedRosterClass(updated[0].id);
+        }
+        showToast('info', `Đã xóa lớp "${className}"`);
+      } catch (err: any) {
+        showToast('error', err?.message || 'Lỗi khi xóa lớp');
+      }
+    }
+  };
+
+  const handleSaveBulkStudents = () => {
+    const parsed = parseBulkStudentNames(bulkImportText);
+    if (parsed.length === 0) {
+      showToast('error', 'Không tìm thấy họ tên học sinh hợp lệ trong nội dung vừa dán!');
+      return;
+    }
+    const updated = bulkAddStudentsToClass(selectedRosterClass, parsed, bulkImportReplace);
+    setRoster(updated);
+    setBulkImportText('');
+    setIsBulkImportOpen(false);
+    showToast('success', `Đã nhập thành công ${parsed.length} học sinh vào lớp ${selectedRosterClass}!`);
+  };
+
+  const handleClearClassRoster = (classId: string) => {
+    if (confirm(`Xóa toàn bộ danh sách học sinh của lớp ${classId} để nạp lại danh sách mới?`)) {
+      const updated = clearClassRoster(classId);
+      setRoster(updated);
+      showToast('info', `Đã dọn sạch danh sách học sinh lớp ${classId}`);
     }
   };
 
@@ -718,7 +839,7 @@ export const ContestManagerModal: React.FC<ContestManagerModalProps> = ({
               }`}
             >
               <Users className="w-4 h-4" />
-              <span>Danh Mục 24 Lớp Học</span>
+              <span>Danh Mục Lớp Học ({classesList.length} Lớp)</span>
             </button>
           </div>
 
@@ -1145,7 +1266,7 @@ export const ContestManagerModal: React.FC<ContestManagerModalProps> = ({
                     className="px-3 py-1.5 bg-heritage-ivory-100 border border-heritage-ivory-300 rounded-xl text-xs sm:text-sm focus:outline-none focus:border-heritage-red-700"
                   >
                     <option value="all">Tất cả lớp ({filteredSubmissions.length} bài)</option>
-                    {SCHOOL_CLASSES.map((c) => (
+                    {classesList.map((c) => (
                       <option key={c.id} value={c.id}>
                         Lớp {c.id}
                       </option>
@@ -1401,126 +1522,348 @@ export const ContestManagerModal: React.FC<ContestManagerModalProps> = ({
           )}
 
           {/* ─────────────────────────────────────────────────────────────
-              TAB: DANH MỤC LỚP & HỌC SINH MẪU (24 LỚP)
+              TAB: QUẢN LÝ DANH MỤC LỚP HỌC & HỌC SINH TOÀN TRƯỜNG
               ───────────────────────────────────────────────────────────── */}
           {activeTab === 'roster' && (
             <div className="space-y-4">
-              <div className="bg-white p-4 rounded-2xl border border-heritage-gold-300/80 shadow-xs flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+              {/* Top Banner & Control Actions */}
+              <div className="bg-white p-4 sm:p-5 rounded-2xl border border-heritage-gold-300/80 shadow-xs flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
                 <div className="flex items-center space-x-3">
-                  <div className="w-8 h-8 rounded-lg bg-heritage-red-100 text-heritage-red-800 flex items-center justify-center font-bold">
-                    <Users className="w-4 h-4" />
+                  <div className="w-10 h-10 rounded-xl bg-heritage-red-700 text-white flex items-center justify-center font-bold shadow-sm border border-heritage-gold-400 flex-shrink-0">
+                    <Users className="w-5 h-5 text-heritage-gold-300" />
                   </div>
                   <div>
-                    <h3 className="font-serif font-bold text-sm sm:text-base text-heritage-ink-900">
-                      Danh Mục Học Sinh Gợi Ý Theo Lớp
+                    <h3 className="font-serif font-bold text-sm sm:text-base text-heritage-ink-900 flex items-center space-x-2">
+                      <span>Quản Lý Danh Mục Lớp Học & Học Sinh</span>
+                      <span className="px-2 py-0.5 rounded-full text-[10px] font-black bg-heritage-red-100 text-heritage-red-800 border border-heritage-red-200">
+                        {classesList.length} Lớp THCS
+                      </span>
                     </h3>
-                    <p className="text-[11px] text-heritage-ink-600">
-                      Hỗ trợ học sinh chọn tên nhanh trong 1 giây, hạn chế việc gõ tên bậy hoặc sai chính tả.
+                    <p className="text-[11px] text-heritage-ink-600 mt-0.5 leading-relaxed">
+                      Thầy/Cô có thể <strong>thêm lớp học mới</strong>, quản lý theo từng khối 6 - 9, và <strong>dán nhanh cả danh sách lớp từ file Excel hoặc Word</strong>.
                     </p>
                   </div>
                 </div>
 
-                <button
-                  onClick={() => {
-                    if (confirm('Khôi phục danh sách học sinh của tất cả 24 lớp về danh sách gốc mẫu?')) {
-                      const res = resetStudentsRoster();
-                      setRoster(res);
-                      showToast('success', 'Đã đặt lại danh mục học sinh về mặc định!');
-                    }
-                  }}
-                  className="inline-flex items-center space-x-1 px-3 py-1.5 bg-heritage-ivory-200 hover:bg-heritage-ivory-300 text-heritage-ink-700 rounded-xl text-xs font-semibold transition"
-                >
-                  <RotateCcw className="w-3.5 h-3.5" />
-                  <span>Khôi phục danh sách mẫu</span>
-                </button>
+                <div className="flex items-center flex-wrap gap-2">
+                  <button
+                    onClick={handleOpenAddClassModal}
+                    className="inline-flex items-center justify-center space-x-1.5 px-3.5 py-2 bg-heritage-red-700 hover:bg-heritage-red-800 text-white rounded-xl text-xs font-bold shadow-sm transition"
+                    title="Thêm một lớp học mới vào danh mục nhà trường"
+                  >
+                    <Plus className="w-4 h-4" />
+                    <span>Thêm Lớp Mới</span>
+                  </button>
+
+                  <button
+                    onClick={() => setIsBulkImportOpen(!isBulkImportOpen)}
+                    className="inline-flex items-center justify-center space-x-1.5 px-3.5 py-2 bg-heritage-gold-400 hover:bg-heritage-gold-300 text-heritage-red-950 font-black rounded-xl text-xs shadow-xs transition border border-heritage-gold-500"
+                    title="Mở khung dán danh sách học sinh từ file Excel hoặc Word"
+                  >
+                    <FileSpreadsheet className="w-4 h-4 text-heritage-red-900" />
+                    <span>Dán Danh Sách Từ Excel</span>
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      if (confirm('Khôi phục danh mục lớp và danh sách học sinh về mặc định của nhà trường?')) {
+                        const resClasses = resetClasses();
+                        setClassesList(resClasses);
+                        const resRoster = resetStudentsRoster();
+                        setRoster(resRoster);
+                        showToast('success', 'Đã đặt lại danh mục lớp và học sinh về mặc định!');
+                      }
+                    }}
+                    className="inline-flex items-center space-x-1 px-2.5 py-2 bg-heritage-ivory-200 hover:bg-heritage-ivory-300 text-heritage-ink-700 rounded-xl text-xs font-semibold transition"
+                    title="Khôi phục danh sách lớp gốc của nhà trường"
+                  >
+                    <RotateCcw className="w-3.5 h-3.5" />
+                    <span>Khôi phục mẫu</span>
+                  </button>
+                </div>
               </div>
 
-              {/* Class Pills */}
-              <div className="bg-white p-3 rounded-2xl border border-heritage-gold-300/80 shadow-xs space-y-2">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-heritage-ink-500 block">
-                  Chọn Lớp / Chi Đội để xem & thêm bớt danh sách học sinh:
-                </span>
-                <div className="flex flex-wrap gap-1.5">
-                  {SCHOOL_CLASSES.map((c) => {
+              {/* Bộ lọc Khối Lớp (Tất cả / Khối 6 / Khối 7 / Khối 8 / Khối 9) */}
+              <div className="bg-white p-3.5 rounded-2xl border border-heritage-gold-300/80 shadow-xs space-y-3">
+                <div className="flex flex-wrap items-center justify-between gap-2 border-b border-heritage-ivory-200 pb-2">
+                  <div className="flex items-center space-x-1.5">
+                    <span className="text-[11px] font-bold uppercase tracking-wider text-heritage-ink-700">
+                      Lọc theo khối lớp:
+                    </span>
+                    {(['all', '6', '7', '8', '9'] as const).map((grade) => {
+                      const count = grade === 'all'
+                        ? classesList.length
+                        : classesList.filter((c) => c.grade === grade).length;
+                      const isSelected = selectedGradeFilter === grade;
+                      return (
+                        <button
+                          key={grade}
+                          onClick={() => setSelectedGradeFilter(grade)}
+                          className={`px-2.5 py-1 rounded-lg text-xs font-bold transition ${
+                            isSelected
+                              ? 'bg-heritage-red-700 text-white shadow-xs'
+                              : 'bg-heritage-ivory-100 text-heritage-ink-700 hover:bg-heritage-ivory-200 border border-heritage-ivory-300'
+                          }`}
+                        >
+                          {grade === 'all' ? `Tất cả (${count})` : `Khối ${grade} (${count})`}
+                        </button>
+                      );
+                    })}
+                  </div>
+
+                  <span className="text-[11px] text-heritage-ink-500 italic">
+                    Bấm vào lớp để xem hoặc nhập danh sách học sinh
+                  </span>
+                </div>
+
+                {/* Danh sách các Thẻ Lớp Học (Class Pills) */}
+                <div className="flex flex-wrap gap-2">
+                  {filteredClasses.map((c) => {
                     const isSelected = selectedRosterClass === c.id;
                     const count = (roster[c.id] || []).length;
                     return (
-                      <button
+                      <div
                         key={c.id}
-                        onClick={() => {
-                          setSelectedRosterClass(c.id);
-                          setRosterError(null);
-                        }}
-                        className={`px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center space-x-1.5 ${
+                        className={`inline-flex items-center rounded-xl transition border text-xs font-bold shadow-xs ${
                           isSelected
-                            ? 'bg-heritage-red-700 text-white shadow-sm'
-                            : 'bg-heritage-ivory-100 hover:bg-heritage-ivory-200 text-heritage-ink-800 border border-heritage-ivory-300'
+                            ? 'bg-heritage-red-700 text-white border-heritage-gold-400 ring-2 ring-heritage-gold-400/40'
+                            : 'bg-heritage-ivory-100 hover:bg-heritage-ivory-200 text-heritage-ink-800 border-heritage-ivory-300'
                         }`}
                       >
-                        <span>Lớp {c.id}</span>
-                        <span className={`text-[10px] px-1.5 py-0.2 rounded-full ${
-                          isSelected ? 'bg-white/20 text-white' : 'bg-heritage-ivory-200 text-heritage-ink-600'
-                        }`}>
-                          {count}
-                        </span>
-                      </button>
+                        <button
+                          onClick={() => {
+                            setSelectedRosterClass(c.id);
+                            setRosterError(null);
+                          }}
+                          className="px-3 py-2 flex items-center space-x-1.5 text-left"
+                          title={c.name}
+                        >
+                          <span>Lớp {c.id}</span>
+                          <span
+                            className={`text-[10px] px-1.5 py-0.2 rounded-full font-bold ${
+                              isSelected ? 'bg-white/20 text-white' : 'bg-heritage-ivory-200 text-heritage-ink-600'
+                            }`}
+                          >
+                            {count} em
+                          </span>
+                        </button>
+
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDeleteClass(c.id, c.name);
+                          }}
+                          className={`pr-2 pl-1 py-2 text-inherit opacity-40 hover:opacity-100 transition ${
+                            isSelected ? 'hover:text-amber-300' : 'hover:text-red-700'
+                          }`}
+                          title={`Xóa lớp ${c.id} khỏi danh mục`}
+                        >
+                          <Trash2 className="w-3 h-3" />
+                        </button>
+                      </div>
                     );
                   })}
+
+                  {/* Nút Thêm Lớp Nhanh ngay trong lưới */}
+                  <button
+                    onClick={handleOpenAddClassModal}
+                    className="px-3 py-2 rounded-xl text-xs font-bold transition flex items-center space-x-1.5 bg-dashed border-2 border-dashed border-heritage-gold-400 text-heritage-red-900 hover:bg-amber-50"
+                  >
+                    <Plus className="w-3.5 h-3.5" />
+                    <span>+ Thêm Lớp Mới</span>
+                  </button>
                 </div>
               </div>
 
-              {/* Add Student to Class Form */}
-              <form onSubmit={handleAddStudentToRoster} className="bg-white p-3.5 rounded-2xl border border-heritage-gold-300/80 shadow-xs flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
-                <div className="flex-1">
-                  <input
-                    type="text"
-                    placeholder={`Nhập họ và tên học sinh muốn thêm vào lớp ${selectedRosterClass}...`}
-                    value={newStudentNameInput}
-                    onChange={(e) => setNewStudentNameInput(e.target.value)}
-                    className="w-full px-3.5 py-2 bg-heritage-ivory-100 border border-heritage-ivory-300 rounded-xl text-xs sm:text-sm focus:outline-none focus:border-heritage-red-700"
-                  />
-                  {rosterError && (
-                    <span className="text-[11px] text-red-600 font-semibold mt-1 block">
-                      ⚠ {rosterError}
-                    </span>
-                  )}
-                </div>
-                <button
-                  type="submit"
-                  className="inline-flex items-center justify-center space-x-1.5 px-4 py-2 bg-heritage-red-700 hover:bg-heritage-red-800 text-white rounded-xl text-xs sm:text-sm font-bold shadow-xs transition"
-                >
-                  <Plus className="w-4 h-4" />
-                  <span>Thêm học sinh</span>
-                </button>
-              </form>
+              {/* KHU VỰC DÁN NHANH DANH SÁCH TỪ EXCEL / WORD (BULK IMPORT DRAWER) */}
+              {isBulkImportOpen && (
+                <div className="bg-gradient-to-r from-amber-50 via-heritage-ivory-100 to-amber-50 p-4 sm:p-5 rounded-2xl border-2 border-heritage-gold-400 shadow-md space-y-3 animate-fadeIn">
+                  <div className="flex items-start justify-between gap-2 border-b border-heritage-gold-300/80 pb-2.5">
+                    <div>
+                      <h4 className="font-serif font-black text-sm sm:text-base text-heritage-red-950 flex items-center space-x-2">
+                        <FileSpreadsheet className="w-5 h-5 text-heritage-red-700" />
+                        <span>Dán Nhanh Danh Sách Học Sinh Cho Lớp {selectedRosterClass}</span>
+                      </h4>
+                      <p className="text-xs text-heritage-ink-700 mt-0.5 leading-relaxed">
+                        Thầy/Cô chỉ cần <strong>copy cột Họ và Tên</strong> từ bảng tính Excel hoặc văn bản Word rồi dán vào khung dưới đây. Hệ thống sẽ tự động tách dòng, bỏ số thứ tự đầu dòng (1, 2, 3...) và định dạng chuẩn tên tiếng Việt.
+                      </p>
+                    </div>
 
-              {/* Class Students Roster Grid */}
-              <div className="bg-white p-4 rounded-2xl border border-heritage-gold-300/80 shadow-xs">
-                <div className="flex items-center justify-between mb-3 border-b border-heritage-ivory-200 pb-2">
-                  <h4 className="font-serif font-bold text-xs sm:text-sm text-heritage-ink-900">
-                    Danh Sách Học Sinh Lớp {selectedRosterClass} ({currentClassStudents.length} em)
-                  </h4>
-                </div>
-
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
-                  {currentClassStudents.map((name, idx) => (
-                    <div
-                      key={idx}
-                      className="p-2.5 rounded-xl bg-heritage-ivory-50 border border-heritage-ivory-200 flex items-center justify-between group hover:border-heritage-gold-400 transition"
+                    <button
+                      onClick={() => setIsBulkImportOpen(false)}
+                      className="p-1 text-heritage-ink-400 hover:text-heritage-red-700"
                     >
-                      <span className="text-xs font-semibold text-heritage-ink-900 truncate">
-                        {name}
+                      <X className="w-5 h-5" />
+                    </button>
+                  </div>
+
+                  <div>
+                    <textarea
+                      rows={6}
+                      value={bulkImportText}
+                      onChange={(e) => setBulkImportText(e.target.value)}
+                      placeholder={`Ví dụ: Dán danh sách học sinh vào đây, mỗi em 1 dòng:\n1. Nguyễn Minh Khang\n2. Trần Bảo Ngọc\n03 - Lê Hoàng Nam\nPhạm Thùy Linh\nĐặng Gia Huy...`}
+                      className="w-full p-3 bg-white border border-heritage-gold-400 rounded-xl text-xs sm:text-sm font-medium focus:outline-none focus:ring-2 focus:ring-heritage-red-700 shadow-inner"
+                    />
+                  </div>
+
+                  <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-1">
+                    <div className="flex items-center space-x-4 text-xs">
+                      <span className="font-bold text-heritage-red-950 flex items-center space-x-1">
+                        <Check className="w-4 h-4 text-emerald-600" />
+                        <span>Đã nhận diện: <strong className="text-emerald-700 text-sm font-black">{parsedBulkNames.length}</strong> học sinh hợp lệ</span>
                       </span>
+
+                      <label className="flex items-center space-x-1.5 cursor-pointer text-heritage-ink-800 font-medium">
+                        <input
+                          type="checkbox"
+                          checked={bulkImportReplace}
+                          onChange={(e) => setBulkImportReplace(e.target.checked)}
+                          className="w-4 h-4 text-heritage-red-700 rounded focus:ring-heritage-red-500"
+                        />
+                        <span>Thay thế toàn bộ danh sách lớp này</span>
+                      </label>
+                    </div>
+
+                    <div className="flex items-center space-x-2">
                       <button
-                        onClick={() => handleRemoveStudentFromRoster(name)}
-                        className="opacity-40 group-hover:opacity-100 p-1 text-heritage-ink-400 hover:text-red-700 transition"
-                        title="Xóa học sinh này khỏi danh sách lớp"
+                        type="button"
+                        onClick={() => setIsBulkImportOpen(false)}
+                        className="px-4 py-2 bg-heritage-ivory-200 hover:bg-heritage-ivory-300 text-heritage-ink-700 rounded-xl text-xs font-semibold transition"
                       >
-                        <X className="w-3.5 h-3.5" />
+                        Đóng
+                      </button>
+
+                      <button
+                        type="button"
+                        disabled={parsedBulkNames.length === 0}
+                        onClick={handleSaveBulkStudents}
+                        className={`px-5 py-2 font-bold rounded-xl text-xs sm:text-sm transition flex items-center space-x-1.5 shadow-sm ${
+                          parsedBulkNames.length > 0
+                            ? 'bg-heritage-red-700 hover:bg-heritage-red-800 text-white'
+                            : 'bg-heritage-ivory-300 text-heritage-ink-400 cursor-not-allowed'
+                        }`}
+                      >
+                        <Check className="w-4 h-4" />
+                        <span>Lưu {parsedBulkNames.length} Học Sinh Vào Lớp {selectedRosterClass}</span>
                       </button>
                     </div>
-                  ))}
+                  </div>
                 </div>
+              )}
+
+              {/* Chi Tiết Lớp Đang Chọn & Danh Sách Học Sinh */}
+              <div className="bg-white p-4 sm:p-5 rounded-2xl border border-heritage-gold-300/80 shadow-xs space-y-4">
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 border-b border-heritage-ivory-200 pb-3">
+                  <div>
+                    <h4 className="font-serif font-black text-sm sm:text-base text-heritage-red-950 flex items-center space-x-2">
+                      <span>Danh Sách Học Sinh: {currentClassObj?.name || `Lớp ${selectedRosterClass}`}</span>
+                      <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-heritage-red-100 text-heritage-red-800">
+                        {currentClassStudents.length} học sinh
+                      </span>
+                    </h4>
+                    <p className="text-[11px] text-heritage-ink-600 mt-0.5">
+                      Khối {currentClassObj?.grade || '8'} • Mã lớp: <strong>{selectedRosterClass}</strong>
+                    </p>
+                  </div>
+
+                  <div className="flex items-center space-x-2">
+                    <button
+                      onClick={() => setIsBulkImportOpen(true)}
+                      className="px-3 py-1.5 bg-heritage-gold-400 hover:bg-heritage-gold-300 text-heritage-red-950 font-bold rounded-xl text-xs transition flex items-center space-x-1 border border-heritage-gold-500 shadow-2xs"
+                      title="Mở khung dán danh sách nhiều em từ Excel"
+                    >
+                      <FileSpreadsheet className="w-3.5 h-3.5 text-heritage-red-900" />
+                      <span>Dán từ Excel</span>
+                    </button>
+
+                    {currentClassStudents.length > 0 && (
+                      <button
+                        onClick={() => handleClearClassRoster(selectedRosterClass)}
+                        className="px-3 py-1.5 bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 rounded-xl text-xs font-bold transition flex items-center space-x-1"
+                        title="Xóa toàn bộ danh sách lớp này để nhập lại danh sách mới"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                        <span>Xóa hết</span>
+                      </button>
+                    )}
+                  </div>
+                </div>
+
+                {/* Form Thêm 1 Học Sinh Thủ Công */}
+                <form
+                  onSubmit={handleAddStudentToRoster}
+                  className="p-3 bg-heritage-ivory-50 rounded-xl border border-heritage-ivory-200 flex flex-col sm:flex-row items-stretch sm:items-center gap-2"
+                >
+                  <div className="flex-1">
+                    <input
+                      type="text"
+                      placeholder={`Thêm 1 em học sinh vào lớp ${selectedRosterClass} (Ví dụ: Nguyễn Minh Khang)...`}
+                      value={newStudentNameInput}
+                      onChange={(e) => setNewStudentNameInput(e.target.value)}
+                      className="w-full px-3.5 py-2 bg-white border border-heritage-ivory-300 rounded-xl text-xs sm:text-sm focus:outline-none focus:border-heritage-red-700 font-medium"
+                    />
+                    {rosterError && (
+                      <span className="text-[11px] text-red-600 font-semibold mt-1 block">
+                        ⚠ {rosterError}
+                      </span>
+                    )}
+                  </div>
+                  <button
+                    type="submit"
+                    className="inline-flex items-center justify-center space-x-1.5 px-4 py-2 bg-heritage-red-700 hover:bg-heritage-red-800 text-white rounded-xl text-xs sm:text-sm font-bold shadow-xs transition whitespace-nowrap"
+                  >
+                    <Plus className="w-4 h-4" />
+                    <span>Thêm 1 em</span>
+                  </button>
+                </form>
+
+                {/* Lưới Thẻ Học Sinh Của Lớp */}
+                {currentClassStudents.length === 0 ? (
+                  <div className="p-8 text-center bg-heritage-ivory-50 rounded-2xl border-2 border-dashed border-heritage-gold-300 space-y-2">
+                    <div className="w-12 h-12 mx-auto rounded-full bg-amber-100 text-amber-800 flex items-center justify-center">
+                      <Users className="w-6 h-6 text-amber-700" />
+                    </div>
+                    <h5 className="font-serif font-bold text-sm text-heritage-red-950">
+                      Lớp {selectedRosterClass} hiện chưa có danh sách học sinh
+                    </h5>
+                    <p className="text-xs text-heritage-ink-600 max-w-md mx-auto">
+                      Thầy/Cô hãy bấm <strong>"Dán Danh Sách Từ Excel"</strong> ở trên để nạp cả lớp trong 1 giây, hoặc nhập từng em vào ô phía trên.
+                    </p>
+                    <button
+                      onClick={() => setIsBulkImportOpen(true)}
+                      className="inline-flex items-center space-x-1 px-4 py-2 bg-heritage-gold-400 hover:bg-heritage-gold-300 text-heritage-red-950 font-black rounded-xl text-xs transition shadow-xs mt-2"
+                    >
+                      <FileSpreadsheet className="w-4 h-4" />
+                      <span>Dán danh sách cả lớp ngay</span>
+                    </button>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
+                    {currentClassStudents.map((name, idx) => (
+                      <div
+                        key={idx}
+                        className="p-2.5 rounded-xl bg-heritage-ivory-50 border border-heritage-ivory-200 flex items-center justify-between group hover:border-heritage-gold-400 hover:bg-white transition shadow-2xs"
+                      >
+                        <div className="flex items-center space-x-2 min-w-0">
+                          <span className="w-6 h-6 rounded-full bg-heritage-red-100 text-heritage-red-800 font-bold text-[10px] flex items-center justify-center flex-shrink-0">
+                            {idx + 1}
+                          </span>
+                          <span className="text-xs font-semibold text-heritage-ink-900 truncate">
+                            {name}
+                          </span>
+                        </div>
+                        <button
+                          onClick={() => handleRemoveStudentFromRoster(name)}
+                          className="opacity-30 group-hover:opacity-100 p-1 text-heritage-ink-400 hover:text-red-700 transition flex-shrink-0"
+                          title={`Xóa học sinh ${name} khỏi lớp`}
+                        >
+                          <X className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
           )}
@@ -1968,6 +2311,113 @@ export const ContestManagerModal: React.FC<ContestManagerModalProps> = ({
                   className="px-5 py-2 bg-heritage-red-700 hover:bg-heritage-red-800 text-white font-bold text-xs sm:text-sm rounded-xl shadow-sm transition"
                 >
                   {editingQuestion ? 'Cập nhật câu hỏi' : 'Thêm câu hỏi'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* ─────────────────────────────────────────────────────────────────
+          MODAL CON: THÊM LỚP HỌC MỚI VÀO DANH MỤC NHÀ TRƯỜNG
+          ───────────────────────────────────────────────────────────────── */}
+      {isAddClassModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 bg-black/60 backdrop-blur-xs animate-fadeIn">
+          <div className="relative w-full max-w-lg bg-white border-2 border-heritage-gold-400 rounded-2xl shadow-2xl p-5 sm:p-6 space-y-4">
+            <div className="flex items-center justify-between border-b border-heritage-ivory-200 pb-3">
+              <h3 className="font-serif font-bold text-base sm:text-lg text-heritage-red-900 flex items-center space-x-2">
+                <Users className="w-5 h-5 text-heritage-gold-600" />
+                <span>Thêm Lớp Học Mới Vào Danh Mục</span>
+              </h3>
+              <button
+                onClick={() => setIsAddClassModalOpen(false)}
+                className="p-1 text-heritage-ink-400 hover:text-heritage-red-700"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <form onSubmit={handleSaveNewClass} className="space-y-4 text-xs sm:text-sm">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-bold text-heritage-ink-800 uppercase tracking-wider mb-1">
+                    Mã Lớp Học <span className="text-red-600">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    value={classFormData.id}
+                    onChange={(e) => setClassFormData({ ...classFormData, id: e.target.value })}
+                    placeholder="Ví dụ: 6A7, 8A7, 6/1..."
+                    className="w-full px-3.5 py-2 bg-heritage-ivory-50 border border-heritage-ivory-300 rounded-xl font-black text-heritage-red-950 focus:outline-none focus:border-heritage-red-700 uppercase"
+                    required
+                  />
+                  <span className="text-[10px] text-heritage-ink-500 mt-0.5 block">
+                    Mã hiển thị ngắn trên bài thi và bảng xếp hạng
+                  </span>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-heritage-ink-800 uppercase tracking-wider mb-1">
+                    Khối Lớp <span className="text-red-600">*</span>
+                  </label>
+                  <select
+                    value={classFormData.grade}
+                    onChange={(e) => setClassFormData({ ...classFormData, grade: e.target.value as '6' | '7' | '8' | '9' })}
+                    className="w-full px-3.5 py-2 bg-heritage-ivory-50 border border-heritage-ivory-300 rounded-xl font-bold text-heritage-ink-900 focus:outline-none focus:border-heritage-red-700"
+                  >
+                    <option value="6">Khối 6 (Lớp 6)</option>
+                    <option value="7">Khối 7 (Lớp 7)</option>
+                    <option value="8">Khối 8 (Lớp 8)</option>
+                    <option value="9">Khối 9 (Lớp 9)</option>
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-heritage-ink-800 uppercase tracking-wider mb-1">
+                  Tên Lớp / Tên Chi Đội Đầy Đủ
+                </label>
+                <input
+                  type="text"
+                  value={classFormData.name}
+                  onChange={(e) => setClassFormData({ ...classFormData, name: e.target.value })}
+                  placeholder="Ví dụ: Lớp 8A7 (Chi đội Trần Phú) hoặc Lớp 6A7..."
+                  className="w-full px-3.5 py-2 bg-heritage-ivory-50 border border-heritage-ivory-300 rounded-xl font-semibold text-heritage-ink-900 focus:outline-none focus:border-heritage-red-700"
+                />
+              </div>
+
+              <div>
+                <div className="flex items-center justify-between mb-1">
+                  <label className="block text-xs font-bold text-heritage-ink-800 uppercase tracking-wider">
+                    Dán Danh Sách Học Sinh Của Lớp Này (Tùy chọn)
+                  </label>
+                  <span className="text-[10px] text-heritage-ink-500">
+                    Mỗi học sinh 1 dòng (Copy từ Excel)
+                  </span>
+                </div>
+                <textarea
+                  rows={4}
+                  value={newClassInitialStudentsText}
+                  onChange={(e) => setNewClassInitialStudentsText(e.target.value)}
+                  placeholder="Dán cột họ tên học sinh từ file Excel hoặc Word vào đây (nếu có)..."
+                  className="w-full p-2.5 bg-heritage-ivory-50 border border-heritage-ivory-300 rounded-xl text-xs focus:outline-none focus:border-heritage-red-700 font-medium"
+                />
+              </div>
+
+              <div className="flex items-center justify-end space-x-2 pt-3 border-t border-heritage-ivory-200">
+                <button
+                  type="button"
+                  onClick={() => setIsAddClassModalOpen(false)}
+                  className="px-4 py-2 bg-heritage-ivory-200 hover:bg-heritage-ivory-300 text-heritage-ink-700 font-semibold text-xs sm:text-sm rounded-xl transition"
+                >
+                  Hủy bỏ
+                </button>
+                <button
+                  type="submit"
+                  className="px-5 py-2 bg-heritage-red-700 hover:bg-heritage-red-800 text-white font-bold text-xs sm:text-sm rounded-xl shadow-sm transition flex items-center space-x-1.5"
+                >
+                  <Plus className="w-4 h-4" />
+                  <span>Lưu Lớp Học Mới</span>
                 </button>
               </div>
             </form>

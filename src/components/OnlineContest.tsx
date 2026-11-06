@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import {
-  SCHOOL_CLASSES,
+  ClassInfo,
+  getStoredClasses,
   getStoredStudentsByClass,
   validateStudentName,
   EVENT_STUDENTS_ROSTER_CHANGED,
@@ -45,6 +46,7 @@ export const OnlineContest: React.FC = () => {
   const [contestsList, setContestsList] = useState<ContestInfo[]>(getStoredContestsList);
   const [contestInfo, setContestInfo] = useState<ContestInfo>(getStoredContestInfo);
   const [questions, setQuestions] = useState<ContestQuestion[]>(getStoredContestQuestions);
+  const [classesList, setClassesList] = useState<ClassInfo[]>(getStoredClasses);
   const [roster, setRoster] = useState<Record<string, string[]>>(getStoredStudentsByClass);
   const [submissions, setSubmissions] = useState<ContestSubmission[]>(getContestSubmissions);
   const [leaderboardContestId, setLeaderboardContestId] = useState<string>(() => getStoredContestInfo().id);
@@ -136,6 +138,7 @@ export const OnlineContest: React.FC = () => {
       setContestsList(getStoredContestsList());
       setContestInfo(active);
       setQuestions(getStoredContestQuestions());
+      setClassesList(getStoredClasses());
       setSubmissions(getContestSubmissions());
       setRoster(getStoredStudentsByClass());
     };
@@ -404,7 +407,7 @@ export const OnlineContest: React.FC = () => {
                 </span>
               </div>
               <p className="text-[11px] text-heritage-ink-600 mt-0.5">
-                Ngân hàng: <strong>{questions.length} câu hỏi</strong> • Đã nộp: <strong>{submissions.length} bài thi</strong> • 24 lớp THCS
+                Ngân hàng: <strong>{questions.length} câu hỏi</strong> • Đã nộp: <strong>{submissions.length} bài thi</strong> • {classesList.length} lớp THCS
               </p>
             </div>
           </div>
@@ -440,10 +443,10 @@ export const OnlineContest: React.FC = () => {
                 setIsManagerOpen(true);
               }}
               className="px-3 py-1.5 bg-white hover:bg-heritage-ivory-200 text-heritage-ink-800 font-bold text-xs rounded-xl shadow-xs transition border border-heritage-ivory-300 flex items-center space-x-1"
-              title="Quản lý danh sách học sinh theo 24 lớp"
+              title="Quản lý danh sách học sinh theo từng lớp"
             >
               <Layers className="w-3.5 h-3.5 text-heritage-red-700" />
-              <span>24 Lớp</span>
+              <span>{classesList.length} Lớp</span>
             </button>
 
             <button
@@ -865,7 +868,7 @@ export const OnlineContest: React.FC = () => {
                 onChange={(e) => setSelectedClass(e.target.value)}
                 className="w-full px-4 py-3 bg-white border border-heritage-gold-400 rounded-xl text-sm font-bold text-heritage-ink-900 outline-none focus:ring-2 focus:ring-heritage-red-600 shadow-sm"
               >
-                {SCHOOL_CLASSES.map((cls) => (
+                {classesList.map((cls) => (
                   <option key={cls.id} value={cls.id}>
                     {cls.name}
                   </option>

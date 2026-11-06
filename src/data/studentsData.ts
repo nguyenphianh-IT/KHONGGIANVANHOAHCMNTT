@@ -43,6 +43,87 @@ export const SCHOOL_CLASSES: ClassInfo[] = [
   { id: '9A6', name: 'Lớp 9A6', grade: '9' },
 ];
 
+// ==============================================================================
+// 0. KHỞI TẠO VÀ QUẢN TRỊ DANH MỤC LỚP HỌC ĐỘNG (CLASSES MANAGEMENT)
+// ==============================================================================
+const STORAGE_KEY_CLASSES = 'hcm_school_classes_v2';
+
+export function getStoredClasses(): ClassInfo[] {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY_CLASSES);
+    if (!raw) {
+      localStorage.setItem(STORAGE_KEY_CLASSES, JSON.stringify(SCHOOL_CLASSES));
+      return SCHOOL_CLASSES;
+    }
+    const parsed = JSON.parse(raw);
+    if (Array.isArray(parsed) && parsed.length > 0) {
+      return parsed;
+    }
+    return SCHOOL_CLASSES;
+  } catch {
+    return SCHOOL_CLASSES;
+  }
+}
+
+export function saveStoredClasses(classes: ClassInfo[]): ClassInfo[] {
+  try {
+    localStorage.setItem(STORAGE_KEY_CLASSES, JSON.stringify(classes));
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new Event(EVENT_STUDENTS_ROSTER_CHANGED));
+    }
+    return classes;
+  } catch (err) {
+    console.error('Lỗi lưu danh mục lớp học:', err);
+    return classes;
+  }
+}
+
+export function addClass(classInfo: ClassInfo): ClassInfo[] {
+  const current = getStoredClasses();
+  if (current.some((c) => c.id.toLowerCase() === classInfo.id.toLowerCase())) {
+    throw new Error(`Lớp "${classInfo.id}" đã tồn tại trong danh mục nhà trường!`);
+  }
+  const updated = [...current, classInfo];
+  saveStoredClasses(updated);
+
+  // Khởi tạo danh sách học sinh trống cho lớp mới nếu chưa có
+  const roster = getStoredStudentsByClass();
+  if (!roster[classInfo.id]) {
+    saveStoredStudentsByClass({ ...roster, [classInfo.id]: [] });
+  }
+
+  return updated;
+}
+
+export function updateClass(classInfo: ClassInfo): ClassInfo[] {
+  const current = getStoredClasses();
+  const updated = current.map((c) => (c.id === classInfo.id ? classInfo : c));
+  return saveStoredClasses(updated);
+}
+
+export function deleteClass(classId: string): ClassInfo[] {
+  const current = getStoredClasses();
+  if (current.length <= 1) {
+    throw new Error('Hệ thống yêu cầu duy trì ít nhất 01 lớp học!');
+  }
+  const updated = current.filter((c) => c.id !== classId);
+  saveStoredClasses(updated);
+
+  // Dọn dẹp danh sách học sinh của lớp đã xóa
+  const roster = getStoredStudentsByClass();
+  if (roster[classId]) {
+    const newRoster = { ...roster };
+    delete newRoster[classId];
+    saveStoredStudentsByClass(newRoster);
+  }
+
+  return updated;
+}
+
+export function resetClasses(): ClassInfo[] {
+  return saveStoredClasses(SCHOOL_CLASSES);
+}
+
 // ------------------------------------------------------------------------------
 // GIẢI PHÁP 1: DANH SÁCH HỌC SINH MẪU THEO LỚP ĐỂ CHỌN NHANH (TRIỆT TIÊU TỰ GÕ BẬY)
 // ------------------------------------------------------------------------------
@@ -270,4 +351,71 @@ export function removeStudentFromClassRoster(className: string, studentName: str
 
 export function resetStudentsRoster(): Record<string, string[]> {
   return saveStoredStudentsByClass(SAMPLE_STUDENTS_BY_CLASS);
+}
+
+/**
+ * Tách và chuẩn hóa danh sách học sinh từ chuỗi văn bản (copy từ Excel, Word hoặc Google Sheets)
+ */
+export function parseBulkStudentNames(rawText: string): string[] {
+  if (!rawText) return [];
+  const lines = rawText.split(/\r?\n/);
+  const names: string[] = [];
+  const seen = new Set<string>();
+
+  for (const line of lines) {
+    let cleaned = line.trim();
+    if (!cleaned) continue;
+    // Bỏ số thứ tự đầu dòng hoặc ký tự bullet nếu có: "1.", "1 -", "01.", "01)", "1/ ", "* ", "• "...
+    cleaned = cleaned.replace(/^([\d\.\-\)\/\s\*•]+)/, '').trim();
+    // Bỏ cột phụ nếu copy nhiều cột từ Excel (chỉ lấy cột họ tên)
+    cleaned = cleaned.split('\t')[0].trim();
+    cleaned = cleaned.replace(/\s+/g, ' ');
+    if (cleaned.length >= 2 && !seen.has(cleaned.toLowerCase())) {
+      seen.add(cleaned.toLowerCase());
+      // Viết hoa chữ cái đầu mỗi từ
+      const words = cleaned.split(' ');
+      const formatted = words.map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(' ');
+      names.push(formatted);
+    }
+  }
+  return names;
+}
+
+/**
+ * Nhập hàng loạt danh sách học sinh vào lớp (hỗ trợ chế độ Thêm mới hoặc Thay thế toàn bộ)
+ */
+export function bulkAddStudentsToClass(
+  className: string,
+  studentNames: string[],
+  replace: boolean = false
+): Record<string, string[]> {
+  const current = getStoredStudentsByClass();
+  const existingList = replace ? [] : (current[className] || []);
+  const set = new Set(existingList);
+
+  studentNames.forEach((name) => {
+    const trimmed = name.trim();
+    if (trimmed && !set.has(trimmed)) {
+      set.add(trimmed);
+      existingList.push(trimmed);
+    }
+  });
+
+  const updated = {
+    ...current,
+    [className]: existingList,
+  };
+  return saveStoredStudentsByClass(updated);
+}
+
+/**
+ * Xóa toàn bộ học sinh của một lớp để nạp lại danh sách mới
+ */
+export function clearClassRoster(className: string): Record<string, string[]> {
+  const current = getStoredStudentsByClass();
+  const updated = {
+    ...current,
+    [className]: [],
+  };
+  return saveStoredStudentsByClass(updated);
 }
