@@ -58,6 +58,7 @@ import {
   validateStudentName,
   EVENT_STUDENTS_ROSTER_CHANGED
 } from '../../data/studentsData';
+import { useAuth } from '../../context/AuthContext';
 
 interface ContestManagerModalProps {
   isOpen: boolean;
@@ -274,7 +275,34 @@ export const ContestManagerModal: React.FC<ContestManagerModalProps> = ({
     return { total, avgScore, perfectCount, topClass };
   }, [submissions, selectedContestFilter]);
 
+  const { user, hasRole } = useAuth();
+  const isStaff = Boolean(user && (hasRole('editor') || hasRole('admin') || hasRole('super_admin')));
+
   if (!isOpen) return null;
+
+  if (!isStaff) {
+    return (
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-heritage-ink-950/75 backdrop-blur-sm animate-fadeIn">
+        <div className="relative w-full max-w-md bg-heritage-ivory-100 border-2 border-heritage-red-400 rounded-3xl shadow-2xl p-6 sm:p-8 text-center">
+          <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-heritage-red-100 border border-heritage-red-300 text-heritage-red-700 flex items-center justify-center shadow-inner">
+            <AlertCircle className="w-9 h-9" />
+          </div>
+          <h3 className="font-serif font-black text-xl text-heritage-red-950 mb-2">
+            Khu Vực Giới Hạn Quản Trị
+          </h3>
+          <p className="text-xs sm:text-sm text-heritage-ink-700 mb-6 leading-relaxed">
+            Ngân hàng câu hỏi trắc nghiệm, đáp án chuẩn, bảng điểm và danh sách học sinh chỉ dành riêng cho <strong>Ban Giám Khảo, Thầy/Cô Giáo Viên và Cán Bộ Quản Trị</strong>. Học sinh tham gia thi không có quyền truy cập khu vực này.
+          </p>
+          <button
+            onClick={onClose}
+            className="w-full py-3 bg-heritage-red-700 hover:bg-heritage-red-800 text-white rounded-xl text-sm font-bold transition shadow-md"
+          >
+            Đóng Cửa Sổ
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   const showToast = (type: 'success' | 'error' | 'info', text: string) => {
     setToastMsg({ type, text });

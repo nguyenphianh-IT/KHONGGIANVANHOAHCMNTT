@@ -21,11 +21,18 @@ import {
 } from '../data/contestData';
 import {
   Trophy, Award, Clock, CheckCircle2, AlertTriangle, ChevronRight,
-  User, Printer, Settings, BookOpen, Layers, FolderArchive, Cloud
+  User, Printer, Settings, BookOpen, Layers, FolderArchive, Cloud, Lock
 } from 'lucide-react';
 import { ContestManagerModal } from './cms/ContestManagerModal';
+import { useAuth } from '../context/AuthContext';
+import { AuthModal } from './cms/AuthModal';
 
 export const OnlineContest: React.FC = () => {
+  // Xác thực Cán bộ Quản trị & Ban Giám Khảo (RBAC bảo vệ ngân hàng đề & bảng điểm)
+  const { user, profile, hasRole } = useAuth();
+  const isStaff = Boolean(user && (hasRole('editor') || hasRole('admin') || hasRole('super_admin')));
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState<boolean>(false);
+
   // Trạng thái màn hình: 'intro' | 'register' | 'exam' | 'result' | 'leaderboard'
   const [screen, setScreen] = useState<'intro' | 'register' | 'exam' | 'result' | 'leaderboard'>('intro');
 
@@ -304,86 +311,94 @@ export const OnlineContest: React.FC = () => {
     <div className="w-full">
       {/* ========================================================================= */}
       {/* 0. THANH ĐIỀU HÀNH DÀNH RIÊNG CHO BAN TỔ CHỨC, BAN GIÁM KHẢO & GIÁO VIÊN   */}
+      {/* BẢO MẬT RBAC: CHỈ HIỂN THỊ KHI ĐÃ ĐĂNG NHẬP VAI TRÒ CÁN BỘ / GIÁO VIÊN      */}
+      {/* HỌC SINH DỰ THI HOÀN TOÀN KHÔNG NHÌN THẤY NGÂN HÀNG ĐỀ & BẢNG ĐIỂM         */}
       {/* ========================================================================= */}
-      <div className="mb-5 bg-gradient-to-r from-heritage-ivory-100 via-amber-50 to-heritage-ivory-100 border-2 border-heritage-gold-400/80 rounded-2xl p-3 sm:px-5 sm:py-3.5 flex flex-wrap items-center justify-between gap-3 shadow-md">
-        <div className="flex items-center space-x-3">
-          <div className="w-9 h-9 rounded-xl bg-heritage-red-700 text-white flex items-center justify-center flex-shrink-0 shadow-sm border border-heritage-gold-400">
-            <Trophy className="w-5 h-5 text-heritage-gold-400" />
-          </div>
-          <div>
-            <div className="flex items-center space-x-2">
-              <span className="font-serif font-black text-xs sm:text-sm text-heritage-red-950 uppercase tracking-tight">
-                Ban Giám Khảo & Quản Trị Hội Thi
-              </span>
-              <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
-                contestInfo.isOpen !== false
-                  ? 'bg-emerald-100 text-emerald-800 border border-emerald-300'
-                  : 'bg-red-100 text-red-800 border border-red-300'
-              }`}>
-                {contestInfo.isOpen !== false ? '🟢 Cổng thi mở' : '🔴 Cổng thi đóng'}
-              </span>
-              {isCloudConnected && (
-                <span className="hidden sm:inline-flex items-center space-x-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-100 text-blue-800 border border-blue-300">
-                  <Cloud className="w-3 h-3 text-blue-600" />
-                  <span>Supabase Live</span>
-                </span>
-              )}
+      {isStaff && (
+        <div className="mb-5 bg-gradient-to-r from-heritage-ivory-100 via-amber-50 to-heritage-ivory-100 border-2 border-heritage-gold-400/80 rounded-2xl p-3 sm:px-5 sm:py-3.5 flex flex-wrap items-center justify-between gap-3 shadow-md animate-fadeIn">
+          <div className="flex items-center space-x-3">
+            <div className="w-9 h-9 rounded-xl bg-heritage-red-700 text-white flex items-center justify-center flex-shrink-0 shadow-sm border border-heritage-gold-400">
+              <Trophy className="w-5 h-5 text-heritage-gold-400" />
             </div>
-            <p className="text-[11px] text-heritage-ink-600 mt-0.5">
-              Ngân hàng: <strong>{questions.length} câu hỏi</strong> • Đã nộp: <strong>{submissions.length} bài thi</strong> • 24 lớp THCS
-            </p>
+            <div>
+              <div className="flex items-center space-x-2">
+                <span className="font-serif font-black text-xs sm:text-sm text-heritage-red-950 uppercase tracking-tight">
+                  Ban Giám Khảo & Quản Trị Hội Thi
+                </span>
+                <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
+                  contestInfo.isOpen !== false
+                    ? 'bg-emerald-100 text-emerald-800 border border-emerald-300'
+                    : 'bg-red-100 text-red-800 border border-red-300'
+                }`}>
+                  {contestInfo.isOpen !== false ? '🟢 Cổng thi mở' : '🔴 Cổng thi đóng'}
+                </span>
+                {isCloudConnected && (
+                  <span className="hidden sm:inline-flex items-center space-x-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-100 text-blue-800 border border-blue-300">
+                    <Cloud className="w-3 h-3 text-blue-600" />
+                    <span>Supabase Live</span>
+                  </span>
+                )}
+                <span className="hidden md:inline-flex items-center space-x-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-900 border border-amber-300">
+                  <User className="w-3 h-3 text-amber-800" />
+                  <span>{profile?.full_name ? profile.full_name.split('(')[0].trim() : user?.email}</span>
+                </span>
+              </div>
+              <p className="text-[11px] text-heritage-ink-600 mt-0.5">
+                Ngân hàng: <strong>{questions.length} câu hỏi</strong> • Đã nộp: <strong>{submissions.length} bài thi</strong> • 24 lớp THCS
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center flex-wrap gap-2">
+            <button
+              onClick={() => {
+                setManagerInitialTab('questions');
+                setIsManagerOpen(true);
+              }}
+              className="px-3.5 py-1.5 bg-heritage-red-700 hover:bg-heritage-red-800 text-white font-bold text-xs rounded-xl shadow-xs transition flex items-center space-x-1.5 border border-heritage-gold-400/40"
+              title="Mở Quản lý ngân hàng câu hỏi trắc nghiệm"
+            >
+              <BookOpen className="w-3.5 h-3.5 text-heritage-gold-300" />
+              <span>Ngân hàng câu hỏi</span>
+            </button>
+
+            <button
+              onClick={() => {
+                setManagerInitialTab('students');
+                setIsManagerOpen(true);
+              }}
+              className="px-3.5 py-1.5 bg-heritage-gold-400 hover:bg-heritage-gold-300 text-heritage-red-950 font-black text-xs rounded-xl shadow-xs transition flex items-center space-x-1.5 border border-heritage-gold-500"
+              title="Xem danh sách bài thi, chấm điểm và xuất file Excel CSV"
+            >
+              <Printer className="w-3.5 h-3.5 text-heritage-red-900" />
+              <span>Bảng điểm & Xuất Excel</span>
+            </button>
+
+            <button
+              onClick={() => {
+                setManagerInitialTab('roster');
+                setIsManagerOpen(true);
+              }}
+              className="px-3 py-1.5 bg-white hover:bg-heritage-ivory-200 text-heritage-ink-800 font-bold text-xs rounded-xl shadow-xs transition border border-heritage-ivory-300 flex items-center space-x-1"
+              title="Quản lý danh sách học sinh theo 24 lớp"
+            >
+              <Layers className="w-3.5 h-3.5 text-heritage-red-700" />
+              <span>24 Lớp</span>
+            </button>
+
+            <button
+              onClick={() => {
+                setManagerInitialTab('contest');
+                setIsManagerOpen(true);
+              }}
+              className="p-1.5 bg-white hover:bg-heritage-ivory-200 text-heritage-ink-700 border border-heritage-ivory-300 rounded-xl transition shadow-xs"
+              title="Cấu hình thông tin hội thi & Mở/Đóng cổng"
+            >
+              <Settings className="w-4 h-4 text-heritage-red-700" />
+            </button>
           </div>
         </div>
-
-        <div className="flex items-center flex-wrap gap-2">
-          <button
-            onClick={() => {
-              setManagerInitialTab('questions');
-              setIsManagerOpen(true);
-            }}
-            className="px-3.5 py-1.5 bg-heritage-red-700 hover:bg-heritage-red-800 text-white font-bold text-xs rounded-xl shadow-xs transition flex items-center space-x-1.5 border border-heritage-gold-400/40"
-            title="Mở Quản lý ngân hàng câu hỏi trắc nghiệm"
-          >
-            <BookOpen className="w-3.5 h-3.5 text-heritage-gold-300" />
-            <span>Ngân hàng câu hỏi</span>
-          </button>
-
-          <button
-            onClick={() => {
-              setManagerInitialTab('students');
-              setIsManagerOpen(true);
-            }}
-            className="px-3.5 py-1.5 bg-heritage-gold-400 hover:bg-heritage-gold-300 text-heritage-red-950 font-black text-xs rounded-xl shadow-xs transition flex items-center space-x-1.5 border border-heritage-gold-500"
-            title="Xem danh sách bài thi, chấm điểm và xuất file Excel CSV"
-          >
-            <Printer className="w-3.5 h-3.5 text-heritage-red-900" />
-            <span>Bảng điểm & Xuất Excel</span>
-          </button>
-
-          <button
-            onClick={() => {
-              setManagerInitialTab('roster');
-              setIsManagerOpen(true);
-            }}
-            className="px-3 py-1.5 bg-white hover:bg-heritage-ivory-200 text-heritage-ink-800 font-bold text-xs rounded-xl shadow-xs transition border border-heritage-ivory-300 flex items-center space-x-1"
-            title="Quản lý danh sách học sinh theo 24 lớp"
-          >
-            <Layers className="w-3.5 h-3.5 text-heritage-red-700" />
-            <span>24 Lớp</span>
-          </button>
-
-          <button
-            onClick={() => {
-              setManagerInitialTab('contest');
-              setIsManagerOpen(true);
-            }}
-            className="p-1.5 bg-white hover:bg-heritage-ivory-200 text-heritage-ink-700 border border-heritage-ivory-300 rounded-xl transition shadow-xs"
-            title="Cấu hình thông tin hội thi & Mở/Đóng cổng"
-          >
-            <Settings className="w-4 h-4 text-heritage-red-700" />
-          </button>
-        </div>
-      </div>
+      )}
 
       {/* 1. MÀN HÌNH GIỚI THIỆU HỘI THI (INTRO) */}
       {screen === 'intro' && (
@@ -438,17 +453,19 @@ export const OnlineContest: React.FC = () => {
               <div className="mb-6 p-4 rounded-2xl bg-amber-500/20 border border-amber-400/50 text-amber-200 text-xs sm:text-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
                 <div className="flex items-center space-x-2">
                   <span className="text-lg">🔒</span>
-                  <span>Cổng thi trực tuyến hiện đang tạm đóng để Ban Giám Khảo tổng kết điểm và xếp hạng.</span>
+                  <span>Cổng thi trực tuyến hiện đang tạm đóng theo thông báo của Ban Tổ Chức.</span>
                 </div>
-                <button
-                  onClick={() => {
-                    setManagerInitialTab('contest');
-                    setIsManagerOpen(true);
-                  }}
-                  className="px-3 py-1 bg-amber-400 text-amber-950 font-bold text-xs rounded-lg hover:bg-amber-300 transition whitespace-nowrap"
-                >
-                  Mở cổng thi
-                </button>
+                {isStaff && (
+                  <button
+                    onClick={() => {
+                      setManagerInitialTab('contest');
+                      setIsManagerOpen(true);
+                    }}
+                    className="px-3 py-1 bg-amber-400 text-amber-950 font-bold text-xs rounded-lg hover:bg-amber-300 transition whitespace-nowrap"
+                  >
+                    Mở cổng thi
+                  </button>
+                )}
               </div>
             )}
 
@@ -474,17 +491,19 @@ export const OnlineContest: React.FC = () => {
                 <span>Xem Bảng Xếp Hạng ({submissions.length} Lượt thi)</span>
               </button>
 
-              <button
-                onClick={() => {
-                  setManagerInitialTab('questions');
-                  setIsManagerOpen(true);
-                }}
-                className="px-5 py-3.5 bg-black/30 hover:bg-black/50 text-heritage-gold-300 font-bold text-xs sm:text-sm rounded-xl border border-heritage-gold-400/40 transition-all flex items-center justify-center space-x-1.5"
-                title="Bảng điều khiển dành cho Giáo viên & Ban Tổ Chức"
-              >
-                <Settings className="w-4 h-4" />
-                <span>Quản Trị Toàn Diện</span>
-              </button>
+              {isStaff && (
+                <button
+                  onClick={() => {
+                    setManagerInitialTab('questions');
+                    setIsManagerOpen(true);
+                  }}
+                  className="px-5 py-3.5 bg-black/30 hover:bg-black/50 text-heritage-gold-300 font-bold text-xs sm:text-sm rounded-xl border border-heritage-gold-400/40 transition-all flex items-center justify-center space-x-1.5"
+                  title="Bảng điều khiển dành cho Giáo viên & Ban Tổ Chức"
+                >
+                  <Settings className="w-4 h-4" />
+                  <span>Quản Trị Toàn Diện</span>
+                </button>
+              )}
             </div>
           </div>
         </div>
@@ -866,17 +885,19 @@ export const OnlineContest: React.FC = () => {
               >
                 Thi Đua Chi Đội Lớp
               </button>
-              <button
-                onClick={() => {
-                  setManagerInitialTab('students');
-                  setIsManagerOpen(true);
-                }}
-                className="px-3.5 py-2 bg-heritage-gold-400 hover:bg-heritage-gold-300 text-heritage-ink-950 font-bold text-xs rounded-xl shadow-xs transition flex items-center space-x-1 border border-heritage-gold-500/50"
-                title="Quản lý toàn bộ danh sách điểm thi & Xuất Excel"
-              >
-                <Settings className="w-3.5 h-3.5 text-heritage-red-800" />
-                <span>Quản trị điểm</span>
-              </button>
+              {isStaff && (
+                <button
+                  onClick={() => {
+                    setManagerInitialTab('students');
+                    setIsManagerOpen(true);
+                  }}
+                  className="px-3.5 py-2 bg-heritage-gold-400 hover:bg-heritage-gold-300 text-heritage-ink-950 font-bold text-xs rounded-xl shadow-xs transition flex items-center space-x-1 border border-heritage-gold-500/50"
+                  title="Quản lý toàn bộ danh sách điểm thi & Xuất Excel"
+                >
+                  <Settings className="w-3.5 h-3.5 text-heritage-red-800" />
+                  <span>Quản trị điểm & Xuất Excel</span>
+                </button>
+              )}
             </div>
           </div>
 
@@ -1089,10 +1110,38 @@ export const OnlineContest: React.FC = () => {
       )}
 
       {/* ========================================================================= */}
+      {/* 6. CHÂN TRANG ĐIỀU HÀNH DÀNH RIÊNG CHO BAN GIÁM KHẢO (NẾU CHƯA ĐĂNG NHẬP) */}
+      {/* ========================================================================= */}
+      {!isStaff && (
+        <div className="mt-8 pt-4 border-t border-heritage-ivory-300 flex flex-wrap items-center justify-between gap-3 text-xs text-heritage-ink-500">
+          <div className="flex items-center space-x-1.5">
+            <Award className="w-3.5 h-3.5 text-heritage-gold-600" />
+            <span className="font-medium text-heritage-ink-600">
+              Hội thi học đường • Liên đội Trường THCS Nguyễn Trung Trực (Phường Thới An, Q.12)
+            </span>
+          </div>
+          <button
+            onClick={() => setIsAuthModalOpen(true)}
+            className="inline-flex items-center space-x-1.5 text-heritage-ink-600 hover:text-heritage-red-700 transition font-medium px-2.5 py-1.5 rounded-xl hover:bg-heritage-ivory-200 border border-transparent hover:border-heritage-gold-300/60"
+            title="Dành cho Ban Giám Khảo & Cán bộ quản lý đăng nhập để điều hành hội thi"
+          >
+            <Lock className="w-3.5 h-3.5 text-heritage-ink-400" />
+            <span>Dành cho Ban Giám Khảo / Quản trị</span>
+          </button>
+        </div>
+      )}
+
+      {/* Modal Đăng nhập / Chuyển quyền Ban Giám Khảo */}
+      <AuthModal
+        isOpen={isAuthModalOpen}
+        onClose={() => setIsAuthModalOpen(false)}
+      />
+
+      {/* ========================================================================= */}
       {/* 7. MODAL HỆ QUẢN TRỊ CÂU HỎI, HỘI THI & HỌC SINH (CHO GIÁO VIÊN / ADMIN)   */}
       {/* ========================================================================= */}
       <ContestManagerModal
-        isOpen={isManagerOpen}
+        isOpen={isManagerOpen && isStaff}
         onClose={() => setIsManagerOpen(false)}
         initialTab={managerInitialTab}
       />
