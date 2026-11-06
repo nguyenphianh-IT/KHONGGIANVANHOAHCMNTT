@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import {
   ChevronLeft, Save, Send, Eye, Sliders, Maximize2, Minimize2,
   Bold, Italic, Underline, Heading1, Heading2, Heading3, Quote,
-  List, ListOrdered, Image as ImageIcon, Video, Volume2,
+  List, ListOrdered, Image as ImageIcon, Video, Volume2, Upload, Music,
   CheckCircle2, Trash2, Sparkles
 } from 'lucide-react';
 import { MediaLibraryModal } from './MediaLibraryModal';
@@ -67,6 +67,56 @@ export const FullScreenEditor: React.FC<FullScreenEditorProps> = ({
   const [references, setReferences] = useState(initialArticle?.references || 'NXB Chính trị Quốc gia Sự thật; Bảo tàng Hồ Chí Minh');
   const [audioUrl, setAudioUrl] = useState<string>((initialArticle as any)?.audio_url || '');
   const [audioDuration, setAudioDuration] = useState<string>((initialArticle as any)?.audio_duration || '');
+  const [audioFileName, setAudioFileName] = useState<string>('');
+  const [isProcessingAudio, setIsProcessingAudio] = useState(false);
+  const [audioUploadNotice, setAudioUploadNotice] = useState<string | null>(null);
+  const audioFileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleAudioFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('audio/') && !file.name.endsWith('.mp3') && !file.name.endsWith('.wav') && !file.name.endsWith('.m4a')) {
+      alert('Vui lòng chọn tệp âm thanh định dạng .mp3, .wav, hoặc .m4a!');
+      return;
+    }
+
+    if (file.size > 15 * 1024 * 1024) {
+      alert(`Tệp âm thanh quá lớn (${(file.size / (1024 * 1024)).toFixed(1)} MB). Vui lòng chọn tệp nhỏ hơn 15MB để đảm bảo tốc độ tải.`);
+      return;
+    }
+
+    setIsProcessingAudio(true);
+    setAudioFileName(file.name);
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const dataUrl = event.target?.result as string;
+      setAudioUrl(dataUrl);
+
+      // Tự động đo thời lượng âm thanh
+      const tempAudio = new Audio();
+      tempAudio.src = dataUrl;
+      tempAudio.onloadedmetadata = () => {
+        if (tempAudio.duration && !isNaN(tempAudio.duration)) {
+          const totalSecs = Math.floor(tempAudio.duration);
+          const mins = Math.floor(totalSecs / 60);
+          const secs = totalSecs % 60;
+          const formatted = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+          setAudioDuration(formatted);
+          setAudioUploadNotice(`Đã nạp: ${file.name} (${(file.size / (1024 * 1024)).toFixed(2)} MB - ${formatted})`);
+        } else {
+          setAudioUploadNotice(`Đã nạp: ${file.name} (${(file.size / (1024 * 1024)).toFixed(2)} MB)`);
+        }
+        setIsProcessingAudio(false);
+      };
+      tempAudio.onerror = () => {
+        setIsProcessingAudio(false);
+        setAudioUploadNotice(`Đã nạp: ${file.name}`);
+      };
+    };
+    reader.readAsDataURL(file);
+  };
   
   const [isFocusMode, setIsFocusMode] = useState(false);
   const [showInspector, setShowInspector] = useState(true);
@@ -645,29 +695,100 @@ export const FullScreenEditor: React.FC<FullScreenEditorProps> = ({
 
             {/* Cấu hình file Băng ghi âm lời Bác nếu được chọn */}
             {category === 'audio' && (
-              <div className="p-3.5 bg-amber-50/90 border border-amber-300 rounded-xl space-y-2.5 animate-fadeIn">
-                <div className="flex items-center space-x-1.5 text-xs font-bold text-amber-900">
-                  <Volume2 className="w-4 h-4 text-amber-700 flex-shrink-0" />
-                  <span>Cấu hình Băng ghi âm lời Bác</span>
+              <div className="p-3.5 bg-amber-50/95 border border-amber-300 rounded-xl space-y-3 animate-fadeIn shadow-sm">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-1.5 text-xs font-bold text-amber-900">
+                    <Volume2 className="w-4 h-4 text-amber-700 flex-shrink-0" />
+                    <span>Cấu hình Băng ghi âm lời Bác</span>
+                  </div>
+                  <span className="text-[10px] font-bold text-amber-800 bg-amber-200/70 px-2 py-0.5 rounded-full">
+                    Định dạng MP3 / Audio
+                  </span>
                 </div>
+
+                {/* 1. NÚT CHỌN TỆP TỪ MÁY TÍNH */}
                 <div>
+                  <input
+                    ref={audioFileInputRef}
+                    type="file"
+                    accept="audio/mp3,audio/mpeg,audio/wav,audio/m4a,audio/*"
+                    onChange={handleAudioFileUpload}
+                    className="hidden"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => audioFileInputRef.current?.click()}
+                    disabled={isProcessingAudio}
+                    className="w-full flex items-center justify-center space-x-2 px-3 py-2.5 bg-gradient-to-r from-amber-600 to-amber-700 text-white rounded-lg text-xs font-bold hover:brightness-110 active:scale-95 transition-all shadow-sm border border-amber-800"
+                  >
+                    <Upload className="w-4 h-4" />
+                    <span>{isProcessingAudio ? 'Đang nạp âm thanh...' : '📁 Tải tệp âm thanh (.mp3) từ máy tính'}</span>
+                  </button>
+                  <p className="text-[10px] text-amber-800 mt-1 text-center">
+                    Tự động nhận diện file & tính toán thời lượng phát chính xác
+                  </p>
+                </div>
+
+                {audioUploadNotice && (
+                  <div className="p-2 bg-emerald-50 border border-emerald-200 rounded-lg flex items-start space-x-2 text-emerald-800 text-xs">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-600 flex-shrink-0 mt-0.5" />
+                    <span className="leading-snug">{audioUploadNotice}</span>
+                  </div>
+                )}
+
+                {/* 2. NGHE THỬ ÂM THANH NGAY NẾU ĐÃ CÓ FILE */}
+                {audioUrl && (
+                  <div className="p-2.5 bg-white border border-amber-300 rounded-lg space-y-1.5">
+                    <div className="flex items-center justify-between text-[11px] font-semibold text-heritage-ink-800">
+                      <span className="flex items-center space-x-1">
+                        <Music className="w-3.5 h-3.5 text-amber-700" />
+                        <span>Nghe thử bản ghi âm:</span>
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setAudioUrl('');
+                          setAudioDuration('');
+                          setAudioFileName('');
+                          setAudioUploadNotice(null);
+                        }}
+                        className="text-red-600 hover:text-red-800 text-[10px] font-bold"
+                      >
+                        Gỡ bỏ
+                      </button>
+                    </div>
+                    <audio controls className="w-full h-8" src={audioUrl}>
+                      Trình duyệt của bạn không hỗ trợ thẻ audio.
+                    </audio>
+                  </div>
+                )}
+
+                {/* 3. HOẶC DÁN ĐƯỜNG DẪN / URL */}
+                <div className="pt-1 border-t border-amber-200">
                   <label className="block text-[11px] font-bold text-heritage-ink-800 mb-1">
-                    Đường dẫn file MP3 (URL hoặc tệp nội bộ) *
+                    Hoặc nhập đường dẫn / URL tệp âm thanh:
                   </label>
                   <input
                     type="text"
-                    value={audioUrl}
-                    onChange={(e) => setAudioUrl(e.target.value)}
+                    value={audioUrl.startsWith('data:') ? `[Đã nạp tệp cục bộ: ${audioFileName || 'Tệp âm thanh'}]` : audioUrl}
+                    onChange={(e) => {
+                      if (!audioUrl.startsWith('data:')) {
+                        setAudioUrl(e.target.value);
+                      }
+                    }}
                     placeholder="/audio/tuyen-ngon-doc-lap-1945.mp3 hoặc https://..."
                     className="w-full px-2.5 py-1.5 bg-white border border-heritage-gold-300 rounded text-xs text-heritage-ink-900 outline-none focus:ring-1 focus:ring-heritage-red-600 font-mono"
                   />
                   <p className="text-[10px] text-heritage-ink-500 mt-1 leading-snug">
-                    Đặt file vào thư mục <code className="bg-amber-100 px-1 py-0.5 rounded text-amber-900">public/audio/</code> rồi nhập <code className="bg-amber-100 px-1 py-0.5 rounded text-amber-900">/audio/ten-file.mp3</code> hoặc dán URL MP3 trực tuyến.
+                    Dành cho file đã lưu sẵn trong thư mục <code className="bg-amber-100 px-1 py-0.5 rounded text-amber-900">public/audio/</code> hoặc liên kết trực tuyến (.mp3).
                   </p>
                 </div>
+
+                {/* 4. THỜI LƯỢNG PHÁT */}
                 <div>
-                  <label className="block text-[11px] font-bold text-heritage-ink-800 mb-1">
-                    Thời lượng phát (ví dụ: 03:45)
+                  <label className="block text-[11px] font-bold text-heritage-ink-800 mb-1 flex items-center justify-between">
+                    <span>Thời lượng phát (phút : giây)</span>
+                    <span className="text-[10px] font-normal text-heritage-ink-500">Tự động điền hoặc nhập tay</span>
                   </label>
                   <input
                     type="text"
