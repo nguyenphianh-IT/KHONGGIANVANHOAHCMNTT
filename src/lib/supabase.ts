@@ -4,9 +4,16 @@ const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 const appEnv = import.meta.env.VITE_APP_ENV || 'development';
 
-if (!supabaseUrl || !supabaseAnonKey) {
+export const isSupabaseConfigured = Boolean(
+  supabaseUrl &&
+  supabaseAnonKey &&
+  supabaseUrl.trim() !== '' &&
+  supabaseAnonKey.trim() !== ''
+);
+
+if (!isSupabaseConfigured) {
   console.warn(
-    '[Cảnh báo Cấu hình] Thiếu biến môi trường VITE_SUPABASE_URL hoặc VITE_SUPABASE_ANON_KEY trong tệp .env.local'
+    '[Cấu hình Hệ thống] Chưa cấu hình VITE_SUPABASE_URL và VITE_SUPABASE_ANON_KEY. Ứng dụng tự động kích hoạt chế độ lưu trữ LocalStorage/Offline an toàn.'
   );
 }
 
@@ -19,7 +26,11 @@ if (appEnv === 'sandbox' && supabaseUrl) {
   }
 }
 
-export const supabase = createClient(supabaseUrl || '', supabaseAnonKey || '', {
+// URL và Key dự phòng hợp lệ cú pháp để tránh lỗi "supabaseUrl is required" làm sập ứng dụng (Trắng trang)
+const validUrl = isSupabaseConfigured ? supabaseUrl! : 'https://placeholder-khonggianvanhoahcm.supabase.co';
+const validKey = isSupabaseConfigured ? supabaseAnonKey! : 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.e30.placeholder-anon-key';
+
+export const supabase = createClient(validUrl, validKey, {
   auth: {
     persistSession: true,
     autoRefreshToken: true,

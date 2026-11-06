@@ -83,15 +83,15 @@ export const ContestManagerModal: React.FC<ContestManagerModalProps> = ({
     category: 'cuoc-doi'
   });
 
-  // 4. Questions Filters
+  // Questions Filters
   const [questionSearch, setQuestionSearch] = useState('');
   const [questionCategoryFilter, setQuestionCategoryFilter] = useState<string>('all');
 
-  // 5. Students & Submissions Filters
+  // Students & Submissions Filters
   const [submissionSearch, setSubmissionSearch] = useState('');
   const [submissionClassFilter, setSubmissionClassFilter] = useState('all');
 
-  // 6. Roster Tab State
+  // Roster Tab State
   const [selectedRosterClass, setSelectedRosterClass] = useState('8A1');
   const [newStudentNameInput, setNewStudentNameInput] = useState('');
   const [rosterError, setRosterError] = useState<string | null>(null);
@@ -124,6 +124,27 @@ export const ContestManagerModal: React.FC<ContestManagerModalProps> = ({
       return () => clearTimeout(timer);
     }
   }, [toastMsg]);
+
+  // Memoized filter calculations (Luôn chạy trước mọi early return để tuân thủ Rules of Hooks)
+  const filteredQuestions = useMemo(() => {
+    return questions.filter((q) => {
+      const matchSearch =
+        q.question.toLowerCase().includes(questionSearch.toLowerCase()) ||
+        q.options.some((opt) => opt.toLowerCase().includes(questionSearch.toLowerCase()));
+      const matchCategory =
+        questionCategoryFilter === 'all' || q.category === questionCategoryFilter;
+      return matchSearch && matchCategory;
+    });
+  }, [questions, questionSearch, questionCategoryFilter]);
+
+  const filteredSubmissions = useMemo(() => {
+    return submissions.filter((s) => {
+      const matchSearch = s.studentName.toLowerCase().includes(submissionSearch.toLowerCase());
+      const matchClass =
+        submissionClassFilter === 'all' || s.studentClass === submissionClassFilter;
+      return matchSearch && matchClass;
+    });
+  }, [submissions, submissionSearch, submissionClassFilter]);
 
   if (!isOpen) return null;
 
@@ -205,17 +226,6 @@ export const ContestManagerModal: React.FC<ContestManagerModalProps> = ({
     }
   };
 
-  const filteredQuestions = useMemo(() => {
-    return questions.filter((q) => {
-      const matchSearch =
-        q.question.toLowerCase().includes(questionSearch.toLowerCase()) ||
-        q.options.some((opt) => opt.toLowerCase().includes(questionSearch.toLowerCase()));
-      const matchCategory =
-        questionCategoryFilter === 'all' || q.category === questionCategoryFilter;
-      return matchSearch && matchCategory;
-    });
-  }, [questions, questionSearch, questionCategoryFilter]);
-
   // ─── CONTEST SETTINGS HANDLERS ────────────────────────────────────
   const handleSaveContestSettings = (e: React.FormEvent) => {
     e.preventDefault();
@@ -269,15 +279,6 @@ export const ContestManagerModal: React.FC<ContestManagerModalProps> = ({
     URL.revokeObjectURL(url);
     showToast('success', 'Đã xuất file bảng điểm Excel/CSV thành công!');
   };
-
-  const filteredSubmissions = useMemo(() => {
-    return submissions.filter((s) => {
-      const matchSearch = s.studentName.toLowerCase().includes(submissionSearch.toLowerCase());
-      const matchClass =
-        submissionClassFilter === 'all' || s.studentClass === submissionClassFilter;
-      return matchSearch && matchClass;
-    });
-  }, [submissions, submissionSearch, submissionClassFilter]);
 
   // ─── ROSTER MANAGEMENT HANDLERS ───────────────────────────────────
   const currentClassStudents = roster[selectedRosterClass] || [];
