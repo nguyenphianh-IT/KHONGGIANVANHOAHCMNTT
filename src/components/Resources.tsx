@@ -2,7 +2,10 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { resourcesData } from '../data/resourcesData';
 import { ResourceCategory, ResourceItem } from '../types';
 import { ResourceModal } from './ResourceModal';
-import { Search, Filter, BookOpen, FileText, Image as ImageIcon, Video, Book, X, AlertCircle, Volume2, Headphones } from 'lucide-react';
+import { 
+  Search, Filter, BookOpen, FileText, Image as ImageIcon, Video, Book, 
+  X, AlertCircle, Volume2, Headphones, ChevronLeft, ChevronRight 
+} from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import {
   getPublishedArticles,
@@ -123,9 +126,37 @@ export const Resources: React.FC = () => {
     });
   }, [allCombinedResources, selectedCategory, searchQuery]);
 
+  // ---------------------------------------------------------------------------
+  // PHÂN TRANG KHO TƯ LIỆU: 9 tư liệu / trang (3 cột x 3 dòng cân đối hoàn hảo)
+  // ---------------------------------------------------------------------------
+  const ITEMS_PER_PAGE = 9;
+  const [currentPage, setCurrentPage] = useState<number>(1);
+
+  // Tự động quay về trang 1 khi thay đổi bộ lọc danh mục hoặc tìm kiếm
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [selectedCategory, searchQuery]);
+
+  const totalPages = Math.ceil(filteredResources.length / ITEMS_PER_PAGE) || 1;
+
+  const paginatedResources = useMemo(() => {
+    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+    return filteredResources.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+  }, [filteredResources, currentPage]);
+
+  const handlePageChange = (newPage: number) => {
+    if (newPage < 1 || newPage > totalPages) return;
+    setCurrentPage(newPage);
+    const catalogEl = document.getElementById('resources-catalog');
+    if (catalogEl) {
+      catalogEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
+
   const resetFilters = () => {
     setSelectedCategory('all');
     setSearchQuery('');
+    setCurrentPage(1);
   };
 
   return (
@@ -212,84 +243,150 @@ export const Resources: React.FC = () => {
           </div>
         </div>
 
-        {/* Resources Grid */}
+        {/* Anchor point for smooth scrolling on pagination change */}
+        <div id="resources-catalog" className="scroll-mt-28" />
+
+        {/* Resources Grid (3 cột x 3 dòng = 9 tư liệu / trang cân đối tuyệt đẹp) */}
         {filteredResources.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {filteredResources.map((item) => (
-              <div
-                key={item.id}
-                onClick={() => setActiveModalItem(item)}
-                className="group cursor-pointer bg-white rounded-xl border border-heritage-ivory-300 shadow-sm hover:shadow-heritage-hover hover:border-heritage-gold-400 transition-all duration-300 flex flex-col justify-between overflow-hidden"
-              >
-                <div>
-                  {/* Card Thumbnail */}
-                  <div className="relative h-48 sm:h-52 overflow-hidden bg-heritage-ivory-200">
-                    <img
-                      src={item.thumbnail}
-                      alt={item.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                      loading="lazy"
-                    />
-                    <div className="absolute top-2.5 left-2.5 flex items-center gap-1.5">
-                      <span className="px-2.5 py-1 bg-heritage-red-700/95 text-white font-semibold text-xs rounded backdrop-blur-sm shadow flex items-center space-x-1">
-                        {item.category === 'audio' && <Volume2 className="w-3 h-3 text-heritage-gold-300 mr-1" />}
-                        <span>{item.categoryLabel}</span>
-                      </span>
-                    </div>
-
-                    {item.audioDuration && (
-                      <div className="absolute top-2.5 right-2.5">
-                        <span className="px-2 py-0.5 bg-black/75 text-heritage-gold-300 text-[11px] font-mono font-bold rounded backdrop-blur-sm border border-white/20 shadow">
-                          ⏱️ {item.audioDuration}
+          <div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-7">
+              {paginatedResources.map((item) => (
+                <div
+                  key={item.id}
+                  onClick={() => setActiveModalItem(item)}
+                  className="group cursor-pointer bg-white rounded-xl border border-heritage-ivory-300 shadow-sm hover:shadow-heritage-hover hover:border-heritage-gold-400 transition-all duration-300 flex flex-col justify-between overflow-hidden"
+                >
+                  <div>
+                    {/* Card Thumbnail */}
+                    <div className="relative h-48 sm:h-52 overflow-hidden bg-heritage-ivory-200">
+                      <img
+                        src={item.thumbnail}
+                        alt={item.title}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        loading="lazy"
+                      />
+                      <div className="absolute top-2.5 left-2.5 flex items-center gap-1.5">
+                        <span className="px-2.5 py-1 bg-heritage-red-700/95 text-white font-semibold text-xs rounded backdrop-blur-sm shadow flex items-center space-x-1">
+                          {item.category === 'audio' && <Volume2 className="w-3 h-3 text-heritage-gold-300 mr-1" />}
+                          <span>{item.categoryLabel}</span>
                         </span>
                       </div>
-                    )}
 
-                    {item.category === 'audio' && (
-                      <div className="absolute inset-0 bg-black/25 flex items-center justify-center group-hover:bg-black/10 transition-colors">
-                        <div className="w-12 h-12 rounded-full bg-heritage-gold-400 text-heritage-red-950 flex items-center justify-center shadow-xl group-hover:scale-110 transition-transform">
-                          <Headphones className="w-6 h-6" />
+                      {item.audioDuration && (
+                        <div className="absolute top-2.5 right-2.5">
+                          <span className="px-2 py-0.5 bg-black/75 text-heritage-gold-300 text-[11px] font-mono font-bold rounded backdrop-blur-sm border border-white/20 shadow">
+                            ⏱️ {item.audioDuration}
+                          </span>
                         </div>
-                      </div>
-                    )}
+                      )}
 
-                    {item.isMockData && (
-                      <div className="absolute bottom-2 left-2 right-2">
-                        <span className="px-2.5 py-1 bg-black/80 text-amber-300 text-xs font-medium rounded backdrop-blur-sm block truncate shadow">
-                          Minh họa giáo dục số
-                        </span>
-                      </div>
-                    )}
-                  </div>
+                      {item.category === 'audio' && (
+                        <div className="absolute inset-0 bg-black/25 flex items-center justify-center group-hover:bg-black/10 transition-colors">
+                          <div className="w-12 h-12 rounded-full bg-heritage-gold-400 text-heritage-red-950 flex items-center justify-center shadow-xl group-hover:scale-110 transition-transform">
+                            <Headphones className="w-6 h-6" />
+                          </div>
+                        </div>
+                      )}
 
-                  {/* Card Content */}
-                  <div className="p-4 sm:p-5">
-                    <div className="text-xs font-semibold text-heritage-gold-600 mb-1.5 flex items-center justify-between">
-                      <span>{item.dateOrEra}</span>
-                      <span className="text-heritage-ink-500 font-normal">{item.badgeText}</span>
+                      {item.isMockData && (
+                        <div className="absolute bottom-2 left-2 right-2">
+                          <span className="px-2.5 py-1 bg-black/80 text-amber-300 text-xs font-medium rounded backdrop-blur-sm block truncate shadow">
+                            Minh họa giáo dục số
+                          </span>
+                        </div>
+                      )}
                     </div>
 
-                    <h3 className="font-serif text-base sm:text-lg font-bold text-heritage-ink-900 group-hover:text-heritage-red-700 transition-colors line-clamp-2 mb-2 leading-snug">
-                      {item.title}
-                    </h3>
+                    {/* Card Content */}
+                    <div className="p-4 sm:p-5">
+                      <div className="text-xs font-semibold text-heritage-gold-600 mb-1.5 flex items-center justify-between">
+                        <span>{item.dateOrEra}</span>
+                        <span className="text-heritage-ink-500 font-normal">{item.badgeText}</span>
+                      </div>
 
-                    <p className="text-sm text-heritage-ink-700 line-clamp-3 leading-relaxed">
-                      {item.description}
-                    </p>
+                      <h3 className="font-serif text-base sm:text-lg font-bold text-heritage-ink-900 group-hover:text-heritage-red-700 transition-colors line-clamp-2 mb-2 leading-snug">
+                        {item.title}
+                      </h3>
+
+                      <p className="text-sm text-heritage-ink-700 line-clamp-3 leading-relaxed">
+                        {item.description}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="px-4 pb-4 pt-3 border-t border-heritage-ivory-200 flex items-center justify-between gap-2 text-xs sm:text-sm">
+                    <span className="text-heritage-ink-500 truncate min-w-0 flex-1 font-medium" title={item.authorOrSource}>
+                      {item.authorOrSource}
+                    </span>
+                    <span className="text-heritage-red-700 font-bold group-hover:underline flex-shrink-0 whitespace-nowrap flex items-center space-x-1">
+                      <span>{item.category === 'audio' ? '🎧 Nghe ghi âm' : 'Xem chi tiết'}</span>
+                      <span>→</span>
+                    </span>
                   </div>
                 </div>
+              ))}
+            </div>
 
-                <div className="px-4 pb-4 pt-3 border-t border-heritage-ivory-200 flex items-center justify-between gap-2 text-xs sm:text-sm">
-                  <span className="text-heritage-ink-500 truncate min-w-0 flex-1 font-medium" title={item.authorOrSource}>
-                    {item.authorOrSource}
-                  </span>
-                  <span className="text-heritage-red-700 font-bold group-hover:underline flex-shrink-0 whitespace-nowrap flex items-center space-x-1">
-                    <span>{item.category === 'audio' ? '🎧 Nghe ghi âm' : 'Xem chi tiết'}</span>
-                    <span>→</span>
-                  </span>
+            {/* Thanh điều khiển phân trang (Pagination Controls) */}
+            {totalPages > 1 && (
+              <div className="mt-12 flex flex-col sm:flex-row items-center justify-between gap-4 pt-8 border-t border-heritage-ivory-300">
+                <div className="text-xs sm:text-sm text-heritage-ink-600 font-medium order-2 sm:order-1 text-center sm:text-left">
+                  Hiển thị <span className="font-bold text-heritage-red-700">{(currentPage - 1) * ITEMS_PER_PAGE + 1}</span> - <span className="font-bold text-heritage-red-700">{Math.min(currentPage * ITEMS_PER_PAGE, filteredResources.length)}</span> trên tổng số <span className="font-bold text-heritage-red-700">{filteredResources.length}</span> mục tư liệu (Trang {currentPage}/{totalPages})
                 </div>
+
+                <nav aria-label="Phân trang tư liệu" className="inline-flex items-center gap-1.5 order-1 sm:order-2">
+                  {/* Nút Trước */}
+                  <button
+                    onClick={() => handlePageChange(currentPage - 1)}
+                    disabled={currentPage === 1}
+                    className={`inline-flex items-center space-x-1 px-3 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all ${
+                      currentPage === 1
+                        ? 'bg-heritage-ivory-200 text-heritage-ink-400 cursor-not-allowed border border-heritage-ivory-300'
+                        : 'bg-white text-heritage-ink-800 hover:bg-heritage-red-50 hover:text-heritage-red-700 border border-heritage-ivory-300 shadow-sm active:scale-95'
+                    }`}
+                    aria-label="Trang trước"
+                  >
+                    <ChevronLeft className="w-4 h-4" />
+                    <span className="hidden sm:inline">Trang trước</span>
+                  </button>
+
+                  {/* Danh sách các số trang */}
+                  {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => {
+                    const isActive = page === currentPage;
+                    return (
+                      <button
+                        key={page}
+                        onClick={() => handlePageChange(page)}
+                        aria-current={isActive ? 'page' : undefined}
+                        className={`w-9 h-9 sm:w-10 sm:h-10 rounded-lg text-xs sm:text-sm font-bold flex items-center justify-center transition-all ${
+                          isActive
+                            ? 'bg-heritage-red-700 text-white ring-2 ring-heritage-gold-400 shadow-md scale-105'
+                            : 'bg-white text-heritage-ink-700 hover:bg-heritage-red-50 hover:text-heritage-red-700 border border-heritage-ivory-300 shadow-sm hover:scale-105'
+                        }`}
+                        aria-label={`Chuyển đến trang ${page}`}
+                      >
+                        {page}
+                      </button>
+                    );
+                  })}
+
+                  {/* Nút Sau */}
+                  <button
+                    onClick={() => handlePageChange(currentPage + 1)}
+                    disabled={currentPage === totalPages}
+                    className={`inline-flex items-center space-x-1 px-3 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all ${
+                      currentPage === totalPages
+                        ? 'bg-heritage-ivory-200 text-heritage-ink-400 cursor-not-allowed border border-heritage-ivory-300'
+                        : 'bg-white text-heritage-ink-800 hover:bg-heritage-red-50 hover:text-heritage-red-700 border border-heritage-ivory-300 shadow-sm active:scale-95'
+                    }`}
+                    aria-label="Trang sau"
+                  >
+                    <span className="hidden sm:inline">Trang sau</span>
+                    <ChevronRight className="w-4 h-4" />
+                  </button>
+                </nav>
               </div>
-            ))}
+            )}
           </div>
         ) : (
           /* Empty State */
