@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { activitiesData } from '../data/activitiesData';
 import { SchoolActivity } from '../types';
 import { ActivityModal } from './ActivityModal';
-import { Calendar, Users, ChevronRight, Award, AlertCircle, Sparkles } from 'lucide-react';
+import { Calendar, Users, ChevronRight, ChevronLeft, Award, AlertCircle, Sparkles } from 'lucide-react';
 import { getPublishedArticles, EVENT_ARTICLES_CHANGED, ArticleData } from '../lib/cmsStore';
 
 const mapArticleToActivity = (art: ArticleData): SchoolActivity => {
@@ -65,6 +65,33 @@ export const Activities: React.FC = () => {
 
   const hasCmsArticles = activitiesList.some((a) => !a.isSampleData);
 
+  // ---------------------------------------------------------------------------
+  // PHÂN TRANG HOẠT ĐỘNG: 6 tin / trang (3 cột x 2 dòng cân đối, không dàn trải)
+  // ---------------------------------------------------------------------------
+  const ITEMS_PER_PAGE = 6;
+  const [currentPage, setCurrentPage] = useState<number>(1);
+
+  // Tự động quay về trang 1 khi số lượng bài viết thay đổi
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [activitiesList.length]);
+
+  const totalPages = Math.ceil(activitiesList.length / ITEMS_PER_PAGE) || 1;
+
+  const paginatedActivities = useMemo(() => {
+    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+    return activitiesList.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+  }, [activitiesList, currentPage]);
+
+  const handlePageChange = (newPage: number) => {
+    if (newPage < 1 || newPage > totalPages) return;
+    setCurrentPage(newPage);
+    const catalogEl = document.getElementById('activities-catalog');
+    if (catalogEl) {
+      catalogEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
+
   return (
     <section id="activities" className="py-16 md:py-24 bg-heritage-ivory-100 border-b border-heritage-ivory-300">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -98,9 +125,12 @@ export const Activities: React.FC = () => {
           </div>
         </div>
 
-        {/* Activities Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {activitiesList.map((activity) => (
+        {/* Anchor point for smooth scrolling on pagination change */}
+        <div id="activities-catalog" className="scroll-mt-28" />
+
+        {/* Activities Grid (3 cột x 2 dòng = đúng 6 tin/trang vuông vắn, cân đối tuyệt đẹp) */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-7">
+          {paginatedActivities.map((activity) => (
             <div
               key={activity.id}
               onClick={() => setSelectedActivity(activity)}
@@ -169,6 +199,67 @@ export const Activities: React.FC = () => {
             </div>
           ))}
         </div>
+
+        {/* Thanh điều khiển phân trang (Pagination Controls) */}
+        {totalPages > 1 && (
+          <div className="mt-12 flex flex-col sm:flex-row items-center justify-between gap-4 pt-8 border-t border-heritage-ivory-300">
+            <div className="text-xs sm:text-sm text-heritage-ink-600 font-medium order-2 sm:order-1 text-center sm:text-left">
+              Hiển thị <span className="font-bold text-heritage-red-700">{(currentPage - 1) * ITEMS_PER_PAGE + 1}</span> - <span className="font-bold text-heritage-red-700">{Math.min(currentPage * ITEMS_PER_PAGE, activitiesList.length)}</span> trên tổng số <span className="font-bold text-heritage-red-700">{activitiesList.length}</span> hoạt động (Trang {currentPage}/{totalPages})
+            </div>
+
+            <nav aria-label="Phân trang hoạt động học đường" className="inline-flex items-center gap-1.5 order-1 sm:order-2">
+              {/* Nút Trước */}
+              <button
+                onClick={() => handlePageChange(currentPage - 1)}
+                disabled={currentPage === 1}
+                className={`inline-flex items-center space-x-1 px-3 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all ${
+                  currentPage === 1
+                    ? 'bg-heritage-ivory-200 text-heritage-ink-400 cursor-not-allowed border border-heritage-ivory-300'
+                    : 'bg-white text-heritage-ink-800 hover:bg-heritage-red-50 hover:text-heritage-red-700 border border-heritage-ivory-300 shadow-sm active:scale-95'
+                }`}
+                aria-label="Trang trước"
+              >
+                <ChevronLeft className="w-4 h-4" />
+                <span className="hidden sm:inline">Trang trước</span>
+              </button>
+
+              {/* Danh sách các số trang */}
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => {
+                const isActive = page === currentPage;
+                return (
+                  <button
+                    key={page}
+                    onClick={() => handlePageChange(page)}
+                    aria-current={isActive ? 'page' : undefined}
+                    className={`w-9 h-9 sm:w-10 sm:h-10 rounded-lg text-xs sm:text-sm font-bold flex items-center justify-center transition-all ${
+                      isActive
+                        ? 'bg-heritage-red-700 text-white ring-2 ring-heritage-gold-400 shadow-md scale-105'
+                        : 'bg-white text-heritage-ink-700 hover:bg-heritage-red-50 hover:text-heritage-red-700 border border-heritage-ivory-300 shadow-sm hover:scale-105'
+                    }`}
+                    aria-label={`Chuyển đến trang ${page}`}
+                  >
+                    {page}
+                  </button>
+                );
+              })}
+
+              {/* Nút Sau */}
+              <button
+                onClick={() => handlePageChange(currentPage + 1)}
+                disabled={currentPage === totalPages}
+                className={`inline-flex items-center space-x-1 px-3 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all ${
+                  currentPage === totalPages
+                    ? 'bg-heritage-ivory-200 text-heritage-ink-400 cursor-not-allowed border border-heritage-ivory-300'
+                    : 'bg-white text-heritage-ink-800 hover:bg-heritage-red-50 hover:text-heritage-red-700 border border-heritage-ivory-300 shadow-sm active:scale-95'
+                }`}
+                aria-label="Trang sau"
+              >
+                <span className="hidden sm:inline">Trang sau</span>
+                <ChevronRight className="w-4 h-4" />
+              </button>
+            </nav>
+          </div>
+        )}
       </div>
 
       {/* Activity Detail Modal */}

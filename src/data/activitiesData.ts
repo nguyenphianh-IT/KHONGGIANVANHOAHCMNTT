@@ -68,5 +68,73 @@ export const activitiesData: SchoolActivity[] = [
       'Trao nghị quyết kết nạp và huy hiệu Đoàn',
       'Sinh hoạt chuyên đề "Tự hào truyền thống người Đoàn viên thanh niên"'
     ]
+  },
+  {
+    id: 'act-5',
+    title: 'Phong trào thi đua "Hoa điểm 10 dâng Bác" chào mừng Ngày Nhà giáo Việt Nam 20/11',
+    date: '18/11/2023',
+    academicYear: 'Năm học 2023 - 2024',
+    organizer: 'Liên đội & Đoàn Thanh niên THCS Nguyễn Trung Trực',
+    summary: 'Đợt thi đua cao điểm trong học tập, rèn luyện nề nếp và thực hiện 5 điều Bác Hồ dạy lập thành tích tri ân thầy cô giáo.',
+    fullDetail: 'Phong trào "Hoa điểm 10 dâng Bác" được phát động sâu rộng đến từng chi đội. Các em học sinh tích cực phát biểu xây dựng bài, giành nhiều tiết học tốt, hoa điểm 10. Bên cạnh đó, các chi đội còn thi đua giữ gìn vệ sinh lớp học, xây dựng khuôn viên trường học "Xanh - Sạch - Năng động - Thân thiện". Kết thúc đợt thi đua, Ban Thi đua nhà trường đã trao 45 phần thưởng cho các cá nhân và tập thể xuất sắc.',
+    imageUrl: 'https://images.unsplash.com/photo-1509062522246-3755977927d7?auto=format&fit=crop&w=800&q=80',
+    participants: 'Toàn thể học sinh các khối 6, 7, 8, 9',
+    isSampleData: true,
+    highlights: [
+      'Hơn 3.500 hoa điểm 9, điểm 10 được ghi nhận trong đợt thi đua',
+      '100% chi đội đạt danh hiệu "Tuần học tốt - Tiết học kiểu mẫu"',
+      'Tuyên dương 36 gương Cháu ngoan Bác Hồ tiêu biểu xuất sắc'
+    ]
+  },
+  {
+    id: 'act-6',
+    title: 'Diễn đàn học đường: "Tuổi trẻ Thới An học tập và làm theo gương Bác Hồ vĩ đại"',
+    date: '10/01/2024',
+    academicYear: 'Năm học 2023 - 2024',
+    organizer: 'Chi bộ & Chi đoàn Giáo viên Trường THCS Nguyễn Trung Trực',
+    summary: 'Buổi sinh hoạt chính trị sâu rộng định hướng lý tưởng sống, tính trung thực, tinh thần hiếu học và lòng nhân ái cho học sinh THCS.',
+    fullDetail: 'Diễn đàn vinh dự đón tiếp các bác cựu chiến binh Phường Thới An đến giao lưu và kể lại những kỷ niệm sâu sắc về Bác Hồ và cuộc kháng chiến giành độc lập dân tộc. Học sinh đã mạnh dạn trao đổi, đặt câu hỏi về cách rèn luyện đức tính trung thực, vượt khó học tập và ứng xử văn minh trong môi trường số và học đường ngày nay.',
+    imageUrl: 'https://images.unsplash.com/photo-1588072432836-e10032774350?auto=format&fit=crop&w=800&q=80',
+    participants: 'Cán bộ Đoàn, Đội và đại diện học sinh các lớp',
+    isSampleData: true,
+    highlights: [
+      'Giao lưu truyền lửa cùng Cựu chiến binh Phường Thới An',
+      'Trao tặng 20 suất học bổng "Khuyến học - Khuyến tài"',
+      'Ký cam kết thực hiện nếp sống học đường văn minh, chuẩn mực'
+    ]
+  },
+  {
+    id: 'act-7',
+    title: 'Sinh hoạt chuyên đề dưới cờ: "Học Bác đức tính tiết kiệm và giữ gìn môi trường xanh"',
+    date: '04/03/2024',
+    academicYear: 'Năm học 2023 - 2024',
+    organizer: 'Tổ Tự nhiên & Đội Cờ đỏ Trường THCS Nguyễn Trung Trực',
+    summary: 'Lan tỏa tinh thần tiết kiệm điện nước, gom rác tái chế gây quỹ "Nuôi heo đất giúp bạn vượt khó đến trường".',
+    fullDetail: 'Trong buổi sinh hoạt dưới cờ đầu tuần, các em học sinh khối 7 đã biểu diễn tiểu phẩm "Bác Hồ với câu chuyện tiết kiệm từng mẩu giấy, hạt gạo". Hoạt động tiếp nối bằng phong trào phân loại rác tại nguồn, thu gom vỏ lon và giấy báo cũ nhằm gây quỹ hỗ trợ sách vở, đồng phục cho học sinh có hoàn cảnh khó khăn trên địa bàn Phường Thới An.',
+    imageUrl: 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=800&q=80',
+    participants: 'Toàn thể cán bộ, giáo viên và hơn 1.500 học sinh',
+    isSampleData: true,
+    highlights: [
+      'Thu gom hơn 800kg giấy vụn gây quỹ hỗ trợ học sinh khó khăn',
+      'Trao 15 phần quà "Cùng bạn đến trường"',
+      'Phát động mô hình "Lớp học xanh không rác thải nhựa"'
+    ]
+  },
+  {
+    id: 'act-8',
+    title: 'Hành trình địa chỉ đỏ: Thăm Di tích Lịch sử Chiến khu An Phú Đông (Quận 12)',
+    date: '22/12/2023',
+    academicYear: 'Năm học 2023 - 2024',
+    organizer: 'Tổ Lịch sử - Địa lý & Ban Phụ trách Đội',
+    summary: 'Hoạt động giáo dục truyền thống cách mạng địa phương hào hùng nhân kỷ niệm Ngày thành lập Quân đội Nhân dân Việt Nam.',
+    fullDetail: 'Đoàn học sinh tiêu biểu khối 8 và khối 9 đã đến dâng hương tại Nhà truyền thống Chiến khu An Phú Đông – vùng đất kiên trung của Quận 12. Qua lời thuyết minh và các hiện vật lịch sử tại di tích, các em hiểu sâu sắc hơn về ý chí quật cường của quân dân quê hương, từ đó bồi đắp lòng tự hào và trách nhiệm của thế hệ trẻ hôm nay.',
+    imageUrl: 'https://images.unsplash.com/photo-1427504494785-3a9ca7044f45?auto=format&fit=crop&w=800&q=80',
+    participants: 'Hơn 80 học sinh xuất sắc và đại diện Cha mẹ học sinh',
+    isSampleData: true,
+    highlights: [
+      'Dâng hương tưởng niệm các anh hùng liệt sĩ tại Chiến khu An Phú Đông',
+      'Tham quan nhà truyền thống và nghe cựu chiến binh kể chuyện lịch sử',
+      'Thực hiện bài thu hoạch Lịch sử địa phương Quận 12 sinh động'
+    ]
   }
 ];
