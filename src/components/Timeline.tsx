@@ -87,31 +87,6 @@ export const Timeline: React.FC = () => {
             onOpenDetailModal={(ev) => setSelectedEvent(ev)}
           />
         </div>
-
-        {/* Timeline Terminal: Stylized Star Motif */}
-        <div
-          className="relative flex flex-col items-center justify-center pt-2 sm:pt-4 pb-2 animate-fadeInSoft"
-          aria-label="Biểu trưng ngôi sao kết thúc dòng thời gian"
-        >
-          {/* Vertical Axis Extension Line connecting down from the timeline axis into the star */}
-          <div
-            aria-hidden="true"
-            className="w-1 h-8 sm:h-10 bg-gradient-to-b from-heritage-red-200 via-heritage-red-300 to-heritage-gold-400 rounded-t-full"
-          />
-
-          {/* Stylized Star */}
-          <div
-            className="group relative -mt-0.5 cursor-default select-none transition-transform duration-300 ease-out hover:scale-105 motion-reduce:transform-none motion-reduce:transition-none"
-            title="Biểu trưng ngôi sao – Không gian văn hóa Hồ Chí Minh"
-          >
-            <img
-              src="/images/timeline-ngoi-sao.png"
-              alt="Biểu trưng ngôi sao cách điệu"
-              className="w-[65px] h-[65px] sm:w-[80px] sm:h-[80px] lg:w-[100px] lg:h-[100px] object-contain drop-shadow-[0_2px_8px_rgba(212,175,55,0.35)] group-hover:drop-shadow-[0_2px_14px_rgba(212,175,55,0.55)] transition-all duration-300"
-              loading="lazy"
-            />
-          </div>
-        </div>
       </div>
 
         {/* Selected Event Detail Modal (Wide Museum-Grade Canvas matching ResourceModal) */}
