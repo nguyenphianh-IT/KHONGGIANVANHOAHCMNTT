@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import { learningTopics, quizQuestions, dailyPractices } from '../data/learningData';
 import { LearningTopic } from '../types';
-import { Award, BookOpen, CheckCircle, HelpCircle, ChevronRight, RotateCcw, Sparkles, CheckSquare, Square, XCircle } from 'lucide-react';
+import { Award, BookOpen, CheckCircle, HelpCircle, ChevronRight, RotateCcw, Sparkles, CheckSquare, Square, XCircle, Trophy } from 'lucide-react';
+import { OnlineContest } from './OnlineContest';
 
 export const LearningCorner: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<'topics' | 'quiz' | 'practices'>('topics');
+  const [activeTab, setActiveTab] = useState<'topics' | 'quiz' | 'contest' | 'practices'>('contest');
   const [selectedTopic, setSelectedTopic] = useState<LearningTopic>(learningTopics[0]);
 
   // Quiz state
@@ -78,6 +79,21 @@ export const LearningCorner: React.FC = () => {
         {/* Tab switchers */}
         <div className="flex flex-wrap items-center justify-center gap-3 mb-10">
           <button
+            onClick={() => setActiveTab('contest')}
+            className={`px-4 py-2.5 rounded-lg text-sm font-semibold transition-all flex items-center space-x-2 relative ${
+              activeTab === 'contest'
+                ? 'bg-heritage-red-700 text-white shadow-md ring-2 ring-heritage-gold-400'
+                : 'bg-heritage-ivory-200 text-heritage-ink-700 hover:bg-heritage-red-50 hover:text-heritage-red-700'
+            }`}
+          >
+            <Trophy className={`w-4 h-4 ${activeTab === 'contest' ? 'text-heritage-gold-300' : 'text-heritage-red-700'}`} />
+            <span>Hội Thi & Bảng Xếp Hạng</span>
+            <span className="hidden sm:inline-block px-1.5 py-0.5 bg-heritage-gold-400 text-heritage-red-950 text-[10px] font-black rounded-full uppercase ml-1 animate-pulse">
+              Thi đua
+            </span>
+          </button>
+
+          <button
             onClick={() => setActiveTab('topics')}
             className={`px-4 py-2.5 rounded-lg text-sm font-semibold transition-all flex items-center space-x-2 ${
               activeTab === 'topics'
@@ -98,7 +114,7 @@ export const LearningCorner: React.FC = () => {
             }`}
           >
             <HelpCircle className="w-4 h-4" />
-            <span>Thử Tài Hiểu Biết (Mini-Quiz)</span>
+            <span>Luyện Tập Nhanh (Mini-Quiz)</span>
           </button>
 
           <button
@@ -113,6 +129,11 @@ export const LearningCorner: React.FC = () => {
             <span>Việc Tốt Mỗi Ngày</span>
           </button>
         </div>
+
+        {/* TAB 0: HỘI THI TRỰC TUYẾN & BẢNG XẾP HẠNG HỌC ĐƯỜNG */}
+        {activeTab === 'contest' && (
+          <OnlineContest />
+        )}
 
         {/* TAB 1: TOPICS */}
         {activeTab === 'topics' && (
