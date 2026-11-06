@@ -67,6 +67,22 @@ export const OnlineContest: React.FC = () => {
   const [timeSpentSeconds, setTimeSpentSeconds] = useState<number>(0);
   const [isExamCompleted, setIsExamCompleted] = useState<boolean>(false);
 
+  // Danh sách các hội thi đang mở song song trên hệ thống
+  const activeContests = useMemo(() => {
+    return contestsList.filter((c) => c.status === 'active');
+  }, [contestsList]);
+
+  // Số lượng bài nộp của riêng hội thi đang được chọn
+  const activeContestSubmissionsCount = useMemo(() => {
+    return submissions.filter((s) => s.contestId === contestInfo.id).length;
+  }, [submissions, contestInfo.id]);
+
+  // Chuyển đổi hội thi đang chọn khi có 2 hoặc nhiều hội thi song song
+  const handleSelectActiveContest = (contest: ContestInfo) => {
+    setContestInfo(contest);
+    setLeaderboardContestId(contest.id);
+  };
+
   // Tính số lượng câu hỏi thực tế của đề thi dựa trên cấu hình (contestInfo.totalQuestions)
   const targetExamQuestionCount = useMemo(() => {
     if (contestInfo.totalQuestions && contestInfo.totalQuestions > 0) {
@@ -209,17 +225,31 @@ export const OnlineContest: React.FC = () => {
       className: selectedClass,
     });
 
-    // 1. RÚT ĐỀ THI LINH HOẠT THEO CẤU HÌNH (5, 10, 15, 20... CÂU)
+    // 1. RÚT ĐỀ THI LINH HOẠT THEO CẤU HÌNH VÀ CHỦ ĐỀ HỘI THI (5, 10, 15, 20... CÂU)
+    let eligibleQuestions = [...questions];
+    if (contestInfo.categoryFilter && contestInfo.categoryFilter !== 'all') {
+      const categorySpecific = questions.filter((q) => q.category === contestInfo.categoryFilter);
+      if (categorySpecific.length >= 5) {
+        eligibleQuestions = categorySpecific;
+      }
+    } else if (contestInfo.id === 'hoi-thi-2024-5-dieu-bac-day') {
+      // Ưu tiên câu hỏi về 5 Điều Bác Hồ dạy & Đội TNTP cho Hội thi thiếu nhi
+      const topicSpecific = questions.filter((q) => q.category === '5-dieu-bac-day' || q.category === 'thoi-an-truyen-thong');
+      if (topicSpecific.length >= 5) {
+        eligibleQuestions = [...topicSpecific, ...questions.filter((q) => !topicSpecific.includes(q))];
+      }
+    }
+
     const count = contestInfo.totalQuestions && contestInfo.totalQuestions > 0
-      ? Math.min(contestInfo.totalQuestions, questions.length)
-      : questions.length;
+      ? Math.min(contestInfo.totalQuestions, eligibleQuestions.length)
+      : eligibleQuestions.length;
 
     let selectedExamQuestions: ContestQuestion[] = [];
-    if (questions.length <= count) {
-      selectedExamQuestions = [...questions];
+    if (eligibleQuestions.length <= count) {
+      selectedExamQuestions = [...eligibleQuestions];
     } else {
       // Xáo trộn ngẫu nhiên bộ câu hỏi từ ngân hàng để chống nhìn bài nhau
-      const shuffled = [...questions].sort(() => 0.5 - Math.random());
+      const shuffled = [...eligibleQuestions].sort(() => 0.5 - Math.random());
       selectedExamQuestions = shuffled.slice(0, count);
     }
     setExamQuestions(selectedExamQuestions);
@@ -430,6 +460,113 @@ export const OnlineContest: React.FC = () => {
         </div>
       )}
 
+      {/* ========================================================================= */}
+      {/* THANH CHUYỂN ĐỔI HỘI THI SONG SONG (PARALLEL CONTEST SELECTOR)           */}
+      {/* TỰ ĐỘNG HIỂN THỊ KHI NHÀ TRƯỜNG MỞ TỪ 2 HỘI THI TRỰC TUYẾN CÙNG LÚC       */}
+      {/* ========================================================================= */}
+      {screen === 'intro' && activeContests.length > 1 && (
+        <div className="mb-6 bg-gradient-to-r from-heritage-ivory-100 via-amber-50 to-heritage-ivory-100 p-3.5 sm:p-4 rounded-3xl border-2 border-heritage-gold-400/80 shadow-lg animate-fadeIn">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 px-1 mb-3">
+            <div className="flex items-center space-x-2.5">
+              <span className="flex h-3 w-3 relative">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-3 w-3 bg-heritage-red-600"></span>
+              </span>
+              <div>
+                <h4 className="font-serif font-black text-xs sm:text-sm text-heritage-red-950 uppercase tracking-wide flex items-center gap-1.5">
+                  <Sparkles className="w-4 h-4 text-heritage-gold-600 flex-shrink-0" />
+                  <span>Các Hội Thi Trực Tuyến Đang Mở Song Song ({activeContests.length})</span>
+                </h4>
+              </div>
+            </div>
+            <div className="text-[11px] text-heritage-ink-700 font-medium bg-white/90 px-3 py-1 rounded-full border border-heritage-gold-300/60 shadow-2xs">
+              👉 Em hãy chọn Hội thi phù hợp với khối lớp để tham gia hoặc tra cứu:
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            {activeContests.map((c, idx) => {
+              const isSelected = c.id === contestInfo.id;
+              const subCount = submissions.filter((s) => s.contestId === c.id).length;
+              return (
+                <button
+                  key={c.id}
+                  onClick={() => handleSelectActiveContest(c)}
+                  className={`text-left p-3.5 sm:p-4 rounded-2xl transition-all duration-200 border-2 relative flex flex-col justify-between cursor-pointer ${
+                    isSelected
+                      ? 'bg-gradient-to-br from-[#78121f] to-[#4c0911] text-white border-heritage-gold-400 shadow-xl ring-2 ring-heritage-gold-400/40 scale-[1.01]'
+                      : 'bg-white hover:bg-amber-50/70 text-heritage-ink-900 border-heritage-ivory-300 hover:border-heritage-gold-300 shadow-xs'
+                  }`}
+                >
+                  <div>
+                    <div className="flex items-center justify-between gap-2 mb-2">
+                      <div className="flex items-center space-x-1.5 flex-wrap gap-y-1">
+                        <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider ${
+                          isSelected
+                            ? 'bg-heritage-gold-400 text-heritage-red-950'
+                            : 'bg-heritage-red-100 text-heritage-red-900 border border-heritage-red-200'
+                        }`}>
+                          Hội thi số {idx + 1}
+                        </span>
+                        {c.targetAudience && (
+                          <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold ${
+                            isSelected
+                              ? 'bg-white/20 text-heritage-gold-200 border border-white/20'
+                              : 'bg-amber-100 text-amber-900 border border-amber-300'
+                          }`}>
+                            🎯 {c.targetAudience}
+                          </span>
+                        )}
+                      </div>
+
+                      {isSelected ? (
+                        <span className="inline-flex items-center space-x-1 px-2.5 py-0.5 rounded-full bg-emerald-500/25 text-emerald-300 text-[11px] font-bold border border-emerald-400/40">
+                          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-300" />
+                          <span>Đang chọn thi</span>
+                        </span>
+                      ) : (
+                        <span className="text-[11px] text-heritage-red-700 font-bold group-hover:underline">
+                          Bấm chọn thi →
+                        </span>
+                      )}
+                    </div>
+
+                    <h5 className={`font-serif font-black text-sm sm:text-base leading-snug mb-1.5 line-clamp-2 ${
+                      isSelected ? 'text-heritage-ivory-50' : 'text-heritage-ink-950'
+                    }`}>
+                      {c.title}
+                    </h5>
+
+                    <p className={`text-xs line-clamp-2 mb-3 leading-relaxed ${
+                      isSelected ? 'text-heritage-gold-100/90' : 'text-heritage-ink-600'
+                    }`}>
+                      {c.subtitle}
+                    </p>
+                  </div>
+
+                  <div className={`pt-2.5 border-t flex items-center justify-between text-xs ${
+                    isSelected ? 'border-white/15 text-heritage-gold-200' : 'border-heritage-ivory-200 text-heritage-ink-600'
+                  }`}>
+                    <span className="flex items-center space-x-1">
+                      <Clock className="w-3.5 h-3.5" />
+                      <span>{c.durationMinutes} Phút</span>
+                    </span>
+                    <span className="flex items-center space-x-1">
+                      <BookOpen className="w-3.5 h-3.5" />
+                      <span>{c.totalQuestions} Câu</span>
+                    </span>
+                    <span className="flex items-center space-x-1 font-bold">
+                      <Trophy className="w-3.5 h-3.5 text-heritage-gold-500" />
+                      <span>{subCount} Bài nộp</span>
+                    </span>
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
       {/* 1. MÀN HÌNH GIỚI THIỆU HỘI THI (INTRO) - GIAO DIỆN 2 CỘT SANG TRỌNG & CÂN ĐỐI */}
       {screen === 'intro' && (
         <div className="bg-gradient-to-br from-[#73101c] via-[#871423] to-[#4c0911] text-white rounded-3xl p-6 sm:p-8 lg:p-10 border-2 border-heritage-gold-400/70 shadow-2xl relative overflow-hidden">
@@ -576,7 +713,7 @@ export const OnlineContest: React.FC = () => {
                   className="px-6 py-4 bg-white/10 hover:bg-white/20 text-heritage-gold-100 hover:text-white font-bold text-xs sm:text-sm rounded-2xl border border-heritage-gold-400/40 hover:border-heritage-gold-400/80 transition-all flex items-center justify-center space-x-2 backdrop-blur-sm shadow-sm"
                 >
                   <Trophy className="w-4 h-4 text-heritage-gold-400" />
-                  <span>Xem Bảng Xếp Hạng ({submissions.length} Lượt thi)</span>
+                  <span>Xem Bảng Xếp Hạng ({activeContestSubmissionsCount} Lượt thi)</span>
                 </button>
 
                 {isStaff && (
@@ -1096,6 +1233,38 @@ export const OnlineContest: React.FC = () => {
             </div>
           </div>
 
+          {/* Chuyển đổi nhanh giữa các Hội thi song song trên Bảng xếp hạng */}
+          {activeContests.length > 1 && (
+            <div className="mb-6 p-2.5 bg-white/90 border border-heritage-gold-400/60 rounded-2xl flex flex-wrap items-center gap-2 shadow-xs">
+              <span className="text-xs font-bold text-heritage-red-950 px-2 flex items-center space-x-1.5">
+                <Sparkles className="w-3.5 h-3.5 text-heritage-gold-600" />
+                <span>Xem điểm Hội thi:</span>
+              </span>
+              {activeContests.map((c, idx) => {
+                const isSelected = c.id === leaderboardContestId;
+                const subCount = submissions.filter((s) => s.contestId === c.id).length;
+                return (
+                  <button
+                    key={c.id}
+                    onClick={() => setLeaderboardContestId(c.id)}
+                    className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center space-x-1.5 ${
+                      isSelected
+                        ? 'bg-heritage-red-700 text-white shadow-sm ring-1 ring-heritage-gold-400'
+                        : 'bg-heritage-ivory-100 text-heritage-ink-800 hover:bg-amber-50 border border-heritage-ivory-300'
+                    }`}
+                  >
+                    <span>Hội thi {idx + 1}: {c.targetAudience ? `(${c.targetAudience})` : c.title.slice(0, 25)}</span>
+                    <span className={`px-1.5 py-0.2 rounded-full text-[10px] font-bold ${
+                      isSelected ? 'bg-heritage-gold-400 text-heritage-red-950' : 'bg-heritage-ivory-200 text-heritage-ink-600'
+                    }`}>
+                      {subCount} bài
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          )}
+
           {/* Banner Kỷ yếu nếu xem Hội thi đã Lưu trữ */}
           {(() => {
             const currentC = contestsList.find((c) => c.id === leaderboardContestId);
@@ -1250,8 +1419,8 @@ export const OnlineContest: React.FC = () => {
               <h2 className="font-serif text-2xl sm:text-3xl font-black text-heritage-red-800 tracking-wider uppercase mt-3">
                 GIẤY CHỨNG NHẬN
               </h2>
-              <p className="text-xs font-serif italic text-heritage-gold-600 font-semibold">
-                Đạt thành tích xuất sắc trong Hội thi Trực tuyến tìm hiểu về Bác Hồ
+              <p className="text-xs font-serif italic text-heritage-gold-600 font-semibold max-w-lg mx-auto">
+                Đạt thành tích xuất sắc trong: {contestsList.find((c) => c.id === latestSubmission?.contestId)?.title || contestInfo.title}
               </p>
             </div>
 

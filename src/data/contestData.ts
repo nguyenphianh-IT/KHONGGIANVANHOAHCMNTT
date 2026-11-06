@@ -32,6 +32,8 @@ export interface ContestInfo {
   archivedAt?: string;
   summaryNote?: string; // Ghi chú tổng kết của Ban Giám Khảo khi lưu trữ
   createdAt?: string;
+  targetAudience?: string; // Đối tượng dự thi: "Khối 6 & Khối 7" hoặc "Khối 8, Khối 9 & Toàn trường"
+  categoryFilter?: 'cuoc-doi' | 'tu-tuong' | '5-dieu-bac-day' | 'thoi-an-truyen-thong' | 'all';
 }
 
 export interface ContestSubmission {
@@ -47,7 +49,7 @@ export interface ContestSubmission {
 }
 
 // ==============================================================================
-// DANH SÁCH CÁC HỘI THI MẶC ĐỊNH (HỘI THI ĐANG MỞ & HỘI THI ĐÃ LƯU TRỮ)
+// DANH SÁCH CÁC HỘI THI MẶC ĐỊNH (HỖ TRỢ TỔ CHỨC 2 HOẶC NHIỀU HỘI THI SONG SONG)
 // ==============================================================================
 export const DEFAULT_CONTESTS_LIST: ContestInfo[] = [
   {
@@ -58,7 +60,8 @@ export const DEFAULT_CONTESTS_LIST: ContestInfo[] = [
     durationMinutes: 10,
     totalQuestions: 10,
     organizer: 'Liên đội & Chi đoàn Giáo viên Trường THCS Nguyễn Trung Trực (Phường Thới An)',
-    bannerTag: '⭐ HỘI THI TRỰC TUYẾN CHÍNH THỨC (ĐANG MỞ)',
+    bannerTag: '⭐ HỘI THI TRỰC TUYẾN CHÍNH THỨC (SONG SONG)',
+    targetAudience: 'Dành cho Khối 8, Khối 9 & Toàn trường',
     status: 'active',
     isOpen: true,
     startDate: '2024-10-15',
@@ -68,19 +71,19 @@ export const DEFAULT_CONTESTS_LIST: ContestInfo[] = [
   {
     id: 'hoi-thi-2024-5-dieu-bac-day',
     title: 'Hội Thi: "Thiếu Nhi Thới An - Ngàn Hoa Dâng Bác Xứng Danh Cháu Ngoan Bác Hồ"',
-    subtitle: 'Đợt 1: Tìm hiểu 5 Điều Bác Hồ dạy & 83 năm truyền thống Đội TNTP Hồ Chí Minh',
+    subtitle: 'Đợt thi đua chuyên đề: Tìm hiểu 5 Điều Bác Hồ dạy & 83 năm truyền thống Đội TNTP Hồ Chí Minh',
     academicYear: 'Năm học 2024 - 2025',
     durationMinutes: 10,
     totalQuestions: 10,
-    organizer: 'Ban Phụ trách Đội & Tổ Khoa học Xã hội THCS Nguyễn Trung Trực',
-    bannerTag: '🏆 ĐÃ TỔNG KẾT & LƯU TRỮ HỒ SƠ',
-    status: 'archived',
-    isOpen: false,
-    startDate: '2024-09-05',
-    endDate: '2024-10-10',
-    archivedAt: '2024-10-12',
-    summaryNote: 'Tổng cộng 342 học sinh tham gia. Chi đội 8A1 đạt giải Nhất toàn đoàn. Trao 03 giải Nhất, 05 giải Nhì và 10 giải Ba cá nhân tại Lễ chào cờ.',
-    createdAt: '2024-09-01',
+    organizer: 'Ban Phụ trách Đội & Liên đội Trường THCS Nguyễn Trung Trực',
+    bannerTag: '🌸 HỘI THI ĐỘI VIÊN CHUYÊN ĐỀ (SONG SONG)',
+    targetAudience: 'Dành cho Khối 6 & Khối 7',
+    status: 'active',
+    isOpen: true,
+    startDate: '2024-10-20',
+    endDate: '2024-11-25',
+    summaryNote: 'Đợt thi đua chuyên đề dành cho các chi đội khối 6 và 7 nhân kỷ niệm 83 năm ngày thành lập Đội.',
+    createdAt: '2024-10-20',
   },
   {
     id: 'hoi-thi-2025-hanh-trinh-theo-dau-chan-bac',
@@ -91,6 +94,7 @@ export const DEFAULT_CONTESTS_LIST: ContestInfo[] = [
     totalQuestions: 15,
     organizer: 'Tổ Lịch sử - GDCD & Chi đoàn Giáo viên THCS Nguyễn Trung Trực',
     bannerTag: '⏳ KẾ HOẠCH DỰ THẢO ĐỢT 2',
+    targetAudience: 'Kế hoạch thi đua Đợt 2',
     status: 'draft',
     isOpen: false,
     startDate: '2025-01-10',
@@ -231,6 +235,201 @@ export const CONTEST_QUESTIONS_BANK: ContestQuestion[] = [
     correctIndex: 1,
     explanation: 'Tại kỳ họp thứ nhất Quốc hội khóa VI (ngày 02/07/1976), Quốc hội đã nhất trí quyết nghị chính thức đặt tên thành phố là Thành phố Hồ Chí Minh.',
     category: 'thoi-an-truyen-thong',
+  },
+  {
+    id: 11,
+    question: 'Đội Thiếu niên Tiền phong Hồ Chí Minh được thành lập vào ngày tháng năm nào?',
+    options: [
+      'Ngày 15 tháng 5 năm 1941',
+      'Ngày 19 tháng 5 năm 1890',
+      'Ngày 03 tháng 2 năm 1930',
+      'Ngày 26 tháng 3 năm 1931',
+    ],
+    correctIndex: 0,
+    explanation: 'Ngày 15/05/1941, tại thôn Nà Mạ, xã Trường Hà, huyện Hà Quảng, tỉnh Cao Bằng, Đội Nhi đồng Cứu quốc (tiền thân Đội TNTP Hồ Chí Minh) chính thức được thành lập.',
+    category: '5-dieu-bac-day',
+  },
+  {
+    id: 12,
+    question: 'Người đội trưởng đầu tiên của Đội Nhi đồng Cứu quốc (tiền thân Đội TNTP Hồ Chí Minh) là người anh hùng nhỏ tuổi nào?',
+    options: [
+      'Kim Đồng (Nông Văn Dền)',
+      'Vừ A Dính',
+      'Lê Văn Tám',
+      'Kpa Klơng',
+    ],
+    correctIndex: 0,
+    explanation: 'Anh hùng liệt sĩ Kim Đồng (tên thật là Nông Văn Dền) là người đội trưởng đầu tiên của Đội Nhi đồng Cứu quốc, hy sinh anh dũng khi làm nhiệm vụ canh gác bảo vệ cán bộ cách mạng.',
+    category: '5-dieu-bac-day',
+  },
+  {
+    id: 13,
+    question: 'Điều thứ nhất trong "5 Điều Bác Hồ dạy Thiếu niên, Nhi đồng" là gì?',
+    options: [
+      'Yêu Tổ quốc, yêu đồng bào',
+      'Học tập tốt, lao động tốt',
+      'Đoàn kết tốt, kỷ luật tốt',
+      'Khiêm tốn, thật thà, dũng cảm',
+    ],
+    correctIndex: 0,
+    explanation: 'Điều 1 trong 5 Điều Bác Hồ dạy là: "Yêu Tổ quốc, yêu đồng bào" - giáo dục thiếu nhi lòng tự hào dân tộc, tình yêu quê hương đất nước và tình yêu thương con người.',
+    category: '5-dieu-bac-day',
+  },
+  {
+    id: 14,
+    question: 'Bài hát chính thức "Cùng nhau ta đi lên" (Đội ca Đội TNTP Hồ Chí Minh) do nhạc sĩ nào sáng tác?',
+    options: [
+      'Nhạc sĩ Phong Nhã',
+      'Nhạc sĩ Văn Cao',
+      'Nhạc sĩ Phạm Tuyên',
+      'Nhạc sĩ Trịnh Công Sơn',
+    ],
+    correctIndex: 0,
+    explanation: 'Bài hát "Cùng nhau ta đi lên" do nhạc sĩ Phong Nhã sáng tác năm 1950, được chọn làm bài hát Đội ca chính thức của Đội TNTP Hồ Chí Minh.',
+    category: '5-dieu-bac-day',
+  },
+  {
+    id: 15,
+    question: 'Khăn quàng đỏ của Đội viên Đội TNTP Hồ Chí Minh có hình gì và mang ý nghĩa thiêng liêng nào?',
+    options: [
+      'Hình tam giác cân - một phần lá cờ Tổ quốc, màu đỏ tượng trưng cho lý tưởng cách mạng',
+      'Hình vuông - tượng trưng cho sự đoàn kết các dân tộc',
+      'Hình chữ nhật - tượng trưng cho kỷ luật Đội',
+      'Hình thoi - tượng trưng cho sự vươn lên trong học tập',
+    ],
+    correctIndex: 0,
+    explanation: 'Khăn quàng đỏ có hình tam giác cân màu đỏ, là một phần của cờ Tổ quốc; màu đỏ tượng trưng cho lý tưởng cách mạng và sự cống hiến của thế hệ cha anh.',
+    category: '5-dieu-bac-day',
+  },
+  {
+    id: 16,
+    question: 'Khẩu hiệu hành động của Đội Thiếu niên Tiền phong Hồ Chí Minh là gì?',
+    options: [
+      '"Vì Tổ quốc xã hội chủ nghĩa, vì lý tưởng của Bác Hồ vĩ đại: Sẵn sàng!"',
+      '"Học tập tốt, rèn luyện tốt, ngày mai lập nghiệp!"',
+      '"Tiến bước lên Đoàn, xứng danh Cháu ngoan Bác Hồ!"',
+      '"Đoàn kết, tự tin, sáng tạo và hội nhập!"',
+    ],
+    correctIndex: 0,
+    explanation: 'Khẩu hiệu truyền thống của Đội là: "Vì Tổ quốc xã hội chủ nghĩa, vì lý tưởng của Bác Hồ vĩ đại: Sẵn sàng!".',
+    category: '5-dieu-bac-day',
+  },
+  {
+    id: 17,
+    question: 'Bác Hồ đã căn dặn sự nghiệp giáo dục thế hệ tương lai bằng câu nói nổi tiếng nào?',
+    options: [
+      'Vì lợi ích mười năm thì phải trồng cây, vì lợi ích trăm năm thì phải trồng người',
+      'Học để làm việc, làm người, làm cán bộ cách mạng',
+      'Học hành là sự nghiệp cả đời của thanh niên',
+      'Non sông Việt Nam trông cậy vào thanh thiếu nhi',
+    ],
+    correctIndex: 0,
+    explanation: 'Chủ tịch Hồ Chí Minh đã căn dặn: "Vì lợi ích mười năm thì phải trồng cây, vì lợi ích trăm năm thì phải trồng người" khẳng định tầm quan trọng đặc biệt của giáo dục.',
+    category: 'tu-tuong',
+  },
+  {
+    id: 18,
+    question: 'Người thiếu niên anh hùng dũng cảm ôm bom cảm tử phá hủy kho đạn Thị Nghè của thực dân Pháp năm 1945 là ai?',
+    options: [
+      'Lê Văn Tám',
+      'Kim Đồng',
+      'Vừ A Dính',
+      'Nguyễn Bá Ngọc',
+    ],
+    correctIndex: 0,
+    explanation: 'Hình tượng thiếu niên anh hùng Lê Văn Tám tự biến mình thành cây đuốc sống thiêu rụi kho đạn Thị Nghè đã trở thành biểu tượng quật cường của thiếu nhi Nam Bộ.',
+    category: 'thoi-an-truyen-thong',
+  },
+  {
+    id: 19,
+    question: 'Chiến dịch lịch sử toàn thắng mang tên Bác đã giải phóng hoàn toàn miền Nam, thống nhất non sông vào ngày tháng năm nào?',
+    options: [
+      'Ngày 30 tháng 4 năm 1975 (Chiến dịch Hồ Chí Minh)',
+      'Ngày 07 tháng 5 năm 1954 (Chiến dịch Điện Biên Phủ)',
+      'Ngày 26 tháng 3 năm 1975',
+      'Ngày 19 tháng 5 năm 1975',
+    ],
+    correctIndex: 0,
+    explanation: 'Đúng 11h30 ngày 30/04/1975, lá cờ cách mạng phấp phới tung bay trên nóc Dinh Độc Lập, đánh dấu Chiến dịch Hồ Chí Minh lịch sử đại thắng, non sông thu về một mối.',
+    category: 'cuoc-doi',
+  },
+  {
+    id: 20,
+    question: 'Bác Hồ sinh ngày tháng năm nào và tại quê hương nào?',
+    options: [
+      '19/05/1890 tại Kim Liên, Nam Đàn, Nghệ An',
+      '05/06/1911 tại Bến Nhà Rồng, Sài Gòn',
+      '03/02/1930 tại Hương Cảng, Trung Quốc',
+      '02/09/1945 tại Ba Đình, Hà Nội',
+    ],
+    correctIndex: 0,
+    explanation: 'Chủ tịch Hồ Chí Minh sinh ngày 19/05/1890 tại làng Hoàng Trù (quê ngoại) và lớn lên ở làng Sen (xã Kim Liên, huyện Nam Đàn, tỉnh Nghệ An).',
+    category: 'cuoc-doi',
+  },
+  {
+    id: 21,
+    question: 'Chiến thắng vang dội đốt cháy tàu Espérance (Hy Vọng) của Pháp trên sông Nhật Tảo (năm 1861) gắn liền với tên tuổi vị Anh hùng dân tộc nào?',
+    options: [
+      'Anh hùng Nguyễn Trung Trực',
+      'Anh hùng Trương Định',
+      'Anh hùng Võ Duy Dương',
+      'Anh hùng Thủ Khoa Huân',
+    ],
+    correctIndex: 0,
+    explanation: 'Anh hùng Nguyễn Trung Trực đã chỉ huy nghĩa quân đốt cháy tàu chiến Espérance trên sông Nhật Tảo ngày 10/12/1861, làm rúng động chính giới thực dân Pháp.',
+    category: 'thoi-an-truyen-thong',
+  },
+  {
+    id: 22,
+    question: 'Trước khi rời Tổ quốc ra đi tìm đường cứu nước, người thanh niên yêu nước Nguyễn Tất Thành đã dạy học tại ngôi trường nào?',
+    options: [
+      'Trường Dục Thanh (Phan Thiết, Bình Thuận)',
+      'Trường Quốc học Huế',
+      'Trường Tiểu học Pháp - Việt Vinh',
+      'Trường Bưởi (Hà Nội)',
+    ],
+    correctIndex: 0,
+    explanation: 'Từ tháng 9/1910 đến tháng 2/1911, thầy giáo Nguyễn Tất Thành đã dạy chữ Hán, chữ Quốc ngữ và thể dục tại Trường Dục Thanh (Phan Thiết) trước khi vào Sài Gòn.',
+    category: 'cuoc-doi',
+  },
+  {
+    id: 23,
+    question: 'Điều thứ tư trong "5 Điều Bác Hồ dạy Thiếu niên, Nhi đồng" căn dặn các em điều gì?',
+    options: [
+      'Giữ gìn vệ sinh thật tốt',
+      'Đoàn kết tốt, kỷ luật tốt',
+      'Khiêm tốn, thật thà, dũng cảm',
+      'Học tập tốt, lao động tốt',
+    ],
+    correctIndex: 0,
+    explanation: 'Điều 4 Bác Hồ dạy là: "Giữ gìn vệ sinh thật tốt" - nhắc nhở thiếu nhi giữ gìn vệ sinh thân thể, trường lớp và môi trường sống xanh sạch đẹp.',
+    category: '5-dieu-bac-day',
+  },
+  {
+    id: 24,
+    question: 'Người nữ anh hùng trẻ tuổi quê ở Đất Đỏ (Bà Rịa) kiên cường, hiên ngang trước mũi súng quân thù tại Côn Đảo là ai?',
+    options: [
+      'Chị Võ Thị Sáu',
+      'Chị Nguyễn Thị Minh Khai',
+      'Chị Út Tịch',
+      'Chị Mạc Thị Bưởi',
+    ],
+    correctIndex: 0,
+    explanation: 'Chị Võ Thị Sáu hy sinh kiên cường năm 1952 tại Côn Đảo, là biểu tượng bất khuất của tuổi trẻ Việt Nam để Đội viên Đội TNTP noi gương.',
+    category: 'thoi-an-truyen-thong',
+  },
+  {
+    id: 25,
+    question: 'Phong trào "Kế hoạch nhỏ" do Đội Thiếu niên Tiền phong Hồ Chí Minh phát động có ý nghĩa giáo dục nào?',
+    options: [
+      'Rèn luyện đức tính tiết kiệm, yêu lao động, bảo vệ môi trường và giúp đỡ bạn khó khăn',
+      'Nâng cao kỹ năng thuyết trình',
+      'Tham gia các hoạt động thể dục thể thao',
+      'Luyện tập đội ngũ nghi thức Đội',
+    ],
+    correctIndex: 0,
+    explanation: 'Phong trào "Kế hoạch nhỏ" được khởi xướng từ năm 1958, giáo dục đội viên ý thức tiết kiệm, tinh thần tương thân tương ái và góp phần xây dựng các công trình măng non.',
+    category: '5-dieu-bac-day',
   },
 ];
 
@@ -461,7 +660,37 @@ export function getStoredContestsList(): ContestInfo[] {
     }
     const parsed = JSON.parse(raw);
     if (Array.isArray(parsed) && parsed.length > 0) {
-      return parsed;
+      // Bổ sung các trường mới (targetAudience, bannerTag...) nếu dữ liệu cũ còn thiếu
+      const merged = parsed.map((item) => {
+        const def = DEFAULT_CONTESTS_LIST.find((d) => d.id === item.id);
+        return {
+          ...def,
+          ...item,
+          targetAudience: item.targetAudience || def?.targetAudience || 'Toàn trường',
+          isOpen: item.status === 'active',
+        };
+      });
+
+      // Nếu hệ thống trước đó chỉ có 1 hội thi active, kích hoạt thêm hội thi số 2
+      // để người dùng trải nghiệm ngay tính năng 2 hội thi song song
+      const activeCount = merged.filter((c) => c.status === 'active').length;
+      if (activeCount < 2 && merged.some((c) => c.id === 'hoi-thi-2024-5-dieu-bac-day')) {
+        const parallelReady = merged.map((c) =>
+          c.id === 'hoi-thi-2024-5-dieu-bac-day'
+            ? {
+                ...c,
+                status: 'active' as ContestStatus,
+                isOpen: true,
+                bannerTag: '🌸 HỘI THI ĐỘI VIÊN CHUYÊN ĐỀ (SONG SONG)',
+                targetAudience: 'Dành cho Khối 6 & Khối 7',
+              }
+            : c
+        );
+        localStorage.setItem(STORAGE_KEY_CONTESTS_LIST, JSON.stringify(parallelReady));
+        return parallelReady;
+      }
+
+      return merged;
     }
     return DEFAULT_CONTESTS_LIST;
   } catch {
@@ -482,21 +711,77 @@ export function saveStoredContestsList(contests: ContestInfo[]): ContestInfo[] {
   }
 }
 
+/**
+ * Trả về danh sách tất cả các hội thi đang mở dự thi song song
+ */
+export function getActiveContests(): ContestInfo[] {
+  const list = getStoredContestsList();
+  const active = list.filter((c) => c.status === 'active');
+  return active.length > 0 ? active : [list[0]];
+}
+
 export function getActiveContestId(): string {
   try {
-    const activeId = localStorage.getItem(STORAGE_KEY_ACTIVE_CONTEST_ID);
-    if (activeId) return activeId;
+    const list = getStoredContestsList();
+    const activeContests = list.filter((c) => c.status === 'active');
+    const storedId = localStorage.getItem(STORAGE_KEY_ACTIVE_CONTEST_ID);
+    if (storedId && activeContests.some((c) => c.id === storedId)) {
+      return storedId;
+    }
+    if (activeContests.length > 0) {
+      return activeContests[0].id;
+    }
+    if (storedId && list.some((c) => c.id === storedId)) {
+      return storedId;
+    }
   } catch {}
   return DEFAULT_CONTESTS_LIST[0].id;
 }
 
+/**
+ * Bật / Tắt trạng thái mở cổng cho một hội thi mà không ảnh hưởng đến các hội thi song song khác
+ */
+export function toggleContestActive(contestId: string, isActive: boolean): ContestInfo[] {
+  const currentList = getStoredContestsList();
+  const updated = currentList.map((c) => {
+    if (c.id === contestId) {
+      const newStatus: ContestStatus = isActive ? 'active' : 'closed';
+      return {
+        ...c,
+        status: newStatus,
+        isOpen: isActive,
+      };
+    }
+    return c;
+  });
+  saveStoredContestsList(updated);
+  return updated;
+}
+
+/**
+ * Cập nhật trạng thái cụ thể cho hội thi (active, closed, archived, draft)
+ */
+export function setContestStatus(contestId: string, status: ContestStatus): ContestInfo[] {
+  const currentList = getStoredContestsList();
+  const updated = currentList.map((c) => {
+    if (c.id === contestId) {
+      return {
+        ...c,
+        status,
+        isOpen: status === 'active',
+      };
+    }
+    return c;
+  });
+  saveStoredContestsList(updated);
+  return updated;
+}
+
 export function setActiveContest(contestId: string): ContestInfo[] {
   const currentList = getStoredContestsList();
-  const updated = currentList.map((c) => ({
-    ...c,
-    status: c.id === contestId ? ('active' as ContestStatus) : c.status === 'active' ? ('closed' as ContestStatus) : c.status,
-    isOpen: c.id === contestId,
-  }));
+  const updated = currentList.map((c) =>
+    c.id === contestId ? { ...c, status: 'active' as ContestStatus, isOpen: true } : c
+  );
   localStorage.setItem(STORAGE_KEY_ACTIVE_CONTEST_ID, contestId);
   saveStoredContestsList(updated);
 
@@ -508,9 +793,13 @@ export function setActiveContest(contestId: string): ContestInfo[] {
   return updated;
 }
 
-export function getStoredContestInfo(): ContestInfo {
+export function getStoredContestInfo(preferredId?: string): ContestInfo {
   try {
     const list = getStoredContestsList();
+    if (preferredId) {
+      const found = list.find((c) => c.id === preferredId);
+      if (found) return found;
+    }
     const activeId = getActiveContestId();
     const active = list.find((c) => c.id === activeId) || list.find((c) => c.status === 'active') || list[0];
     return active || CURRENT_CONTEST;
@@ -593,7 +882,18 @@ export function getStoredContestQuestions(): ContestQuestion[] {
       return CONTEST_QUESTIONS_BANK;
     }
     const parsed = JSON.parse(raw);
-    return Array.isArray(parsed) && parsed.length > 0 ? parsed : CONTEST_QUESTIONS_BANK;
+    if (Array.isArray(parsed) && parsed.length > 0) {
+      // Nếu ngân hàng đã lưu trước đó ít câu hơn bộ đề chuẩn mới (25 câu), tự động bổ sung câu hỏi mới
+      if (parsed.length < CONTEST_QUESTIONS_BANK.length) {
+        const existingIds = new Set(parsed.map((q) => q.id));
+        const additional = CONTEST_QUESTIONS_BANK.filter((q) => !existingIds.has(q.id));
+        const combined = [...parsed, ...additional];
+        localStorage.setItem(STORAGE_KEY_CONTEST_QUESTIONS, JSON.stringify(combined));
+        return combined;
+      }
+      return parsed;
+    }
+    return CONTEST_QUESTIONS_BANK;
   } catch {
     return CONTEST_QUESTIONS_BANK;
   }

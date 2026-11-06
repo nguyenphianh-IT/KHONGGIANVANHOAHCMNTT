@@ -33,6 +33,7 @@ import {
   getStoredContestsList,
   getActiveContestId,
   setActiveContest,
+  toggleContestActive,
   getStoredContestInfo,
   addContest,
   updateContest,
@@ -163,6 +164,7 @@ export const ContestManagerModal: React.FC<ContestManagerModalProps> = ({
     totalQuestions: 10,
     organizer: 'Liên đội & Chi đoàn Giáo viên Trường THCS Nguyễn Trung Trực (Phường Thới An)',
     bannerTag: '⭐ HỘI THI TRỰC TUYẾN CHÍNH THỨC',
+    targetAudience: 'Dành cho toàn thể học sinh',
     status: 'active',
     startDate: '',
     endDate: '',
@@ -382,6 +384,23 @@ export const ContestManagerModal: React.FC<ContestManagerModalProps> = ({
   };
 
   // ─── MULTI-CONTEST MANAGEMENT HANDLERS ────────────────────────────
+  const handleToggleContestActive = (contestId: string, isActive: boolean) => {
+    const updated = toggleContestActive(contestId, isActive);
+    setContestsList(updated);
+    const target = updated.find((c) => c.id === contestId);
+    if (target) {
+      if (target.id === activeContestId) {
+        setContestInfo(target);
+      }
+      showToast(
+        isActive ? 'success' : 'info',
+        isActive
+          ? `Đã mở cổng thi song song cho "${target.title}"!`
+          : `Đã tạm đóng cổng nhận bài cho "${target.title}"!`
+      );
+    }
+  };
+
   const handleSwitchActiveContest = (contestId: string) => {
     const updated = setActiveContest(contestId);
     setContestsList(updated);
@@ -390,7 +409,7 @@ export const ContestManagerModal: React.FC<ContestManagerModalProps> = ({
     if (target) {
       setContestInfo(target);
       setSelectedContestFilter(contestId);
-      showToast('success', `Đã kích hoạt "${target.title}" thành Hội thi trực tuyến chính thức trên trang chủ!`);
+      showToast('success', `Đã chọn "${target.title}" làm Hội thi hiển thị chính trên trang chủ!`);
     }
   };
 
@@ -404,6 +423,7 @@ export const ContestManagerModal: React.FC<ContestManagerModalProps> = ({
       totalQuestions: 10,
       organizer: 'Liên đội & Chi đoàn Giáo viên Trường THCS Nguyễn Trung Trực (Phường Thới An)',
       bannerTag: '⭐ HỘI THI TRỰC TUYẾN MỚI',
+      targetAudience: 'Dành cho Khối 6, 7 hoặc Khối 8, 9',
       status: 'active',
       startDate: new Date().toISOString().substring(0, 10),
       endDate: '',
@@ -422,6 +442,7 @@ export const ContestManagerModal: React.FC<ContestManagerModalProps> = ({
       totalQuestions: c.totalQuestions,
       organizer: c.organizer,
       bannerTag: c.bannerTag,
+      targetAudience: c.targetAudience || '',
       status: c.status,
       startDate: c.startDate || '',
       endDate: c.endDate || '',
@@ -754,6 +775,49 @@ export const ContestManagerModal: React.FC<ContestManagerModalProps> = ({
               ───────────────────────────────────────────────────────────── */}
           {activeTab === 'contest' && (
             <div className="space-y-5">
+              {/* Thống kê đợt thi & Đang mở song song */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div className="bg-emerald-50/90 border border-emerald-300/80 rounded-2xl p-3.5 flex items-center space-x-3 shadow-xs">
+                  <div className="w-10 h-10 rounded-xl bg-emerald-600 text-white flex items-center justify-center font-black text-base shadow-sm">
+                    {contestsList.filter((c) => c.status === 'active').length}
+                  </div>
+                  <div>
+                    <span className="text-xs font-bold text-emerald-950 block">Đang Mở Thi Song Song</span>
+                    <span className="text-[11px] text-emerald-700 font-medium">Học sinh tự do chọn thi</span>
+                  </div>
+                </div>
+
+                <div className="bg-purple-50/90 border border-purple-300/80 rounded-2xl p-3.5 flex items-center space-x-3 shadow-xs">
+                  <div className="w-10 h-10 rounded-xl bg-purple-600 text-white flex items-center justify-center font-black text-base shadow-sm">
+                    {contestsList.filter((c) => c.status === 'archived').length}
+                  </div>
+                  <div>
+                    <span className="text-xs font-bold text-purple-950 block">Đã Lưu Trữ Kỷ Yếu</span>
+                    <span className="text-[11px] text-purple-700 font-medium">Lưu trữ biên bản hồ sơ</span>
+                  </div>
+                </div>
+
+                <div className="bg-amber-50/90 border border-amber-300/80 rounded-2xl p-3.5 flex items-center space-x-3 shadow-xs">
+                  <div className="w-10 h-10 rounded-xl bg-amber-600 text-white flex items-center justify-center font-black text-base shadow-sm">
+                    {submissions.length}
+                  </div>
+                  <div>
+                    <span className="text-xs font-bold text-amber-950 block">Tổng Bài Nộp Hệ Thống</span>
+                    <span className="text-[11px] text-amber-700 font-medium">24 lớp THCS Nguyễn Trung Trực</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Thông báo trạng thái Song song */}
+              {contestsList.filter((c) => c.status === 'active').length > 1 && (
+                <div className="p-3.5 bg-gradient-to-r from-amber-500/15 via-emerald-500/10 to-amber-500/10 border-2 border-heritage-gold-400/80 rounded-2xl flex items-center space-x-3 text-xs text-heritage-red-950 shadow-xs">
+                  <Sparkles className="w-5 h-5 text-heritage-gold-600 flex-shrink-0" />
+                  <span className="leading-relaxed">
+                    <strong>Chế độ Hội thi song song đang kích hoạt:</strong> Có <strong>{contestsList.filter((c) => c.status === 'active').length} hội thi</strong> đang cùng mở nhận bài. Học sinh trên trang chủ sẽ thấy thanh chọn hội thi để lựa chọn dự thi theo đúng khối lớp của mình.
+                  </span>
+                </div>
+              )}
+
               {/* Top Banner & Add Contest Button */}
               <div className="bg-white p-4 sm:p-5 rounded-2xl border border-heritage-gold-300/80 shadow-xs flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
                 <div>
@@ -762,7 +826,7 @@ export const ContestManagerModal: React.FC<ContestManagerModalProps> = ({
                     <span>Danh Sách & Hồ Sơ Các Đợt Hội Thi Trực Tuyến</span>
                   </h3>
                   <p className="text-xs text-heritage-ink-600 mt-0.5">
-                    Quản lý từng đợt thi đua học đường, kích hoạt cổng thi chính thức và đóng gói lưu trữ kết quả kỷ yếu.
+                    Quản lý từng đợt thi đua học đường, mở cổng thi song song và đóng gói lưu trữ kết quả kỷ yếu.
                   </p>
                 </div>
 
@@ -795,11 +859,11 @@ export const ContestManagerModal: React.FC<ContestManagerModalProps> = ({
                       <div className="space-y-3">
                         {/* Status Badge & Banner tag */}
                         <div className="flex flex-wrap items-center justify-between gap-2">
-                          <div className="flex items-center space-x-2">
+                          <div className="flex items-center space-x-2 flex-wrap gap-y-1">
                             {c.status === 'active' && (
-                              <span className="inline-flex items-center space-x-1 px-2.5 py-1 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-300">
-                                <PlayCircle className="w-3.5 h-3.5 text-emerald-600" />
-                                <span>ĐANG DIỄN RA (Chính thức)</span>
+                              <span className="inline-flex items-center space-x-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-300">
+                                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
+                                <span>ĐANG MỞ THI (SONG SONG)</span>
                               </span>
                             )}
                             {c.status === 'closed' && (
@@ -821,9 +885,15 @@ export const ContestManagerModal: React.FC<ContestManagerModalProps> = ({
                               </span>
                             )}
 
+                            {c.targetAudience && (
+                              <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-900 border border-amber-300">
+                                🎯 {c.targetAudience}
+                              </span>
+                            )}
+
                             {isActive && (
                               <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-heritage-red-100 text-heritage-red-800 border border-heritage-red-300">
-                                ★ Cổng Thi Trang Chủ
+                                ★ Tiêu Điểm Trang Chủ
                               </span>
                             )}
                           </div>
@@ -873,15 +943,34 @@ export const ContestManagerModal: React.FC<ContestManagerModalProps> = ({
 
                       {/* Actions Footer */}
                       <div className="mt-4 pt-3 border-t border-heritage-ivory-200 flex flex-wrap items-center justify-between gap-2">
-                        <div className="flex items-center space-x-1.5">
+                        <div className="flex items-center space-x-1.5 flex-wrap gap-y-1">
+                          {c.status === 'active' ? (
+                            <button
+                              onClick={() => handleToggleContestActive(c.id, false)}
+                              className="px-2.5 py-1.5 bg-amber-100 hover:bg-amber-200 text-amber-900 border border-amber-300 rounded-lg text-xs font-bold transition flex items-center space-x-1"
+                              title="Tạm đóng cổng nhận bài của hội thi này"
+                            >
+                              <PauseCircle className="w-3.5 h-3.5 text-amber-700" />
+                              <span>Tạm đóng</span>
+                            </button>
+                          ) : (
+                            <button
+                              onClick={() => handleToggleContestActive(c.id, true)}
+                              className="px-2.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-bold transition flex items-center space-x-1 shadow-xs"
+                              title="Mở cổng thi (hỗ trợ chạy song song cùng hội thi khác)"
+                            >
+                              <PlayCircle className="w-3.5 h-3.5" />
+                              <span>Mở thi (Song song)</span>
+                            </button>
+                          )}
+
                           {!isActive && (
                             <button
                               onClick={() => handleSwitchActiveContest(c.id)}
-                              className="px-2.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-bold transition flex items-center space-x-1"
-                              title="Chọn làm hội thi chính thức hiển thị trên trang chủ"
+                              className="px-2.5 py-1.5 bg-heritage-ivory-200 hover:bg-heritage-ivory-300 text-heritage-ink-800 rounded-lg text-xs font-bold transition flex items-center space-x-1 border border-heritage-ivory-300"
+                              title="Đặt làm hội thi tiêu điểm mặc định trên trang chủ"
                             >
-                              <PlayCircle className="w-3.5 h-3.5" />
-                              <span>Kích hoạt cổng</span>
+                              <span>★ Tiêu điểm</span>
                             </button>
                           )}
 
@@ -1633,6 +1722,19 @@ export const ContestManagerModal: React.FC<ContestManagerModalProps> = ({
                   onChange={(e) => setContestFormData({ ...contestFormData, organizer: e.target.value })}
                   className="w-full px-3.5 py-2 bg-heritage-ivory-50 border border-heritage-ivory-300 rounded-xl focus:outline-none focus:border-heritage-red-700"
                   required
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-heritage-ink-800 uppercase tracking-wider mb-1">
+                  Khối Lớp / Đối Tượng Dự Thi (Hiển thị nổi bật trên thẻ hội thi song song)
+                </label>
+                <input
+                  type="text"
+                  value={contestFormData.targetAudience || ''}
+                  onChange={(e) => setContestFormData({ ...contestFormData, targetAudience: e.target.value })}
+                  placeholder="Ví dụ: Dành cho Khối 6 & Khối 7, hoặc Dành cho Khối 8, Khối 9 & Toàn trường"
+                  className="w-full px-3.5 py-2 bg-heritage-ivory-50 border border-heritage-ivory-300 rounded-xl focus:outline-none focus:border-heritage-red-700 font-medium"
                 />
               </div>
 
