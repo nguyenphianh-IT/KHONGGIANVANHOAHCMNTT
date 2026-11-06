@@ -5,6 +5,7 @@ import {
   Sparkles, CheckCircle2, ShieldCheck, Quote
 } from 'lucide-react';
 import { ContentRenderer } from './cms/ContentRenderer';
+import { AudioPlayer } from './AudioPlayer';
 
 interface ResourceModalProps {
   item: ResourceItem | null;
@@ -206,6 +207,19 @@ export const ResourceModal: React.FC<ResourceModalProps> = ({ item, onClose }) =
                 <p className="font-serif italic text-base sm:text-lg text-heritage-red-950 leading-relaxed font-medium">
                   {item.description}
                 </p>
+              </div>
+            )}
+
+            {/* HISTORICAL AUDIO PLAYER CARD (If category is audio) */}
+            {item.category === 'audio' && (
+              <div className="my-6">
+                <AudioPlayer
+                  title={item.title}
+                  source={item.authorOrSource}
+                  dateOrEra={item.dateOrEra}
+                  duration={item.audioDuration || '03:30'}
+                  audioUrl={item.audioUrl}
+                />
               </div>
             )}
 

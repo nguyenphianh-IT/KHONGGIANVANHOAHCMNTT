@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { resourcesData } from '../data/resourcesData';
 import { ResourceCategory, ResourceItem } from '../types';
 import { ResourceModal } from './ResourceModal';
-import { Search, Filter, BookOpen, FileText, Image as ImageIcon, Video, Book, X, AlertCircle } from 'lucide-react';
+import { Search, Filter, BookOpen, FileText, Image as ImageIcon, Video, Book, X, AlertCircle, Volume2, Headphones } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import {
   getPublishedArticles,
@@ -102,6 +102,7 @@ export const Resources: React.FC = () => {
     { id: 'book' as ResourceCategory, label: 'Sách & Tài liệu', icon: Book },
     { id: 'image' as ResourceCategory, label: 'Hình ảnh lịch sử', icon: ImageIcon },
     { id: 'video' as ResourceCategory, label: 'Phim tư liệu', icon: Video },
+    { id: 'audio' as ResourceCategory, label: 'Băng ghi âm lời Bác', icon: Volume2 },
   ];
 
   const allCombinedResources = useMemo(() => {
@@ -229,11 +230,28 @@ export const Resources: React.FC = () => {
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                       loading="lazy"
                     />
-                    <div className="absolute top-2.5 left-2.5">
-                      <span className="px-2.5 py-1 bg-heritage-red-700/95 text-white font-semibold text-xs rounded backdrop-blur-sm shadow">
-                        {item.categoryLabel}
+                    <div className="absolute top-2.5 left-2.5 flex items-center gap-1.5">
+                      <span className="px-2.5 py-1 bg-heritage-red-700/95 text-white font-semibold text-xs rounded backdrop-blur-sm shadow flex items-center space-x-1">
+                        {item.category === 'audio' && <Volume2 className="w-3 h-3 text-heritage-gold-300 mr-1" />}
+                        <span>{item.categoryLabel}</span>
                       </span>
                     </div>
+
+                    {item.audioDuration && (
+                      <div className="absolute top-2.5 right-2.5">
+                        <span className="px-2 py-0.5 bg-black/75 text-heritage-gold-300 text-[11px] font-mono font-bold rounded backdrop-blur-sm border border-white/20 shadow">
+                          ⏱️ {item.audioDuration}
+                        </span>
+                      </div>
+                    )}
+
+                    {item.category === 'audio' && (
+                      <div className="absolute inset-0 bg-black/25 flex items-center justify-center group-hover:bg-black/10 transition-colors">
+                        <div className="w-12 h-12 rounded-full bg-heritage-gold-400 text-heritage-red-950 flex items-center justify-center shadow-xl group-hover:scale-110 transition-transform">
+                          <Headphones className="w-6 h-6" />
+                        </div>
+                      </div>
+                    )}
 
                     {item.isMockData && (
                       <div className="absolute bottom-2 left-2 right-2">
@@ -266,7 +284,7 @@ export const Resources: React.FC = () => {
                     {item.authorOrSource}
                   </span>
                   <span className="text-heritage-red-700 font-bold group-hover:underline flex-shrink-0 whitespace-nowrap flex items-center space-x-1">
-                    <span>Xem chi tiết</span>
+                    <span>{item.category === 'audio' ? '🎧 Nghe ghi âm' : 'Xem chi tiết'}</span>
                     <span>→</span>
                   </span>
                 </div>

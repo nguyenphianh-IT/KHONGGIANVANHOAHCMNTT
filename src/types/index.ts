@@ -13,12 +13,12 @@ export interface TimelineEvent {
   isMemorial?: boolean;
 }
 
-export type ResourceCategory = 'all' | 'article' | 'image' | 'video' | 'book';
+export type ResourceCategory = 'all' | 'article' | 'image' | 'video' | 'book' | 'audio';
 
 export interface ResourceItem {
   id: string;
   title: string;
-  category: 'article' | 'image' | 'video' | 'book';
+  category: 'article' | 'image' | 'video' | 'book' | 'audio';
   categoryLabel: string;
   description: string;
   fullContent?: string;
@@ -26,6 +26,8 @@ export interface ResourceItem {
   dateOrEra: string;
   thumbnail: string;
   mediaUrl?: string;
+  audioUrl?: string;
+  audioDuration?: string;
   badgeText: string;
   isMockData: boolean;
   tags: string[];

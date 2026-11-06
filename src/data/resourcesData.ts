@@ -112,5 +112,160 @@ export const resourcesData: ResourceItem[] = [
     badgeText: 'Nội dung minh họa số hóa',
     isMockData: true,
     tags: ['Bến Nhà Rồng', '1911', 'Nguyễn Tất Thành', 'Sài Gòn - TP.HCM']
+  },
+  {
+    id: 'audio-1',
+    title: 'Bản ghi âm gốc: Bác Hồ đọc Tuyên ngôn Độc lập tại Ba Đình (02/09/1945)',
+    category: 'audio',
+    categoryLabel: 'Băng ghi âm lời Bác',
+    description: 'Bản ghi âm lịch sử tại Quảng trường Ba Đình mùa thu năm 1945, ghi lại khoảnh khắc thiêng liêng khi Bác đọc bản Tuyên ngôn Độc lập với câu hỏi ân cần lay động triệu trái tim: "Tôi nói đồng bào nghe rõ không?".',
+    fullContent: `### BẢN GHI ÂM LỊCH SỬ TẠI QUẢNG TRƯỜNG BA ĐÌNH (02/09/1945)
+
+Ngày 2 tháng 9 năm 1945, tại Quảng trường Ba Đình lịch sử, Chủ tịch Hồ Chí Minh thay mặt Chính phủ lâm thời trang trọng đọc bản Tuyên ngôn Độc lập khai sinh nước Việt Nam Dân chủ Cộng hòa.
+
+---
+
+#### 🎙️ TOÀN VĂN LỜI NÓI CỦA BÁC HỒ TRONG BĂNG GHI ÂM:
+
+> "Hỡi đồng bào cả nước!
+>
+> Tất cả mọi người đều sinh ra có quyền bình đẳng. Tạo hóa cho họ những quyền không ai có thể xâm phạm được; trong những quyền ấy, có quyền được sống, quyền tự do và quyền mưu cầu hạnh phúc...
+>
+> Lời bất hủ ấy ở trong bản Tuyên ngôn Độc lập năm 1776 của nước Mỹ. Suy rộng ra, câu ấy có ý nghĩa là: tất cả các dân tộc trên thế giới đều sinh ra bình đẳng, dân tộc nào cũng có quyền sống, quyền sung sướng và quyền tự do."
+
+*(Giữa bài phát biểu, Bác dừng lại một giây lát, hướng về phía biển người vẫy chào và cất tiếng hỏi ấm áp, bình dị)*:
+
+> **"Tôi nói đồng bào nghe rõ không?"**
+
+*(Cả Quảng trường Ba Đình như vỡ òa, hàng triệu con người cùng đồng thanh reo vang như sấm dậy: **"RÕ! RÕ!"** - Khoảnh khắc xóa nhòa mọi khoảng cách giữa vị Lãnh tụ tối cao và nhân dân)*.
+
+> "Nước Việt Nam có quyền hưởng tự do và độc lập, và sự thật đã thành một nước tự do độc lập. Toàn thể dân tộc Việt Nam quyết đem tất cả tinh thần và lực lượng, tính mạng và của cải để giữ vững quyền tự do, độc lập ấy!"
+
+---
+
+**Nguồn tư liệu gốc:** Đài Tiếng nói Việt Nam (VOV) & Trung tâm Lưu trữ Quốc gia III.`,
+    authorOrSource: 'Đài Tiếng nói Việt Nam (VOV) & Trung tâm Lưu trữ Quốc gia III',
+    dateOrEra: '02/09/1945 • 04:30',
+    thumbnail: '/images/tuyen-ngon-doc-lap-1945.jpg',
+    audioDuration: '04:30',
+    badgeText: 'Băng ghi âm lịch sử gốc',
+    isMockData: false,
+    tags: ['Ghi âm lời Bác', 'Tuyên ngôn độc lập', 'Ba Đình', 'VOV', 'Âm thanh lịch sử']
+  },
+  {
+    id: 'audio-2',
+    title: 'Bản ghi âm: Bác Hồ đọc Lời kêu gọi toàn quốc kháng chiến (19/12/1946)',
+    category: 'audio',
+    categoryLabel: 'Băng ghi âm lời Bác',
+    description: 'Bản ghi âm vang vọng hồn thiêng sông núi phát đi từ làng Vạn Phúc (Hà Đông) trong đêm đông 1946: "Chúng ta thà hy sinh tất cả, chứ nhất định không chịu mất nước, nhất định không chịu làm nô lệ!".',
+    fullContent: `### BẢN GHI ÂM LỜI HỊCH CỨU QUỐC (ĐÊM 19/12/1946)
+
+Đêm ngày 19 tháng 12 năm 1946, tại làng Vạn Phúc (Hà Đông), Chủ tịch Hồ Chí Minh đã viết và đọc Lời kêu gọi toàn quốc kháng chiến, phát đi trên Đài Tiếng nói Việt Nam hiệu triệu toàn thể đồng bào đứng lên bảo vệ độc lập non sông.
+
+---
+
+#### 🎙️ TOÀN VĂN LỜI HỊCH KHÁNG CHIẾN TRONG BĂNG GHI ÂM:
+
+> "Hỡi đồng bào toàn quốc!
+>
+> Chúng ta muốn hòa bình, chúng ta phải nhân nhượng. Nhưng chúng ta càng nhân nhượng, thực dân Pháp càng lấn tới, vì chúng quyết tâm cướp nước ta lần nữa!
+>
+> **Không! Chúng ta thà hy sinh tất cả, chứ nhất định không chịu mất nước, nhất định không chịu làm nô lệ.**
+>
+> Hỡi đồng bào!
+> Chúng ta phải đứng lên!
+>
+> Bất kỳ đàn ông, đàn bà, bất kỳ người già, người trẻ, không chia tôn giáo, đảng phái, dân tộc. Hễ là người Việt Nam thì phải đứng lên đánh thực dân Pháp để cứu Tổ quốc. Ai có súng dùng súng. Ai có gươm dùng gươm, không có gươm thì dùng cuốc, thuổng, gậy gộc. Ai cũng phải ra sức chống thực dân Pháp cứu nước.
+>
+> Hỡi anh em binh sĩ, tự vệ, dân quân!
+> Giờ cứu nước đã đến. Ta phải hy sinh đến giọt máu cuối cùng để giữ gìn đất nước. Dù phải gian lao kháng chiến, nhưng với một lòng kiên quyết hy sinh, thắng lợi nhất định về dân tộc ta!
+>
+> Việt Nam độc lập và thống nhất muôn năm!
+> Kháng chiến thắng lợi muôn năm!"
+
+---
+
+**Nguồn tư liệu gốc:** Đài Tiếng nói Việt Nam (VOV) & Bảo tàng Lịch sử Quân sự Việt Nam.`,
+    authorOrSource: 'Đài Tiếng nói Việt Nam (VOV) & Bảo tàng Lịch sử Quân sự',
+    dateOrEra: '19/12/1946 • 02:45',
+    thumbnail: '/images/bac-ho-pac-bo-1941.jpg',
+    audioDuration: '02:45',
+    badgeText: 'Lời hịch cứu quốc',
+    isMockData: false,
+    tags: ['Ghi âm lời Bác', 'Toàn quốc kháng chiến', '1946', 'Vạn Phúc', 'VOV']
+  },
+  {
+    id: 'audio-3',
+    title: 'Bản ghi âm: "Không có gì quý hơn độc lập, tự do" (17/07/1966)',
+    category: 'audio',
+    categoryLabel: 'Băng ghi âm lời Bác',
+    description: 'Lời kêu gọi chống Mỹ cứu nước của Bác Hồ phát trên làn sóng Đài Tiếng nói Việt Nam khi đế quốc Mỹ leo thang ném bom miền Bắc, đúc kết chân lý thời đại bất diệt của dân tộc Việt Nam.',
+    fullContent: `### CHÂN LÝ THỜI ĐẠI "KHÔNG CÓ GÌ QUÝ HƠN ĐỘC LẬP, TỰ DO" (17/07/1966)
+
+Sáng ngày 17 tháng 7 năm 1966, trên làn sóng Đài Tiếng nói Việt Nam, Chủ tịch Hồ Chí Minh đã đọc Lời kêu gọi đồng bào và chiến sĩ cả nước kiên quyết đánh thắng giặc Mỹ xâm lược. Lời căn dặn của Người đã trở thành khẩu hiệu hành động, ý chí sắt đá của toàn dân tộc.
+
+---
+
+#### 🎙️ ĐOẠN GHI ÂM LỜI NÓI CỦA BÁC:
+
+> "Chiến tranh có thể kéo dài 5 năm, 10 năm, 20 năm hoặc lâu hơn nữa. Hà Nội, Hải Phòng và một số thành phố, xí nghiệp có thể bị tàn phá, song nhân dân Việt Nam quyết không sợ!
+>
+> **KHÔNG CÓ GÌ QUÝ HƠN ĐỘC LẬP, TỰ DO!**
+>
+> Đến ngày thắng lợi, nhân dân ta sẽ xây dựng lại đất nước ta đàng hoàng hơn, to đẹp hơn!
+>
+> Nhân dân ta rất yêu chuộng hòa bình, nhưng phải là hòa bình chân chính, hòa bình trong độc lập tự do, chứ không phải thứ hòa bình giả hiệu của bọn cướp nước...
+>
+> Toàn thể đồng bào và chiến sĩ miền Bắc cũng như miền Nam, hãy kiên quyết một lòng, vượt qua mọi gian khổ hy sinh, quyết tâm đánh thắng giặc Mỹ xâm lược!"
+
+---
+
+**Nguồn tư liệu gốc:** Đài Tiếng nói Việt Nam (VOV) & Bảo tàng Hồ Chí Minh.`,
+    authorOrSource: 'Đài Tiếng nói Việt Nam (VOV) & Bảo tàng Hồ Chí Minh',
+    dateOrEra: '17/07/1966 • 03:15',
+    thumbnail: '/images/tuong-dai-bac-ho-tphcm.jpg',
+    audioDuration: '03:15',
+    badgeText: 'Chân lý thời đại',
+    isMockData: false,
+    tags: ['Ghi âm lời Bác', 'Không có gì quý hơn độc lập tự do', '1966', 'VOV']
+  },
+  {
+    id: 'audio-4',
+    title: 'Bản ghi âm giọng Bác đọc Thơ chúc Tết Xuân Kỷ Dậu (1969)',
+    category: 'audio',
+    categoryLabel: 'Băng ghi âm lời Bác',
+    description: 'Bài thơ chúc Tết giao thừa cuối cùng của Bác Hồ gửi tới đồng bào, chiến sĩ cả nước. Giọng đọc ấm áp, truyền cảm hứng chiến đấu và niềm tin tất thắng thống nhất non sông.',
+    fullContent: `### BẢN GHI ÂM BÁC HỒ ĐỌC THƠ CHÚC TẾT GIAO THỪA NĂM 1969
+
+Đêm giao thừa Tết Kỷ Dậu 1969, qua làn sóng Đài Tiếng nói Việt Nam, hàng triệu con tim người dân Việt Nam bồi hồi lắng nghe Bác Hồ đọc thư và thơ chúc Tết. Đây là mùa xuân cuối cùng Người gửi thơ chúc Tết đến toàn thể dân tộc trước lúc đi xa.
+
+---
+
+#### 🎙️ LỜI THƠ BÁC ĐỌC TRONG BĂNG GHI ÂM:
+
+> "Xuân này hơn hẳn mấy xuân qua,
+> Thắng trận tin vui khắp nước nhà.
+> Nam - Bắc thi đua đánh giặc Mỹ,
+> Tiến lên! Toàn thắng ắt về ta!"
+>
+> *(Và lời thơ hiệu triệu hào hùng)*:
+>
+> "Năm qua thắng lợi vẻ vang,
+> Năm nay tiền tuyến chắc càng thắng to.
+> Vì độc lập, vì tự do,
+> Đánh cho Mỹ cút, đánh cho Ngụy nhào.
+> Tiến lên! Chiến sĩ, đồng bào,
+> Bắc - Nam sum họp, xuân nào vui hơn!"
+
+---
+
+**Nguồn tư liệu gốc:** Đài Tiếng nói Việt Nam (VOV) - Băng ghi âm lưu trữ giao thừa Tết Kỷ Dậu 1969.`,
+    authorOrSource: 'Đài Tiếng nói Việt Nam (VOV) - Giao thừa 1969',
+    dateOrEra: 'Xuân Kỷ Dậu 1969 • 01:50',
+    thumbnail: '/images/ho-chi-minh-tp-hcm.png',
+    audioDuration: '01:50',
+    badgeText: 'Thơ chúc Tết lịch sử',
+    isMockData: false,
+    tags: ['Ghi âm lời Bác', 'Thơ chúc Tết', 'Kỷ Dậu 1969', 'Bắc Nam sum họp']
   }
 ];

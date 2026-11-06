@@ -88,6 +88,7 @@ export function getCategoryLabel(catId: string): string {
     book: 'Sách & Tài liệu',
     image: 'Hình ảnh lịch sử',
     video: 'Phim tư liệu',
+    audio: 'Băng ghi âm lời Bác',
     activity: 'Hoạt động & Phong trào',
     'CAT-01-CUOCDOI': 'Văn kiện & Bài viết',
     'CAT-02-THIEUNHI': 'Văn kiện & Bài viết',
@@ -98,8 +99,8 @@ export function getCategoryLabel(catId: string): string {
   return map[catId] || 'Văn kiện & Bài viết';
 }
 
-export function normalizeCategoryToHomepage(catId: string): 'article' | 'book' | 'image' | 'video' {
-  if (catId === 'book' || catId === 'image' || catId === 'video' || catId === 'article') {
+export function normalizeCategoryToHomepage(catId: string): 'article' | 'book' | 'image' | 'video' | 'audio' {
+  if (catId === 'book' || catId === 'image' || catId === 'video' || catId === 'article' || catId === 'audio') {
     return catId;
   }
   if (catId === 'activity') return 'article';
