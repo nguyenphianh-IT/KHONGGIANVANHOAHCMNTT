@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import {
   ChevronLeft, Save, Send, Eye, Sliders, Maximize2, Minimize2,
   Bold, Italic, Underline, Heading1, Heading2, Heading3, Quote,
-  List, ListOrdered, Image as ImageIcon, Video,
+  List, ListOrdered, Image as ImageIcon, Video, Volume2,
   CheckCircle2, Trash2, Sparkles
 } from 'lucide-react';
 import { MediaLibraryModal } from './MediaLibraryModal';
@@ -29,6 +29,8 @@ export interface ArticleData {
   topic?: string;
   featured_image?: string;
   references?: string;
+  audio_url?: string;
+  audio_duration?: string;
   status: 'draft' | 'pending' | 'approved' | 'published' | 'rejected' | 'archived';
   author_id?: string;
   author_name?: string;
@@ -63,6 +65,8 @@ export const FullScreenEditor: React.FC<FullScreenEditorProps> = ({
   );
   const [featuredImage, setFeaturedImage] = useState(initialArticle?.featured_image || '');
   const [references, setReferences] = useState(initialArticle?.references || 'NXB Chính trị Quốc gia Sự thật; Bảo tàng Hồ Chí Minh');
+  const [audioUrl, setAudioUrl] = useState<string>((initialArticle as any)?.audio_url || '');
+  const [audioDuration, setAudioDuration] = useState<string>((initialArticle as any)?.audio_duration || '');
   
   const [isFocusMode, setIsFocusMode] = useState(false);
   const [showInspector, setShowInspector] = useState(true);
@@ -225,6 +229,8 @@ export const FullScreenEditor: React.FC<FullScreenEditorProps> = ({
       topic,
       featured_image: featuredImage,
       references,
+      audio_url: audioUrl,
+      audio_duration: audioDuration,
       status: initialArticle?.status || 'draft',
       author_name: currentUserName,
     };
@@ -260,6 +266,8 @@ export const FullScreenEditor: React.FC<FullScreenEditorProps> = ({
       topic,
       featured_image: featuredImage,
       references,
+      audio_url: audioUrl,
+      audio_duration: audioDuration,
       status: 'pending',
       author_name: currentUserName,
     };
@@ -634,6 +642,43 @@ export const FullScreenEditor: React.FC<FullScreenEditorProps> = ({
                 {CMS_CATEGORIES.find((c) => c.id === category)?.desc}
               </p>
             </div>
+
+            {/* Cấu hình file Băng ghi âm lời Bác nếu được chọn */}
+            {category === 'audio' && (
+              <div className="p-3.5 bg-amber-50/90 border border-amber-300 rounded-xl space-y-2.5 animate-fadeIn">
+                <div className="flex items-center space-x-1.5 text-xs font-bold text-amber-900">
+                  <Volume2 className="w-4 h-4 text-amber-700 flex-shrink-0" />
+                  <span>Cấu hình Băng ghi âm lời Bác</span>
+                </div>
+                <div>
+                  <label className="block text-[11px] font-bold text-heritage-ink-800 mb-1">
+                    Đường dẫn file MP3 (URL hoặc tệp nội bộ) *
+                  </label>
+                  <input
+                    type="text"
+                    value={audioUrl}
+                    onChange={(e) => setAudioUrl(e.target.value)}
+                    placeholder="/audio/tuyen-ngon-doc-lap-1945.mp3 hoặc https://..."
+                    className="w-full px-2.5 py-1.5 bg-white border border-heritage-gold-300 rounded text-xs text-heritage-ink-900 outline-none focus:ring-1 focus:ring-heritage-red-600 font-mono"
+                  />
+                  <p className="text-[10px] text-heritage-ink-500 mt-1 leading-snug">
+                    Đặt file vào thư mục <code className="bg-amber-100 px-1 py-0.5 rounded text-amber-900">public/audio/</code> rồi nhập <code className="bg-amber-100 px-1 py-0.5 rounded text-amber-900">/audio/ten-file.mp3</code> hoặc dán URL MP3 trực tuyến.
+                  </p>
+                </div>
+                <div>
+                  <label className="block text-[11px] font-bold text-heritage-ink-800 mb-1">
+                    Thời lượng phát (ví dụ: 03:45)
+                  </label>
+                  <input
+                    type="text"
+                    value={audioDuration}
+                    onChange={(e) => setAudioDuration(e.target.value)}
+                    placeholder="03:45"
+                    className="w-full px-2.5 py-1.5 bg-white border border-heritage-gold-300 rounded text-xs text-heritage-ink-900 outline-none focus:ring-1 focus:ring-heritage-red-600"
+                  />
+                </div>
+              </div>
+            )}
 
             {/* Chủ đề giáo dục & Lịch sử (Chuyên đề phụ) */}
             <div className="space-y-1.5">

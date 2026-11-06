@@ -29,6 +29,8 @@ const mapArticleToResource = (art: ArticleData): ResourceItem => {
     authorOrSource: art.author_name || 'Trường THCS Nguyễn Trung Trực',
     dateOrEra: art.updated_at || art.created_at || 'Mới xuất bản',
     thumbnail: art.featured_image || (normCat === 'video' ? '/images/timeline-ngoi-sao.png' : '/images/ho-chi-minh-tp-hcm.png'),
+    audioUrl: art.audio_url || (normCat === 'audio' ? '/audio/tuyen-ngon-doc-lap-1945.mp3' : undefined),
+    audioDuration: art.audio_duration || (normCat === 'audio' ? '03:30' : undefined),
     badgeText: art.topic ? `⭐ ${art.topic}` : '⭐ Đã duyệt 4 Mắt (CMS)',
     isMockData: false,
     tags: [normCat, '4-eyes-approved', 'chinh-thuc', art.topic || '', art.category],

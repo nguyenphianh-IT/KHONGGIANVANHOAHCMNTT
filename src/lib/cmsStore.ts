@@ -10,10 +10,12 @@ export interface ArticleData {
   slug: string;
   summary: string;
   content: string;
-  category: 'article' | 'book' | 'image' | 'video' | string;
+  category: 'article' | 'book' | 'image' | 'video' | 'audio' | string;
   topic?: string;
   featured_image?: string;
   references?: string;
+  audio_url?: string;
+  audio_duration?: string;
   status: 'draft' | 'pending' | 'approved' | 'published' | 'rejected' | 'archived';
   author_id?: string;
   author_name?: string;
@@ -22,7 +24,7 @@ export interface ArticleData {
 }
 
 export interface CmsCategory {
-  id: 'article' | 'book' | 'image' | 'video' | 'activity';
+  id: 'article' | 'book' | 'image' | 'video' | 'activity' | 'audio';
   name: string;
   icon: string;
   badgeClass: string;
@@ -60,6 +62,13 @@ export const CMS_CATEGORIES: CmsCategory[] = [
     icon: '🎬',
     badgeClass: 'bg-purple-100 text-purple-900 border-purple-200',
     desc: 'Phim tài liệu, phóng sự truyền hình, video giáo dục',
+  },
+  {
+    id: 'audio',
+    name: 'Băng ghi âm lời Bác',
+    icon: '🔊',
+    badgeClass: 'bg-amber-100 text-amber-900 border-amber-200',
+    desc: 'Băng ghi âm giọng nói của Bác, phát biểu lịch sử, lời hiệu triệu cứu quốc (Có tích hợp trình phát đĩa cổ điển)',
   },
   {
     id: 'activity',
