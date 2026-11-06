@@ -1,9 +1,24 @@
 import React, { useState, useEffect } from 'react';
 import { timelineData } from '../data/timelineData';
 import { TimelineEvent } from '../types';
-import { Calendar, MapPin, Sparkles, ChevronRight, CheckCircle2, X, Star, BookOpen, ShieldCheck, Printer } from 'lucide-react';
+import {
+  Calendar,
+  MapPin,
+  Sparkles,
+  ChevronRight,
+  CheckCircle2,
+  X,
+  Star,
+  BookOpen,
+  ShieldCheck,
+  Printer,
+  SlidersHorizontal,
+  ListFilter
+} from 'lucide-react';
+import { HorizontalTimelineRail } from './HorizontalTimelineRail';
 
 export const Timeline: React.FC = () => {
+  const [viewMode, setViewMode] = useState<'rail' | 'vertical'>('rail'); // Default to 'rail' (Phương án 4)
   const [filter, setFilter] = useState<string>('all');
   const [selectedEvent, setSelectedEvent] = useState<TimelineEvent | null>(null);
   const [fontSize, setFontSize] = useState<'normal' | 'large'>('normal');
@@ -52,8 +67,39 @@ export const Timeline: React.FC = () => {
           </p>
         </div>
 
+        {/* View Mode Toggle: Phương án 4 (Thước đo tương tác ngang) vs Phương án 1 (Trục dọc) */}
+        <div className="flex flex-col items-center justify-center mb-8">
+          <div className="inline-flex p-1 rounded-2xl bg-heritage-ivory-200 border border-heritage-gold-300 shadow-inner max-w-full overflow-x-auto">
+            <button
+              onClick={() => setViewMode('rail')}
+              className={`flex items-center space-x-2 px-3 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all whitespace-nowrap ${
+                viewMode === 'rail'
+                  ? 'bg-heritage-red-700 text-white shadow-md'
+                  : 'text-heritage-ink-700 hover:text-heritage-red-700'
+              }`}
+            >
+              <SlidersHorizontal className="w-4 h-4" />
+              <span>🚀 Thước đo thời gian ngang (Phương án 4)</span>
+              <span className="hidden md:inline-block bg-heritage-gold-400 text-heritage-ink-950 text-[10px] font-black px-1.5 py-0.5 rounded ml-1">
+                Kiosk / Smart TV
+              </span>
+            </button>
+            <button
+              onClick={() => setViewMode('vertical')}
+              className={`flex items-center space-x-2 px-3 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all whitespace-nowrap ${
+                viewMode === 'vertical'
+                  ? 'bg-heritage-red-700 text-white shadow-md'
+                  : 'text-heritage-ink-700 hover:text-heritage-red-700'
+              }`}
+            >
+              <ListFilter className="w-4 h-4" />
+              <span>📜 Dòng thời gian dọc (Phương án 1)</span>
+            </button>
+          </div>
+        </div>
+
         {/* Filter Pills */}
-        <div className="flex flex-wrap items-center justify-center gap-2 mb-12">
+        <div className="flex flex-wrap items-center justify-center gap-2 mb-10">
           {filterOptions.map((opt) => (
             <button
               key={opt.id}
@@ -69,138 +115,148 @@ export const Timeline: React.FC = () => {
           ))}
         </div>
 
-        {/* Timeline Stream */}
-        <div className="max-w-5xl mx-auto">
-          <div className="relative">
-            {/* Desktop Vertical Center Line */}
-            <div className="hidden md:block absolute left-1/2 -ml-0.5 top-0 bottom-0 w-1 bg-gradient-to-b from-heritage-red-400 via-heritage-gold-400 to-heritage-red-400 shadow-sm" />
+        {/* Content Render: Either Horizontal Rail (Phương án 4) or Vertical Stream (Phương án 1) */}
+        {viewMode === 'rail' ? (
+          <div className="animate-fadeIn">
+            <HorizontalTimelineRail
+              events={filteredEvents}
+              onOpenDetailModal={(ev) => setSelectedEvent(ev)}
+            />
+          </div>
+        ) : (
+          <div className="max-w-5xl mx-auto animate-fadeIn">
+            <div className="relative">
+              {/* Desktop Vertical Center Line */}
+              <div className="hidden md:block absolute left-1/2 -ml-0.5 top-0 bottom-0 w-1 bg-gradient-to-b from-heritage-red-400 via-heritage-gold-400 to-heritage-red-400 shadow-sm" />
 
-            {/* Mobile Vertical Left Line (Trục lịch sử xuyên suốt trên di động) */}
-            <div className="md:hidden absolute left-[1.35rem] sm:left-[1.65rem] top-3 bottom-3 w-0.5 bg-gradient-to-b from-heritage-gold-400 via-heritage-red-400 to-heritage-gold-500 shadow-sm" />
+              {/* Mobile Vertical Left Line */}
+              <div className="md:hidden absolute left-[1.35rem] sm:left-[1.65rem] top-3 bottom-3 w-0.5 bg-gradient-to-b from-heritage-gold-400 via-heritage-red-400 to-heritage-gold-500 shadow-sm" />
 
-            <div className="space-y-3.5 md:space-y-4">
-            {filteredEvents.map((event, idx) => {
-              const isEven = idx % 2 === 0;
-              const isMemorialEvent = event.isMemorial || !event.year;
-              return (
-                <div
-                  key={event.year || `event-${idx}`}
-                  className="relative flex flex-col md:flex-row items-start pl-11 sm:pl-14 md:pl-0"
-                >
-                  {/* Desktop Timeline Badge in Center */}
+              <div className="space-y-3.5 md:space-y-4">
+              {filteredEvents.map((event, idx) => {
+                const isEven = idx % 2 === 0;
+                const isMemorialEvent = event.isMemorial || !event.year;
+                return (
                   <div
-                    className={`hidden md:flex absolute left-1/2 -ml-5 top-3.5 w-10 h-10 rounded-full border-2 shadow-md items-center justify-center font-serif font-black text-xs z-10 ${
-                      isMemorialEvent
-                        ? 'bg-gradient-to-br from-heritage-red-700 to-heritage-red-900 text-heritage-gold-300 border-heritage-gold-400 shadow-gold-glow ring-2 ring-heritage-gold-400/40'
-                        : 'bg-heritage-red-700 text-heritage-gold-300 border-heritage-gold-300'
-                    }`}
+                    key={event.year || `event-${idx}`}
+                    className="relative flex flex-col md:flex-row items-start pl-11 sm:pl-14 md:pl-0"
                   >
-                    {isMemorialEvent ? (
-                      <Star className="w-4 h-4 text-heritage-gold-300 fill-heritage-gold-400 drop-shadow" />
-                    ) : (
-                      event.year
-                    )}
-                  </div>
-
-                  {/* Mobile Timeline Node on the Left Track */}
-                  <div
-                    className={`md:hidden absolute left-2.5 sm:left-3.5 top-3.5 w-6 h-6 sm:w-7 sm:h-7 rounded-full border-2 shadow-sm flex items-center justify-center z-10 ${
-                      isMemorialEvent
-                        ? 'bg-gradient-to-br from-heritage-red-700 to-heritage-red-900 text-heritage-gold-300 border-heritage-gold-400 ring-2 ring-heritage-gold-400/40'
-                        : 'bg-heritage-red-700 text-heritage-gold-300 border-heritage-gold-300 text-[10px] font-black font-serif'
-                    }`}
-                    title={event.year ? `Năm ${event.year}` : 'Mốc son lịch sử'}
-                  >
-                    {isMemorialEvent ? (
-                      <Star className="w-3 h-3 text-heritage-gold-300 fill-heritage-gold-400" />
-                    ) : (
-                      <span className="text-[9px] sm:text-[10px] font-bold">{event.year ? event.year.slice(-2) : '•'}</span>
-                    )}
-                  </div>
-
-                  {/* Horizontal Connector Arm linking Badge to Card */}
-                  <div
-                    className={`hidden md:block absolute top-[1.7rem] h-0.5 z-0 ${
-                      isEven
-                        ? 'left-1/2 ml-5 w-6 bg-gradient-to-r from-heritage-gold-400 to-heritage-red-300'
-                        : 'right-1/2 mr-5 w-6 bg-gradient-to-l from-heritage-gold-400 to-heritage-red-300'
-                    }`}
-                  />
-
-                  {/* Content Box (Phương án 1: Thẻ thu gọn dạng ngang Compact Horizontal Card) */}
-                  <div className={`w-full md:w-[calc(50%-1.75rem)] ${isEven ? 'md:ml-auto' : 'md:mr-auto'}`}>
+                    {/* Desktop Timeline Badge in Center */}
                     <div
-                      onClick={() => setSelectedEvent(event)}
-                      className={`group cursor-pointer rounded-2xl p-3 sm:p-3.5 border transition-all duration-200 ${
+                      className={`hidden md:flex absolute left-1/2 -ml-5 top-3.5 w-10 h-10 rounded-full border-2 shadow-md items-center justify-center font-serif font-black text-xs z-10 ${
                         isMemorialEvent
-                          ? 'bg-heritage-ivory-100 hover:bg-white border-heritage-gold-400/70 hover:border-heritage-gold-500 shadow-sm hover:shadow-heritage-hover ring-1 ring-heritage-gold-300/40'
-                          : 'bg-heritage-ivory-100 hover:bg-white border-heritage-ivory-300 hover:border-heritage-gold-400 shadow-sm hover:shadow-heritage-hover'
+                          ? 'bg-gradient-to-br from-heritage-red-700 to-heritage-red-900 text-heritage-gold-300 border-heritage-gold-400 shadow-gold-glow ring-2 ring-heritage-gold-400/40'
+                          : 'bg-heritage-red-700 text-heritage-gold-300 border-heritage-gold-300'
                       }`}
                     >
-                      <div className="flex items-start space-x-3 sm:space-x-3.5">
-                        {/* Ảnh thumbnail vuông nhỏ gọn (90x90) */}
-                        {event.imageUrl && (
-                          <div className="w-20 h-20 sm:w-24 sm:h-24 md:w-20 md:h-20 lg:w-24 lg:h-24 rounded-xl overflow-hidden flex-shrink-0 relative border border-heritage-gold-300/60 bg-heritage-ivory-200 shadow-sm self-start">
-                            <img
-                              src={event.imageUrl}
-                              alt={event.title}
-                              className={`w-full h-full object-cover ${event.imagePosition || 'object-top'} group-hover:scale-105 transition-transform duration-500`}
-                              loading="lazy"
-                            />
-                          </div>
-                        )}
+                      {isMemorialEvent ? (
+                        <Star className="w-4 h-4 text-heritage-gold-300 fill-heritage-gold-400 drop-shadow" />
+                      ) : (
+                        event.year
+                      )}
+                    </div>
 
-                        {/* Cột thông tin cô đọng bên cạnh ảnh */}
-                        <div className="flex-1 min-w-0 flex flex-col justify-between self-stretch">
-                          <div>
-                            {/* Mốc năm / Ngày tháng */}
-                            <div className="flex items-center space-x-1.5 text-[11px] font-bold text-heritage-red-700 mb-0.5">
-                              {isMemorialEvent ? (
-                                <>
-                                  <Star className="w-3 h-3 text-heritage-gold-600 fill-heritage-gold-500 flex-shrink-0" />
-                                  <span>Thông điệp tưởng niệm</span>
-                                </>
-                              ) : (
-                                <>
-                                  <Calendar className="w-3 h-3 flex-shrink-0" />
-                                  <span>{event.exactDate || `Năm ${event.year}`}</span>
-                                </>
-                              )}
+                    {/* Mobile Timeline Node on the Left Track */}
+                    <div
+                      className={`md:hidden absolute left-2.5 sm:left-3.5 top-3.5 w-6 h-6 sm:w-7 sm:h-7 rounded-full border-2 shadow-sm flex items-center justify-center z-10 ${
+                        isMemorialEvent
+                          ? 'bg-gradient-to-br from-heritage-red-700 to-heritage-red-900 text-heritage-gold-300 border-heritage-gold-400 ring-2 ring-heritage-gold-400/40'
+                          : 'bg-heritage-red-700 text-heritage-gold-300 border-heritage-gold-300 text-[10px] font-black font-serif'
+                      }`}
+                      title={event.year ? `Năm ${event.year}` : 'Mốc son lịch sử'}
+                    >
+                      {isMemorialEvent ? (
+                        <Star className="w-3 h-3 text-heritage-gold-300 fill-heritage-gold-400" />
+                      ) : (
+                        <span className="text-[9px] sm:text-[10px] font-bold">{event.year ? event.year.slice(-2) : '•'}</span>
+                      )}
+                    </div>
+
+                    {/* Horizontal Connector Arm linking Badge to Card */}
+                    <div
+                      className={`hidden md:block absolute top-[1.7rem] h-0.5 z-0 ${
+                        isEven
+                          ? 'left-1/2 ml-5 w-6 bg-gradient-to-r from-heritage-gold-400 to-heritage-red-300'
+                          : 'right-1/2 mr-5 w-6 bg-gradient-to-l from-heritage-gold-400 to-heritage-red-300'
+                      }`}
+                    />
+
+                    {/* Content Box (Phương án 1: Thẻ thu gọn dạng ngang Compact Horizontal Card) */}
+                    <div className={`w-full md:w-[calc(50%-1.75rem)] ${isEven ? 'md:ml-auto' : 'md:mr-auto'}`}>
+                      <div
+                        onClick={() => setSelectedEvent(event)}
+                        className={`group cursor-pointer rounded-2xl p-3 sm:p-3.5 border transition-all duration-200 ${
+                          isMemorialEvent
+                            ? 'bg-heritage-ivory-100 hover:bg-white border-heritage-gold-400/70 hover:border-heritage-gold-500 shadow-sm hover:shadow-heritage-hover ring-1 ring-heritage-gold-300/40'
+                            : 'bg-heritage-ivory-100 hover:bg-white border-heritage-ivory-300 hover:border-heritage-gold-400 shadow-sm hover:shadow-heritage-hover'
+                        }`}
+                      >
+                        <div className="flex items-start space-x-3 sm:space-x-3.5">
+                          {/* Ảnh thumbnail vuông nhỏ gọn (90x90) */}
+                          {event.imageUrl && (
+                            <div className="w-20 h-20 sm:w-24 sm:h-24 md:w-20 md:h-20 lg:w-24 lg:h-24 rounded-xl overflow-hidden flex-shrink-0 relative border border-heritage-gold-300/60 bg-heritage-ivory-200 shadow-sm self-start">
+                              <img
+                                src={event.imageUrl}
+                                alt={event.title}
+                                className={`w-full h-full object-cover ${event.imagePosition || 'object-top'} group-hover:scale-105 transition-transform duration-500`}
+                                loading="lazy"
+                              />
+                            </div>
+                          )}
+
+                          {/* Cột thông tin cô đọng bên cạnh ảnh */}
+                          <div className="flex-1 min-w-0 flex flex-col justify-between self-stretch">
+                            <div>
+                              {/* Mốc năm / Ngày tháng */}
+                              <div className="flex items-center space-x-1.5 text-[11px] font-bold text-heritage-red-700 mb-0.5">
+                                {isMemorialEvent ? (
+                                  <>
+                                    <Star className="w-3 h-3 text-heritage-gold-600 fill-heritage-gold-500 flex-shrink-0" />
+                                    <span>Thông điệp tưởng niệm</span>
+                                  </>
+                                ) : (
+                                  <>
+                                    <Calendar className="w-3 h-3 flex-shrink-0" />
+                                    <span>{event.exactDate || `Năm ${event.year}`}</span>
+                                  </>
+                                )}
+                              </div>
+
+                              {/* Tiêu đề mốc lịch sử */}
+                              <h3 className="font-serif text-xs sm:text-sm md:text-base font-bold text-heritage-ink-900 group-hover:text-heritage-red-700 transition-colors leading-snug line-clamp-2">
+                                {event.title}
+                              </h3>
+
+                              {/* Tóm tắt cô đọng 2 dòng */}
+                              <p className="mt-1 text-[11px] sm:text-xs text-heritage-ink-600 leading-relaxed line-clamp-2">
+                                {event.shortDescription}
+                              </p>
                             </div>
 
-                            {/* Tiêu đề mốc lịch sử */}
-                            <h3 className="font-serif text-xs sm:text-sm md:text-base font-bold text-heritage-ink-900 group-hover:text-heritage-red-700 transition-colors leading-snug line-clamp-2">
-                              {event.title}
-                            </h3>
-
-                            {/* Tóm tắt cô đọng 2 dòng */}
-                            <p className="mt-1 text-[11px] sm:text-xs text-heritage-ink-600 leading-relaxed line-clamp-2">
-                              {event.shortDescription}
-                            </p>
-                          </div>
-
-                          {/* Footer: Địa điểm & Nút Xem chi tiết */}
-                          <div className="mt-2 pt-1.5 border-t border-heritage-ivory-200/80 flex items-center justify-between text-[11px]">
-                            {event.location ? (
-                              <span className="flex items-center text-heritage-ink-500 truncate mr-1.5 max-w-[65%]">
-                                <MapPin className="w-3 h-3 mr-0.5 text-heritage-red-600 flex-shrink-0" />
-                                <span className="truncate">{event.location}</span>
+                            {/* Footer: Địa điểm & Nút Xem chi tiết */}
+                            <div className="mt-2 pt-1.5 border-t border-heritage-ivory-200/80 flex items-center justify-between text-[11px]">
+                              {event.location ? (
+                                <span className="flex items-center text-heritage-ink-500 truncate mr-1.5 max-w-[65%]">
+                                  <MapPin className="w-3 h-3 mr-0.5 text-heritage-red-600 flex-shrink-0" />
+                                  <span className="truncate">{event.location}</span>
+                                </span>
+                              ) : <span />}
+                              <span className="text-heritage-red-700 font-bold group-hover:translate-x-0.5 transition-transform flex items-center space-x-0.5 whitespace-nowrap ml-auto">
+                                <span>Chi tiết</span>
+                                <ChevronRight className="w-3 h-3" />
                               </span>
-                            ) : <span />}
-                            <span className="text-heritage-red-700 font-bold group-hover:translate-x-0.5 transition-transform flex items-center space-x-0.5 whitespace-nowrap ml-auto">
-                              <span>Chi tiết</span>
-                              <ChevronRight className="w-3 h-3" />
-                            </span>
+                            </div>
                           </div>
                         </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              );
-            })}
+                );
+              })}
+            </div>
           </div>
         </div>
+        )}
 
         {/* Timeline Terminal: Stylized Star Motif */}
         <div
@@ -430,7 +486,6 @@ export const Timeline: React.FC = () => {
             </div>
           </div>
         )}
-      </div>
     </section>
   );
 };
