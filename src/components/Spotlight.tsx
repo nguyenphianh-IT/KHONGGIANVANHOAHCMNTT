@@ -193,11 +193,6 @@ export const Spotlight: React.FC = () => {
           {/* LEFT COLUMN: TƯ LIỆU TIÊU ĐIỂM (Cột 7 / 12)                             */}
           {/* ----------------------------------------------------------------------- */}
           <div className={`lg:col-span-7 space-y-6 ${mobileTab !== 'featured' ? 'hidden lg:block' : ''}`}>
-            <div className="flex items-center space-x-2 text-xs font-bold uppercase tracking-wider text-heritage-red-800 mb-1">
-              <Star className="w-4 h-4 text-heritage-gold-500 fill-heritage-gold-400" />
-              <span>Tư Liệu Tiêu Điểm Chọn Lọc</span>
-            </div>
-
             {/* GRAND FEATURE HERO CARD */}
             {featuredHero && (
               <div
@@ -205,7 +200,7 @@ export const Spotlight: React.FC = () => {
                 className="group cursor-pointer bg-white rounded-3xl overflow-hidden border-2 border-heritage-gold-300/80 shadow-md hover:shadow-2xl transition-all duration-300 hover:border-heritage-gold-500 flex flex-col"
               >
                 {/* Hero Image with high-definition aspect ratio */}
-                <div className="relative h-64 sm:h-80 w-full overflow-hidden bg-black/10">
+                <div className="relative h-64 sm:h-72 lg:h-[18.5rem] w-full overflow-hidden bg-black/10">
                   <img
                     src={featuredHero.thumbnail}
                     alt={featuredHero.title}
@@ -241,8 +236,8 @@ export const Spotlight: React.FC = () => {
                 </div>
 
                 {/* Card Excerpt & CTA button */}
-                <div className="p-6 sm:p-7 flex flex-col justify-between flex-1 bg-heritage-ivory-50/60">
-                  <p className="text-sm sm:text-base text-heritage-ink-800 font-serif leading-relaxed line-clamp-3 mb-5">
+                <div className="p-5 sm:p-6 flex flex-col justify-between flex-1 bg-heritage-ivory-50/60">
+                  <p className="text-sm sm:text-base text-heritage-ink-800 font-serif leading-relaxed line-clamp-3 mb-4">
                     {featuredHero.description}
                   </p>
 
