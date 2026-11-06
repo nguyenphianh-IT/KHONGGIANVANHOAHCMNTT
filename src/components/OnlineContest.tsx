@@ -59,12 +59,24 @@ export const OnlineContest: React.FC = () => {
   // Thí sinh đang thi
   const [currentCandidate, setCurrentCandidate] = useState<{ name: string; className: string } | null>(null);
 
-  // Trạng thái bài thi
+  // Trạng thái bài thi (hỗ trợ số lượng câu hỏi linh hoạt theo cấu hình)
+  const [examQuestions, setExamQuestions] = useState<ContestQuestion[]>([]);
   const [currentQuestionIdx, setCurrentQuestionIdx] = useState<number>(0);
   const [answers, setAnswers] = useState<Record<number, number>>({});
   const [timeLeftSeconds, setTimeLeftSeconds] = useState<number>(contestInfo.durationMinutes * 60);
   const [timeSpentSeconds, setTimeSpentSeconds] = useState<number>(0);
   const [isExamCompleted, setIsExamCompleted] = useState<boolean>(false);
+
+  // Tính số lượng câu hỏi thực tế của đề thi dựa trên cấu hình (contestInfo.totalQuestions)
+  const targetExamQuestionCount = useMemo(() => {
+    if (contestInfo.totalQuestions && contestInfo.totalQuestions > 0) {
+      return questions.length > 0 ? Math.min(contestInfo.totalQuestions, questions.length) : contestInfo.totalQuestions;
+    }
+    return questions.length;
+  }, [contestInfo.totalQuestions, questions.length]);
+
+  // Bộ câu hỏi hiện thời dùng trong phòng thi
+  const activeExamQuestions = examQuestions.length > 0 ? examQuestions : questions;
 
   // Kết quả vừa thi
   const [latestSubmission, setLatestSubmission] = useState<ContestSubmission | null>(null);
@@ -197,6 +209,21 @@ export const OnlineContest: React.FC = () => {
       className: selectedClass,
     });
 
+    // 1. RÚT ĐỀ THI LINH HOẠT THEO CẤU HÌNH (5, 10, 15, 20... CÂU)
+    const count = contestInfo.totalQuestions && contestInfo.totalQuestions > 0
+      ? Math.min(contestInfo.totalQuestions, questions.length)
+      : questions.length;
+
+    let selectedExamQuestions: ContestQuestion[] = [];
+    if (questions.length <= count) {
+      selectedExamQuestions = [...questions];
+    } else {
+      // Xáo trộn ngẫu nhiên bộ câu hỏi từ ngân hàng để chống nhìn bài nhau
+      const shuffled = [...questions].sort(() => 0.5 - Math.random());
+      selectedExamQuestions = shuffled.slice(0, count);
+    }
+    setExamQuestions(selectedExamQuestions);
+
     // Reset thông số bài thi
     setCurrentQuestionIdx(0);
     setAnswers({});
@@ -213,9 +240,10 @@ export const OnlineContest: React.FC = () => {
 
   // Nộp bài thi
   const handleSubmitExam = () => {
-    if (Object.keys(answers).length < questions.length) {
+    const totalQ = activeExamQuestions.length;
+    if (Object.keys(answers).length < totalQ) {
       const confirmSubmit = window.confirm(
-        `Em mới làm ${Object.keys(answers).length}/${questions.length} câu. Em có chắc chắn muốn nộp bài sớm không?`
+        `Em mới làm ${Object.keys(answers).length}/${totalQ} câu. Em có chắc chắn muốn nộp bài sớm không?`
       );
       if (!confirmSubmit) return;
     }
@@ -232,8 +260,9 @@ export const OnlineContest: React.FC = () => {
   const finalizeExam = () => {
     setIsExamCompleted(true);
 
+    const questionsToScore = activeExamQuestions;
     let correctCount = 0;
-    questions.forEach((q, idx) => {
+    questionsToScore.forEach((q, idx) => {
       if (answers[idx] === q.correctIndex) {
         correctCount += 1;
       }
@@ -245,7 +274,7 @@ export const OnlineContest: React.FC = () => {
       studentName: currentCandidate?.name || 'Học sinh',
       studentClass: currentCandidate?.className || '8A1',
       score: correctCount,
-      totalQuestions: questions.length,
+      totalQuestions: questionsToScore.length,
       timeSpentSeconds: timeSpentSeconds,
       submittedAt: new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }),
     };
@@ -470,9 +499,11 @@ export const OnlineContest: React.FC = () => {
                       <span>Số câu hỏi</span>
                     </div>
                     <span className="font-serif text-base sm:text-xl font-black text-white block">
-                      {questions.length} Câu hỏi
+                      {targetExamQuestionCount} Câu hỏi
                     </span>
-                    <span className="text-[10px] text-heritage-gold-200/70 block mt-0.5">Trắc nghiệm 4 lựa chọn</span>
+                    <span className="text-[10px] text-heritage-gold-200/70 block mt-0.5">
+                      {questions.length > targetExamQuestionCount ? `Rút từ kho ${questions.length} câu` : 'Trắc nghiệm 4 lựa chọn'}
+                    </span>
                   </div>
 
                   {/* 3. Đơn vị tổ chức */}
@@ -496,7 +527,9 @@ export const OnlineContest: React.FC = () => {
                     <span className="font-serif text-xs sm:text-sm font-bold text-emerald-300 block truncate mt-0.5">
                       Giấy khen số
                     </span>
-                    <span className="text-[10px] text-emerald-200/70 block mt-0.5 truncate">Đạt từ 7/10 câu</span>
+                    <span className="text-[10px] text-emerald-200/70 block mt-0.5 truncate">
+                      Đạt từ {Math.ceil(targetExamQuestionCount * 0.7)}/{targetExamQuestionCount} câu (70%)
+                    </span>
                   </div>
                 </div>
 
@@ -637,7 +670,7 @@ export const OnlineContest: React.FC = () => {
                         <span>GIẤY CHỨNG NHẬN ĐIỆN TỬ</span>
                       </div>
                       <p className="text-[10px] text-heritage-ink-700 font-medium">
-                        Cấp tự động cho thí sinh đạt từ <strong>7/{questions.length}</strong> câu trắc nghiệm
+                        Cấp tự động cho thí sinh đạt từ <strong>{Math.ceil(targetExamQuestionCount * 0.7)}/{targetExamQuestionCount}</strong> câu trắc nghiệm (từ 70%)
                       </p>
                     </div>
                     <div className="flex items-center justify-between pt-1.5 border-t border-heritage-ivory-300 text-[8px] text-heritage-ink-500">
@@ -815,7 +848,7 @@ export const OnlineContest: React.FC = () => {
 
           {/* Bản đồ câu hỏi (Question Navigation Rail) */}
           <div className="flex items-center gap-1.5 overflow-x-auto pb-3 mb-6 scrollbar-none">
-            {questions.map((_, idx) => {
+            {activeExamQuestions.map((_, idx) => {
               const isAnswered = answers[idx] !== undefined;
               const isCurrent = currentQuestionIdx === idx;
               return (
@@ -838,22 +871,22 @@ export const OnlineContest: React.FC = () => {
           </div>
 
           {/* Câu hỏi hiện tại */}
-          {questions[currentQuestionIdx] && (
+          {activeExamQuestions[currentQuestionIdx] && (
             <div className="bg-white rounded-2xl p-5 sm:p-7 border border-heritage-ivory-300 shadow-sm mb-6">
               <div className="flex items-center justify-between text-xs font-semibold text-heritage-red-700 mb-3">
-                <span>Câu hỏi {currentQuestionIdx + 1} / {questions.length}</span>
+                <span>Câu hỏi {currentQuestionIdx + 1} / {activeExamQuestions.length}</span>
                 <span className="text-heritage-ink-500 font-normal">
                   {answers[currentQuestionIdx] !== undefined ? '✓ Đã chọn đáp án' : 'Chưa chọn'}
                 </span>
               </div>
 
               <h3 className="font-serif text-base sm:text-xl font-bold text-heritage-ink-900 leading-relaxed mb-6">
-                {questions[currentQuestionIdx].question}
+                {activeExamQuestions[currentQuestionIdx].question}
               </h3>
 
               {/* Lựa chọn A, B, C, D */}
               <div className="space-y-3">
-                {questions[currentQuestionIdx].options.map((opt, optIdx) => {
+                {activeExamQuestions[currentQuestionIdx].options.map((opt, optIdx) => {
                   const isSelected = answers[currentQuestionIdx] === optIdx;
                   return (
                     <button
@@ -893,9 +926,9 @@ export const OnlineContest: React.FC = () => {
             </button>
 
             <div className="flex items-center space-x-2">
-              {currentQuestionIdx < questions.length - 1 ? (
+              {currentQuestionIdx < activeExamQuestions.length - 1 ? (
                 <button
-                  onClick={() => setCurrentQuestionIdx((p) => Math.min(questions.length - 1, p + 1))}
+                  onClick={() => setCurrentQuestionIdx((p) => Math.min(activeExamQuestions.length - 1, p + 1))}
                   className="px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-heritage-ivory-200 hover:bg-heritage-ivory-300 text-heritage-ink-900 transition flex items-center space-x-1"
                 >
                   <span>Câu tiếp theo</span>
@@ -949,14 +982,17 @@ export const OnlineContest: React.FC = () => {
             <div className="col-span-2 sm:col-span-1 p-4 bg-white rounded-2xl border border-heritage-ivory-300 shadow-sm">
               <span className="text-xs text-heritage-ink-500 block">Đánh giá</span>
               <span className="font-serif text-base sm:text-lg font-bold text-emerald-700">
-                {latestSubmission.score >= 9 ? '⭐ Xuất sắc' : latestSubmission.score >= 7 ? 'Giỏi' : 'Đạt'}
+                {(() => {
+                  const ratio = latestSubmission.totalQuestions > 0 ? latestSubmission.score / latestSubmission.totalQuestions : 0;
+                  return ratio >= 0.9 ? '⭐ Xuất sắc' : ratio >= 0.7 ? 'Giỏi' : ratio >= 0.5 ? 'Đạt' : 'Cần cố gắng';
+                })()}
               </span>
             </div>
           </div>
 
           {/* Các nút hành động */}
           <div className="flex flex-wrap items-center justify-center gap-3">
-            {latestSubmission.score >= 7 && (
+            {latestSubmission.score >= Math.ceil(latestSubmission.totalQuestions * 0.7) && (
               <button
                 onClick={() => setShowCertificate(true)}
                 className="px-6 py-3 bg-gradient-to-r from-heritage-gold-500 to-heritage-gold-600 hover:brightness-110 text-heritage-red-950 font-black text-xs sm:text-sm rounded-xl shadow-md transition-all flex items-center space-x-2"

@@ -22,7 +22,8 @@ import {
   FileSpreadsheet,
   Cloud,
   CloudUpload,
-  RefreshCw
+  RefreshCw,
+  Settings
 } from 'lucide-react';
 import {
   ContestInfo,
@@ -1158,6 +1159,31 @@ export const ContestManagerModal: React.FC<ContestManagerModalProps> = ({
               ───────────────────────────────────────────────────────────── */}
           {activeTab === 'questions' && (
             <div className="space-y-4">
+              {/* Băng thông báo hướng dẫn linh hoạt số câu hỏi */}
+              <div className="bg-gradient-to-r from-amber-50 via-heritage-ivory-100 to-amber-50 border-2 border-heritage-gold-400/80 rounded-2xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-xs">
+                <div className="flex items-center space-x-3">
+                  <div className="w-10 h-10 rounded-xl bg-heritage-red-700 text-white flex items-center justify-center font-bold text-lg flex-shrink-0 shadow-sm border border-heritage-gold-400">
+                    <Sparkles className="w-5 h-5 text-heritage-gold-300" />
+                  </div>
+                  <div>
+                    <h4 className="font-serif font-bold text-xs sm:text-sm text-heritage-red-950">
+                      Ngân Hàng Đề Thi Mở Linh Hoạt ({questions.length} Câu Hỏi Hiện Có)
+                    </h4>
+                    <p className="text-[11px] text-heritage-ink-700 mt-0.5 leading-relaxed">
+                      Thầy/Cô có thể <strong>thêm mới, chỉnh sửa hoặc xóa bớt câu hỏi tự do</strong> không giới hạn. Mỗi hội thi có thể cấu hình số lượng câu hỏi thi riêng biệt (5, 10, 15, 20 câu hoặc toàn bộ).
+                    </p>
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => setActiveTab('contest')}
+                  className="px-3.5 py-2 bg-heritage-gold-400 hover:bg-heritage-gold-300 text-heritage-red-950 font-black rounded-xl text-xs whitespace-nowrap shadow-xs transition flex items-center space-x-1.5 border border-heritage-gold-500 flex-shrink-0"
+                >
+                  <Settings className="w-3.5 h-3.5 text-heritage-red-900" />
+                  <span>Cấu hình số câu thi</span>
+                </button>
+              </div>
               <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 bg-white p-3 sm:p-4 rounded-2xl border border-heritage-gold-300/80 shadow-xs">
                 <div className="flex flex-1 items-center space-x-2">
                   <div className="relative flex-1 max-w-sm">
@@ -1504,6 +1530,71 @@ export const ContestManagerModal: React.FC<ContestManagerModalProps> = ({
                     <option value="archived">📦 Đã tổng kết & Lưu trữ</option>
                   </select>
                 </div>
+              </div>
+
+              {/* CẤU HÌNH SỐ LƯỢNG CÂU HỎI THI (TỰ DO ĐIỀU CHỈNH THEO NHU CẦU GIÁO VIÊN) */}
+              <div className="bg-gradient-to-r from-amber-50 to-heritage-ivory-100 border border-amber-300/80 rounded-2xl p-4 space-y-2.5 shadow-xs">
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <label className="block text-xs font-bold text-heritage-red-950 uppercase tracking-wider">
+                    Số Lượng Câu Hỏi Trong Mỗi Đề Thi *
+                  </label>
+                  <span className="text-[11px] text-heritage-ink-600 font-medium">
+                    (Ngân hàng hiện có: <strong className="text-heritage-red-700 font-bold">{questions.length} câu hỏi</strong>)
+                  </span>
+                </div>
+
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+                  <div className="w-full sm:w-36">
+                    <input
+                      type="number"
+                      min={1}
+                      max={100}
+                      value={contestFormData.totalQuestions || 10}
+                      onChange={(e) => {
+                        const val = parseInt(e.target.value) || 1;
+                        setContestFormData({ ...contestFormData, totalQuestions: Math.max(1, val) });
+                      }}
+                      className="w-full px-3.5 py-2 bg-white border-2 border-heritage-gold-400 rounded-xl font-black text-base text-heritage-red-900 focus:outline-none focus:ring-2 focus:ring-heritage-red-700 shadow-inner text-center"
+                      required
+                    />
+                  </div>
+
+                  {/* Nút chọn nhanh số câu hỏi */}
+                  <div className="flex flex-wrap items-center gap-1.5 flex-1">
+                    <span className="text-[11px] text-heritage-ink-500 font-semibold mr-1 hidden sm:inline">Chọn nhanh:</span>
+                    {[5, 10, 15, 20, 25, 30].map((num) => (
+                      <button
+                        key={num}
+                        type="button"
+                        onClick={() => setContestFormData({ ...contestFormData, totalQuestions: num })}
+                        className={`px-2.5 py-1.5 rounded-lg text-xs font-bold border transition ${
+                          contestFormData.totalQuestions === num
+                            ? 'bg-heritage-red-700 text-white border-heritage-red-700 shadow-xs'
+                            : 'bg-white text-heritage-ink-800 border-heritage-ivory-300 hover:bg-heritage-ivory-200'
+                        }`}
+                      >
+                        {num} câu
+                      </button>
+                    ))}
+                    {questions.length > 0 && ![5, 10, 15, 20, 25, 30].includes(questions.length) && (
+                      <button
+                        type="button"
+                        onClick={() => setContestFormData({ ...contestFormData, totalQuestions: questions.length })}
+                        className={`px-2.5 py-1.5 rounded-lg text-xs font-bold border transition ${
+                          contestFormData.totalQuestions === questions.length
+                            ? 'bg-heritage-red-700 text-white border-heritage-red-700 shadow-xs'
+                            : 'bg-white text-heritage-ink-800 border-heritage-ivory-300 hover:bg-heritage-ivory-200'
+                        }`}
+                      >
+                        Toàn bộ ({questions.length} câu)
+                      </button>
+                    )}
+                  </div>
+                </div>
+
+                <p className="text-[11px] text-heritage-ink-600 italic">
+                  💡 <strong>Gợi ý sư phạm:</strong> Nếu ngân hàng có nhiều hơn số câu cài đặt (ví dụ ngân hàng có {questions.length} câu nhưng cài 10 câu), hệ thống sẽ tự động xáo trộn và rút ngẫu nhiên đúng số câu này cho mỗi thí sinh để đề thi phong phú và chống nhìn bài nhau.
+                </p>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
