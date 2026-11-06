@@ -4,8 +4,9 @@ import {
   ShieldCheck, Shield, X, Plus, Search,
   CheckCircle2, AlertCircle, Send,
   ExternalLink, Sparkles, ArrowRight,
-  Upload, Copy, Check, Trash2, Trophy, GraduationCap
+  Upload, Copy, Check, Trash2, Trophy, GraduationCap, LogOut
 } from 'lucide-react';
+import { useAuth } from '../../context/AuthContext';
 import { FullScreenEditor } from './FullScreenEditor';
 import { ReviewModal } from './ReviewModal';
 import { MediaLibraryModal } from './MediaLibraryModal';
@@ -49,6 +50,8 @@ export const CmsDashboard: React.FC<CmsDashboardProps> = ({ isOpen, onClose }) =
   const [mediaUploadError, setMediaUploadError] = useState<string | null>(null);
   const [mediaUploadSuccess, setMediaUploadSuccess] = useState<string | null>(null);
 
+  const { user, profile, roles, logout } = useAuth();
+
   // Active Personas Switcher (To test 4-Eyes in real time!)
   const [currentPersona, setCurrentPersona] = useState({
     id: 'usr-editor-a',
@@ -57,6 +60,41 @@ export const CmsDashboard: React.FC<CmsDashboardProps> = ({ isOpen, onClose }) =
     roleLabel: 'Biên Tập Viên',
     avatar: '👨‍🏫',
   });
+
+  // Đồng bộ hóa persona theo tài khoản đã đăng nhập trong AuthContext
+  useEffect(() => {
+    if (user && profile) {
+      const isSuperAdmin = roles.some((r) => r.code === 'super_admin');
+      const isAdmin = roles.some((r) => r.code === 'admin');
+      const isEditor = roles.some((r) => r.code === 'editor');
+
+      let roleCode = 'editor';
+      let roleLabel = 'Biên Tập Viên';
+      let avatar = '👨‍🏫';
+
+      if (isSuperAdmin) {
+        roleCode = 'super_admin';
+        roleLabel = 'Super Admin';
+        avatar = '🛡️';
+      } else if (isAdmin) {
+        roleCode = 'admin';
+        roleLabel = 'Ban Giám Hiệu';
+        avatar = '🏛️';
+      } else if (isEditor) {
+        roleCode = 'editor';
+        roleLabel = 'Biên Tập Viên';
+        avatar = profile.avatar_url || '👨‍🏫';
+      }
+
+      setCurrentPersona({
+        id: user.id || 'usr-active',
+        name: profile.full_name || 'Cán Bộ Quản Trị',
+        role: roleCode,
+        roleLabel: roleLabel,
+        avatar: profile.avatar_url || avatar,
+      });
+    }
+  }, [user, profile, roles]);
 
   // Editor modal state
   const [isEditing, setIsEditing] = useState(false);
@@ -393,6 +431,46 @@ export const CmsDashboard: React.FC<CmsDashboardProps> = ({ isOpen, onClose }) =
               <button
                 onClick={() =>
                   handleSwitchRole({
+                    id: 'usr-superadmin',
+                    name: 'Quản Trị Viên Tối Cao (Super Admin)',
+                    role: 'super_admin',
+                    roleLabel: 'Super Admin',
+                    avatar: '🛡️',
+                  })
+                }
+                className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition ${
+                  currentPersona.id === 'usr-superadmin' || currentPersona.role === 'super_admin'
+                    ? 'bg-heritage-red-700 text-white font-bold shadow'
+                    : 'text-white/80 hover:text-white hover:bg-white/10'
+                }`}
+                title="Đổi sang Quản Trị Viên Tối Cao (Super Admin)"
+              >
+                🛡️ Super Admin
+              </button>
+
+              <button
+                onClick={() =>
+                  handleSwitchRole({
+                    id: 'usr-admin-chief',
+                    name: 'Cán Bộ Quản Trị Trưởng (Ban Giám Hiệu)',
+                    role: 'admin',
+                    roleLabel: 'Ban Giám Hiệu',
+                    avatar: '🏛️',
+                  })
+                }
+                className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition ${
+                  currentPersona.id === 'usr-admin-chief' || (currentPersona.role === 'admin' && currentPersona.id !== 'usr-superadmin')
+                    ? 'bg-purple-600 text-white font-bold shadow'
+                    : 'text-white/80 hover:text-white hover:bg-white/10'
+                }`}
+                title="Đổi sang Ban Giám Hiệu (Duyệt 4 Mắt)"
+              >
+                🏛️ Ban Giám Hiệu
+              </button>
+
+              <button
+                onClick={() =>
+                  handleSwitchRole({
                     id: 'usr-editor-a',
                     name: 'Biên Tập Viên A (Thầy Lịch sử)',
                     role: 'editor',
@@ -429,26 +507,6 @@ export const CmsDashboard: React.FC<CmsDashboardProps> = ({ isOpen, onClose }) =
               >
                 👩‍🏫 Cô Văn
               </button>
-
-              <button
-                onClick={() =>
-                  handleSwitchRole({
-                    id: 'usr-admin-chief',
-                    name: 'Cán Bộ Quản Trị Trưởng (Ban Giám Hiệu)',
-                    role: 'admin',
-                    roleLabel: 'Ban Giám Hiệu',
-                    avatar: '🏛️',
-                  })
-                }
-                className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition ${
-                  currentPersona.id === 'usr-admin-chief'
-                    ? 'bg-purple-500 text-white font-bold shadow'
-                    : 'text-white/80 hover:text-white hover:bg-white/10'
-                }`}
-                title="Đổi sang Ban Giám Hiệu (Duyệt 4 Mắt)"
-              >
-                🏛️ Ban Giám Hiệu
-              </button>
             </div>
 
             {/* Back to Public Portal Button */}
@@ -459,6 +517,19 @@ export const CmsDashboard: React.FC<CmsDashboardProps> = ({ isOpen, onClose }) =
             >
               <ExternalLink className="w-3.5 h-3.5" />
               <span>Về Cổng thông tin</span>
+            </button>
+
+            {/* Logout Button */}
+            <button
+              onClick={async () => {
+                await logout();
+                onClose();
+              }}
+              className="px-3.5 py-1.5 bg-red-900/80 hover:bg-red-800 text-white rounded-xl text-xs font-bold transition flex items-center space-x-1.5 shadow-sm border border-red-500/40"
+              title="Đăng xuất khỏi hệ thống quản trị"
+            >
+              <LogOut className="w-3.5 h-3.5 text-red-200" />
+              <span>Đăng Xuất</span>
             </button>
           </div>
         </header>

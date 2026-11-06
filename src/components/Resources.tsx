@@ -6,7 +6,7 @@ import {
   Search, Filter, BookOpen, FileText, Image as ImageIcon, Video, Book, 
   X, AlertCircle, Volume2, Headphones, ChevronLeft, ChevronRight 
 } from 'lucide-react';
-import { supabase } from '../lib/supabase';
+import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import {
   getPublishedArticles,
   EVENT_ARTICLES_CHANGED,
@@ -93,7 +93,9 @@ export const Resources: React.FC = () => {
       }
     };
 
-    fetchSupabase();
+    if (isSupabaseConfigured) {
+      fetchSupabase();
+    }
 
     return () => {
       window.removeEventListener(EVENT_ARTICLES_CHANGED, loadPublishedResources);

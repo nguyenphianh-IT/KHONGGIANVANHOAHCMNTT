@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Menu, X, BookOpen, Compass, Award, Calendar, Phone, Home, Sparkles, Shield, LogIn, Flame } from 'lucide-react';
+import { Menu, X, BookOpen, Compass, Award, Calendar, Phone, Home, Sparkles, Shield, LogIn, LogOut, Flame } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
 interface HeaderProps {
@@ -9,7 +9,7 @@ interface HeaderProps {
 }
 
 export const Header: React.FC<HeaderProps> = ({ onOpenChatbotPreview, onOpenAuthModal, onOpenCmsDashboard }) => {
-  const { user, profile } = useAuth();
+  const { user, profile, logout } = useAuth();
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState('hero');
@@ -120,14 +120,24 @@ export const Header: React.FC<HeaderProps> = ({ onOpenChatbotPreview, onOpenAuth
 
             {/* Nút Đăng nhập / Vào CMS Quản trị */}
             {user ? (
-              <button
-                onClick={onOpenCmsDashboard}
-                className="ml-1.5 2xl:ml-2.5 px-3 py-1.5 bg-heritage-red-700 hover:bg-heritage-red-800 text-white font-bold text-xs rounded-full shadow-sm flex items-center space-x-1.5 transition-all whitespace-nowrap flex-shrink-0 border border-heritage-gold-400/50"
-                title="Mở Bảng điều khiển Quản trị CMS"
-              >
-                <Shield className="w-3.5 h-3.5 text-heritage-gold-300" />
-                <span>CMS: {profile?.full_name ? profile.full_name.split(' ').slice(-1)[0] : 'Quản trị'}</span>
-              </button>
+              <div className="flex items-center space-x-1.5 ml-1.5 2xl:ml-2.5 flex-shrink-0">
+                <button
+                  onClick={onOpenCmsDashboard}
+                  className="px-3 py-1.5 bg-heritage-red-700 hover:bg-heritage-red-800 text-white font-bold text-xs rounded-full shadow-sm flex items-center space-x-1.5 transition-all whitespace-nowrap border border-heritage-gold-400/50"
+                  title="Mở Bảng điều khiển Quản trị CMS"
+                >
+                  <Shield className="w-3.5 h-3.5 text-heritage-gold-300" />
+                  <span>CMS: {profile?.full_name ? profile.full_name.split(' ').slice(-1)[0] : 'Quản trị'}</span>
+                </button>
+                <button
+                  onClick={logout}
+                  className="p-1.5 text-heritage-ink-600 hover:text-heritage-red-700 hover:bg-heritage-ivory-200 rounded-full transition-colors"
+                  title="Đăng xuất khỏi phiên hiện tại"
+                  aria-label="Đăng xuất"
+                >
+                  <LogOut className="w-3.5 h-3.5" />
+                </button>
+              </div>
             ) : (
               <button
                 onClick={onOpenAuthModal}
@@ -143,15 +153,25 @@ export const Header: React.FC<HeaderProps> = ({ onOpenChatbotPreview, onOpenAuth
           {/* Mobile & Tablet (< 1280px) Toggle Button */}
           <div className="flex items-center space-x-1.5 sm:space-x-2 xl:hidden flex-shrink-0">
             {user ? (
-              <button
-                onClick={onOpenCmsDashboard}
-                className="w-9 h-9 sm:w-auto sm:px-2.5 sm:py-1.5 bg-heritage-red-700 hover:bg-heritage-red-800 text-white rounded-full sm:rounded-lg text-xs font-semibold flex items-center justify-center space-x-1 flex-shrink-0 shadow-sm border border-heritage-gold-400/40"
-                aria-label="Vào CMS Quản trị"
-                title="Bảng điều khiển CMS"
-              >
-                <Shield className="w-4 h-4 text-heritage-gold-300 flex-shrink-0" />
-                <span className="hidden sm:inline text-[11px] sm:text-xs">CMS</span>
-              </button>
+              <div className="flex items-center space-x-1">
+                <button
+                  onClick={onOpenCmsDashboard}
+                  className="w-9 h-9 sm:w-auto sm:px-2.5 sm:py-1.5 bg-heritage-red-700 hover:bg-heritage-red-800 text-white rounded-full sm:rounded-lg text-xs font-semibold flex items-center justify-center space-x-1 flex-shrink-0 shadow-sm border border-heritage-gold-400/40"
+                  aria-label="Vào CMS Quản trị"
+                  title="Bảng điều khiển CMS"
+                >
+                  <Shield className="w-4 h-4 text-heritage-gold-300 flex-shrink-0" />
+                  <span className="hidden sm:inline text-[11px] sm:text-xs">CMS</span>
+                </button>
+                <button
+                  onClick={logout}
+                  className="w-8 h-8 sm:w-auto sm:px-2 sm:py-1.5 text-heritage-ink-600 hover:text-heritage-red-700 hover:bg-heritage-ivory-200 rounded-full text-xs font-semibold flex items-center justify-center flex-shrink-0"
+                  title="Đăng xuất"
+                  aria-label="Đăng xuất"
+                >
+                  <LogOut className="w-3.5 h-3.5 flex-shrink-0" />
+                </button>
+              </div>
             ) : (
               <button
                 onClick={onOpenAuthModal}
