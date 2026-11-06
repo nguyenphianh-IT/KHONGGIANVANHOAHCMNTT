@@ -85,9 +85,9 @@ export const Spotlight: React.FC = () => {
       .slice(0, 2);
   }, [allResources, featuredHero]);
 
-  // 2. TƯ LIỆU MỚI NHẤT (Latest Articles - Giảm còn 3 bài cho bố cục tinh gọn)
+  // 2. TƯ LIỆU MỚI NHẤT (Latest Articles - 4 bài giúp cân đối trọn vẹn chiều cao hai cột)
   const latestResources = useMemo(() => {
-    return allResources.slice(0, 3);
+    return allResources.slice(0, 4);
   }, [allResources]);
 
   // 3. TƯ LIỆU ĐỌC NHIỀU NHẤT (Top 3 tác phẩm tiêu biểu vinh danh Vàng - Bạc - Đồng)
@@ -171,7 +171,7 @@ export const Spotlight: React.FC = () => {
                 : 'text-heritage-ink-700 hover:text-heritage-red-800'
             }`}
           >
-            🆕 Mới nhất (3)
+            🆕 Mới nhất ({latestResources.length})
           </button>
           <button
             onClick={() => setMobileTab('most_read')}
@@ -335,7 +335,7 @@ export const Spotlight: React.FC = () => {
                 </span>
               </div>
 
-              {/* Items List (3 Items) */}
+              {/* Items List (4 Items - Cân đối chiều cao hai cột) */}
               <div className="divide-y divide-heritage-ivory-200">
                 {latestResources.map((item) => (
                   <div
