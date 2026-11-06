@@ -122,19 +122,19 @@ export const activitiesData: SchoolActivity[] = [
   },
   {
     id: 'act-8',
-    title: 'Hành trình địa chỉ đỏ: Thăm Di tích Lịch sử Chiến khu An Phú Đông (Quận 12)',
+    title: 'Hành trình địa chỉ đỏ: Thăm Di tích Lịch sử Chiến khu An Phú Đông',
     date: '22/12/2023',
     academicYear: 'Năm học 2023 - 2024',
     organizer: 'Tổ Lịch sử - Địa lý & Ban Phụ trách Đội',
     summary: 'Hoạt động giáo dục truyền thống cách mạng địa phương hào hùng nhân kỷ niệm Ngày thành lập Quân đội Nhân dân Việt Nam.',
-    fullDetail: 'Đoàn học sinh tiêu biểu khối 8 và khối 9 đã đến dâng hương tại Nhà truyền thống Chiến khu An Phú Đông – vùng đất kiên trung của Quận 12. Qua lời thuyết minh và các hiện vật lịch sử tại di tích, các em hiểu sâu sắc hơn về ý chí quật cường của quân dân quê hương, từ đó bồi đắp lòng tự hào và trách nhiệm của thế hệ trẻ hôm nay.',
+    fullDetail: 'Đoàn học sinh tiêu biểu khối 8 và khối 9 đã đến dâng hương tại Nhà truyền thống Chiến khu An Phú Đông – vùng đất kiên trung, giàu truyền thống cách mạng. Qua lời thuyết minh và các hiện vật lịch sử tại di tích, các em hiểu sâu sắc hơn về ý chí quật cường của quân dân quê hương, từ đó bồi đắp lòng tự hào và trách nhiệm của thế hệ trẻ hôm nay.',
     imageUrl: 'https://images.unsplash.com/photo-1427504494785-3a9ca7044f45?auto=format&fit=crop&w=800&q=80',
     participants: 'Hơn 80 học sinh xuất sắc và đại diện Cha mẹ học sinh',
     isSampleData: true,
     highlights: [
       'Dâng hương tưởng niệm các anh hùng liệt sĩ tại Chiến khu An Phú Đông',
       'Tham quan nhà truyền thống và nghe cựu chiến binh kể chuyện lịch sử',
-      'Thực hiện bài thu hoạch Lịch sử địa phương Quận 12 sinh động'
+      'Thực hiện bài thu hoạch Lịch sử địa phương sinh động'
     ]
   }
 ];

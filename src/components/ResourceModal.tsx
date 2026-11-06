@@ -256,7 +256,7 @@ export const ResourceModal: React.FC<ResourceModalProps> = ({ item, onClose }) =
                   Tư liệu Giáo dục Lịch sử & Đạo đức Học đường
                 </p>
                 <p>
-                  Tư liệu số hóa chính thức phục vụ công tác giảng dạy, nghiên cứu và bồi dưỡng lý tưởng cách mạng cho cán bộ, giáo viên và học sinh <strong>Trường THCS Nguyễn Trung Trực (Phường Thới An, Q.12, TP. Hồ Chí Minh)</strong>.
+                  Tư liệu số hóa chính thức phục vụ công tác giảng dạy, nghiên cứu và bồi dưỡng lý tưởng cách mạng cho cán bộ, giáo viên và học sinh <strong>Trường THCS Nguyễn Trung Trực (Phường Thới An, Thành phố Hồ Chí Minh)</strong>.
                 </p>
               </div>
             </div>

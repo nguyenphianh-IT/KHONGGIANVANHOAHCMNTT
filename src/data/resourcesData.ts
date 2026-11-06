@@ -91,7 +91,7 @@ export const resourcesData: ResourceItem[] = [
     category: 'article',
     categoryLabel: 'Văn kiện & Bài viết',
     description: 'Khái quát tình cảm thiêng liêng "Miền Nam trong trái tim tôi" và khát vọng thống nhất non sông của Chủ tịch Hồ Chí Minh.',
-    fullContent: 'Bác Hồ luôn dành cho đồng bào và chiến sĩ miền Nam ruột thịt tình cảm thương nhớ khôn nguôi. Bác từng nói: "Miền Nam yêu quý luôn luôn ở trong trái tim tôi", "Bác nhớ miền Nam nỗi nhớ nhà / Miền Nam mong Bác nỗi mong cha". Không gian văn hóa Hồ Chí Minh tại phường Thới An, Quận 12 càng có ý nghĩa sâu sắc khi nằm trên mảnh đất thành đồng Tổ quốc mang tên Người.',
+    fullContent: 'Bác Hồ luôn dành cho đồng bào và chiến sĩ miền Nam ruột thịt tình cảm thương nhớ khôn nguôi. Bác từng nói: "Miền Nam yêu quý luôn luôn ở trong trái tim tôi", "Bác nhớ miền Nam nỗi nhớ nhà / Miền Nam mong Bác nỗi mong cha". Không gian văn hóa Hồ Chí Minh tại Phường Thới An, Thành phố Hồ Chí Minh càng có ý nghĩa sâu sắc khi nằm trên mảnh đất thành đồng Tổ quốc mang tên Người.',
     authorOrSource: 'Chuyên đề học tập - Chi bộ & Nhà trường THCS Nguyễn Trung Trực',
     dateOrEra: 'Tài liệu giáo dục chuyên đề',
     thumbnail: 'https://images.unsplash.com/photo-1528127269322-539801943592?auto=format&fit=crop&w=600&q=80',
