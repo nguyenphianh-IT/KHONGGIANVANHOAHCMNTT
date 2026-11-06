@@ -12,39 +12,92 @@ export interface ContestQuestion {
   category: 'cuoc-doi' | 'tu-tuong' | '5-dieu-bac-day' | 'thoi-an-truyen-thong';
 }
 
+export type ContestStatus = 'active' | 'closed' | 'archived' | 'draft';
+
 export interface ContestInfo {
   id: string;
   title: string;
   subtitle: string;
   academicYear: string;
-  durationMinutes: number; // 10 phút
-  totalQuestions: number;  // 10 câu
+  durationMinutes: number; // Ví dụ: 10 phút
+  totalQuestions: number;  // Ví dụ: 10 câu
   organizer: string;
   bannerTag: string;
-  isOpen?: boolean; // Trạng thái mở/đóng cổng thi
+  status: ContestStatus; // 'active' (Đang diễn ra), 'closed' (Tạm đóng), 'archived' (Đã lưu trữ), 'draft' (Dự thảo)
+  isOpen?: boolean; // Tương thích ngược: true khi status === 'active'
+  startDate?: string;
+  endDate?: string;
+  archivedAt?: string;
+  summaryNote?: string; // Ghi chú tổng kết của Ban Giám Khảo khi lưu trữ
+  createdAt?: string;
 }
 
 export interface ContestSubmission {
   id: string;
+  contestId: string; // ID của hội thi tương ứng
   studentName: string;
   studentClass: string;
-  score: number; // Số câu đúng (0 - 10)
+  score: number; // Số câu đúng
   totalQuestions: number;
   timeSpentSeconds: number; // Thời gian làm bài tính bằng giây
-  submittedAt: string; // ISO hoặc ngày giờ
+  submittedAt: string; // Giờ hoặc ngày nộp bài
+  award?: string; // Danh hiệu khen thưởng: "Giải Nhất", "Giải Nhì", "Giải Ba", "Khuyến Khích"
 }
 
-export const CURRENT_CONTEST: ContestInfo = {
-  id: 'hoi-thi-2024-tuoi-tre-bac-ho',
-  title: 'Hội Thi Trực Tuyến: "Tuổi Trẻ THCS Nguyễn Trung Trực Học Tập & Làm Theo Lời Bác"',
-  subtitle: 'Đợt thi đua rèn đức luyện tài chào mừng Không gian văn hóa Hồ Chí Minh học đường',
-  academicYear: 'Năm học 2024 - 2025',
-  durationMinutes: 10,
-  totalQuestions: 10,
-  organizer: 'Liên đội & Chi đoàn Giáo viên Trường THCS Nguyễn Trung Trực (Phường Thới An)',
-  bannerTag: '⭐ HỘI THI TRỰC TUYẾN HỌC ĐƯỜNG CHÍNH THỨC',
-  isOpen: true,
-};
+// ==============================================================================
+// DANH SÁCH CÁC HỘI THI MẶC ĐỊNH (HỘI THI ĐANG MỞ & HỘI THI ĐÃ LƯU TRỮ)
+// ==============================================================================
+export const DEFAULT_CONTESTS_LIST: ContestInfo[] = [
+  {
+    id: 'hoi-thi-2024-tuoi-tre-bac-ho',
+    title: 'Hội Thi Trực Tuyến: "Tuổi Trẻ THCS Nguyễn Trung Trực Học Tập & Làm Theo Lời Bác"',
+    subtitle: 'Đợt thi đua rèn đức luyện tài chào mừng Không gian văn hóa Hồ Chí Minh học đường',
+    academicYear: 'Năm học 2024 - 2025',
+    durationMinutes: 10,
+    totalQuestions: 10,
+    organizer: 'Liên đội & Chi đoàn Giáo viên Trường THCS Nguyễn Trung Trực (Phường Thới An)',
+    bannerTag: '⭐ HỘI THI TRỰC TUYẾN CHÍNH THỨC (ĐANG MỞ)',
+    status: 'active',
+    isOpen: true,
+    startDate: '2024-10-15',
+    endDate: '2024-11-20',
+    createdAt: '2024-10-15',
+  },
+  {
+    id: 'hoi-thi-2024-5-dieu-bac-day',
+    title: 'Hội Thi: "Thiếu Nhi Thới An - Ngàn Hoa Dâng Bác Xứng Danh Cháu Ngoan Bác Hồ"',
+    subtitle: 'Đợt 1: Tìm hiểu 5 Điều Bác Hồ dạy & 83 năm truyền thống Đội TNTP Hồ Chí Minh',
+    academicYear: 'Năm học 2024 - 2025',
+    durationMinutes: 10,
+    totalQuestions: 10,
+    organizer: 'Ban Phụ trách Đội & Tổ Khoa học Xã hội THCS Nguyễn Trung Trực',
+    bannerTag: '🏆 ĐÃ TỔNG KẾT & LƯU TRỮ HỒ SƠ',
+    status: 'archived',
+    isOpen: false,
+    startDate: '2024-09-05',
+    endDate: '2024-10-10',
+    archivedAt: '2024-10-12',
+    summaryNote: 'Tổng cộng 342 học sinh tham gia. Chi đội 8A1 đạt giải Nhất toàn đoàn. Trao 03 giải Nhất, 05 giải Nhì và 10 giải Ba cá nhân tại Lễ chào cờ.',
+    createdAt: '2024-09-01',
+  },
+  {
+    id: 'hoi-thi-2025-hanh-trinh-theo-dau-chan-bac',
+    title: 'Hội Thi: "Hành Trình Mùa Xuân 1930 - Ánh Sáng Soi Đường Cách Mạng"',
+    subtitle: 'Đợt thi đua chào mừng 95 năm Ngày thành lập Đảng Cộng sản Việt Nam (03/02/1930 - 03/02/2025)',
+    academicYear: 'Năm học 2024 - 2025',
+    durationMinutes: 15,
+    totalQuestions: 15,
+    organizer: 'Tổ Lịch sử - GDCD & Chi đoàn Giáo viên THCS Nguyễn Trung Trực',
+    bannerTag: '⏳ KẾ HOẠCH DỰ THẢO ĐỢT 2',
+    status: 'draft',
+    isOpen: false,
+    startDate: '2025-01-10',
+    endDate: '2025-02-15',
+    createdAt: '2024-11-01',
+  },
+];
+
+export const CURRENT_CONTEST: ContestInfo = DEFAULT_CONTESTS_LIST[0];
 
 export const CONTEST_QUESTIONS_BANK: ContestQuestion[] = [
   {
@@ -180,117 +233,285 @@ export const CONTEST_QUESTIONS_BANK: ContestQuestion[] = [
 ];
 
 // ------------------------------------------------------------------------------
-// DANH SÁCH BẢNG XẾP HẠNG MẪU BAN ĐẦU ĐỂ TẠO KHÍ THẾ THI ĐUA HỌC ĐƯỜNG
+// DANH SÁCH BÀI THI MẪU CHO CÁC HỘI THI (ĐANG MỞ & ĐÃ LƯU TRỮ)
 // ------------------------------------------------------------------------------
 const DEFAULT_SUBMISSIONS: ContestSubmission[] = [
+  // 1. Bài thi của Hội thi đang mở (hoi-thi-2024-tuoi-tre-bac-ho)
   {
     id: 'sub-1',
+    contestId: 'hoi-thi-2024-tuoi-tre-bac-ho',
     studentName: 'Nguyễn Minh Khang',
     studentClass: '8A1',
     score: 10,
     totalQuestions: 10,
-    timeSpentSeconds: 154, // 2 phút 34 giây
+    timeSpentSeconds: 154,
     submittedAt: 'Vừa xong',
+    award: 'Giải Nhất (Tạm thời)',
   },
   {
     id: 'sub-2',
+    contestId: 'hoi-thi-2024-tuoi-tre-bac-ho',
     studentName: 'Trần Bảo Ngọc',
     studentClass: '8A1',
     score: 10,
     totalQuestions: 10,
-    timeSpentSeconds: 178, // 2 phút 58 giây
+    timeSpentSeconds: 178,
     submittedAt: 'Hôm nay',
+    award: 'Giải Nhất (Tạm thời)',
   },
   {
     id: 'sub-3',
+    contestId: 'hoi-thi-2024-tuoi-tre-bac-ho',
     studentName: 'Nguyễn Tuấn Kiệt',
     studentClass: '8A2',
     score: 10,
     totalQuestions: 10,
     timeSpentSeconds: 195,
     submittedAt: 'Hôm nay',
+    award: 'Giải Nhì (Tạm thời)',
   },
   {
     id: 'sub-4',
+    contestId: 'hoi-thi-2024-tuoi-tre-bac-ho',
     studentName: 'Trần Văn An',
     studentClass: '9A1',
     score: 10,
     totalQuestions: 10,
     timeSpentSeconds: 210,
     submittedAt: 'Hôm qua',
+    award: 'Giải Nhì (Tạm thời)',
   },
   {
     id: 'sub-5',
+    contestId: 'hoi-thi-2024-tuoi-tre-bac-ho',
     studentName: 'Phan Quỳnh Anh',
     studentClass: '8A2',
     score: 9,
     totalQuestions: 10,
     timeSpentSeconds: 145,
     submittedAt: 'Hôm nay',
+    award: 'Giải Ba (Tạm thời)',
   },
   {
     id: 'sub-6',
+    contestId: 'hoi-thi-2024-tuoi-tre-bac-ho',
     studentName: 'Lê Hoàng Nam',
     studentClass: '8A1',
     score: 9,
     totalQuestions: 10,
     timeSpentSeconds: 162,
     submittedAt: 'Hôm nay',
+    award: 'Giải Ba (Tạm thời)',
   },
   {
     id: 'sub-7',
+    contestId: 'hoi-thi-2024-tuoi-tre-bac-ho',
     studentName: 'Vũ Minh Trí',
     studentClass: '9A2',
     score: 9,
     totalQuestions: 10,
     timeSpentSeconds: 180,
     submittedAt: 'Hôm qua',
+    award: 'Khuyến Khích',
   },
   {
     id: 'sub-8',
+    contestId: 'hoi-thi-2024-tuoi-tre-bac-ho',
     studentName: 'Nguyễn Hải Đăng',
     studentClass: '7A1',
     score: 9,
     totalQuestions: 10,
     timeSpentSeconds: 220,
     submittedAt: 'Hôm qua',
+    award: 'Khuyến Khích',
   },
   {
     id: 'sub-9',
+    contestId: 'hoi-thi-2024-tuoi-tre-bac-ho',
     studentName: 'Hoàng Mai Chi',
     studentClass: '8A1',
     score: 8,
     totalQuestions: 10,
     timeSpentSeconds: 190,
     submittedAt: 'Hôm nay',
+    award: 'Đạt chuẩn',
   },
   {
     id: 'sub-10',
+    contestId: 'hoi-thi-2024-tuoi-tre-bac-ho',
     studentName: 'Lê Minh Quân',
     studentClass: '6A1',
     score: 8,
     totalQuestions: 10,
     timeSpentSeconds: 215,
     submittedAt: 'Hôm qua',
+    award: 'Đạt chuẩn',
+  },
+
+  // 2. Bài thi của Hội thi đã Lưu trữ Đợt 1 (hoi-thi-2024-5-dieu-bac-day)
+  {
+    id: 'sub-archived-1',
+    contestId: 'hoi-thi-2024-5-dieu-bac-day',
+    studentName: 'Trần Bảo Ngọc',
+    studentClass: '8A1',
+    score: 10,
+    totalQuestions: 10,
+    timeSpentSeconds: 142,
+    submittedAt: '05/10/2024',
+    award: '🥇 Giải Nhất Toàn Trường',
+  },
+  {
+    id: 'sub-archived-2',
+    contestId: 'hoi-thi-2024-5-dieu-bac-day',
+    studentName: 'Nguyễn Minh Khang',
+    studentClass: '8A1',
+    score: 10,
+    totalQuestions: 10,
+    timeSpentSeconds: 148,
+    submittedAt: '05/10/2024',
+    award: '🥇 Giải Nhất Khối 8',
+  },
+  {
+    id: 'sub-archived-3',
+    contestId: 'hoi-thi-2024-5-dieu-bac-day',
+    studentName: 'Lê Gia Huy',
+    studentClass: '9A2',
+    score: 10,
+    totalQuestions: 10,
+    timeSpentSeconds: 165,
+    submittedAt: '04/10/2024',
+    award: '🥇 Giải Nhất Khối 9',
+  },
+  {
+    id: 'sub-archived-4',
+    contestId: 'hoi-thi-2024-5-dieu-bac-day',
+    studentName: 'Phạm Quỳnh Anh',
+    studentClass: '8A2',
+    score: 10,
+    totalQuestions: 10,
+    timeSpentSeconds: 172,
+    submittedAt: '06/10/2024',
+    award: '🥈 Giải Nhì',
+  },
+  {
+    id: 'sub-archived-5',
+    contestId: 'hoi-thi-2024-5-dieu-bac-day',
+    studentName: 'Nguyễn Tuấn Kiệt',
+    studentClass: '8A2',
+    score: 9,
+    totalQuestions: 10,
+    timeSpentSeconds: 135,
+    submittedAt: '07/10/2024',
+    award: '🥈 Giải Nhì',
+  },
+  {
+    id: 'sub-archived-6',
+    contestId: 'hoi-thi-2024-5-dieu-bac-day',
+    studentName: 'Hoàng Mai Chi',
+    studentClass: '7A1',
+    score: 9,
+    totalQuestions: 10,
+    timeSpentSeconds: 155,
+    submittedAt: '06/10/2024',
+    award: '🥉 Giải Ba Khối 7',
+  },
+  {
+    id: 'sub-archived-7',
+    contestId: 'hoi-thi-2024-5-dieu-bac-day',
+    studentName: 'Vũ Đức Trọng',
+    studentClass: '6A1',
+    score: 9,
+    totalQuestions: 10,
+    timeSpentSeconds: 178,
+    submittedAt: '08/10/2024',
+    award: '🥉 Giải Ba Khối 6',
+  },
+  {
+    id: 'sub-archived-8',
+    contestId: 'hoi-thi-2024-5-dieu-bac-day',
+    studentName: 'Đỗ Ngọc Hân',
+    studentClass: '9A1',
+    score: 8,
+    totalQuestions: 10,
+    timeSpentSeconds: 190,
+    submittedAt: '09/10/2024',
+    award: 'Khuyến Khích',
   },
 ];
 
+const STORAGE_KEY_CONTESTS_LIST = 'hcm_contests_list_v2';
+const STORAGE_KEY_ACTIVE_CONTEST_ID = 'hcm_active_contest_id_v2';
 const STORAGE_KEY_CONTEST = 'hcm_contest_submissions_v1';
 const STORAGE_KEY_CONTEST_INFO = 'hcm_contest_info_v1';
 const STORAGE_KEY_CONTEST_QUESTIONS = 'hcm_contest_questions_v1';
 export const EVENT_CONTEST_DATA_CHANGED = 'hcm_contest_data_changed';
 
 // ==============================================================================
-// 1. QUẢN TRỊ CẤU HÌNH HỘI THI (CONTEST INFO)
+// 1. QUẢN TRỊ DANH SÁCH TỪNG HỘI THI (MULTI-CONTEST MANAGEMENT)
 // ==============================================================================
+
+export function getStoredContestsList(): ContestInfo[] {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY_CONTESTS_LIST);
+    if (!raw) {
+      localStorage.setItem(STORAGE_KEY_CONTESTS_LIST, JSON.stringify(DEFAULT_CONTESTS_LIST));
+      return DEFAULT_CONTESTS_LIST;
+    }
+    const parsed = JSON.parse(raw);
+    if (Array.isArray(parsed) && parsed.length > 0) {
+      return parsed;
+    }
+    return DEFAULT_CONTESTS_LIST;
+  } catch {
+    return DEFAULT_CONTESTS_LIST;
+  }
+}
+
+export function saveStoredContestsList(contests: ContestInfo[]): ContestInfo[] {
+  try {
+    localStorage.setItem(STORAGE_KEY_CONTESTS_LIST, JSON.stringify(contests));
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new Event(EVENT_CONTEST_DATA_CHANGED));
+    }
+    return contests;
+  } catch (err) {
+    console.error('Lỗi lưu danh sách hội thi:', err);
+    return contests;
+  }
+}
+
+export function getActiveContestId(): string {
+  try {
+    const activeId = localStorage.getItem(STORAGE_KEY_ACTIVE_CONTEST_ID);
+    if (activeId) return activeId;
+  } catch {}
+  return DEFAULT_CONTESTS_LIST[0].id;
+}
+
+export function setActiveContest(contestId: string): ContestInfo[] {
+  const currentList = getStoredContestsList();
+  const updated = currentList.map((c) => ({
+    ...c,
+    status: c.id === contestId ? ('active' as ContestStatus) : c.status === 'active' ? ('closed' as ContestStatus) : c.status,
+    isOpen: c.id === contestId,
+  }));
+  localStorage.setItem(STORAGE_KEY_ACTIVE_CONTEST_ID, contestId);
+  saveStoredContestsList(updated);
+
+  // Đồng bộ sang key cũ STORAGE_KEY_CONTEST_INFO để giữ tương thích 100%
+  const active = updated.find((c) => c.id === contestId);
+  if (active) {
+    localStorage.setItem(STORAGE_KEY_CONTEST_INFO, JSON.stringify(active));
+  }
+  return updated;
+}
+
 export function getStoredContestInfo(): ContestInfo {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY_CONTEST_INFO);
-    if (!raw) {
-      localStorage.setItem(STORAGE_KEY_CONTEST_INFO, JSON.stringify(CURRENT_CONTEST));
-      return CURRENT_CONTEST;
-    }
-    return JSON.parse(raw);
+    const list = getStoredContestsList();
+    const activeId = getActiveContestId();
+    const active = list.find((c) => c.id === activeId) || list.find((c) => c.status === 'active') || list[0];
+    return active || CURRENT_CONTEST;
   } catch {
     return CURRENT_CONTEST;
   }
@@ -298,15 +519,65 @@ export function getStoredContestInfo(): ContestInfo {
 
 export function saveStoredContestInfo(info: ContestInfo): ContestInfo {
   try {
-    localStorage.setItem(STORAGE_KEY_CONTEST_INFO, JSON.stringify(info));
-    if (typeof window !== 'undefined') {
-      window.dispatchEvent(new Event(EVENT_CONTEST_DATA_CHANGED));
+    const list = getStoredContestsList();
+    const exists = list.some((c) => c.id === info.id);
+    let updatedList: ContestInfo[];
+    if (exists) {
+      updatedList = list.map((c) => (c.id === info.id ? { ...c, ...info } : c));
+    } else {
+      updatedList = [info, ...list];
     }
+    saveStoredContestsList(updatedList);
+    localStorage.setItem(STORAGE_KEY_CONTEST_INFO, JSON.stringify(info));
     return info;
   } catch (err) {
     console.error('Lỗi lưu cấu hình hội thi:', err);
     return info;
   }
+}
+
+export function addContest(contestData: Omit<ContestInfo, 'id'> & { id?: string }): ContestInfo[] {
+  const list = getStoredContestsList();
+  const newId = contestData.id || `hoi-thi-${Date.now()}`;
+  const newContest: ContestInfo = {
+    ...contestData,
+    id: newId,
+    createdAt: new Date().toISOString().substring(0, 10),
+  };
+  const updated = [newContest, ...list];
+  return saveStoredContestsList(updated);
+}
+
+export function updateContest(contest: ContestInfo): ContestInfo[] {
+  const list = getStoredContestsList();
+  const updated = list.map((c) => (c.id === contest.id ? contest : c));
+  return saveStoredContestsList(updated);
+}
+
+export function deleteContest(contestId: string): ContestInfo[] {
+  const list = getStoredContestsList();
+  if (list.length <= 1) {
+    throw new Error('Hệ thống yêu cầu duy trì ít nhất 01 hội thi!');
+  }
+  const updated = list.filter((c) => c.id !== contestId);
+  return saveStoredContestsList(updated);
+}
+
+export function archiveContest(contestId: string, summaryNote?: string): ContestInfo[] {
+  const list = getStoredContestsList();
+  const updated = list.map((c) => {
+    if (c.id === contestId) {
+      return {
+        ...c,
+        status: 'archived' as ContestStatus,
+        isOpen: false,
+        archivedAt: new Date().toISOString().substring(0, 10),
+        summaryNote: summaryNote || c.summaryNote || 'Đã tổng kết và lưu trữ kết quả thi đua vào biên bản kỷ yếu.',
+      };
+    }
+    return c;
+  });
+  return saveStoredContestsList(updated);
 }
 
 // ==============================================================================
@@ -360,26 +631,47 @@ export function deleteContestQuestion(id: number): ContestQuestion[] {
 }
 
 // ==============================================================================
-// 3. QUẢN TRỊ BÀI THI & BẢNG ĐIỂM HỌC SINH (SUBMISSIONS)
+// 3. QUẢN TRỊ BÀI THI & LƯU TRỮ BẢNG ĐIỂM THEO TỪNG HỘI THI (SUBMISSIONS)
 // ==============================================================================
-export function getContestSubmissions(): ContestSubmission[] {
+export function getContestSubmissions(filterContestId?: string): ContestSubmission[] {
   try {
     const raw = localStorage.getItem(STORAGE_KEY_CONTEST);
+    let allSubmissions: ContestSubmission[] = [];
     if (!raw) {
       localStorage.setItem(STORAGE_KEY_CONTEST, JSON.stringify(DEFAULT_SUBMISSIONS));
-      return DEFAULT_SUBMISSIONS;
+      allSubmissions = DEFAULT_SUBMISSIONS;
+    } else {
+      const parsed = JSON.parse(raw);
+      allSubmissions = Array.isArray(parsed) && parsed.length > 0 ? parsed : DEFAULT_SUBMISSIONS;
     }
-    const parsed = JSON.parse(raw);
-    return parsed.length > 0 ? parsed : DEFAULT_SUBMISSIONS;
+
+    // Đảm bảo mọi submission cũ đều có contestId
+    const activeContestId = getActiveContestId();
+    allSubmissions = allSubmissions.map((s) => ({
+      ...s,
+      contestId: s.contestId || activeContestId,
+    }));
+
+    if (filterContestId && filterContestId !== 'all') {
+      return allSubmissions.filter((s) => s.contestId === filterContestId);
+    }
+    return allSubmissions;
   } catch {
-    return DEFAULT_SUBMISSIONS;
+    return filterContestId && filterContestId !== 'all'
+      ? DEFAULT_SUBMISSIONS.filter((s) => s.contestId === filterContestId)
+      : DEFAULT_SUBMISSIONS;
   }
 }
 
-export function saveContestSubmission(submission: ContestSubmission): ContestSubmission[] {
+export function saveContestSubmission(submission: Omit<ContestSubmission, 'contestId'> & { contestId?: string }): ContestSubmission[] {
   try {
+    const activeId = getActiveContestId();
+    const subWithContest: ContestSubmission = {
+      ...submission,
+      contestId: submission.contestId || activeId,
+    };
     const current = getContestSubmissions();
-    const updated = [submission, ...current];
+    const updated = [subWithContest, ...current];
     localStorage.setItem(STORAGE_KEY_CONTEST, JSON.stringify(updated));
     if (typeof window !== 'undefined') {
       window.dispatchEvent(new Event(EVENT_CONTEST_DATA_CHANGED));

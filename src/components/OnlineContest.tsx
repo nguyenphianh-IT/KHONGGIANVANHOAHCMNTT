@@ -9,6 +9,7 @@ import {
   ContestInfo,
   ContestQuestion,
   ContestSubmission,
+  getStoredContestsList,
   getStoredContestInfo,
   getStoredContestQuestions,
   getContestSubmissions,
@@ -18,7 +19,7 @@ import {
 } from '../data/contestData';
 import {
   Trophy, Award, Clock, CheckCircle2, AlertTriangle, ChevronRight,
-  User, Printer, Settings, BookOpen, Layers
+  User, Printer, Settings, BookOpen, Layers, FolderArchive
 } from 'lucide-react';
 import { ContestManagerModal } from './cms/ContestManagerModal';
 
@@ -31,10 +32,12 @@ export const OnlineContest: React.FC = () => {
   const [managerInitialTab, setManagerInitialTab] = useState<'questions' | 'contest' | 'students' | 'roster'>('questions');
 
   // Dữ liệu quản trị động (đồng bộ qua LocalStorage và sự kiện hệ thống)
+  const [contestsList, setContestsList] = useState<ContestInfo[]>(getStoredContestsList);
   const [contestInfo, setContestInfo] = useState<ContestInfo>(getStoredContestInfo);
   const [questions, setQuestions] = useState<ContestQuestion[]>(getStoredContestQuestions);
   const [roster, setRoster] = useState<Record<string, string[]>>(getStoredStudentsByClass);
   const [submissions, setSubmissions] = useState<ContestSubmission[]>(getContestSubmissions);
+  const [leaderboardContestId, setLeaderboardContestId] = useState<string>(() => getStoredContestInfo().id);
 
   // Thông tin đăng ký dự thi
   const [selectedClass, setSelectedClass] = useState<string>('8A1');
@@ -63,7 +66,9 @@ export const OnlineContest: React.FC = () => {
   // Lắng nghe sự kiện đồng bộ dữ liệu từ Modal Quản trị hoặc Tab khác
   useEffect(() => {
     const handleSync = () => {
-      setContestInfo(getStoredContestInfo());
+      const active = getStoredContestInfo();
+      setContestsList(getStoredContestsList());
+      setContestInfo(active);
       setQuestions(getStoredContestQuestions());
       setSubmissions(getContestSubmissions());
       setRoster(getStoredStudentsByClass());
@@ -79,6 +84,13 @@ export const OnlineContest: React.FC = () => {
       window.removeEventListener('storage', handleSync);
     };
   }, []);
+
+  // Đồng bộ ID hội thi trên bảng xếp hạng khi hội thi hiện hành thay đổi
+  useEffect(() => {
+    if (contestInfo?.id) {
+      setLeaderboardContestId(contestInfo.id);
+    }
+  }, [contestInfo?.id]);
 
   // Đặt tên mặc định khi đổi lớp hoặc khi danh sách lớp cập nhật
   useEffect(() => {
@@ -191,6 +203,7 @@ export const OnlineContest: React.FC = () => {
 
     const newSub: ContestSubmission = {
       id: `sub-${Date.now()}`,
+      contestId: contestInfo.id,
       studentName: currentCandidate?.name || 'Học sinh',
       studentClass: currentCandidate?.className || '8A1',
       score: correctCount,
@@ -205,21 +218,26 @@ export const OnlineContest: React.FC = () => {
     setScreen('result');
   };
 
+  // Lọc danh sách bài thi theo hội thi đang được chọn trên bảng xếp hạng
+  const activeLeaderboardSubmissions = useMemo(() => {
+    return submissions.filter((s) => s.contestId === leaderboardContestId);
+  }, [submissions, leaderboardContestId]);
+
   // Tính bảng xếp hạng cá nhân Top 10 (Sắp xếp: Điểm cao nhất -> Thời gian nhanh nhất)
   const sortedIndividuals = useMemo(() => {
-    return [...submissions].sort((a, b) => {
+    return [...activeLeaderboardSubmissions].sort((a, b) => {
       if (b.score !== a.score) {
         return b.score - a.score;
       }
       return a.timeSpentSeconds - b.timeSpentSeconds;
     }).slice(0, 10);
-  }, [submissions]);
+  }, [activeLeaderboardSubmissions]);
 
   // Tính bảng xếp hạng thi đua tập thể theo Chi đội / Lớp
   const classLeaderboard = useMemo(() => {
     const classMap: Record<string, { totalScore: number; count: number; perfectCount: number }> = {};
 
-    submissions.forEach((sub) => {
+    activeLeaderboardSubmissions.forEach((sub) => {
       if (!classMap[sub.studentClass]) {
         classMap[sub.studentClass] = { totalScore: 0, count: 0, perfectCount: 0 };
       }
@@ -245,7 +263,7 @@ export const OnlineContest: React.FC = () => {
       if (b.avgScore !== a.avgScore) return b.avgScore - a.avgScore;
       return b.participantsCount - a.participantsCount;
     });
-  }, [submissions]);
+  }, [activeLeaderboardSubmissions]);
 
   // In / Tải giấy khen
   const handlePrintCertificate = () => {
@@ -767,10 +785,26 @@ export const OnlineContest: React.FC = () => {
               </h3>
             </div>
 
-            <div className="flex items-center space-x-2">
+            <div className="flex flex-wrap items-center justify-center sm:justify-end gap-2">
+              <div className="flex items-center space-x-1.5 bg-white px-3 py-1.5 rounded-xl border border-heritage-gold-300 shadow-xs">
+                <Trophy className="w-3.5 h-3.5 text-heritage-red-700 flex-shrink-0" />
+                <select
+                  value={leaderboardContestId}
+                  onChange={(e) => setLeaderboardContestId(e.target.value)}
+                  className="bg-transparent font-bold text-xs text-heritage-ink-900 focus:outline-none cursor-pointer max-w-[200px] truncate"
+                  title="Chọn Hội thi cần xem bảng xếp hạng"
+                >
+                  {contestsList.map((c) => (
+                    <option key={c.id} value={c.id}>
+                      {c.status === 'active' ? '⭐ [Đang mở]' : c.status === 'archived' ? '📦 [Đã lưu trữ]' : '📝 [Dự thảo]'} {c.title}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
               <button
                 onClick={() => setLeaderboardTab('individual')}
-                className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition ${
+                className={`px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition ${
                   leaderboardTab === 'individual'
                     ? 'bg-heritage-red-700 text-white shadow-sm'
                     : 'bg-white text-heritage-ink-700 border border-heritage-ivory-300 hover:bg-heritage-red-50'
@@ -780,7 +814,7 @@ export const OnlineContest: React.FC = () => {
               </button>
               <button
                 onClick={() => setLeaderboardTab('class')}
-                className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition ${
+                className={`px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition ${
                   leaderboardTab === 'class'
                     ? 'bg-heritage-red-700 text-white shadow-sm'
                     : 'bg-white text-heritage-ink-700 border border-heritage-ivory-300 hover:bg-heritage-red-50'
@@ -797,10 +831,31 @@ export const OnlineContest: React.FC = () => {
                 title="Quản lý toàn bộ danh sách điểm thi & Xuất Excel"
               >
                 <Settings className="w-3.5 h-3.5 text-heritage-red-800" />
-                <span>Quản trị điểm thi</span>
+                <span>Quản trị điểm</span>
               </button>
             </div>
           </div>
+
+          {/* Banner Kỷ yếu nếu xem Hội thi đã Lưu trữ */}
+          {(() => {
+            const currentC = contestsList.find((c) => c.id === leaderboardContestId);
+            if (currentC && currentC.status === 'archived') {
+              return (
+                <div className="mb-6 p-4 bg-purple-50/80 border border-purple-200 rounded-2xl flex items-start space-x-3 text-xs text-purple-950 shadow-xs">
+                  <FolderArchive className="w-5 h-5 text-purple-700 flex-shrink-0 mt-0.5" />
+                  <div>
+                    <span className="font-bold text-sm text-purple-900 block">
+                      Bảng Vàng Kỷ Yếu Danh Dự (Đã Tổng Kết & Lưu Trữ Hồ Sơ {currentC.archivedAt ? `ngày ${currentC.archivedAt}` : ''})
+                    </span>
+                    <p className="text-xs text-purple-800 italic mt-1 leading-relaxed">
+                      {currentC.summaryNote || 'Hội thi đã hoàn thành xuất sắc các mục tiêu thi đua đề ra.'}
+                    </p>
+                  </div>
+                </div>
+              );
+            }
+            return null;
+          })()}
 
           {/* TAB 1: BẢNG XẾP HẠNG CÁ NHÂN */}
           {leaderboardTab === 'individual' && (
