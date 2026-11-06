@@ -13,12 +13,14 @@ import {
   ShieldCheck,
   Printer,
   SlidersHorizontal,
-  ListFilter
+  ListFilter,
+  LayoutGrid
 } from 'lucide-react';
 import { HorizontalTimelineRail } from './HorizontalTimelineRail';
+import { TwoColumnTimelineMasonry } from './TwoColumnTimelineMasonry';
 
 export const Timeline: React.FC = () => {
-  const [viewMode, setViewMode] = useState<'rail' | 'vertical'>('rail'); // Default to 'rail' (Phương án 4)
+  const [viewMode, setViewMode] = useState<'masonry' | 'rail' | 'vertical'>('masonry'); // Default to 'masonry' (Phương án 2)
   const [filter, setFilter] = useState<string>('all');
   const [selectedEvent, setSelectedEvent] = useState<TimelineEvent | null>(null);
   const [fontSize, setFontSize] = useState<'normal' | 'large'>('normal');
@@ -67,9 +69,23 @@ export const Timeline: React.FC = () => {
           </p>
         </div>
 
-        {/* View Mode Toggle: Phương án 4 (Thước đo tương tác ngang) vs Phương án 1 (Trục dọc) */}
+        {/* View Mode Toggle: Phương án 2 (2 Cột đan cài) vs Phương án 4 (Thước đo ngang) vs Phương án 1 (Trục dọc) */}
         <div className="flex flex-col items-center justify-center mb-8">
           <div className="inline-flex p-1 rounded-2xl bg-heritage-ivory-200 border border-heritage-gold-300 shadow-inner max-w-full overflow-x-auto">
+            <button
+              onClick={() => setViewMode('masonry')}
+              className={`flex items-center space-x-2 px-3 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all whitespace-nowrap ${
+                viewMode === 'masonry'
+                  ? 'bg-heritage-red-700 text-white shadow-md'
+                  : 'text-heritage-ink-700 hover:text-heritage-red-700'
+              }`}
+            >
+              <LayoutGrid className="w-4 h-4" />
+              <span>🌟 2 Cột đan cài (Phương án 2)</span>
+              <span className="hidden lg:inline-block bg-heritage-gold-400 text-heritage-ink-950 text-[10px] font-black px-1.5 py-0.5 rounded ml-1">
+                Biên niên sử
+              </span>
+            </button>
             <button
               onClick={() => setViewMode('rail')}
               className={`flex items-center space-x-2 px-3 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all whitespace-nowrap ${
@@ -79,9 +95,9 @@ export const Timeline: React.FC = () => {
               }`}
             >
               <SlidersHorizontal className="w-4 h-4" />
-              <span>🚀 Thước đo thời gian ngang (Phương án 4)</span>
-              <span className="hidden md:inline-block bg-heritage-gold-400 text-heritage-ink-950 text-[10px] font-black px-1.5 py-0.5 rounded ml-1">
-                Kiosk / Smart TV
+              <span>🚀 Thước đo ngang (Phương án 4)</span>
+              <span className="hidden lg:inline-block bg-heritage-gold-400 text-heritage-ink-950 text-[10px] font-black px-1.5 py-0.5 rounded ml-1">
+                Smart TV
               </span>
             </button>
             <button
@@ -93,7 +109,7 @@ export const Timeline: React.FC = () => {
               }`}
             >
               <ListFilter className="w-4 h-4" />
-              <span>📜 Dòng thời gian dọc (Phương án 1)</span>
+              <span>📜 Trục dọc gọn (Phương án 1)</span>
             </button>
           </div>
         </div>
@@ -115,8 +131,15 @@ export const Timeline: React.FC = () => {
           ))}
         </div>
 
-        {/* Content Render: Either Horizontal Rail (Phương án 4) or Vertical Stream (Phương án 1) */}
-        {viewMode === 'rail' ? (
+        {/* Content Render: Masonry (Phương án 2) | Horizontal Rail (Phương án 4) | Vertical Stream (Phương án 1) */}
+        {viewMode === 'masonry' ? (
+          <div className="animate-fadeIn">
+            <TwoColumnTimelineMasonry
+              events={filteredEvents}
+              onOpenDetailModal={(ev) => setSelectedEvent(ev)}
+            />
+          </div>
+        ) : viewMode === 'rail' ? (
           <div className="animate-fadeIn">
             <HorizontalTimelineRail
               events={filteredEvents}
