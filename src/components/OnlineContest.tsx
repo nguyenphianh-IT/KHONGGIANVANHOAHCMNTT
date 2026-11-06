@@ -16,10 +16,12 @@ import {
   saveContestSubmission,
   formatTime,
   EVENT_CONTEST_DATA_CHANGED,
+  fetchSupabaseContestData,
+  fetchSupabaseQuestions,
 } from '../data/contestData';
 import {
   Trophy, Award, Clock, CheckCircle2, AlertTriangle, ChevronRight,
-  User, Printer, Settings, BookOpen, Layers, FolderArchive
+  User, Printer, Settings, BookOpen, Layers, FolderArchive, Cloud
 } from 'lucide-react';
 import { ContestManagerModal } from './cms/ContestManagerModal';
 
@@ -60,8 +62,36 @@ export const OnlineContest: React.FC = () => {
   const [latestSubmission, setLatestSubmission] = useState<ContestSubmission | null>(null);
   const [showCertificate, setShowCertificate] = useState<boolean>(false);
 
-  // Bảng xếp hạng
+  // Bảng xếp hạng & Trạng thái Supabase Cloud
   const [leaderboardTab, setLeaderboardTab] = useState<'individual' | 'class'>('individual');
+  const [isCloudConnected, setIsCloudConnected] = useState<boolean>(true);
+
+  // Kéo dữ liệu câu hỏi và hội thi từ Supabase Cloud khi người dùng truy cập
+  useEffect(() => {
+    let isMounted = true;
+    const initCloud = async () => {
+      try {
+        const [cloudData, cloudQuestions] = await Promise.all([
+          fetchSupabaseContestData(),
+          fetchSupabaseQuestions(),
+        ]);
+        if (isMounted) {
+          if (cloudData.success) {
+            setIsCloudConnected(true);
+            if (cloudData.contests) setContestsList(cloudData.contests);
+            if (cloudData.submissions) setSubmissions(cloudData.submissions);
+          }
+          if (cloudQuestions && cloudQuestions.length > 0) {
+            setQuestions(cloudQuestions);
+          }
+        }
+      } catch (err) {
+        console.warn('[OnlineContest Cloud Init Warning]', err);
+      }
+    };
+    initCloud();
+    return () => { isMounted = false; };
+  }, []);
 
   // Lắng nghe sự kiện đồng bộ dữ liệu từ Modal Quản trị hoặc Tab khác
   useEffect(() => {
@@ -292,6 +322,12 @@ export const OnlineContest: React.FC = () => {
               }`}>
                 {contestInfo.isOpen !== false ? '🟢 Cổng thi mở' : '🔴 Cổng thi đóng'}
               </span>
+              {isCloudConnected && (
+                <span className="hidden sm:inline-flex items-center space-x-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-100 text-blue-800 border border-blue-300">
+                  <Cloud className="w-3 h-3 text-blue-600" />
+                  <span>Supabase Live</span>
+                </span>
+              )}
             </div>
             <p className="text-[11px] text-heritage-ink-600 mt-0.5">
               Ngân hàng: <strong>{questions.length} câu hỏi</strong> • Đã nộp: <strong>{submissions.length} bài thi</strong> • 24 lớp THCS
@@ -776,9 +812,17 @@ export const OnlineContest: React.FC = () => {
           {/* Header Bảng xếp hạng */}
           <div className="flex flex-col sm:flex-row items-center justify-between pb-6 border-b border-heritage-ivory-300 gap-4 mb-6">
             <div className="text-center sm:text-left">
-              <div className="inline-flex items-center space-x-1.5 text-xs uppercase tracking-wider text-heritage-red-700 font-bold bg-heritage-red-50 px-3 py-1 rounded-full border border-heritage-red-200 mb-2">
-                <Trophy className="w-3.5 h-3.5 text-heritage-gold-600" />
-                <span>Bảng Vinh Danh Học Đường</span>
+              <div className="flex items-center space-x-2 mb-2">
+                <div className="inline-flex items-center space-x-1.5 text-xs uppercase tracking-wider text-heritage-red-700 font-bold bg-heritage-red-50 px-3 py-1 rounded-full border border-heritage-red-200">
+                  <Trophy className="w-3.5 h-3.5 text-heritage-gold-600" />
+                  <span>Bảng Vinh Danh Học Đường</span>
+                </div>
+                {isCloudConnected && (
+                  <div className="inline-flex items-center space-x-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-300">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                    <span>Supabase Cloud Sync</span>
+                  </div>
+                )}
               </div>
               <h3 className="font-serif text-xl sm:text-2xl font-bold text-heritage-ink-900">
                 Bảng Xếp Hạng Hội Thi Trực Tuyến

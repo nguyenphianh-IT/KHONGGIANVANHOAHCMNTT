@@ -19,7 +19,10 @@ import {
   PlayCircle,
   PauseCircle,
   FolderArchive,
-  FileSpreadsheet
+  FileSpreadsheet,
+  Cloud,
+  CloudUpload,
+  RefreshCw
 } from 'lucide-react';
 import {
   ContestInfo,
@@ -42,7 +45,9 @@ import {
   deleteContestSubmission,
   resetContestSubmissions,
   formatTime,
-  EVENT_CONTEST_DATA_CHANGED
+  EVENT_CONTEST_DATA_CHANGED,
+  syncContestsAndSubmissionsToSupabase,
+  fetchSupabaseContestData
 } from '../../data/contestData';
 import {
   SCHOOL_CLASSES,
@@ -75,8 +80,58 @@ export const ContestManagerModal: React.FC<ContestManagerModalProps> = ({
   const [submissions, setSubmissions] = useState<ContestSubmission[]>(getContestSubmissions);
   const [roster, setRoster] = useState<Record<string, string[]>>(getStoredStudentsByClass);
 
-  // 2. Feedback Toast
+  // 2. Feedback Toast & Cloud Sync State
   const [toastMsg, setToastMsg] = useState<{ type: 'success' | 'error' | 'info'; text: string } | null>(null);
+  const [isSyncingCloud, setIsSyncingCloud] = useState<boolean>(false);
+  const [cloudSyncStatus, setCloudSyncStatus] = useState<string | null>(null);
+
+  const handleSyncToCloud = async () => {
+    setIsSyncingCloud(true);
+    setCloudSyncStatus(null);
+    try {
+      const res = await syncContestsAndSubmissionsToSupabase(contestsList, submissions);
+      if (res.success) {
+        setCloudSyncStatus(res.message);
+        setToastMsg({ type: 'success', text: res.message });
+      } else {
+        setCloudSyncStatus(res.message);
+        setToastMsg({ type: 'error', text: res.message });
+      }
+    } catch (err: any) {
+      const msg = `Lỗi: ${err?.message || 'Không thể đồng bộ Supabase'}`;
+      setCloudSyncStatus(msg);
+      setToastMsg({ type: 'error', text: msg });
+    } finally {
+      setIsSyncingCloud(false);
+      setTimeout(() => setCloudSyncStatus(null), 6000);
+    }
+  };
+
+  const handlePullFromCloud = async () => {
+    setIsSyncingCloud(true);
+    setCloudSyncStatus(null);
+    try {
+      const res = await fetchSupabaseContestData();
+      if (res.success) {
+        if (res.contests) setContestsList(res.contests);
+        if (res.submissions) setSubmissions(res.submissions);
+        const successMsg = 'Đã tải thành công dữ liệu mới nhất từ Supabase Cloud!';
+        setCloudSyncStatus(successMsg);
+        setToastMsg({ type: 'success', text: successMsg });
+      } else {
+        const errMsg = res.error || 'Không thể tải dữ liệu từ Cloud';
+        setCloudSyncStatus(errMsg);
+        setToastMsg({ type: 'error', text: errMsg });
+      }
+    } catch (err: any) {
+      const msg = `Lỗi: ${err?.message || 'Không thể tải từ Supabase'}`;
+      setCloudSyncStatus(msg);
+      setToastMsg({ type: 'error', text: msg });
+    } finally {
+      setIsSyncingCloud(false);
+      setTimeout(() => setCloudSyncStatus(null), 5000);
+    }
+  };
 
   // 3. Question Form Modal State (for Adding/Editing)
   const [editingQuestion, setEditingQuestion] = useState<ContestQuestion | null>(null);
@@ -565,56 +620,102 @@ export const ContestManagerModal: React.FC<ContestManagerModalProps> = ({
           </button>
         </header>
 
-        {/* Navigation Tabs Bar */}
-        <div className="bg-heritage-ivory-200 border-b border-heritage-gold-300/80 px-4 sm:px-6 flex items-center space-x-1 sm:space-x-2 overflow-x-auto no-scrollbar flex-shrink-0 py-2">
-          <button
-            onClick={() => setActiveTab('contest')}
-            className={`flex items-center space-x-1.5 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all whitespace-nowrap ${
-              activeTab === 'contest'
-                ? 'bg-heritage-red-700 text-white shadow-sm'
-                : 'text-heritage-ink-700 hover:text-heritage-red-700 hover:bg-white/60'
-            }`}
-          >
-            <Trophy className="w-4 h-4" />
-            <span>Quản Lý Từng Hội Thi ({contestsList.length})</span>
-          </button>
+        {/* Navigation Tabs Bar & Supabase Cloud Controls */}
+        <div className="bg-heritage-ivory-200 border-b border-heritage-gold-300/80 px-4 sm:px-6 flex flex-wrap items-center justify-between gap-2 flex-shrink-0 py-2">
+          <div className="flex items-center space-x-1 sm:space-x-2 overflow-x-auto no-scrollbar">
+            <button
+              onClick={() => setActiveTab('contest')}
+              className={`flex items-center space-x-1.5 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all whitespace-nowrap ${
+                activeTab === 'contest'
+                  ? 'bg-heritage-red-700 text-white shadow-sm'
+                  : 'text-heritage-ink-700 hover:text-heritage-red-700 hover:bg-white/60'
+              }`}
+            >
+              <Trophy className="w-4 h-4" />
+              <span>Quản Lý Từng Hội Thi ({contestsList.length})</span>
+            </button>
 
-          <button
-            onClick={() => setActiveTab('students')}
-            className={`flex items-center space-x-1.5 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all whitespace-nowrap ${
-              activeTab === 'students'
-                ? 'bg-heritage-red-700 text-white shadow-sm'
-                : 'text-heritage-ink-700 hover:text-heritage-red-700 hover:bg-white/60'
-            }`}
-          >
-            <GraduationCap className="w-4 h-4" />
-            <span>Bảng Điểm & Lưu Trữ Kết Quả ({filteredSubmissions.length})</span>
-          </button>
+            <button
+              onClick={() => setActiveTab('students')}
+              className={`flex items-center space-x-1.5 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all whitespace-nowrap ${
+                activeTab === 'students'
+                  ? 'bg-heritage-red-700 text-white shadow-sm'
+                  : 'text-heritage-ink-700 hover:text-heritage-red-700 hover:bg-white/60'
+              }`}
+            >
+              <GraduationCap className="w-4 h-4" />
+              <span>Bảng Điểm & Lưu Trữ Kết Quả ({filteredSubmissions.length})</span>
+            </button>
 
-          <button
-            onClick={() => setActiveTab('questions')}
-            className={`flex items-center space-x-1.5 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all whitespace-nowrap ${
-              activeTab === 'questions'
-                ? 'bg-heritage-red-700 text-white shadow-sm'
-                : 'text-heritage-ink-700 hover:text-heritage-red-700 hover:bg-white/60'
-            }`}
-          >
-            <HelpCircle className="w-4 h-4" />
-            <span>Ngân Hàng Câu Hỏi ({questions.length})</span>
-          </button>
+            <button
+              onClick={() => setActiveTab('questions')}
+              className={`flex items-center space-x-1.5 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all whitespace-nowrap ${
+                activeTab === 'questions'
+                  ? 'bg-heritage-red-700 text-white shadow-sm'
+                  : 'text-heritage-ink-700 hover:text-heritage-red-700 hover:bg-white/60'
+              }`}
+            >
+              <HelpCircle className="w-4 h-4" />
+              <span>Ngân Hàng Câu Hỏi ({questions.length})</span>
+            </button>
 
-          <button
-            onClick={() => setActiveTab('roster')}
-            className={`flex items-center space-x-1.5 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all whitespace-nowrap ${
-              activeTab === 'roster'
-                ? 'bg-heritage-red-700 text-white shadow-sm'
-                : 'text-heritage-ink-700 hover:text-heritage-red-700 hover:bg-white/60'
-            }`}
-          >
-            <Users className="w-4 h-4" />
-            <span>Danh Mục 24 Lớp Học</span>
-          </button>
+            <button
+              onClick={() => setActiveTab('roster')}
+              className={`flex items-center space-x-1.5 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all whitespace-nowrap ${
+                activeTab === 'roster'
+                  ? 'bg-heritage-red-700 text-white shadow-sm'
+                  : 'text-heritage-ink-700 hover:text-heritage-red-700 hover:bg-white/60'
+              }`}
+            >
+              <Users className="w-4 h-4" />
+              <span>Danh Mục 24 Lớp Học</span>
+            </button>
+          </div>
+
+          {/* Supabase Cloud Live Sync Buttons */}
+          <div className="flex items-center space-x-2">
+            <div className="hidden md:flex items-center space-x-1.5 px-2.5 py-1 bg-emerald-50 border border-emerald-300 rounded-lg text-[11px] font-bold text-emerald-800">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+              <span>Supabase Cloud Live</span>
+            </div>
+
+            <button
+              onClick={handleSyncToCloud}
+              disabled={isSyncingCloud}
+              className="px-3 py-1.5 bg-emerald-700 hover:bg-emerald-800 disabled:opacity-50 text-white font-bold text-xs rounded-xl shadow-xs transition flex items-center space-x-1.5"
+              title="Đẩy toàn bộ hội thi và bài thi học sinh lên Supabase Cloud Database"
+            >
+              {isSyncingCloud ? (
+                <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+              ) : (
+                <CloudUpload className="w-3.5 h-3.5" />
+              )}
+              <span>Đồng Bộ Cloud</span>
+            </button>
+
+            <button
+              onClick={handlePullFromCloud}
+              disabled={isSyncingCloud}
+              className="p-1.5 bg-white hover:bg-heritage-ivory-200 text-heritage-ink-700 border border-heritage-gold-300 rounded-xl transition shadow-xs"
+              title="Tải lại dữ liệu mới nhất từ Supabase Cloud"
+            >
+              <RefreshCw className={`w-3.5 h-3.5 ${isSyncingCloud ? 'animate-spin' : ''}`} />
+            </button>
+          </div>
         </div>
+
+        {/* Cloud Sync Notification Banner */}
+        {cloudSyncStatus && (
+          <div className="bg-emerald-500 text-white text-xs px-4 py-2 flex items-center justify-between animate-fadeIn">
+            <div className="flex items-center space-x-2">
+              <Cloud className="w-4 h-4" />
+              <span>{cloudSyncStatus}</span>
+            </div>
+            <button onClick={() => setCloudSyncStatus(null)} className="text-white/80 hover:text-white">
+              <X className="w-3.5 h-3.5" />
+            </button>
+          </div>
+        )}
 
         {/* Main Content Area */}
         <div className="flex-1 overflow-y-auto p-4 sm:p-6 select-text">

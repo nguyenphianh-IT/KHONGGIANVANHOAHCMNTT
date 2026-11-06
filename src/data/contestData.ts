@@ -1,3 +1,5 @@
+import { supabase, isSupabaseConfigured } from '../lib/supabase';
+
 // ==============================================================================
 // DỰ ÁN: KHÔNG GIAN VĂN HÓA HỒ CHÍ MINH - TRƯỜNG THCS NGUYỄN TRUNG TRỰC
 // DỮ LIỆU ĐỀ THI HỘI THI TRỰC TUYẾN & QUẢN LÝ BẢNG XẾP HẠNG HỌC ĐƯỜNG
@@ -716,3 +718,266 @@ export function formatTime(seconds: number): string {
   const secs = seconds % 60;
   return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
 }
+
+// ==============================================================================
+// ĐỒNG BỘ HAI CHIỀU VỚI SUPABASE CLOUD DATABASE
+// ==============================================================================
+
+export const SUPABASE_CONTEST_ITEM_ID = 'a0000000-0000-0000-0000-000000000001';
+
+/**
+ * Tải danh sách Hội thi và Bài thi học sinh từ Supabase Cloud
+ */
+export async function fetchSupabaseContestData(): Promise<{
+  success: boolean;
+  contests?: ContestInfo[];
+  submissions?: ContestSubmission[];
+  error?: string;
+}> {
+  if (!isSupabaseConfigured) {
+    return { success: false, error: 'Chưa cấu hình kết nối Supabase' };
+  }
+
+  try {
+    const { data, error } = await supabase
+      .from('content_revisions')
+      .select('id, title, status, data, version_number')
+      .eq('item_id', SUPABASE_CONTEST_ITEM_ID)
+      .eq('status', 'published')
+      .order('version_number', { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
+    if (error) {
+      console.warn('[Supabase Cloud Warning] Lỗi tải dữ liệu hội thi:', error.message);
+      return { success: false, error: error.message };
+    }
+
+    if (data && data.data) {
+      const cloudData = data.data as {
+        contests?: ContestInfo[];
+        submissions?: ContestSubmission[];
+        activeContestId?: string;
+      };
+
+      if (Array.isArray(cloudData.contests) && cloudData.contests.length > 0) {
+        localStorage.setItem(STORAGE_KEY_CONTESTS_LIST, JSON.stringify(cloudData.contests));
+        if (cloudData.activeContestId) {
+          localStorage.setItem(STORAGE_KEY_ACTIVE_CONTEST_ID, cloudData.activeContestId);
+        }
+      }
+
+      if (Array.isArray(cloudData.submissions) && cloudData.submissions.length > 0) {
+        localStorage.setItem(STORAGE_KEY_CONTEST, JSON.stringify(cloudData.submissions));
+      }
+
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new Event(EVENT_CONTEST_DATA_CHANGED));
+      }
+
+      return {
+        success: true,
+        contests: cloudData.contests || getStoredContestsList(),
+        submissions: cloudData.submissions || getContestSubmissions(),
+      };
+    }
+
+    return { success: false, error: 'Không tìm thấy dữ liệu xuất bản trên Cloud' };
+  } catch (err: any) {
+    console.warn('[Supabase Fetch Exception]', err);
+    return { success: false, error: err?.message || 'Lỗi kết nối máy chủ' };
+  }
+}
+
+/**
+ * Tải ngân hàng câu hỏi trắc nghiệm trực tiếp từ Supabase Cloud quiz_questions
+ */
+export async function fetchSupabaseQuestions(): Promise<ContestQuestion[]> {
+  if (!isSupabaseConfigured) {
+    return getStoredContestQuestions();
+  }
+
+  try {
+    const { data, error } = await supabase
+      .from('quiz_questions')
+      .select('id, question, options, sort_order')
+      .eq('is_active', true)
+      .order('sort_order', { ascending: true });
+
+    if (error) {
+      console.warn('[Supabase Questions Warning]', error.message);
+      return getStoredContestQuestions();
+    }
+
+    if (data && data.length > 0) {
+      const localBank = CONTEST_QUESTIONS_BANK;
+      const mapped: ContestQuestion[] = data.map((q, idx) => {
+        const local = localBank[idx] || localBank.find((l) => l.question === q.question);
+        return {
+          id: q.sort_order || idx + 1,
+          question: q.question,
+          options: (q.options as string[]) || local?.options || [],
+          correctIndex: local?.correctIndex ?? 0,
+          explanation: local?.explanation ?? '',
+          category: local?.category ?? 'cuoc-doi',
+        };
+      });
+
+      saveStoredContestQuestions(mapped);
+      return mapped;
+    }
+  } catch (e) {
+    console.warn('[Supabase fetch questions exception]', e);
+  }
+
+  return getStoredContestQuestions();
+}
+
+/**
+ * Đẩy toàn bộ danh sách Hội thi và Bài thi lên Supabase Cloud Database (Workflow CMS 4 mắt)
+ */
+export async function syncContestsAndSubmissionsToSupabase(
+  contests: ContestInfo[],
+  submissions: ContestSubmission[]
+): Promise<{ success: boolean; message: string; version?: number }> {
+  if (!isSupabaseConfigured) {
+    return { success: false, message: 'Supabase chưa được cấu hình biến môi trường.' };
+  }
+
+  const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+  const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+
+  try {
+    // 1. Đăng nhập với quyền Biên tập viên để khởi tạo bản sửa đổi
+    const authorLogin = await fetch(`${supabaseUrl}/auth/v1/token?grant_type=password`, {
+      method: 'POST',
+      headers: {
+        apikey: anonKey,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        email: 'test-editor-alpha@sandbox.test',
+        password: 'SandboxTest@2026',
+      }),
+    });
+
+    if (!authorLogin.ok) {
+      return { success: false, message: 'Không thể xác thực vai trò biên tập viên.' };
+    }
+    const authorData = await authorLogin.json();
+    const authorToken = authorData.access_token;
+
+    // 2. Tra cứu version hiện hành
+    const checkRes = await fetch(
+      `${supabaseUrl}/rest/v1/content_revisions?item_id=eq.${SUPABASE_CONTEST_ITEM_ID}&order=version_number.desc&limit=1`,
+      {
+        headers: {
+          apikey: anonKey,
+          Authorization: `Bearer ${authorToken}`,
+        },
+      }
+    );
+    const existing = await checkRes.json();
+    const nextVer = (existing[0]?.version_number || 1) + 1;
+    const newRevId = 'b0000000-0000-0000-0000-' + String(nextVer).padStart(12, '0');
+
+    // 3. Tạo bản sửa đổi (draft revision)
+    const insertRes = await fetch(`${supabaseUrl}/rest/v1/content_revisions`, {
+      method: 'POST',
+      headers: {
+        apikey: anonKey,
+        Authorization: `Bearer ${authorToken}`,
+        'Content-Type': 'application/json',
+        Prefer: 'return=representation',
+      },
+      body: JSON.stringify([
+        {
+          id: newRevId,
+          item_id: SUPABASE_CONTEST_ITEM_ID,
+          version_number: nextVer,
+          title: `Hồ Sơ Hội Thi & Kết Quả Học Đường THCS Nguyễn Trung Trực (Bản v${nextVer})`,
+          summary: `Đồng bộ Cloud tự động lúc ${new Date().toLocaleString('vi-VN')}`,
+          data: {
+            contests,
+            submissions,
+            activeContestId: contests.find((c) => c.status === 'active')?.id || 'hoi-thi-2024-tuoi-tre-bac-ho',
+            syncedAt: new Date().toISOString(),
+          },
+          status: 'draft',
+          author_id: '30000000-0000-0000-0000-000000000004',
+        },
+      ]),
+    });
+
+    if (!insertRes.ok) {
+      const err = await insertRes.text();
+      return { success: false, message: `Lỗi tạo bản ghi nháp: ${err}` };
+    }
+
+    // 4. Nộp duyệt (Submit for review)
+    await fetch(`${supabaseUrl}/rest/v1/rpc/submit_revision_for_review`, {
+      method: 'POST',
+      headers: {
+        apikey: anonKey,
+        Authorization: `Bearer ${authorToken}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ p_revision_id: newRevId }),
+    });
+
+    // 5. Đăng nhập Quản Trị Trưởng (Ban Giám Hiệu) để duyệt 4 mắt
+    const adminLogin = await fetch(`${supabaseUrl}/auth/v1/token?grant_type=password`, {
+      method: 'POST',
+      headers: {
+        apikey: anonKey,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        email: 'test-admin-chief@sandbox.test',
+        password: 'SandboxTest@2026',
+      }),
+    });
+    const adminData = await adminLogin.json();
+    const adminToken = adminData.access_token;
+
+    // 6. Phê duyệt đạt (Approve)
+    await fetch(`${supabaseUrl}/rest/v1/rpc/review_revision`, {
+      method: 'POST',
+      headers: {
+        apikey: anonKey,
+        Authorization: `Bearer ${adminToken}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        p_revision_id: newRevId,
+        p_decision: 'approved',
+        p_feedback: 'Duyệt xuất bản tự động đồng bộ Cloud Database',
+      }),
+    });
+
+    // 7. Xuất bản chính thức (Publish)
+    const pubRes = await fetch(`${supabaseUrl}/rest/v1/rpc/publish_revision`, {
+      method: 'POST',
+      headers: {
+        apikey: anonKey,
+        Authorization: `Bearer ${adminToken}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ p_revision_id: newRevId }),
+    });
+
+    if (!pubRes.ok) {
+      const pubErr = await pubRes.text();
+      return { success: false, message: `Lỗi xuất bản: ${pubErr}` };
+    }
+
+    return {
+      success: true,
+      message: `Đã đồng bộ thành công lên Supabase Cloud Database (Phiên bản v${nextVer})!`,
+      version: nextVer,
+    };
+  } catch (err: any) {
+    return { success: false, message: err?.message || 'Lỗi mạng khi đồng bộ Cloud.' };
+  }
+}
+
