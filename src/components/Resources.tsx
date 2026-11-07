@@ -176,10 +176,6 @@ export const Resources: React.FC = () => {
             Kho Tư Liệu Số Hóa
           </h2>
           <div className="w-16 h-1 bg-heritage-gold-400 mx-auto mt-4 rounded-full" />
-          <p className="mt-4 text-base sm:text-lg text-heritage-ink-700 leading-relaxed">
-            Hệ thống hóa các văn kiện, hình ảnh, bài viết và thước phim tư liệu quý giá về Chủ tịch Hồ Chí Minh,
-            được thẩm định và phân loại khoa học phục vụ học sinh THCS.
-          </p>
         </div>
 
         {/* Search & Filter Controls */}
