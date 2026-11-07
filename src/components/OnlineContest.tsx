@@ -374,11 +374,22 @@ export const OnlineContest: React.FC = () => {
     return processedIndividuals;
   }, [processedIndividuals, leaderboardViewMode, leaderboardSearch]);
 
-  // Thủ khoa dẫn đầu của Hội thi đang hiển thị trên Banner
-  const bannerTopCandidate = useMemo(() => {
+  // Top 3 Thí sinh dẫn đầu của Hội thi đang hiển thị trên Banner Bảng Vàng
+  const bannerTopCandidates = useMemo(() => {
     const contestSubs = submissions.filter((s) => s.contestId === contestInfo.id);
-    if (contestSubs.length === 0) return null;
-    return [...contestSubs].sort(compareSubmissions)[0];
+    if (contestSubs.length === 0) return [];
+
+    // Mỗi học sinh (Họ tên + Lớp) chỉ lấy bài thi có kết quả tốt nhất để xếp hạng công bằng
+    const bestMap = new Map<string, ContestSubmission>();
+    contestSubs.forEach((sub) => {
+      const key = `${sub.studentName.trim().toLowerCase()}__${sub.studentClass.trim().toLowerCase()}`;
+      const existing = bestMap.get(key);
+      if (!existing || compareSubmissions(sub, existing) < 0) {
+        bestMap.set(key, sub);
+      }
+    });
+
+    return Array.from(bestMap.values()).sort(compareSubmissions).slice(0, 3);
   }, [submissions, contestInfo.id]);
 
   // Tra cứu thứ hạng của bài thi vừa nộp
@@ -696,8 +707,8 @@ export const OnlineContest: React.FC = () => {
                 </span>
               </div>
 
-              {/* Tiêu đề chính hội thi - Tối ưu 1 dòng duy nhất */}
-              <h3 className="font-serif text-lg sm:text-2xl md:text-3xl lg:text-3xl xl:text-4xl font-black text-heritage-ivory-50 tracking-tight leading-tight mb-2 drop-shadow-sm whitespace-normal md:whitespace-nowrap overflow-hidden text-ellipsis">
+              {/* Tiêu đề chính hội thi */}
+              <h3 className="font-serif text-xl sm:text-2xl md:text-3xl lg:text-3xl xl:text-4xl font-black text-heritage-ivory-50 tracking-tight leading-snug mb-2.5 drop-shadow-sm">
                 {contestInfo.title}
               </h3>
 
@@ -835,24 +846,23 @@ export const OnlineContest: React.FC = () => {
               </div>
 
             {/* ========================================================= */}
-            {/* CỘT PHẢI (40%): BẢNG VÀNG VINH DANH & GIẤY KHEN ĐIỆN TỬ   */}
-            {/* LẤP ĐẦY KHOẢNG TRỐNG VÀ TRUYỀN CẢM HỨNG THI ĐUA HỌC ĐƯỜNG  */}
+            {/* CỘT PHẢI: BẢNG VÀNG VINH DANH TOP 3 HỌC ĐƯỜNG             */}
             {/* ========================================================= */}
-            <div className="lg:w-[400px] xl:w-[440px] flex-shrink-0 flex flex-col justify-between">
-              <div className="bg-gradient-to-b from-black/45 via-black/35 to-black/50 backdrop-blur-md rounded-2xl p-5 border-2 border-heritage-gold-400/40 shadow-xl relative overflow-hidden flex flex-col justify-between h-full">
+            <div className="lg:w-[420px] xl:w-[460px] flex-shrink-0 flex flex-col justify-between">
+              <div className="bg-gradient-to-b from-black/50 via-black/40 to-black/55 backdrop-blur-md rounded-2xl p-4 sm:p-5 border-2 border-heritage-gold-400/40 shadow-xl relative overflow-hidden flex flex-col justify-between h-full">
                 {/* Vệt sáng trang trí góc thẻ */}
                 <div className="absolute top-0 right-0 w-40 h-40 bg-heritage-gold-400/15 rounded-full blur-2xl pointer-events-none" />
 
                 <div>
                   {/* Header thẻ Bảng vàng */}
-                  <div className="flex items-center justify-between pb-3 border-b border-white/15 mb-3.5">
+                  <div className="flex items-center justify-between pb-3 border-b border-white/15 mb-3">
                     <div className="flex items-center space-x-2">
                       <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-heritage-gold-400 to-amber-600 text-heritage-red-950 flex items-center justify-center shadow-sm">
                         <Trophy className="w-4 h-4" />
                       </div>
                       <div>
                         <span className="font-serif font-black text-xs sm:text-sm uppercase tracking-wide text-heritage-gold-300 block">
-                          Bảng Vàng Học Đường
+                          Bảng Vàng Học Đường • Top 3
                         </span>
                         <span className="text-[10px] text-white/70 block">
                           Thi đua rèn đức luyện tài
@@ -865,60 +875,86 @@ export const OnlineContest: React.FC = () => {
                     </span>
                   </div>
 
-                  {/* Thủ khoa dẫn đầu hội thi đang xem */}
-                  {bannerTopCandidate ? (
-                    <div className="bg-gradient-to-r from-amber-500/20 via-amber-400/10 to-transparent p-3.5 rounded-xl border border-heritage-gold-400/40 mb-3 shadow-xs">
-                      <div className="flex items-center justify-between text-[11px] font-bold text-heritage-gold-300 mb-1.5">
-                        <span className="flex items-center space-x-1">
-                          <span>🥇</span>
-                          <span className="uppercase tracking-wider">Thủ Khoa Đang Dẫn Đầu</span>
-                        </span>
-                        <span className="font-mono text-emerald-300 font-bold">
-                          {getStandardizedScore10(bannerTopCandidate)} Điểm ({bannerTopCandidate.score}/{bannerTopCandidate.totalQuestions} câu • {formatTime(bannerTopCandidate.timeSpentSeconds)})
-                        </span>
-                      </div>
-                      <div className="flex items-center space-x-3">
-                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-heritage-gold-300 to-heritage-gold-500 text-heritage-red-950 font-black text-base flex items-center justify-center shadow border-2 border-white/40 flex-shrink-0">
-                          {bannerTopCandidate.studentName.split(' ').slice(-1)[0][0]}
+                  {/* Danh sách Top 3 Thí Sinh Dẫn Đầu */}
+                  {bannerTopCandidates.length > 0 ? (
+                    <div className="space-y-2">
+                      {bannerTopCandidates.map((cand, idx) => {
+                        const rankStyles = [
+                          {
+                            badge: '🥇 Thủ Khoa',
+                            border: 'border-heritage-gold-400/70 bg-gradient-to-r from-amber-500/25 via-amber-400/15 to-transparent',
+                            avatarBg: 'bg-gradient-to-br from-heritage-gold-300 via-amber-400 to-heritage-gold-500 text-heritage-red-950 ring-2 ring-heritage-gold-400/50',
+                            scoreColor: 'text-heritage-gold-300',
+                          },
+                          {
+                            badge: '🥈 Á Khoa 1',
+                            border: 'border-slate-300/50 bg-gradient-to-r from-slate-400/20 via-slate-300/10 to-transparent',
+                            avatarBg: 'bg-gradient-to-br from-slate-200 to-slate-400 text-slate-900 ring-2 ring-slate-300/50',
+                            scoreColor: 'text-slate-200',
+                          },
+                          {
+                            badge: '🥉 Á Khoa 2',
+                            border: 'border-amber-600/50 bg-gradient-to-r from-amber-700/20 via-amber-600/10 to-transparent',
+                            avatarBg: 'bg-gradient-to-br from-amber-500 to-amber-700 text-amber-950 ring-2 ring-amber-600/50',
+                            scoreColor: 'text-amber-300',
+                          },
+                        ][idx] || {
+                          badge: `#${idx + 1}`,
+                          border: 'border-white/20 bg-white/5',
+                          avatarBg: 'bg-white/20 text-white',
+                          scoreColor: 'text-emerald-300',
+                        };
+
+                        const initialLetter = cand.studentName.trim().split(' ').slice(-1)[0][0] || '★';
+
+                        return (
+                          <div
+                            key={cand.id}
+                            className={`p-2.5 rounded-xl border ${rankStyles.border} flex items-center justify-between gap-2.5 shadow-xs transition hover:scale-[1.01]`}
+                          >
+                            <div className="flex items-center space-x-2.5 min-w-0">
+                              <div className={`w-8 h-8 rounded-full ${rankStyles.avatarBg} font-black text-xs sm:text-sm flex items-center justify-center shadow-sm flex-shrink-0`}>
+                                {initialLetter}
+                              </div>
+
+                              <div className="min-w-0">
+                                <div className="flex items-center space-x-1.5">
+                                  <h4 className="font-serif font-bold text-xs sm:text-sm text-white truncate max-w-[130px] sm:max-w-[170px]">
+                                    {cand.studentName}
+                                  </h4>
+                                  <span className="text-[10px] font-bold text-heritage-gold-300/90 whitespace-nowrap">
+                                    {rankStyles.badge}
+                                  </span>
+                                </div>
+                                <p className="text-[10px] text-heritage-gold-200/80 truncate">
+                                  Chi đội: <strong>Lớp {cand.studentClass}</strong> • Nộp: {cand.submittedAt}
+                                </p>
+                              </div>
+                            </div>
+
+                            <div className="text-right flex-shrink-0">
+                              <span className={`font-mono text-xs sm:text-sm font-bold ${rankStyles.scoreColor} block`}>
+                                {getStandardizedScore10(cand)} Điểm
+                              </span>
+                              <span className="text-[10px] text-heritage-gold-200/70 block">
+                                {cand.score}/{cand.totalQuestions} câu • {formatTime(cand.timeSpentSeconds)}
+                              </span>
+                            </div>
+                          </div>
+                        );
+                      })}
+
+                      {bannerTopCandidates.length < 3 && (
+                        <div className="p-2 rounded-xl bg-white/5 border border-dashed border-white/15 text-center text-[11px] text-heritage-gold-200/70">
+                          🌟 Còn {3 - bannerTopCandidates.length} vị trí trên Bảng Vàng Top 3 đang chờ đón em!
                         </div>
-                        <div className="min-w-0">
-                          <h4 className="font-serif font-bold text-sm sm:text-base text-white truncate">
-                            {bannerTopCandidate.studentName}
-                          </h4>
-                          <p className="text-[11px] text-heritage-gold-200/80 truncate">
-                            Chi đội: <strong>Lớp {bannerTopCandidate.studentClass}</strong> • Nộp: {bannerTopCandidate.submittedAt}
-                          </p>
-                        </div>
-                      </div>
+                      )}
                     </div>
                   ) : (
-                    <div className="p-3.5 rounded-xl bg-white/5 border border-white/10 text-center text-xs text-heritage-gold-200/80 mb-3">
+                    <div className="p-6 rounded-xl bg-white/5 border border-white/10 text-center text-xs text-heritage-gold-200/80">
                       Hội thi đã sẵn sàng! Hãy là thí sinh đầu tiên ghi danh lên Bảng Vàng danh dự.
                     </div>
                   )}
-
-                  {/* Mô phỏng Giấy Khen Điện Tử Thu Nhỏ */}
-                  <div className="bg-heritage-ivory-50 text-heritage-ink-900 rounded-xl p-3 border-2 border-dashed border-heritage-gold-400/70 shadow-md relative">
-                    <div className="flex items-center justify-between text-[8px] font-bold text-heritage-red-800 uppercase tracking-tight border-b border-heritage-ivory-300 pb-1 mb-1.5">
-                      <span>TRƯỜNG THCS NGUYỄN TRUNG TRỰC</span>
-                      <span className="text-heritage-gold-800 font-serif">KHÔNG GIAN VĂN HÓA SỐ</span>
-                    </div>
-                    <div className="text-center py-1">
-                      <div className="inline-flex items-center space-x-1 px-2 py-0.5 rounded-full bg-heritage-red-100 text-heritage-red-800 text-[9px] font-bold uppercase tracking-wider mb-1">
-                        <Award className="w-3 h-3 text-heritage-red-700" />
-                        <span>GIẤY CHỨNG NHẬN ĐIỆN TỬ</span>
-                      </div>
-                      <p className="text-[10px] text-heritage-ink-700 font-medium">
-                        Cấp tự động cho thí sinh đạt từ <strong>{Math.ceil(targetExamQuestionCount * 0.7)}/{targetExamQuestionCount}</strong> câu trắc nghiệm (từ 70%)
-                      </p>
-                    </div>
-                    <div className="flex items-center justify-between pt-1.5 border-t border-heritage-ivory-300 text-[8px] text-heritage-ink-500">
-                      <span className="font-mono font-bold text-heritage-ink-700">Mã QR xác thực số</span>
-                      <span className="px-1.5 py-0.5 rounded bg-red-100 text-red-800 font-bold border border-red-300 text-[8px]">
-                        DẤU MỘC SỐ LIÊN ĐỘI
-                      </span>
-                    </div>
-                  </div>
                 </div>
 
                 {/* Tóm tắt phong trào các chi đội lớp */}
