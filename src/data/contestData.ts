@@ -5,6 +5,15 @@ import { supabase, isSupabaseConfigured } from '../lib/supabase';
 // DỮ LIỆU ĐỀ THI HỘI THI TRỰC TUYẾN & QUẢN LÝ BẢNG XẾP HẠNG HỌC ĐƯỜNG
 // ==============================================================================
 
+export interface QuestionBank {
+  id: string; // Mã định danh ngân hàng (vd: 'bank-cuoc-doi', 'bank-5-dieu', 'bank-hoi-thi-2024-tuoi-tre')
+  name: string; // Tên ngân hàng câu hỏi
+  description?: string; // Mô tả chuyên đề hoặc định hướng bài học
+  contestId?: string; // (Tùy chọn) Gán riêng cho 1 hội thi cụ thể
+  createdAt?: string;
+  isDefault?: boolean; // Ngân hàng mặc định của hệ thống
+}
+
 export interface ContestQuestion {
   id: number;
   question: string;
@@ -12,6 +21,8 @@ export interface ContestQuestion {
   correctIndex: number;
   explanation: string;
   category: 'cuoc-doi' | 'tu-tuong' | '5-dieu-bac-day' | 'thoi-an-truyen-thong';
+  bankId?: string; // ID ngân hàng câu hỏi chứa câu này
+  contestIds?: string[]; // (Tùy chọn) Danh sách ID hội thi được phép sử dụng câu này
 }
 
 export type ContestStatus = 'active' | 'closed' | 'archived' | 'draft';
@@ -34,6 +45,9 @@ export interface ContestInfo {
   createdAt?: string;
   targetAudience?: string; // Đối tượng dự thi: "Khối 6 & Khối 7" hoặc "Khối 8, Khối 9 & Toàn trường"
   categoryFilter?: 'cuoc-doi' | 'tu-tuong' | '5-dieu-bac-day' | 'thoi-an-truyen-thong' | 'all';
+  // Cấu hình ngân hàng đề thi: 'dedicated' (Ngân hàng riêng của hội thi), 'combined' (Kết hợp nhiều ngân hàng), 'all' (Toàn bộ)
+  questionBankMode?: 'dedicated' | 'combined' | 'all';
+  selectedBankIds?: string[]; // Danh sách các ID ngân hàng câu hỏi được chọn để rút đề
 }
 
 export interface ContestSubmission {
@@ -47,6 +61,56 @@ export interface ContestSubmission {
   submittedAt: string; // Giờ hoặc ngày nộp bài
   award?: string; // Danh hiệu khen thưởng: "Giải Nhất", "Giải Nhì", "Giải Ba", "Khuyến Khích"
 }
+
+// ==============================================================================
+// DANH SÁCH NGÂN HÀNG CÂU HỎI MẶC ĐỊNH (HỖ TRỢ NGÂN HÀNG RIÊNG & KẾT HỢP NHIỀU NGÂN HÀNG)
+// ==============================================================================
+export const DEFAULT_QUESTION_BANKS: QuestionBank[] = [
+  {
+    id: 'bank-cuoc-doi',
+    name: 'Ngân Hàng: Cuộc Đời & Sự Nghiệp Bác Hồ',
+    description: 'Tiểu sử, hành trình bôn ba tìm đường cứu nước và các mốc son lịch sử của Chủ tịch Hồ Chí Minh.',
+    isDefault: true,
+    createdAt: '2024-10-15',
+  },
+  {
+    id: 'bank-tu-tuong',
+    name: 'Ngân Hàng: Tư Tưởng, Đạo Đức & Tác Phẩm Bác Hồ',
+    description: 'Tư tưởng, Di chúc thiêng liêng, thơ văn và lời căn dặn bất hủ của Bác Hồ với thế hệ trẻ.',
+    isDefault: true,
+    createdAt: '2024-10-15',
+  },
+  {
+    id: 'bank-5-dieu-bac-day',
+    name: 'Ngân Hàng: 5 Điều Bác Hồ Dạy & Đội TNTP',
+    description: 'Tìm hiểu 5 Điều Bác Hồ dạy, truyền thống Đội TNTP Hồ Chí Minh và gương anh hùng nhỏ tuổi.',
+    isDefault: true,
+    createdAt: '2024-10-15',
+  },
+  {
+    id: 'bank-thoi-an-truyen-thong',
+    name: 'Ngân Hàng: Truyền Thống Thới An & NTT',
+    description: 'Khí phách Anh hùng Nguyễn Trung Trực, di tích Chiến khu An Phú Đông và truyền thống quê hương.',
+    isDefault: true,
+    createdAt: '2024-10-15',
+  },
+  {
+    id: 'bank-hoi-thi-2024-tuoi-tre-bac-ho',
+    name: 'Ngân Hàng Riêng: Hội Thi "Tuổi Trẻ Học Theo Lời Bác"',
+    description: 'Bộ đề thi riêng dành cho Hội thi Trực tuyến Khối 8, 9 & Toàn trường.',
+    contestId: 'hoi-thi-2024-tuoi-tre-bac-ho',
+    isDefault: false,
+    createdAt: '2024-10-15',
+  },
+  {
+    id: 'bank-hoi-thi-2024-5-dieu-bac-day',
+    name: 'Ngân Hàng Riêng: Hội Thi "Thiếu Nhi Thới An"',
+    description: 'Bộ đề thi riêng chuyên đề 5 Điều Bác dạy dành cho Khối 6 & 7.',
+    contestId: 'hoi-thi-2024-5-dieu-bac-day',
+    isDefault: false,
+    createdAt: '2024-10-20',
+  },
+];
 
 // ==============================================================================
 // DANH SÁCH CÁC HỘI THI MẶC ĐỊNH (HỖ TRỢ TỔ CHỨC 2 HOẶC NHIỀU HỘI THI SONG SONG)
@@ -67,6 +131,8 @@ export const DEFAULT_CONTESTS_LIST: ContestInfo[] = [
     startDate: '2024-10-15',
     endDate: '2024-11-20',
     createdAt: '2024-10-15',
+    questionBankMode: 'combined',
+    selectedBankIds: ['bank-cuoc-doi', 'bank-tu-tuong', 'bank-thoi-an-truyen-thong'],
   },
   {
     id: 'hoi-thi-2024-5-dieu-bac-day',
@@ -84,6 +150,8 @@ export const DEFAULT_CONTESTS_LIST: ContestInfo[] = [
     endDate: '2024-11-25',
     summaryNote: 'Đợt thi đua chuyên đề dành cho các chi đội khối 6 và 7 nhân kỷ niệm 83 năm ngày thành lập Đội.',
     createdAt: '2024-10-20',
+    questionBankMode: 'combined',
+    selectedBankIds: ['bank-5-dieu-bac-day', 'bank-thoi-an-truyen-thong'],
   },
   {
     id: 'hoi-thi-2025-hanh-trinh-theo-dau-chan-bac',
@@ -100,6 +168,8 @@ export const DEFAULT_CONTESTS_LIST: ContestInfo[] = [
     startDate: '2025-01-10',
     endDate: '2025-02-15',
     createdAt: '2024-11-01',
+    questionBankMode: 'combined',
+    selectedBankIds: ['bank-cuoc-doi', 'bank-tu-tuong'],
   },
 ];
 
@@ -645,6 +715,7 @@ const STORAGE_KEY_ACTIVE_CONTEST_ID = 'hcm_active_contest_id_v2';
 const STORAGE_KEY_CONTEST = 'hcm_contest_submissions_v1';
 const STORAGE_KEY_CONTEST_INFO = 'hcm_contest_info_v1';
 const STORAGE_KEY_CONTEST_QUESTIONS = 'hcm_contest_questions_v1';
+const STORAGE_KEY_QUESTION_BANKS = 'hcm_contest_question_banks_v1';
 export const EVENT_CONTEST_DATA_CHANGED = 'hcm_contest_data_changed';
 
 // ==============================================================================
@@ -660,7 +731,7 @@ export function getStoredContestsList(): ContestInfo[] {
     }
     const parsed = JSON.parse(raw);
     if (Array.isArray(parsed) && parsed.length > 0) {
-      // Bổ sung các trường mới (targetAudience, bannerTag...) nếu dữ liệu cũ còn thiếu
+      // Bổ sung các trường mới (targetAudience, bannerTag, questionBankMode...) nếu dữ liệu cũ còn thiếu
       const merged = parsed.map((item) => {
         const def = DEFAULT_CONTESTS_LIST.find((d) => d.id === item.id);
         return {
@@ -668,6 +739,15 @@ export function getStoredContestsList(): ContestInfo[] {
           ...item,
           targetAudience: item.targetAudience || def?.targetAudience || 'Toàn trường',
           isOpen: item.status === 'active',
+          questionBankMode: item.questionBankMode || def?.questionBankMode || 'combined',
+          selectedBankIds:
+            item.selectedBankIds ||
+            def?.selectedBankIds || [
+              'bank-cuoc-doi',
+              'bank-tu-tuong',
+              'bank-5-dieu-bac-day',
+              'bank-thoi-an-truyen-thong',
+            ],
         };
       });
 
@@ -872,34 +952,113 @@ export function archiveContest(contestId: string, summaryNote?: string): Contest
 }
 
 // ==============================================================================
-// 2. QUẢN TRỊ NGÂN HÀNG CÂU HỎI TRẮC NGHIỆM (QUESTIONS BANK)
+// 2. QUẢN TRỊ CÁC NGÂN HÀNG CÂU HỎI (QUESTION BANKS MANAGEMENT)
+// ==============================================================================
+
+export function getStoredQuestionBanks(): QuestionBank[] {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY_QUESTION_BANKS);
+    if (!raw) {
+      localStorage.setItem(STORAGE_KEY_QUESTION_BANKS, JSON.stringify(DEFAULT_QUESTION_BANKS));
+      return DEFAULT_QUESTION_BANKS;
+    }
+    const parsed = JSON.parse(raw);
+    if (Array.isArray(parsed) && parsed.length > 0) {
+      // Đảm bảo các bank mặc định luôn tồn tại
+      const merged = [...parsed];
+      DEFAULT_QUESTION_BANKS.forEach((def) => {
+        if (!merged.some((m) => m.id === def.id)) {
+          merged.push(def);
+        }
+      });
+      return merged;
+    }
+    return DEFAULT_QUESTION_BANKS;
+  } catch {
+    return DEFAULT_QUESTION_BANKS;
+  }
+}
+
+export function saveStoredQuestionBanks(banks: QuestionBank[]): QuestionBank[] {
+  try {
+    localStorage.setItem(STORAGE_KEY_QUESTION_BANKS, JSON.stringify(banks));
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new Event(EVENT_CONTEST_DATA_CHANGED));
+    }
+    return banks;
+  } catch (err) {
+    console.error('Lỗi lưu danh sách ngân hàng câu hỏi:', err);
+    return banks;
+  }
+}
+
+export function addQuestionBank(bankData: Omit<QuestionBank, 'id'> & { id?: string }): QuestionBank[] {
+  const current = getStoredQuestionBanks();
+  const newId = bankData.id || `bank-custom-${Date.now()}`;
+  const newBank: QuestionBank = {
+    ...bankData,
+    id: newId,
+    createdAt: new Date().toISOString().substring(0, 10),
+  };
+  const updated = [...current, newBank];
+  return saveStoredQuestionBanks(updated);
+}
+
+export function updateQuestionBank(bank: QuestionBank): QuestionBank[] {
+  const current = getStoredQuestionBanks();
+  const updated = current.map((b) => (b.id === bank.id ? bank : b));
+  return saveStoredQuestionBanks(updated);
+}
+
+export function deleteQuestionBank(bankId: string): QuestionBank[] {
+  const current = getStoredQuestionBanks();
+  if (current.find((b) => b.id === bankId)?.isDefault) {
+    throw new Error('Không thể xóa ngân hàng câu hỏi mặc định của hệ thống!');
+  }
+  const updated = current.filter((b) => b.id !== bankId);
+  return saveStoredQuestionBanks(updated);
+}
+
+// ==============================================================================
+// 3. QUẢN TRỊ CHI TIẾT TỪNG CÂU HỎI TRẮC NGHIỆM (QUESTIONS ITEM MANAGEMENT)
 // ==============================================================================
 export function getStoredContestQuestions(): ContestQuestion[] {
   try {
     const raw = localStorage.getItem(STORAGE_KEY_CONTEST_QUESTIONS);
-    if (!raw) {
-      localStorage.setItem(STORAGE_KEY_CONTEST_QUESTIONS, JSON.stringify(CONTEST_QUESTIONS_BANK));
-      return CONTEST_QUESTIONS_BANK;
+    let list: ContestQuestion[] = CONTEST_QUESTIONS_BANK;
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        list = parsed;
+      }
     }
-    const parsed = JSON.parse(raw);
-    if (Array.isArray(parsed) && parsed.length > 0) {
-      return parsed;
-    }
-    return CONTEST_QUESTIONS_BANK;
+    // Chuẩn hóa: Đảm bảo mọi câu hỏi đều có bankId hợp lệ
+    return list.map((q) => ({
+      ...q,
+      bankId: q.bankId || `bank-${q.category}`,
+    }));
   } catch {
-    return CONTEST_QUESTIONS_BANK;
+    return CONTEST_QUESTIONS_BANK.map((q) => ({
+      ...q,
+      bankId: q.bankId || `bank-${q.category}`,
+    }));
   }
 }
 
 export function saveStoredContestQuestions(questions: ContestQuestion[]): ContestQuestion[] {
   try {
-    localStorage.setItem(STORAGE_KEY_CONTEST_QUESTIONS, JSON.stringify(questions));
+    // Đảm bảo mọi câu hỏi đều có bankId hợp lệ trước khi lưu
+    const normalized = questions.map((q) => ({
+      ...q,
+      bankId: q.bankId || `bank-${q.category}`,
+    }));
+    localStorage.setItem(STORAGE_KEY_CONTEST_QUESTIONS, JSON.stringify(normalized));
     localStorage.setItem('hcm_contest_questions_customized', 'true');
     localStorage.setItem('hcm_contest_questions_updated_at', new Date().toISOString());
     if (typeof window !== 'undefined') {
       window.dispatchEvent(new Event(EVENT_CONTEST_DATA_CHANGED));
     }
-    return questions;
+    return normalized;
   } catch (err) {
     console.error('Lỗi lưu ngân hàng câu hỏi:', err);
     return questions;
@@ -909,14 +1068,22 @@ export function saveStoredContestQuestions(questions: ContestQuestion[]): Contes
 export function addContestQuestion(q: Omit<ContestQuestion, 'id'>): ContestQuestion[] {
   const current = getStoredContestQuestions();
   const nextId = current.length > 0 ? Math.max(...current.map((item) => item.id)) + 1 : 1;
-  const newQuestion: ContestQuestion = { ...q, id: nextId };
+  const newQuestion: ContestQuestion = {
+    ...q,
+    id: nextId,
+    bankId: q.bankId || `bank-${q.category}`,
+  };
   const updated = [...current, newQuestion];
   return saveStoredContestQuestions(updated);
 }
 
 export function updateContestQuestion(q: ContestQuestion): ContestQuestion[] {
   const current = getStoredContestQuestions();
-  const updated = current.map((item) => (item.id === q.id ? q : item));
+  const updated = current.map((item) =>
+    item.id === q.id
+      ? { ...q, bankId: q.bankId || item.bankId || `bank-${q.category}` }
+      : item
+  );
   return saveStoredContestQuestions(updated);
 }
 
@@ -924,6 +1091,63 @@ export function deleteContestQuestion(id: number): ContestQuestion[] {
   const current = getStoredContestQuestions();
   const updated = current.filter((item) => item.id !== id);
   return saveStoredContestQuestions(updated);
+}
+
+/**
+ * Rút chính xác danh sách câu hỏi hợp lệ cho một hội thi cụ thể:
+ * - Hỗ trợ chế độ Ngân hàng riêng ('dedicated')
+ * - Hỗ trợ chế độ Kết hợp nhiều ngân hàng câu hỏi ('combined')
+ * - Hỗ trợ chế độ Toàn bộ kho câu hỏi ('all')
+ */
+export function getQuestionsForContest(contestId: string): ContestQuestion[] {
+  const allQuestions = getStoredContestQuestions();
+  const contests = getStoredContestsList();
+  const contest = contests.find((c) => c.id === contestId);
+
+  if (!contest) return allQuestions;
+
+  const mode = contest.questionBankMode || 'combined';
+
+  // 1. Chế độ Ngân hàng riêng của hội thi
+  if (mode === 'dedicated') {
+    const dedicatedBankId = `bank-${contest.id}`;
+    const dedicatedQuestions = allQuestions.filter(
+      (q) => q.bankId === dedicatedBankId || (q.contestIds && q.contestIds.includes(contest.id))
+    );
+    if (dedicatedQuestions.length > 0) {
+      return dedicatedQuestions;
+    }
+    // Nếu chưa tạo câu riêng, kiểm tra theo selectedBankIds
+    if (contest.selectedBankIds && contest.selectedBankIds.length > 0) {
+      const fallback = allQuestions.filter((q) =>
+        contest.selectedBankIds?.includes(q.bankId || `bank-${q.category}`)
+      );
+      if (fallback.length > 0) return fallback;
+    }
+    return allQuestions;
+  }
+
+  // 2. Chế độ Kết hợp nhiều ngân hàng câu hỏi
+  if (mode === 'combined') {
+    const selectedBanks = contest.selectedBankIds;
+    if (selectedBanks && selectedBanks.length > 0) {
+      const combined = allQuestions.filter((q) => {
+        const qBank = q.bankId || `bank-${q.category}`;
+        if (selectedBanks.includes(qBank)) return true;
+        if (q.contestIds && q.contestIds.includes(contest.id)) return true;
+        return false;
+      });
+      if (combined.length > 0) return combined;
+    }
+  }
+
+  // 3. Chế độ Dùng toàn bộ ngân hàng hệ thống ('all')
+  if (contest.categoryFilter && contest.categoryFilter !== 'all') {
+    const byCategory = allQuestions.filter((q) => q.category === contest.categoryFilter);
+    if (byCategory.length > 0) return byCategory;
+  }
+
+  return allQuestions;
 }
 
 // ==============================================================================
@@ -1084,6 +1308,7 @@ export async function fetchSupabaseContestData(): Promise<{
         contests?: ContestInfo[];
         submissions?: ContestSubmission[];
         questions?: ContestQuestion[];
+        questionBanks?: QuestionBank[];
         activeContestId?: string;
       };
 
@@ -1092,6 +1317,10 @@ export async function fetchSupabaseContestData(): Promise<{
         if (cloudData.activeContestId) {
           localStorage.setItem(STORAGE_KEY_ACTIVE_CONTEST_ID, cloudData.activeContestId);
         }
+      }
+
+      if (Array.isArray(cloudData.questionBanks) && cloudData.questionBanks.length > 0) {
+        localStorage.setItem(STORAGE_KEY_QUESTION_BANKS, JSON.stringify(cloudData.questionBanks));
       }
 
       if (Array.isArray(cloudData.submissions) && cloudData.submissions.length > 0) {
@@ -1259,6 +1488,7 @@ export async function syncContestsAndSubmissionsToSupabase(
             contests,
             submissions,
             questions: questionsToSync,
+            questionBanks: getStoredQuestionBanks(),
             activeContestId: contests.find((c) => c.status === 'active')?.id || 'hoi-thi-2024-tuoi-tre-bac-ho',
             syncedAt: new Date().toISOString(),
           },

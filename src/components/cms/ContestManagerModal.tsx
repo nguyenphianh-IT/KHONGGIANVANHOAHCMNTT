@@ -23,13 +23,17 @@ import {
   Cloud,
   CloudUpload,
   RefreshCw,
-  Settings
+  Settings,
+  BookOpen,
+  Library,
+  FolderPlus
 } from 'lucide-react';
 import {
   ContestInfo,
   ContestQuestion,
   ContestSubmission,
   ContestStatus,
+  QuestionBank,
   getStoredContestsList,
   getActiveContestId,
   setActiveContest,
@@ -39,7 +43,13 @@ import {
   updateContest,
   deleteContest,
   archiveContest,
+  getStoredQuestionBanks,
+  addQuestionBank,
+  updateQuestionBank,
+  deleteQuestionBank,
+  getQuestionsForContest,
   getStoredContestQuestions,
+  saveStoredContestQuestions,
   addContestQuestion,
   updateContestQuestion,
   deleteContestQuestion,
@@ -89,9 +99,15 @@ export const ContestManagerModal: React.FC<ContestManagerModalProps> = ({
   const [activeContestId, setActiveContestIdState] = useState<string>(getActiveContestId);
   const [contestInfo, setContestInfo] = useState<ContestInfo>(getStoredContestInfo);
   const [questions, setQuestions] = useState<ContestQuestion[]>(getStoredContestQuestions);
+  const [questionBanks, setQuestionBanks] = useState<QuestionBank[]>(getStoredQuestionBanks);
   const [submissions, setSubmissions] = useState<ContestSubmission[]>(getContestSubmissions);
   const [classesList, setClassesList] = useState<ClassInfo[]>(getStoredClasses);
   const [roster, setRoster] = useState<Record<string, string[]>>(getStoredStudentsByClass);
+
+  // 1.1 Question Bank Management Modal State
+  const [isBankManagerOpen, setIsBankManagerOpen] = useState(false);
+  const [editingBank, setEditingBank] = useState<QuestionBank | null>(null);
+  const [bankFormData, setBankFormData] = useState({ name: '', description: '', contestId: '' });
 
   // 2. Feedback Toast & Cloud Sync State
   const [toastMsg, setToastMsg] = useState<{ type: 'success' | 'error' | 'info'; text: string } | null>(null);
@@ -156,12 +172,16 @@ export const ContestManagerModal: React.FC<ContestManagerModalProps> = ({
     correctIndex: number;
     explanation: string;
     category: ContestQuestion['category'];
+    bankId: string;
+    contestIds: string[];
   }>({
     question: '',
     options: ['', '', '', ''],
     correctIndex: 0,
     explanation: '',
-    category: 'cuoc-doi'
+    category: 'cuoc-doi',
+    bankId: 'bank-cuoc-doi',
+    contestIds: [],
   });
 
   // 4. Contest Form Modal State (for Adding/Editing Contests)
@@ -180,6 +200,8 @@ export const ContestManagerModal: React.FC<ContestManagerModalProps> = ({
     startDate: '',
     endDate: '',
     summaryNote: '',
+    questionBankMode: 'combined',
+    selectedBankIds: ['bank-cuoc-doi', 'bank-tu-tuong', 'bank-5-dieu-bac-day', 'bank-thoi-an-truyen-thong'],
   });
 
   // 5. Archive Contest Modal State
@@ -190,6 +212,8 @@ export const ContestManagerModal: React.FC<ContestManagerModalProps> = ({
   // 6. Filters
   const [questionSearch, setQuestionSearch] = useState('');
   const [questionCategoryFilter, setQuestionCategoryFilter] = useState<string>('all');
+  const [selectedBankFilter, setSelectedBankFilter] = useState<string>('all');
+  const [selectedContestQuestionFilter, setSelectedContestQuestionFilter] = useState<string>('all');
 
   const [selectedContestFilter, setSelectedContestFilter] = useState<string>(() => getActiveContestId());
   const [submissionSearch, setSubmissionSearch] = useState('');
@@ -222,6 +246,7 @@ export const ContestManagerModal: React.FC<ContestManagerModalProps> = ({
       setActiveContestIdState(getActiveContestId());
       setContestInfo(getStoredContestInfo());
       setQuestions(getStoredContestQuestions());
+      setQuestionBanks(getStoredQuestionBanks());
       setSubmissions(getContestSubmissions());
       setClassesList(getStoredClasses());
       setRoster(getStoredStudentsByClass());
@@ -255,9 +280,17 @@ export const ContestManagerModal: React.FC<ContestManagerModalProps> = ({
         q.options.some((opt) => opt.toLowerCase().includes(questionSearch.toLowerCase()));
       const matchCategory =
         questionCategoryFilter === 'all' || q.category === questionCategoryFilter;
-      return matchSearch && matchCategory;
+      
+      const qBankId = q.bankId || `bank-${q.category}`;
+      const matchBank = selectedBankFilter === 'all' || qBankId === selectedBankFilter;
+
+      const matchContest =
+        selectedContestQuestionFilter === 'all' ||
+        getQuestionsForContest(selectedContestQuestionFilter).some((item) => item.id === q.id);
+
+      return matchSearch && matchCategory && matchBank && matchContest;
     });
-  }, [questions, questionSearch, questionCategoryFilter]);
+  }, [questions, questionSearch, questionCategoryFilter, selectedBankFilter, selectedContestQuestionFilter]);
 
   const filteredSubmissions = useMemo(() => {
     const list = submissions.filter((s) => {
@@ -353,7 +386,9 @@ export const ContestManagerModal: React.FC<ContestManagerModalProps> = ({
       options: ['', '', '', ''],
       correctIndex: 0,
       explanation: '',
-      category: 'cuoc-doi'
+      category: 'cuoc-doi',
+      bankId: selectedBankFilter !== 'all' ? selectedBankFilter : (questionBanks[0]?.id || 'bank-cuoc-doi'),
+      contestIds: selectedContestQuestionFilter !== 'all' ? [selectedContestQuestionFilter] : [],
     });
     setIsQuestionFormOpen(true);
   };
@@ -365,7 +400,9 @@ export const ContestManagerModal: React.FC<ContestManagerModalProps> = ({
       options: [q.options[0] || '', q.options[1] || '', q.options[2] || '', q.options[3] || ''],
       correctIndex: q.correctIndex,
       explanation: q.explanation || '',
-      category: q.category
+      category: q.category,
+      bankId: q.bankId || `bank-${q.category}`,
+      contestIds: q.contestIds || [],
     });
     setIsQuestionFormOpen(true);
   };
@@ -390,7 +427,9 @@ export const ContestManagerModal: React.FC<ContestManagerModalProps> = ({
         options: questionFormData.options.map((opt) => opt.trim()),
         correctIndex: questionFormData.correctIndex,
         explanation: questionFormData.explanation.trim(),
-        category: questionFormData.category
+        category: questionFormData.category,
+        bankId: questionFormData.bankId,
+        contestIds: questionFormData.contestIds,
       };
       const res = updateContestQuestion(updated);
       setQuestions(res);
@@ -401,7 +440,9 @@ export const ContestManagerModal: React.FC<ContestManagerModalProps> = ({
         options: questionFormData.options.map((opt) => opt.trim()),
         correctIndex: questionFormData.correctIndex,
         explanation: questionFormData.explanation.trim(),
-        category: questionFormData.category
+        category: questionFormData.category,
+        bankId: questionFormData.bankId,
+        contestIds: questionFormData.contestIds,
       });
       setQuestions(res);
       showToast('success', 'Đã thêm câu hỏi trắc nghiệm mới thành công!');
@@ -414,6 +455,59 @@ export const ContestManagerModal: React.FC<ContestManagerModalProps> = ({
       const res = deleteContestQuestion(id);
       setQuestions(res);
       showToast('info', `Đã xóa câu hỏi số ${id}`);
+    }
+  };
+
+  // ─── QUESTION BANKS MANAGEMENT HANDLERS ───────────────────────────
+  const handleOpenBankManager = () => {
+    setEditingBank(null);
+    setBankFormData({ name: '', description: '', contestId: '' });
+    setIsBankManagerOpen(true);
+  };
+
+  const handleSaveBank = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!bankFormData.name.trim()) {
+      showToast('error', 'Vui lòng nhập tên ngân hàng câu hỏi!');
+      return;
+    }
+    if (editingBank) {
+      const updated = updateQuestionBank({
+        ...editingBank,
+        name: bankFormData.name.trim(),
+        description: bankFormData.description.trim(),
+        contestId: bankFormData.contestId || undefined,
+      });
+      setQuestionBanks(updated);
+      showToast('success', `Đã cập nhật ngân hàng "${bankFormData.name}"!`);
+    } else {
+      const updated = addQuestionBank({
+        name: bankFormData.name.trim(),
+        description: bankFormData.description.trim(),
+        contestId: bankFormData.contestId || undefined,
+      });
+      setQuestionBanks(updated);
+      showToast('success', `Đã tạo ngân hàng câu hỏi "${bankFormData.name}" thành công!`);
+    }
+    setEditingBank(null);
+    setBankFormData({ name: '', description: '', contestId: '' });
+  };
+
+  const handleDeleteBank = (bankId: string) => {
+    if (confirm('Thầy/Cô có chắc chắn muốn xóa ngân hàng câu hỏi này? Các câu hỏi bên trong sẽ được chuyển về ngân hàng mặc định.')) {
+      try {
+        const updated = deleteQuestionBank(bankId);
+        setQuestionBanks(updated);
+        // Chuyển các câu hỏi của bank này về bank mặc định
+        const remappedQuestions = questions.map((q) =>
+          q.bankId === bankId ? { ...q, bankId: `bank-${q.category}` } : q
+        );
+        saveStoredContestQuestions(remappedQuestions);
+        setQuestions(remappedQuestions);
+        showToast('info', 'Đã xóa ngân hàng câu hỏi');
+      } catch (err: any) {
+        showToast('error', err?.message || 'Không thể xóa ngân hàng này!');
+      }
     }
   };
 
@@ -462,6 +556,8 @@ export const ContestManagerModal: React.FC<ContestManagerModalProps> = ({
       startDate: new Date().toISOString().substring(0, 10),
       endDate: '',
       summaryNote: '',
+      questionBankMode: 'combined',
+      selectedBankIds: ['bank-cuoc-doi', 'bank-tu-tuong', 'bank-5-dieu-bac-day', 'bank-thoi-an-truyen-thong'],
     });
     setIsContestFormOpen(true);
   };
@@ -481,6 +577,8 @@ export const ContestManagerModal: React.FC<ContestManagerModalProps> = ({
       startDate: c.startDate || '',
       endDate: c.endDate || '',
       summaryNote: c.summaryNote || '',
+      questionBankMode: c.questionBankMode || 'combined',
+      selectedBankIds: c.selectedBankIds || ['bank-cuoc-doi', 'bank-tu-tuong', 'bank-5-dieu-bac-day', 'bank-thoi-an-truyen-thong'],
     });
     setIsContestFormOpen(true);
   };
@@ -1066,6 +1164,29 @@ export const ContestManagerModal: React.FC<ContestManagerModalProps> = ({
                           </div>
                         </div>
 
+                        {/* Nguồn ngân hàng câu hỏi của hội thi */}
+                        {(() => {
+                          const contestQs = getQuestionsForContest(c.id);
+                          return (
+                            <div className="flex items-center justify-between text-[11px] px-3 py-1.5 rounded-xl bg-amber-50/80 border border-amber-200 text-amber-950 font-medium">
+                              <span className="flex items-center space-x-1 truncate mr-2">
+                                <Library className="w-3.5 h-3.5 text-amber-700 flex-shrink-0" />
+                                <span className="text-heritage-ink-600">Đề thi:</span>
+                                <strong className="font-bold truncate">
+                                  {c.questionBankMode === 'dedicated'
+                                    ? 'Ngân hàng riêng'
+                                    : c.questionBankMode === 'all'
+                                    ? 'Toàn bộ kho câu hỏi'
+                                    : `Kết hợp ${c.selectedBankIds?.length || 0} ngân hàng`}
+                                </strong>
+                              </span>
+                              <span className="px-2 py-0.5 rounded-full bg-white text-heritage-red-900 font-bold border border-amber-300 flex-shrink-0 shadow-2xs">
+                                {contestQs.length} câu khả dụng
+                              </span>
+                            </div>
+                          );
+                        })()}
+
                         {/* Archived Summary Note (If present) */}
                         {c.status === 'archived' && c.summaryNote && (
                           <div className="p-3 bg-purple-100/50 border border-purple-200 rounded-xl text-xs text-purple-900">
@@ -1403,18 +1524,32 @@ export const ContestManagerModal: React.FC<ContestManagerModalProps> = ({
                   </div>
                 </div>
 
-                <button
-                  type="button"
-                  onClick={() => setActiveTab('contest')}
-                  className="px-3.5 py-2 bg-heritage-gold-400 hover:bg-heritage-gold-300 text-heritage-red-950 font-black rounded-xl text-xs whitespace-nowrap shadow-xs transition flex items-center space-x-1.5 border border-heritage-gold-500 flex-shrink-0"
-                >
-                  <Settings className="w-3.5 h-3.5 text-heritage-red-900" />
-                  <span>Cấu hình số câu thi</span>
-                </button>
+                <div className="flex items-center space-x-2 flex-wrap gap-y-2">
+                  <button
+                    type="button"
+                    onClick={handleOpenBankManager}
+                    className="px-3.5 py-2 bg-white hover:bg-amber-50 text-heritage-red-950 font-bold rounded-xl text-xs whitespace-nowrap shadow-xs transition flex items-center space-x-1.5 border border-amber-300 flex-shrink-0"
+                    title="Tạo mới, đổi tên hoặc quản lý các ngân hàng câu hỏi"
+                  >
+                    <Library className="w-4 h-4 text-amber-700" />
+                    <span>Quản lý Ngân hàng đề ({questionBanks.length})</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setActiveTab('contest')}
+                    className="px-3.5 py-2 bg-heritage-gold-400 hover:bg-heritage-gold-300 text-heritage-red-950 font-black rounded-xl text-xs whitespace-nowrap shadow-xs transition flex items-center space-x-1.5 border border-heritage-gold-500 flex-shrink-0"
+                  >
+                    <Settings className="w-3.5 h-3.5 text-heritage-red-900" />
+                    <span>Cấu hình số câu thi</span>
+                  </button>
+                </div>
               </div>
-              <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 bg-white p-3 sm:p-4 rounded-2xl border border-heritage-gold-300/80 shadow-xs">
-                <div className="flex flex-1 items-center space-x-2">
-                  <div className="relative flex-1 max-w-sm">
+
+              {/* Hàng bộ lọc nâng cao: Tìm kiếm, Ngân hàng câu hỏi, Theo Hội thi, Theo Chủ đề */}
+              <div className="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3 bg-white p-3 sm:p-4 rounded-2xl border border-heritage-gold-300/80 shadow-xs">
+                <div className="flex flex-1 flex-wrap items-center gap-2">
+                  <div className="relative flex-1 min-w-[200px]">
                     <Search className="w-4 h-4 text-heritage-ink-400 absolute left-3 top-1/2 -translate-y-1/2" />
                     <input
                       type="text"
@@ -1425,12 +1560,49 @@ export const ContestManagerModal: React.FC<ContestManagerModalProps> = ({
                     />
                   </div>
 
+                  {/* Lọc theo Ngân hàng câu hỏi */}
+                  <select
+                    value={selectedBankFilter}
+                    onChange={(e) => setSelectedBankFilter(e.target.value)}
+                    className="px-3 py-1.5 bg-heritage-ivory-100 border border-heritage-ivory-300 rounded-xl text-xs sm:text-sm focus:outline-none focus:border-heritage-red-700 font-semibold"
+                    title="Lọc danh sách câu hỏi theo Ngân hàng"
+                  >
+                    <option value="all">📚 Tất cả ngân hàng ({questions.length} câu)</option>
+                    {questionBanks.map((b) => {
+                      const count = questions.filter((q) => (q.bankId || `bank-${q.category}`) === b.id).length;
+                      return (
+                        <option key={b.id} value={b.id}>
+                          {b.name} ({count} câu)
+                        </option>
+                      );
+                    })}
+                  </select>
+
+                  {/* Lọc theo Hội thi */}
+                  <select
+                    value={selectedContestQuestionFilter}
+                    onChange={(e) => setSelectedContestQuestionFilter(e.target.value)}
+                    className="px-3 py-1.5 bg-heritage-ivory-100 border border-heritage-ivory-300 rounded-xl text-xs sm:text-sm focus:outline-none focus:border-heritage-red-700 font-semibold"
+                    title="Lọc danh sách câu hỏi theo Hội thi được cấp phép"
+                  >
+                    <option value="all">🏆 Tất cả hội thi</option>
+                    {contestsList.map((c) => {
+                      const count = getQuestionsForContest(c.id).length;
+                      return (
+                        <option key={c.id} value={c.id}>
+                          Đề cho: {c.title.replace('Hội Thi Trực Tuyến: ', '').replace('Hội Thi: ', '')} ({count} câu)
+                        </option>
+                      );
+                    })}
+                  </select>
+
+                  {/* Lọc theo Chủ đề */}
                   <select
                     value={questionCategoryFilter}
                     onChange={(e) => setQuestionCategoryFilter(e.target.value)}
                     className="px-3 py-1.5 bg-heritage-ivory-100 border border-heritage-ivory-300 rounded-xl text-xs sm:text-sm focus:outline-none focus:border-heritage-red-700"
                   >
-                    <option value="all">Tất cả chủ đề ({questions.length} câu)</option>
+                    <option value="all">Tất cả chủ đề</option>
                     <option value="cuoc-doi">Cuộc đời & Sự nghiệp</option>
                     <option value="tu-tuong">Tư tưởng Hồ Chí Minh</option>
                     <option value="5-dieu-bac-day">5 Điều Bác Hồ dạy</option>
@@ -1438,7 +1610,7 @@ export const ContestManagerModal: React.FC<ContestManagerModalProps> = ({
                   </select>
                 </div>
 
-                <div className="flex items-center space-x-2">
+                <div className="flex items-center space-x-2 flex-shrink-0">
                   <button
                     type="button"
                     onClick={handleSyncToCloud}
@@ -1464,7 +1636,7 @@ export const ContestManagerModal: React.FC<ContestManagerModalProps> = ({
               <div className="space-y-3">
                 {filteredQuestions.length === 0 ? (
                   <div className="bg-white p-8 rounded-2xl border border-heritage-gold-300/80 text-center text-heritage-ink-500 text-sm">
-                    Không tìm thấy câu hỏi trắc nghiệm nào phù hợp!
+                    Không tìm thấy câu hỏi trắc nghiệm nào phù hợp với bộ lọc hiện tại!
                   </div>
                 ) : (
                   filteredQuestions.map((q, idx) => (
@@ -1478,15 +1650,36 @@ export const ContestManagerModal: React.FC<ContestManagerModalProps> = ({
                             {idx + 1}
                           </span>
                           <div>
-                            <span className="inline-block px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider mb-1 bg-heritage-ivory-200 text-heritage-red-800">
-                              {q.category === 'cuoc-doi'
-                                ? 'Cuộc đời & Sự nghiệp'
-                                : q.category === 'tu-tuong'
-                                ? 'Tư tưởng Hồ Chí Minh'
-                                : q.category === '5-dieu-bac-day'
-                                ? '5 Điều Bác Hồ dạy'
-                                : 'Truyền thống Thới An & Trường NTT'}
-                            </span>
+                            <div className="flex items-center space-x-1.5 flex-wrap gap-y-1 mb-1">
+                              <span className="inline-block px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-heritage-ivory-200 text-heritage-red-800">
+                                {q.category === 'cuoc-doi'
+                                  ? 'Cuộc đời & Sự nghiệp'
+                                  : q.category === 'tu-tuong'
+                                  ? 'Tư tưởng Hồ Chí Minh'
+                                  : q.category === '5-dieu-bac-day'
+                                  ? '5 Điều Bác Hồ dạy'
+                                  : 'Truyền thống Thới An & Trường NTT'}
+                              </span>
+
+                              {/* Huy hiệu Ngân hàng câu hỏi */}
+                              {(() => {
+                                const bId = q.bankId || `bank-${q.category}`;
+                                const bank = questionBanks.find((b) => b.id === bId);
+                                return (
+                                  <span className="inline-flex items-center space-x-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-900 border border-amber-300">
+                                    <Library className="w-3 h-3 text-amber-700 flex-shrink-0" />
+                                    <span className="truncate max-w-[200px]">{bank?.name || 'Ngân hàng chuyên đề'}</span>
+                                  </span>
+                                );
+                              })()}
+
+                              {/* Huy hiệu Hội thi được gán riêng (nếu có) */}
+                              {q.contestIds && q.contestIds.length > 0 && (
+                                <span className="inline-flex items-center space-x-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-purple-100 text-purple-900 border border-purple-300">
+                                  <span>🏆 Gán cho {q.contestIds.length} hội thi</span>
+                                </span>
+                              )}
+                            </div>
                             <h4 className="font-serif font-bold text-xs sm:text-sm text-heritage-ink-900 leading-snug">
                               {q.question}
                             </h4>
@@ -2060,6 +2253,157 @@ export const ContestManagerModal: React.FC<ContestManagerModalProps> = ({
                 </p>
               </div>
 
+              {/* CẤU HÌNH NGUỒN NGÂN HÀNG CÂU HỎI (RIÊNG BIỆT HOẶC KẾT HỢP NHIỀU NGÂN HÀNG) */}
+              <div className="bg-gradient-to-r from-amber-50 to-heritage-ivory-100 border-2 border-heritage-gold-400/80 rounded-2xl p-4 space-y-3.5 shadow-xs">
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <label className="block text-xs font-black text-heritage-red-950 uppercase tracking-wider flex items-center space-x-1.5">
+                    <BookOpen className="w-4 h-4 text-heritage-red-700" />
+                    <span>Nguồn Ngân Hàng Câu Hỏi Cho Hội Thi *</span>
+                  </label>
+                  <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-heritage-gold-200 text-heritage-red-950 border border-heritage-gold-400">
+                    Ngân hàng riêng HOẶC kết hợp linh hoạt
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+                  {/* Chế độ 1: Kết hợp nhiều ngân hàng */}
+                  <label
+                    onClick={() => setContestFormData({ ...contestFormData, questionBankMode: 'combined' })}
+                    className={`p-3 rounded-xl border-2 cursor-pointer transition flex flex-col justify-between ${
+                      contestFormData.questionBankMode === 'combined'
+                        ? 'bg-amber-100/70 border-heritage-gold-500 ring-2 ring-heritage-gold-300'
+                        : 'bg-white border-heritage-ivory-300 hover:border-heritage-gold-300'
+                    }`}
+                  >
+                    <div className="flex items-start space-x-2">
+                      <input
+                        type="radio"
+                        name="questionBankMode"
+                        checked={contestFormData.questionBankMode === 'combined'}
+                        onChange={() => setContestFormData({ ...contestFormData, questionBankMode: 'combined' })}
+                        className="mt-0.5 text-heritage-red-700"
+                      />
+                      <div>
+                        <span className="text-xs font-black text-heritage-red-950 block">🔀 Kết Hợp Nhiều Ngân Hàng</span>
+                        <span className="text-[10px] text-heritage-ink-600 block mt-0.5 leading-snug">
+                          Tự do tích chọn các ngân hàng chuyên đề để trộn thành bộ đề chung.
+                        </span>
+                      </div>
+                    </div>
+                  </label>
+
+                  {/* Chế độ 2: Ngân hàng riêng của hội thi */}
+                  <label
+                    onClick={() => setContestFormData({ ...contestFormData, questionBankMode: 'dedicated' })}
+                    className={`p-3 rounded-xl border-2 cursor-pointer transition flex flex-col justify-between ${
+                      contestFormData.questionBankMode === 'dedicated'
+                        ? 'bg-amber-100/70 border-heritage-gold-500 ring-2 ring-heritage-gold-300'
+                        : 'bg-white border-heritage-ivory-300 hover:border-heritage-gold-300'
+                    }`}
+                  >
+                    <div className="flex items-start space-x-2">
+                      <input
+                        type="radio"
+                        name="questionBankMode"
+                        checked={contestFormData.questionBankMode === 'dedicated'}
+                        onChange={() => setContestFormData({ ...contestFormData, questionBankMode: 'dedicated' })}
+                        className="mt-0.5 text-heritage-red-700"
+                      />
+                      <div>
+                        <span className="text-xs font-black text-heritage-red-950 block">🔒 Ngân Hàng Riêng Biệt</span>
+                        <span className="text-[10px] text-heritage-ink-600 block mt-0.5 leading-snug">
+                          Chỉ rút từ ngân hàng câu hỏi riêng được phân bổ cho hội thi này.
+                        </span>
+                      </div>
+                    </div>
+                  </label>
+
+                  {/* Chế độ 3: Tất cả câu hỏi */}
+                  <label
+                    onClick={() => setContestFormData({ ...contestFormData, questionBankMode: 'all' })}
+                    className={`p-3 rounded-xl border-2 cursor-pointer transition flex flex-col justify-between ${
+                      contestFormData.questionBankMode === 'all'
+                        ? 'bg-amber-100/70 border-heritage-gold-500 ring-2 ring-heritage-gold-300'
+                        : 'bg-white border-heritage-ivory-300 hover:border-heritage-gold-300'
+                    }`}
+                  >
+                    <div className="flex items-start space-x-2">
+                      <input
+                        type="radio"
+                        name="questionBankMode"
+                        checked={contestFormData.questionBankMode === 'all'}
+                        onChange={() => setContestFormData({ ...contestFormData, questionBankMode: 'all' })}
+                        className="mt-0.5 text-heritage-red-700"
+                      />
+                      <div>
+                        <span className="text-xs font-black text-heritage-red-950 block">🌐 Toàn Bộ Hệ Thống</span>
+                        <span className="text-[10px] text-heritage-ink-600 block mt-0.5 leading-snug">
+                          Rút ngẫu nhiên từ toàn bộ kho {questions.length} câu hỏi hiện có.
+                        </span>
+                      </div>
+                    </div>
+                  </label>
+                </div>
+
+                {/* Checklist các ngân hàng được chọn (khi ở chế độ 'combined') */}
+                {contestFormData.questionBankMode === 'combined' && (
+                  <div className="mt-3 p-3 bg-white rounded-xl border border-heritage-gold-300/80 space-y-2">
+                    <div className="flex items-center justify-between text-xs font-bold text-heritage-ink-800 pb-1.5 border-b border-heritage-ivory-200">
+                      <span>Chọn các Ngân hàng câu hỏi tham gia trộn đề:</span>
+                      <span className="text-heritage-red-700 font-bold">
+                        Đã chọn: {contestFormData.selectedBankIds?.length || 0} / {questionBanks.length} ngân hàng
+                      </span>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-48 overflow-y-auto pr-1">
+                      {questionBanks.map((bank) => {
+                        const isChecked = (contestFormData.selectedBankIds || []).includes(bank.id);
+                        const bankQuestionsCount = questions.filter((q) => (q.bankId || `bank-${q.category}`) === bank.id).length;
+                        return (
+                          <label
+                            key={bank.id}
+                            className={`p-2.5 rounded-xl border transition cursor-pointer flex items-start space-x-2 ${
+                              isChecked
+                                ? 'bg-emerald-50/70 border-emerald-400 text-emerald-950 ring-1 ring-emerald-300'
+                                : 'bg-heritage-ivory-50 border-heritage-ivory-200 hover:bg-white text-heritage-ink-700'
+                            }`}
+                          >
+                            <input
+                              type="checkbox"
+                              checked={isChecked}
+                              onChange={(e) => {
+                                const currentSelected = contestFormData.selectedBankIds || [];
+                                let updated: string[];
+                                if (e.target.checked) {
+                                  updated = [...currentSelected, bank.id];
+                                } else {
+                                  updated = currentSelected.filter((id) => id !== bank.id);
+                                }
+                                setContestFormData({ ...contestFormData, selectedBankIds: updated });
+                              }}
+                              className="mt-0.5 text-emerald-600 rounded"
+                            />
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center justify-between gap-1">
+                                <span className="text-xs font-bold truncate block">{bank.name}</span>
+                                <span className="px-1.5 py-0.2 rounded-full text-[10px] font-bold bg-white text-emerald-800 border border-emerald-300 flex-shrink-0">
+                                  {bankQuestionsCount} câu
+                                </span>
+                              </div>
+                              {bank.description && (
+                                <span className="text-[10px] text-heritage-ink-500 block truncate mt-0.5">
+                                  {bank.description}
+                                </span>
+                              )}
+                            </div>
+                          </label>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+              </div>
+
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <label className="block text-xs font-bold text-heritage-ink-800 uppercase tracking-wider mb-1">
@@ -2230,25 +2574,49 @@ export const ContestManagerModal: React.FC<ContestManagerModalProps> = ({
             </div>
 
             <form onSubmit={handleSaveQuestion} className="space-y-4">
-              <div>
-                <label className="block text-xs font-bold text-heritage-ink-800 uppercase tracking-wider mb-1">
-                  Chủ đề câu hỏi
-                </label>
-                <select
-                  value={questionFormData.category}
-                  onChange={(e) =>
-                    setQuestionFormData({
-                      ...questionFormData,
-                      category: e.target.value as ContestQuestion['category']
-                    })
-                  }
-                  className="w-full px-3.5 py-2 bg-heritage-ivory-50 border border-heritage-ivory-300 rounded-xl text-xs sm:text-sm font-semibold focus:outline-none focus:border-heritage-red-700"
-                >
-                  <option value="cuoc-doi">Cuộc đời & Sự nghiệp của Bác</option>
-                  <option value="tu-tuong">Tư tưởng, Đạo đức, Phong cách Hồ Chí Minh</option>
-                  <option value="5-dieu-bac-day">5 Điều Bác Hồ dạy Thiếu niên, Nhi đồng</option>
-                  <option value="thoi-an-truyen-thong">Truyền thống Thới An & Trường Nguyễn Trung Trực</option>
-                </select>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-bold text-heritage-ink-800 uppercase tracking-wider mb-1">
+                    Chủ đề câu hỏi
+                  </label>
+                  <select
+                    value={questionFormData.category}
+                    onChange={(e) =>
+                      setQuestionFormData({
+                        ...questionFormData,
+                        category: e.target.value as ContestQuestion['category']
+                      })
+                    }
+                    className="w-full px-3.5 py-2 bg-heritage-ivory-50 border border-heritage-ivory-300 rounded-xl text-xs sm:text-sm font-semibold focus:outline-none focus:border-heritage-red-700"
+                  >
+                    <option value="cuoc-doi">Cuộc đời & Sự nghiệp của Bác</option>
+                    <option value="tu-tuong">Tư tưởng, Đạo đức, Phong cách Hồ Chí Minh</option>
+                    <option value="5-dieu-bac-day">5 Điều Bác Hồ dạy Thiếu niên, Nhi đồng</option>
+                    <option value="thoi-an-truyen-thong">Truyền thống Thới An & Trường Nguyễn Trung Trực</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-heritage-ink-800 uppercase tracking-wider mb-1 flex items-center justify-between">
+                    <span>Thuộc Ngân Hàng Câu Hỏi *</span>
+                  </label>
+                  <select
+                    value={questionFormData.bankId}
+                    onChange={(e) =>
+                      setQuestionFormData({
+                        ...questionFormData,
+                        bankId: e.target.value
+                      })
+                    }
+                    className="w-full px-3.5 py-2 bg-heritage-ivory-50 border border-heritage-ivory-300 rounded-xl text-xs sm:text-sm font-semibold focus:outline-none focus:border-heritage-red-700"
+                  >
+                    {questionBanks.map((b) => (
+                      <option key={b.id} value={b.id}>
+                        {b.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
               </div>
 
               <div>
@@ -2452,6 +2820,182 @@ export const ContestManagerModal: React.FC<ContestManagerModalProps> = ({
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* ─────────────────────────────────────────────────────────────────
+          MODAL CON: QUẢN LÝ CÁC NGÂN HÀNG CÂU HỎI (QUESTION BANKS)
+          ───────────────────────────────────────────────────────────────── */}
+      {isBankManagerOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 bg-black/60 backdrop-blur-xs animate-fadeIn">
+          <div className="relative w-full max-w-2xl bg-white border-2 border-heritage-gold-400 rounded-2xl shadow-2xl p-5 sm:p-6 space-y-4 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between border-b border-heritage-ivory-200 pb-3">
+              <div className="flex items-center space-x-2.5">
+                <div className="w-8 h-8 rounded-xl bg-amber-500 text-white flex items-center justify-center shadow-xs">
+                  <Library className="w-4.5 h-4.5" />
+                </div>
+                <div>
+                  <h3 className="font-serif font-bold text-base sm:text-lg text-heritage-red-900">
+                    Quản Lý Danh Sách Ngân Hàng Câu Hỏi
+                  </h3>
+                  <p className="text-[11px] text-heritage-ink-600">
+                    Phân chia ngân hàng câu hỏi riêng cho từng hội thi hoặc thiết lập chuyên đề để trộn đề thi linh hoạt.
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => {
+                  setIsBankManagerOpen(false);
+                  setEditingBank(null);
+                }}
+                className="p-1 text-heritage-ink-400 hover:text-heritage-red-700 rounded-lg hover:bg-heritage-ivory-100"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Form thêm / sửa Ngân hàng */}
+            <form onSubmit={handleSaveBank} className="bg-amber-50/70 p-4 rounded-xl border border-amber-300 space-y-3">
+              <h4 className="font-bold text-xs uppercase tracking-wider text-amber-950 flex items-center space-x-1.5">
+                <FolderPlus className="w-4 h-4 text-amber-700" />
+                <span>{editingBank ? `Chỉnh sửa: "${editingBank.name}"` : 'Tạo Ngân Hàng Câu Hỏi Mới'}</span>
+              </h4>
+
+              <div className="space-y-2.5 text-xs">
+                <div>
+                  <label className="block font-bold text-heritage-ink-800 mb-1">
+                    Tên Ngân Hàng Câu Hỏi <span className="text-red-600">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    value={bankFormData.name}
+                    onChange={(e) => setBankFormData({ ...bankFormData, name: e.target.value })}
+                    placeholder="Ví dụ: Ngân Hàng: Bộ Đề Khối 6-7 Chuyên Đề Đội TNTP..."
+                    className="w-full px-3 py-2 bg-white border border-heritage-ivory-300 rounded-xl font-bold text-heritage-ink-900 focus:outline-none focus:border-heritage-red-700 text-xs sm:text-sm"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="block font-bold text-heritage-ink-800 mb-1">
+                    Mô Tả Định Hướng / Chuyên Đề
+                  </label>
+                  <input
+                    type="text"
+                    value={bankFormData.description}
+                    onChange={(e) => setBankFormData({ ...bankFormData, description: e.target.value })}
+                    placeholder="Ví dụ: Rèn luyện 5 điều Bác dạy, truyền thống lịch sử..."
+                    className="w-full px-3 py-2 bg-white border border-heritage-ivory-300 rounded-xl text-heritage-ink-800 focus:outline-none focus:border-heritage-red-700 text-xs"
+                  />
+                </div>
+
+                <div className="flex items-center justify-end space-x-2 pt-1">
+                  {editingBank && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setEditingBank(null);
+                        setBankFormData({ name: '', description: '', contestId: '' });
+                      }}
+                      className="px-3 py-1.5 bg-white border border-heritage-ivory-300 text-heritage-ink-700 rounded-xl text-xs font-bold hover:bg-heritage-ivory-100"
+                    >
+                      Hủy bỏ
+                    </button>
+                  )}
+                  <button
+                    type="submit"
+                    className="px-4 py-1.5 bg-heritage-red-700 hover:bg-heritage-red-800 text-white rounded-xl text-xs font-bold shadow-xs transition"
+                  >
+                    {editingBank ? 'Cập Nhật Ngân Hàng' : 'Lưu Ngân Hàng Mới'}
+                  </button>
+                </div>
+              </div>
+            </form>
+
+            {/* Danh sách các Ngân hàng hiện có */}
+            <div className="space-y-2">
+              <h4 className="font-bold text-xs uppercase tracking-wider text-heritage-ink-700 flex items-center justify-between">
+                <span>Danh sách ngân hàng hiện có ({questionBanks.length})</span>
+                <span className="text-[10px] text-heritage-ink-500 font-normal">
+                  Ngân hàng mặc định được bảo vệ không thể xóa
+                </span>
+              </h4>
+
+              <div className="space-y-2 max-h-60 overflow-y-auto pr-1">
+                {questionBanks.map((bank) => {
+                  const count = questions.filter((q) => (q.bankId || `bank-${q.category}`) === bank.id).length;
+                  return (
+                    <div
+                      key={bank.id}
+                      className="p-3 bg-heritage-ivory-50 rounded-xl border border-heritage-ivory-300 flex items-center justify-between gap-3 hover:border-heritage-gold-400 transition"
+                    >
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center space-x-2">
+                          <span className="font-bold text-xs text-heritage-ink-900 truncate block">
+                            {bank.name}
+                          </span>
+                          <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-900 border border-amber-300 flex-shrink-0">
+                            {count} câu hỏi
+                          </span>
+                          {bank.isDefault && (
+                            <span className="px-1.5 py-0.2 rounded-full text-[9px] font-bold bg-slate-200 text-slate-700 flex-shrink-0">
+                              Mặc định
+                            </span>
+                          )}
+                        </div>
+                        {bank.description && (
+                          <p className="text-[11px] text-heritage-ink-600 truncate mt-0.5">
+                            {bank.description}
+                          </p>
+                        )}
+                      </div>
+
+                      <div className="flex items-center space-x-1 flex-shrink-0">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setEditingBank(bank);
+                            setBankFormData({
+                              name: bank.name,
+                              description: bank.description || '',
+                              contestId: bank.contestId || '',
+                            });
+                          }}
+                          className="p-1.5 rounded-lg text-heritage-ink-600 hover:text-heritage-red-700 hover:bg-heritage-ivory-200 transition"
+                          title="Sửa thông tin ngân hàng"
+                        >
+                          <Edit2 className="w-3.5 h-3.5" />
+                        </button>
+                        {!bank.isDefault && (
+                          <button
+                            type="button"
+                            onClick={() => handleDeleteBank(bank.id)}
+                            className="p-1.5 rounded-lg text-heritage-ink-400 hover:text-red-700 hover:bg-red-50 transition"
+                            title="Xóa ngân hàng câu hỏi"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            <div className="pt-2 border-t border-heritage-ivory-200 flex justify-end">
+              <button
+                type="button"
+                onClick={() => {
+                  setIsBankManagerOpen(false);
+                  setEditingBank(null);
+                }}
+                className="px-4 py-2 bg-heritage-ivory-200 hover:bg-heritage-ivory-300 text-heritage-ink-800 font-bold rounded-xl text-xs transition"
+              >
+                Hoàn Tất & Đóng
+              </button>
+            </div>
           </div>
         </div>
       )}

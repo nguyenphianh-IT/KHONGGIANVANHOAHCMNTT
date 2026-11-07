@@ -13,6 +13,7 @@ import {
   getStoredContestsList,
   getStoredContestInfo,
   getStoredContestQuestions,
+  getQuestionsForContest,
   getContestSubmissions,
   saveContestSubmission,
   formatTime,
@@ -87,16 +88,21 @@ export const OnlineContest: React.FC = () => {
     setLeaderboardContestId(contest.id);
   };
 
+  // Danh sách câu hỏi thuộc ngân hàng của hội thi đang chọn (ngân hàng riêng hoặc kết hợp)
+  const contestQuestions = useMemo(() => {
+    return getQuestionsForContest(contestInfo.id);
+  }, [contestInfo.id, questions]);
+
   // Tính số lượng câu hỏi thực tế của đề thi dựa trên cấu hình (contestInfo.totalQuestions)
   const targetExamQuestionCount = useMemo(() => {
     if (contestInfo.totalQuestions && contestInfo.totalQuestions > 0) {
-      return questions.length > 0 ? Math.min(contestInfo.totalQuestions, questions.length) : contestInfo.totalQuestions;
+      return contestQuestions.length > 0 ? Math.min(contestInfo.totalQuestions, contestQuestions.length) : contestInfo.totalQuestions;
     }
-    return questions.length;
-  }, [contestInfo.totalQuestions, questions.length]);
+    return contestQuestions.length;
+  }, [contestInfo.totalQuestions, contestQuestions.length]);
 
   // Bộ câu hỏi hiện thời dùng trong phòng thi
-  const activeExamQuestions = examQuestions.length > 0 ? examQuestions : questions;
+  const activeExamQuestions = examQuestions.length > 0 ? examQuestions : contestQuestions;
 
   // Kết quả vừa thi
   const [latestSubmission, setLatestSubmission] = useState<ContestSubmission | null>(null);
@@ -234,20 +240,8 @@ export const OnlineContest: React.FC = () => {
       className: selectedClass,
     });
 
-    // 1. RÚT ĐỀ THI LINH HOẠT THEO CẤU HÌNH VÀ CHỦ ĐỀ HỘI THI (5, 10, 15, 20... CÂU)
-    let eligibleQuestions = [...questions];
-    if (contestInfo.categoryFilter && contestInfo.categoryFilter !== 'all') {
-      const categorySpecific = questions.filter((q) => q.category === contestInfo.categoryFilter);
-      if (categorySpecific.length >= 5) {
-        eligibleQuestions = categorySpecific;
-      }
-    } else if (contestInfo.id === 'hoi-thi-2024-5-dieu-bac-day') {
-      // Ưu tiên câu hỏi về 5 Điều Bác Hồ dạy & Đội TNTP cho Hội thi thiếu nhi
-      const topicSpecific = questions.filter((q) => q.category === '5-dieu-bac-day' || q.category === 'thoi-an-truyen-thong');
-      if (topicSpecific.length >= 5) {
-        eligibleQuestions = [...topicSpecific, ...questions.filter((q) => !topicSpecific.includes(q))];
-      }
-    }
+    // 1. RÚT ĐỀ THI TỪ NGÂN HÀNG RIÊNG HOẶC KẾT HỢP NHIỀU NGÂN HÀNG CỦA HỘI THI
+    const eligibleQuestions = getQuestionsForContest(contestInfo.id);
 
     const count = contestInfo.totalQuestions && contestInfo.totalQuestions > 0
       ? Math.min(contestInfo.totalQuestions, eligibleQuestions.length)
@@ -748,8 +742,8 @@ export const OnlineContest: React.FC = () => {
                       <span className="font-serif text-base sm:text-xl font-black text-white block">
                         {targetExamQuestionCount} Câu hỏi
                       </span>
-                      <span className="text-[10px] text-heritage-gold-200/70 block mt-0.5">
-                        {questions.length > targetExamQuestionCount ? `Rút từ kho ${questions.length} câu` : 'Trắc nghiệm 4 lựa chọn'}
+                      <span className="text-[10px] text-heritage-gold-200/70 block mt-0.5" title={`Ngân hàng hội thi có ${contestQuestions.length} câu hỏi`}>
+                        {contestQuestions.length > targetExamQuestionCount ? `Rút từ kho ${contestQuestions.length} câu` : 'Trắc nghiệm 4 lựa chọn'}
                       </span>
                     </div>
 
