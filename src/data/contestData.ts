@@ -883,14 +883,6 @@ export function getStoredContestQuestions(): ContestQuestion[] {
     }
     const parsed = JSON.parse(raw);
     if (Array.isArray(parsed) && parsed.length > 0) {
-      // Nếu ngân hàng đã lưu trước đó ít câu hơn bộ đề chuẩn mới (25 câu), tự động bổ sung câu hỏi mới
-      if (parsed.length < CONTEST_QUESTIONS_BANK.length) {
-        const existingIds = new Set(parsed.map((q) => q.id));
-        const additional = CONTEST_QUESTIONS_BANK.filter((q) => !existingIds.has(q.id));
-        const combined = [...parsed, ...additional];
-        localStorage.setItem(STORAGE_KEY_CONTEST_QUESTIONS, JSON.stringify(combined));
-        return combined;
-      }
       return parsed;
     }
     return CONTEST_QUESTIONS_BANK;
@@ -902,6 +894,8 @@ export function getStoredContestQuestions(): ContestQuestion[] {
 export function saveStoredContestQuestions(questions: ContestQuestion[]): ContestQuestion[] {
   try {
     localStorage.setItem(STORAGE_KEY_CONTEST_QUESTIONS, JSON.stringify(questions));
+    localStorage.setItem('hcm_contest_questions_customized', 'true');
+    localStorage.setItem('hcm_contest_questions_updated_at', new Date().toISOString());
     if (typeof window !== 'undefined') {
       window.dispatchEvent(new Event(EVENT_CONTEST_DATA_CHANGED));
     }
@@ -1063,6 +1057,7 @@ export async function fetchSupabaseContestData(): Promise<{
   success: boolean;
   contests?: ContestInfo[];
   submissions?: ContestSubmission[];
+  questions?: ContestQuestion[];
   error?: string;
 }> {
   if (!isSupabaseConfigured) {
@@ -1088,6 +1083,7 @@ export async function fetchSupabaseContestData(): Promise<{
       const cloudData = data.data as {
         contests?: ContestInfo[];
         submissions?: ContestSubmission[];
+        questions?: ContestQuestion[];
         activeContestId?: string;
       };
 
@@ -1114,6 +1110,11 @@ export async function fetchSupabaseContestData(): Promise<{
         localStorage.setItem(STORAGE_KEY_CONTEST, JSON.stringify(mergedSubs));
       }
 
+      // Nếu Cloud đã có bản sửa đổi chính thức chứa ngân hàng câu hỏi do quản trị viên xuất bản
+      if (Array.isArray(cloudData.questions) && cloudData.questions.length > 0) {
+        localStorage.setItem(STORAGE_KEY_CONTEST_QUESTIONS, JSON.stringify(cloudData.questions));
+      }
+
       if (typeof window !== 'undefined') {
         window.dispatchEvent(new Event(EVENT_CONTEST_DATA_CHANGED));
       }
@@ -1122,6 +1123,7 @@ export async function fetchSupabaseContestData(): Promise<{
         success: true,
         contests: cloudData.contests || getStoredContestsList(),
         submissions: getContestSubmissions(),
+        questions: cloudData.questions || getStoredContestQuestions(),
       };
     }
 
@@ -1133,11 +1135,26 @@ export async function fetchSupabaseContestData(): Promise<{
 }
 
 /**
- * Tải ngân hàng câu hỏi trắc nghiệm trực tiếp từ Supabase Cloud quiz_questions
+ * Tải ngân hàng câu hỏi trắc nghiệm từ Supabase Cloud
+ * (BẢO VỆ TUYỆT ĐỐI CÂU HỎI DO THẦY/CÔ ĐÃ TÙY CHỈNH: Không bao giờ tự động ghi đè làm mất chỉnh sửa)
  */
 export async function fetchSupabaseQuestions(): Promise<ContestQuestion[]> {
+  const localQuestions = getStoredContestQuestions();
+  const isCustomized = localStorage.getItem('hcm_contest_questions_customized') === 'true';
+
+  // 1. Nếu Thầy/Cô đã chủ động tùy chỉnh / sửa câu hỏi cục bộ, giữ nguyên 100% không bao giờ ghi đè
+  if (isCustomized && localQuestions.length > 0) {
+    return localQuestions;
+  }
+
   if (!isSupabaseConfigured) {
-    return getStoredContestQuestions();
+    return localQuestions;
+  }
+
+  // 2. Nếu trong LocalStorage đã có sẵn danh sách câu hỏi, ưu tiên sử dụng danh sách này
+  const raw = localStorage.getItem(STORAGE_KEY_CONTEST_QUESTIONS);
+  if (raw) {
+    return localQuestions;
   }
 
   try {
@@ -1147,41 +1164,38 @@ export async function fetchSupabaseQuestions(): Promise<ContestQuestion[]> {
       .eq('is_active', true)
       .order('sort_order', { ascending: true });
 
-    if (error) {
-      console.warn('[Supabase Questions Warning]', error.message);
-      return getStoredContestQuestions();
+    if (error || !data || data.length === 0) {
+      return localQuestions;
     }
 
-    if (data && data.length > 0) {
-      const localBank = CONTEST_QUESTIONS_BANK;
-      const mapped: ContestQuestion[] = data.map((q, idx) => {
-        const local = localBank[idx] || localBank.find((l) => l.question === q.question);
-        return {
-          id: q.sort_order || idx + 1,
-          question: q.question,
-          options: (q.options as string[]) || local?.options || [],
-          correctIndex: local?.correctIndex ?? 0,
-          explanation: local?.explanation ?? '',
-          category: local?.category ?? 'cuoc-doi',
-        };
-      });
+    const localBank = CONTEST_QUESTIONS_BANK;
+    const mapped: ContestQuestion[] = data.map((q, idx) => {
+      const local = localBank[idx] || localBank.find((l) => l.question === q.question);
+      return {
+        id: q.sort_order || idx + 1,
+        question: q.question,
+        options: (q.options as string[]) || local?.options || [],
+        correctIndex: local?.correctIndex ?? 0,
+        explanation: local?.explanation ?? '',
+        category: local?.category ?? 'cuoc-doi',
+      };
+    });
 
-      saveStoredContestQuestions(mapped);
-      return mapped;
-    }
+    saveStoredContestQuestions(mapped);
+    return mapped;
   } catch (e) {
     console.warn('[Supabase fetch questions exception]', e);
+    return localQuestions;
   }
-
-  return getStoredContestQuestions();
 }
 
 /**
- * Đẩy toàn bộ danh sách Hội thi và Bài thi lên Supabase Cloud Database (Workflow CMS 4 mắt)
+ * Đẩy toàn bộ danh sách Hội thi, Bài thi và Ngân hàng câu hỏi lên Supabase Cloud Database (Workflow CMS 4 mắt)
  */
 export async function syncContestsAndSubmissionsToSupabase(
   contests: ContestInfo[],
-  submissions: ContestSubmission[]
+  submissions: ContestSubmission[],
+  questions?: ContestQuestion[]
 ): Promise<{ success: boolean; message: string; version?: number }> {
   if (!isSupabaseConfigured) {
     return { success: false, message: 'Supabase chưa được cấu hình biến môi trường.' };
@@ -1225,6 +1239,7 @@ export async function syncContestsAndSubmissionsToSupabase(
     const newRevId = 'b0000000-0000-0000-0000-' + String(nextVer).padStart(12, '0');
 
     // 3. Tạo bản sửa đổi (draft revision)
+    const questionsToSync = questions && questions.length > 0 ? questions : getStoredContestQuestions();
     const insertRes = await fetch(`${supabaseUrl}/rest/v1/content_revisions`, {
       method: 'POST',
       headers: {
@@ -1243,6 +1258,7 @@ export async function syncContestsAndSubmissionsToSupabase(
           data: {
             contests,
             submissions,
+            questions: questionsToSync,
             activeContestId: contests.find((c) => c.status === 'active')?.id || 'hoi-thi-2024-tuoi-tre-bac-ho',
             syncedAt: new Date().toISOString(),
           },

@@ -102,7 +102,7 @@ export const ContestManagerModal: React.FC<ContestManagerModalProps> = ({
     setIsSyncingCloud(true);
     setCloudSyncStatus(null);
     try {
-      const res = await syncContestsAndSubmissionsToSupabase(contestsList, submissions);
+      const res = await syncContestsAndSubmissionsToSupabase(contestsList, submissions, questions);
       if (res.success) {
         setCloudSyncStatus(res.message);
         setToastMsg({ type: 'success', text: res.message });
@@ -128,6 +128,7 @@ export const ContestManagerModal: React.FC<ContestManagerModalProps> = ({
       if (res.success) {
         if (res.contests) setContestsList(res.contests);
         if (res.submissions) setSubmissions(res.submissions);
+        if (res.questions) setQuestions(res.questions);
         const successMsg = 'Đã tải thành công dữ liệu mới nhất từ Supabase Cloud!';
         setCloudSyncStatus(successMsg);
         setToastMsg({ type: 'success', text: successMsg });
@@ -1437,13 +1438,26 @@ export const ContestManagerModal: React.FC<ContestManagerModalProps> = ({
                   </select>
                 </div>
 
-                <button
-                  onClick={handleOpenAddQuestion}
-                  className="inline-flex items-center justify-center space-x-1.5 px-4 py-2 bg-heritage-red-700 hover:bg-heritage-red-800 text-white rounded-xl text-xs sm:text-sm font-bold shadow-xs transition"
-                >
-                  <Plus className="w-4 h-4" />
-                  <span>Thêm câu hỏi mới</span>
-                </button>
+                <div className="flex items-center space-x-2">
+                  <button
+                    type="button"
+                    onClick={handleSyncToCloud}
+                    disabled={isSyncingCloud}
+                    className="inline-flex items-center justify-center space-x-1.5 px-3.5 py-2 bg-heritage-gold-400 hover:bg-heritage-gold-300 text-heritage-red-950 font-black rounded-xl text-xs shadow-xs transition border border-heritage-gold-500 disabled:opacity-50"
+                    title="Đồng bộ lưu trữ vĩnh viễn ngân hàng câu hỏi lên Supabase Cloud Database"
+                  >
+                    <CloudUpload className="w-4 h-4 text-heritage-red-900" />
+                    <span>{isSyncingCloud ? 'Đang lưu...' : 'Lưu lên Cloud'}</span>
+                  </button>
+
+                  <button
+                    onClick={handleOpenAddQuestion}
+                    className="inline-flex items-center justify-center space-x-1.5 px-4 py-2 bg-heritage-red-700 hover:bg-heritage-red-800 text-white rounded-xl text-xs sm:text-sm font-bold shadow-xs transition"
+                  >
+                    <Plus className="w-4 h-4" />
+                    <span>Thêm câu hỏi mới</span>
+                  </button>
+                </div>
               </div>
 
               {/* Questions List */}
