@@ -60,84 +60,241 @@ export const LearningCorner: React.FC = () => {
   return (
     <section id="learning" className="py-16 md:py-24 bg-white border-b border-heritage-ivory-300">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Section Header */}
-        <div className="text-center max-w-4xl lg:max-w-5xl mx-auto mb-10">
-          <div className="inline-flex items-center space-x-1.5 text-xs uppercase tracking-wider text-heritage-red-700 font-bold bg-heritage-red-50 px-3 py-1 rounded-full border border-heritage-red-200 mb-3">
-            <Award className="w-3.5 h-3.5 text-heritage-red-700" />
-            <span>Dành Cho Học Sinh THCS</span>
+        {/* Section Header - Nâng cấp nhận diện trang trọng, uy nghiêm */}
+        <div className="text-center max-w-4xl lg:max-w-5xl mx-auto mb-8 sm:mb-10">
+          <div className="inline-flex items-center space-x-2 text-xs uppercase tracking-wider text-heritage-red-700 font-bold bg-heritage-red-50 px-3.5 py-1.5 rounded-full border border-heritage-red-200 mb-3.5 shadow-2xs">
+            <Sparkles className="w-3.5 h-3.5 text-heritage-red-700" />
+            <span>KHÔNG GIAN RÈN ĐỨC LUYỆN TÀI • TRƯỜNG THCS NGUYỄN TRUNG TRỰC</span>
           </div>
-          <h2 className="font-serif text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-heritage-ink-900 tracking-tight whitespace-normal sm:whitespace-nowrap">
+
+          <h2 className="font-serif text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black text-heritage-ink-950 tracking-tight whitespace-normal sm:whitespace-nowrap drop-shadow-2xs">
             Góc Học Tập & Rèn Luyện
           </h2>
-          <div className="w-16 h-1 bg-heritage-gold-400 mx-auto mt-4 rounded-full" />
-          <p className="mt-4 text-base sm:text-lg text-heritage-ink-700 leading-relaxed">
+
+          {/* Dải hoa văn di sản đối xứng tinh tế */}
+          <div className="flex items-center justify-center space-x-2.5 my-3.5" aria-hidden="true">
+            <div className="w-8 sm:w-14 h-0.5 bg-gradient-to-r from-transparent to-heritage-gold-400 rounded-full" />
+            <div className="w-2 h-2 rounded-full bg-heritage-gold-500 ring-2 ring-heritage-gold-200" />
+            <div className="w-8 sm:w-14 h-0.5 bg-gradient-to-l from-transparent to-heritage-gold-400 rounded-full" />
+          </div>
+
+          <p className="mt-2 text-sm sm:text-base md:text-lg text-heritage-ink-700 leading-relaxed max-w-3xl mx-auto">
             Nơi các em học sinh trường THCS Nguyễn Trung Trực cùng tìm hiểu các bài học giản dị mà sâu sắc
             của Bác, thực hành việc tốt mỗi ngày và thử tài tri thức lịch sử.
           </p>
         </div>
 
-        {/* Tab switchers */}
-        <div className="flex flex-wrap items-center justify-center gap-3 mb-10">
+        {/* ========================================================================= */}
+        {/* NAVIGATION: 4 THẺ TƯƠNG TÁC HỌC TẬP (INTERACTIVE BENTO CARDS GRID)         */}
+        {/* ========================================================================= */}
+        <div 
+          role="tablist" 
+          aria-label="Các phân khu chức năng Góc học tập và rèn luyện"
+          className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-5 mb-8 sm:mb-10"
+        >
+          {/* THẺ 1: HỘI THI & BẢNG XẾP HẠNG */}
           <button
+            role="tab"
+            aria-selected={activeTab === 'contest'}
+            aria-controls="panel-contest"
             onClick={() => setActiveTab('contest')}
-            className={`px-4 py-2.5 rounded-lg text-sm font-semibold transition-all flex items-center space-x-2 relative ${
+            className={`text-left p-3.5 sm:p-4.5 rounded-2xl border-2 transition-all duration-200 flex flex-col justify-between group relative cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-heritage-gold-400 focus-visible:ring-offset-2 select-none ${
               activeTab === 'contest'
-                ? 'bg-heritage-red-700 text-white shadow-md ring-2 ring-heritage-gold-400'
-                : 'bg-heritage-ivory-200 text-heritage-ink-700 hover:bg-heritage-red-50 hover:text-heritage-red-700'
+                ? 'bg-gradient-to-br from-[#7a121f] via-[#630d17] to-[#450810] text-white border-heritage-gold-400 shadow-xl shadow-heritage-red-950/25 ring-2 ring-heritage-gold-400/40 -translate-y-0.5'
+                : 'bg-heritage-ivory-100 hover:bg-white text-heritage-ink-900 border-heritage-ivory-300 hover:border-heritage-gold-400 hover:shadow-md hover:-translate-y-0.5'
             }`}
           >
-            <Trophy className={`w-4 h-4 ${activeTab === 'contest' ? 'text-heritage-gold-300' : 'text-heritage-red-700'}`} />
-            <span>Hội Thi & Bảng Xếp Hạng</span>
-            <span className="hidden sm:inline-block px-1.5 py-0.5 bg-heritage-gold-400 text-heritage-red-950 text-[10px] font-black rounded-full uppercase ml-1 animate-pulse">
-              Thi đua
-            </span>
+            <div>
+              <div className="flex items-center justify-between mb-2.5">
+                <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-transform group-hover:scale-105 shadow-xs ${
+                  activeTab === 'contest'
+                    ? 'bg-gradient-to-br from-heritage-gold-300 to-heritage-gold-500 text-heritage-red-950'
+                    : 'bg-heritage-red-50 text-heritage-red-700 group-hover:bg-heritage-red-100'
+                }`}>
+                  <Trophy className="w-5 h-5" />
+                </div>
+                <span className={`px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider ${
+                  activeTab === 'contest'
+                    ? 'bg-heritage-gold-400 text-heritage-red-950 animate-pulse'
+                    : 'bg-heritage-gold-100 text-heritage-red-900 border border-heritage-gold-300'
+                }`}>
+                  Thi đua
+                </span>
+              </div>
+
+              <h3 className={`font-serif font-black text-sm sm:text-base leading-snug line-clamp-1 ${
+                activeTab === 'contest' ? 'text-heritage-ivory-50' : 'text-heritage-ink-950'
+              }`}>
+                Hội Thi Trực Tuyến
+              </h3>
+
+              <p className={`text-[11px] sm:text-xs mt-1 leading-relaxed line-clamp-2 ${
+                activeTab === 'contest' ? 'text-heritage-gold-100/90' : 'text-heritage-ink-600'
+              }`}>
+                Đợt thi đua rèn đức luyện tài & Bảng Vàng vinh danh
+              </p>
+            </div>
+
+            {activeTab === 'contest' && (
+              <div className="w-8 h-1 bg-heritage-gold-400 rounded-full mt-3" aria-hidden="true" />
+            )}
           </button>
 
+          {/* THẺ 2: 5 ĐIỀU BÁC DẠY */}
           <button
+            role="tab"
+            aria-selected={activeTab === 'topics'}
+            aria-controls="panel-topics"
             onClick={() => setActiveTab('topics')}
-            className={`px-4 py-2.5 rounded-lg text-sm font-semibold transition-all flex items-center space-x-2 ${
+            className={`text-left p-3.5 sm:p-4.5 rounded-2xl border-2 transition-all duration-200 flex flex-col justify-between group relative cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-heritage-gold-400 focus-visible:ring-offset-2 select-none ${
               activeTab === 'topics'
-                ? 'bg-heritage-red-700 text-white shadow-md'
-                : 'bg-heritage-ivory-200 text-heritage-ink-700 hover:bg-heritage-red-50 hover:text-heritage-red-700'
+                ? 'bg-gradient-to-br from-[#7a121f] via-[#630d17] to-[#450810] text-white border-heritage-gold-400 shadow-xl shadow-heritage-red-950/25 ring-2 ring-heritage-gold-400/40 -translate-y-0.5'
+                : 'bg-heritage-ivory-100 hover:bg-white text-heritage-ink-900 border-heritage-ivory-300 hover:border-heritage-gold-400 hover:shadow-md hover:-translate-y-0.5'
             }`}
           >
-            <BookOpen className="w-4 h-4" />
-            <span>Chủ Đề Tìm Hiểu (5 Điều Bác Dạy)</span>
+            <div>
+              <div className="flex items-center justify-between mb-2.5">
+                <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-transform group-hover:scale-105 shadow-xs ${
+                  activeTab === 'topics'
+                    ? 'bg-gradient-to-br from-heritage-gold-300 to-heritage-gold-500 text-heritage-red-950'
+                    : 'bg-heritage-red-50 text-heritage-red-700 group-hover:bg-heritage-red-100'
+                }`}>
+                  <BookOpen className="w-5 h-5" />
+                </div>
+                <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
+                  activeTab === 'topics'
+                    ? 'bg-white/20 text-heritage-gold-200'
+                    : 'bg-heritage-ivory-200 text-heritage-ink-700'
+                }`}>
+                  5 Chuyên đề
+                </span>
+              </div>
+
+              <h3 className={`font-serif font-black text-sm sm:text-base leading-snug line-clamp-1 ${
+                activeTab === 'topics' ? 'text-heritage-ivory-50' : 'text-heritage-ink-950'
+              }`}>
+                5 Điều Bác Hồ Dạy
+              </h3>
+
+              <p className={`text-[11px] sm:text-xs mt-1 leading-relaxed line-clamp-2 ${
+                activeTab === 'topics' ? 'text-heritage-gold-100/90' : 'text-heritage-ink-600'
+              }`}>
+                Chương trình rèn luyện Đội viên TNTP Hồ Chí Minh
+              </p>
+            </div>
+
+            {activeTab === 'topics' && (
+              <div className="w-8 h-1 bg-heritage-gold-400 rounded-full mt-3" aria-hidden="true" />
+            )}
           </button>
 
+          {/* THẺ 3: MINI QUIZ */}
           <button
+            role="tab"
+            aria-selected={activeTab === 'quiz'}
+            aria-controls="panel-quiz"
             onClick={() => setActiveTab('quiz')}
-            className={`px-4 py-2.5 rounded-lg text-sm font-semibold transition-all flex items-center space-x-2 ${
+            className={`text-left p-3.5 sm:p-4.5 rounded-2xl border-2 transition-all duration-200 flex flex-col justify-between group relative cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-heritage-gold-400 focus-visible:ring-offset-2 select-none ${
               activeTab === 'quiz'
-                ? 'bg-heritage-red-700 text-white shadow-md'
-                : 'bg-heritage-ivory-200 text-heritage-ink-700 hover:bg-heritage-red-50 hover:text-heritage-red-700'
+                ? 'bg-gradient-to-br from-[#7a121f] via-[#630d17] to-[#450810] text-white border-heritage-gold-400 shadow-xl shadow-heritage-red-950/25 ring-2 ring-heritage-gold-400/40 -translate-y-0.5'
+                : 'bg-heritage-ivory-100 hover:bg-white text-heritage-ink-900 border-heritage-ivory-300 hover:border-heritage-gold-400 hover:shadow-md hover:-translate-y-0.5'
             }`}
           >
-            <HelpCircle className="w-4 h-4" />
-            <span>Luyện Tập Nhanh (Mini-Quiz)</span>
+            <div>
+              <div className="flex items-center justify-between mb-2.5">
+                <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-transform group-hover:scale-105 shadow-xs ${
+                  activeTab === 'quiz'
+                    ? 'bg-gradient-to-br from-heritage-gold-300 to-heritage-gold-500 text-heritage-red-950'
+                    : 'bg-heritage-red-50 text-heritage-red-700 group-hover:bg-heritage-red-100'
+                }`}>
+                  <HelpCircle className="w-5 h-5" />
+                </div>
+                <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
+                  activeTab === 'quiz'
+                    ? 'bg-white/20 text-heritage-gold-200'
+                    : 'bg-heritage-ivory-200 text-heritage-ink-700'
+                }`}>
+                  Tự rèn luyện
+                </span>
+              </div>
+
+              <h3 className={`font-serif font-black text-sm sm:text-base leading-snug line-clamp-1 ${
+                activeTab === 'quiz' ? 'text-heritage-ivory-50' : 'text-heritage-ink-950'
+              }`}>
+                Luyện Tập Mini-Quiz
+              </h3>
+
+              <p className={`text-[11px] sm:text-xs mt-1 leading-relaxed line-clamp-2 ${
+                activeTab === 'quiz' ? 'text-heritage-gold-100/90' : 'text-heritage-ink-600'
+              }`}>
+                Thử tài nhanh tri thức lịch sử Bác Hồ & nhà trường
+              </p>
+            </div>
+
+            {activeTab === 'quiz' && (
+              <div className="w-8 h-1 bg-heritage-gold-400 rounded-full mt-3" aria-hidden="true" />
+            )}
           </button>
 
+          {/* THẺ 4: VIỆC TỐT MỖI NGÀY */}
           <button
+            role="tab"
+            aria-selected={activeTab === 'practices'}
+            aria-controls="panel-practices"
             onClick={() => setActiveTab('practices')}
-            className={`px-4 py-2.5 rounded-lg text-sm font-semibold transition-all flex items-center space-x-2 ${
+            className={`text-left p-3.5 sm:p-4.5 rounded-2xl border-2 transition-all duration-200 flex flex-col justify-between group relative cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-heritage-gold-400 focus-visible:ring-offset-2 select-none ${
               activeTab === 'practices'
-                ? 'bg-heritage-red-700 text-white shadow-md'
-                : 'bg-heritage-ivory-200 text-heritage-ink-700 hover:bg-heritage-red-50 hover:text-heritage-red-700'
+                ? 'bg-gradient-to-br from-[#7a121f] via-[#630d17] to-[#450810] text-white border-heritage-gold-400 shadow-xl shadow-heritage-red-950/25 ring-2 ring-heritage-gold-400/40 -translate-y-0.5'
+                : 'bg-heritage-ivory-100 hover:bg-white text-heritage-ink-900 border-heritage-ivory-300 hover:border-heritage-gold-400 hover:shadow-md hover:-translate-y-0.5'
             }`}
           >
-            <Sparkles className="w-4 h-4" />
-            <span>Việc Tốt Mỗi Ngày</span>
+            <div>
+              <div className="flex items-center justify-between mb-2.5">
+                <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-transform group-hover:scale-105 shadow-xs ${
+                  activeTab === 'practices'
+                    ? 'bg-gradient-to-br from-heritage-gold-300 to-heritage-gold-500 text-heritage-red-950'
+                    : 'bg-heritage-red-50 text-heritage-red-700 group-hover:bg-heritage-red-100'
+                }`}>
+                  <Sparkles className="w-5 h-5" />
+                </div>
+                <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
+                  activeTab === 'practices'
+                    ? 'bg-white/20 text-heritage-gold-200'
+                    : 'bg-heritage-ivory-200 text-heritage-ink-700'
+                }`}>
+                  Nhật ký
+                </span>
+              </div>
+
+              <h3 className={`font-serif font-black text-sm sm:text-base leading-snug line-clamp-1 ${
+                activeTab === 'practices' ? 'text-heritage-ivory-50' : 'text-heritage-ink-950'
+              }`}>
+                Việc Tốt Mỗi Ngày
+              </h3>
+
+              <p className={`text-[11px] sm:text-xs mt-1 leading-relaxed line-clamp-2 ${
+                activeTab === 'practices' ? 'text-heritage-gold-100/90' : 'text-heritage-ink-600'
+              }`}>
+                Đánh dấu những hành động đẹp làm theo lời Bác dạy
+              </p>
+            </div>
+
+            {activeTab === 'practices' && (
+              <div className="w-8 h-1 bg-heritage-gold-400 rounded-full mt-3" aria-hidden="true" />
+            )}
           </button>
         </div>
 
         {/* TAB 0: HỘI THI TRỰC TUYẾN & BẢNG XẾP HẠNG HỌC ĐƯỜNG */}
         {activeTab === 'contest' && (
-          <OnlineContest />
+          <div id="panel-contest" role="tabpanel" aria-label="Hội thi trực tuyến và Bảng xếp hạng">
+            <OnlineContest />
+          </div>
         )}
 
         {/* TAB 1: TOPICS */}
         {activeTab === 'topics' && (
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+          <div id="panel-topics" role="tabpanel" aria-label="5 Điều Bác Hồ Dạy" className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
             {/* Left list */}
             <div className="lg:col-span-4 space-y-3">
               <h3 className="text-xs sm:text-sm font-bold uppercase tracking-wider text-heritage-red-700 mb-3 px-1">
@@ -228,7 +385,7 @@ export const LearningCorner: React.FC = () => {
 
         {/* TAB 2: MINI QUIZ */}
         {activeTab === 'quiz' && (
-          <div className="max-w-4xl mx-auto bg-heritage-ivory-100 rounded-2xl p-6 sm:p-8 md:p-10 border border-heritage-gold-400/50 shadow-md">
+          <div id="panel-quiz" role="tabpanel" aria-label="Luyện tập Mini-Quiz" className="max-w-4xl mx-auto bg-heritage-ivory-100 rounded-2xl p-6 sm:p-8 md:p-10 border border-heritage-gold-400/50 shadow-md">
             {quizScore === null ? (
               <div>
                 <div className="flex items-center justify-between pb-4 border-b border-heritage-ivory-300 mb-6">
@@ -390,7 +547,7 @@ export const LearningCorner: React.FC = () => {
 
         {/* TAB 3: DAILY PRACTICES */}
         {activeTab === 'practices' && (
-          <div className="max-w-4xl mx-auto">
+          <div id="panel-practices" role="tabpanel" aria-label="Việc tốt mỗi ngày" className="max-w-4xl mx-auto">
             <div className="bg-heritage-ivory-100 rounded-2xl p-6 sm:p-8 md:p-10 border border-heritage-ivory-300">
               <div className="text-center mb-6">
                 <h3 className="font-serif text-xl sm:text-2xl font-bold text-heritage-ink-900">

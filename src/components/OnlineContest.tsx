@@ -753,29 +753,29 @@ export const OnlineContest: React.FC = () => {
                       </span>
                     </div>
 
-                    {/* 3. Đơn vị tổ chức */}
+                    {/* 3. Đối tượng dự thi */}
                     <div className="bg-black/35 backdrop-blur-md p-3 sm:p-3.5 rounded-2xl border border-heritage-gold-400/30 hover:border-heritage-gold-400/60 transition shadow-inner">
                       <div className="flex items-center space-x-1.5 text-heritage-gold-300 text-[10px] sm:text-[11px] uppercase font-bold tracking-wider mb-1">
                         <Users className="w-3.5 h-3.5 text-heritage-gold-400 flex-shrink-0" />
-                        <span>Tổ chức</span>
+                        <span>Đối tượng</span>
                       </div>
-                      <span className="font-serif text-xs sm:text-sm font-bold text-white truncate block mt-0.5" title={contestInfo.organizer}>
-                        Liên đội trường
+                      <span className="font-serif text-xs sm:text-sm font-bold text-white truncate block mt-0.5" title={contestInfo.targetAudience || 'Khối 6, 7, 8, 9 THCS'}>
+                        {contestInfo.targetAudience || 'Khối 6, 7, 8, 9'}
                       </span>
                       <span className="text-[10px] text-heritage-gold-200/70 block mt-0.5 truncate">THCS Nguyễn Trung Trực</span>
                     </div>
 
-                    {/* 4. Vinh danh */}
+                    {/* 4. Giải thưởng & Khen thưởng */}
                     <div className="bg-black/35 backdrop-blur-md p-3 sm:p-3.5 rounded-2xl border border-emerald-400/40 hover:border-emerald-400/60 transition shadow-inner">
                       <div className="flex items-center space-x-1.5 text-emerald-300 text-[10px] sm:text-[11px] uppercase font-bold tracking-wider mb-1">
                         <Award className="w-3.5 h-3.5 text-emerald-400 flex-shrink-0" />
                         <span>Khen thưởng</span>
                       </div>
                       <span className="font-serif text-xs sm:text-sm font-bold text-emerald-300 block truncate mt-0.5">
-                        Giấy khen số
+                        Giấy khen điện tử
                       </span>
                       <span className="text-[10px] text-emerald-200/70 block mt-0.5 truncate">
-                        Đạt từ {Math.ceil(targetExamQuestionCount * 0.7)}/{targetExamQuestionCount} câu (70%)
+                        Đạt từ {Math.ceil(targetExamQuestionCount * 0.7)}/{targetExamQuestionCount} câu (≥70%)
                       </span>
                     </div>
                   </div>
@@ -846,16 +846,16 @@ export const OnlineContest: React.FC = () => {
               </div>
 
             {/* ========================================================= */}
-            {/* CỘT PHẢI: BẢNG VÀNG VINH DANH TOP 3 HỌC ĐƯỜNG             */}
+            {/* CỘT PHẢI: BẢNG VÀNG VINH DANH TOP 3 HỌC ĐƯỜNG (PODIUM)    */}
             {/* ========================================================= */}
             <div className="lg:w-[420px] xl:w-[460px] flex-shrink-0 flex flex-col justify-between">
-              <div className="bg-gradient-to-b from-black/50 via-black/40 to-black/55 backdrop-blur-md rounded-2xl p-4 sm:p-5 border-2 border-heritage-gold-400/40 shadow-xl relative overflow-hidden flex flex-col justify-between h-full">
+              <div className="bg-gradient-to-b from-black/55 via-black/45 to-black/60 backdrop-blur-md rounded-2xl p-4 sm:p-5 border-2 border-heritage-gold-400/40 shadow-xl relative overflow-hidden flex flex-col justify-between h-full">
                 {/* Vệt sáng trang trí góc thẻ */}
                 <div className="absolute top-0 right-0 w-40 h-40 bg-heritage-gold-400/15 rounded-full blur-2xl pointer-events-none" />
 
                 <div>
                   {/* Header thẻ Bảng vàng */}
-                  <div className="flex items-center justify-between pb-3 border-b border-white/15 mb-3">
+                  <div className="flex items-center justify-between pb-3 border-b border-white/15 mb-3.5">
                     <div className="flex items-center space-x-2">
                       <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-heritage-gold-400 to-amber-600 text-heritage-red-950 flex items-center justify-center shadow-sm">
                         <Trophy className="w-4 h-4" />
@@ -875,80 +875,107 @@ export const OnlineContest: React.FC = () => {
                     </span>
                   </div>
 
-                  {/* Danh sách Top 3 Thí Sinh Dẫn Đầu */}
+                  {/* BỤC VINH DANH TOP 3 (OLYMPIC PODIUM SHOWCASE) */}
                   {bannerTopCandidates.length > 0 ? (
-                    <div className="space-y-2">
-                      {bannerTopCandidates.map((cand, idx) => {
-                        const rankStyles = [
-                          {
-                            badge: '🥇 Thủ Khoa',
-                            border: 'border-heritage-gold-400/70 bg-gradient-to-r from-amber-500/25 via-amber-400/15 to-transparent',
-                            avatarBg: 'bg-gradient-to-br from-heritage-gold-300 via-amber-400 to-heritage-gold-500 text-heritage-red-950 ring-2 ring-heritage-gold-400/50',
-                            scoreColor: 'text-heritage-gold-300',
-                          },
-                          {
-                            badge: '🥈 Á Khoa 1',
-                            border: 'border-slate-300/50 bg-gradient-to-r from-slate-400/20 via-slate-300/10 to-transparent',
-                            avatarBg: 'bg-gradient-to-br from-slate-200 to-slate-400 text-slate-900 ring-2 ring-slate-300/50',
-                            scoreColor: 'text-slate-200',
-                          },
-                          {
-                            badge: '🥉 Á Khoa 2',
-                            border: 'border-amber-600/50 bg-gradient-to-r from-amber-700/20 via-amber-600/10 to-transparent',
-                            avatarBg: 'bg-gradient-to-br from-amber-500 to-amber-700 text-amber-950 ring-2 ring-amber-600/50',
-                            scoreColor: 'text-amber-300',
-                          },
-                        ][idx] || {
-                          badge: `#${idx + 1}`,
-                          border: 'border-white/20 bg-white/5',
-                          avatarBg: 'bg-white/20 text-white',
-                          scoreColor: 'text-emerald-300',
-                        };
-
-                        const initialLetter = cand.studentName.trim().split(' ').slice(-1)[0][0] || '★';
-
-                        return (
-                          <div
-                            key={cand.id}
-                            className={`p-2.5 rounded-xl border ${rankStyles.border} flex items-center justify-between gap-2.5 shadow-xs transition hover:scale-[1.01]`}
-                          >
-                            <div className="flex items-center space-x-2.5 min-w-0">
-                              <div className={`w-8 h-8 rounded-full ${rankStyles.avatarBg} font-black text-xs sm:text-sm flex items-center justify-center shadow-sm flex-shrink-0`}>
-                                {initialLetter}
-                              </div>
-
-                              <div className="min-w-0">
-                                <div className="flex items-center space-x-1.5">
-                                  <h4 className="font-serif font-bold text-xs sm:text-sm text-white truncate max-w-[130px] sm:max-w-[170px]">
-                                    {cand.studentName}
-                                  </h4>
-                                  <span className="text-[10px] font-bold text-heritage-gold-300/90 whitespace-nowrap">
-                                    {rankStyles.badge}
-                                  </span>
+                    <div className="pt-2 pb-1">
+                      <div className="grid grid-cols-3 gap-2 sm:gap-2.5 items-end">
+                        {/* 🥈 BỤC HẠNG 2: Á KHOA 1 (TRÁI) */}
+                        <div className="flex flex-col items-center text-center">
+                          {bannerTopCandidates[1] ? (
+                            <>
+                              <div className="relative mb-1.5">
+                                <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-gradient-to-br from-slate-200 via-slate-300 to-slate-400 text-slate-900 font-black text-xs sm:text-sm flex items-center justify-center shadow-md ring-2 ring-slate-300/80">
+                                  {bannerTopCandidates[1].studentName.trim().split(' ').slice(-1)[0][0]}
                                 </div>
-                                <p className="text-[10px] text-heritage-gold-200/80 truncate">
-                                  Chi đội: <strong>Lớp {cand.studentClass}</strong> • Nộp: {cand.submittedAt}
-                                </p>
+                                <span className="absolute -top-1 -right-1 text-xs">🥈</span>
                               </div>
-                            </div>
-
-                            <div className="text-right flex-shrink-0">
-                              <span className={`font-mono text-xs sm:text-sm font-bold ${rankStyles.scoreColor} block`}>
-                                {getStandardizedScore10(cand)} Điểm
+                              <h5 className="font-serif font-bold text-[11px] sm:text-xs text-white truncate max-w-[85px] sm:max-w-[105px]" title={bannerTopCandidates[1].studentName}>
+                                {bannerTopCandidates[1].studentName}
+                              </h5>
+                              <span className="text-[10px] text-slate-300 font-medium block truncate max-w-[80px]">
+                                Lớp {bannerTopCandidates[1].studentClass}
                               </span>
-                              <span className="text-[10px] text-heritage-gold-200/70 block">
-                                {cand.score}/{cand.totalQuestions} câu • {formatTime(cand.timeSpentSeconds)}
+                              <span className="font-mono text-[10px] font-bold text-slate-200 mb-1.5 block">
+                                {getStandardizedScore10(bannerTopCandidates[1])}đ • {formatTime(bannerTopCandidates[1].timeSpentSeconds)}
                               </span>
+                            </>
+                          ) : (
+                            <div className="h-16 flex flex-col items-center justify-center text-[10px] text-white/40 italic">
+                              <span>🥈</span>
+                              <span>Chờ Á khoa 1</span>
                             </div>
+                          )}
+                          <div className="w-full h-11 sm:h-13 bg-gradient-to-t from-slate-700/80 via-slate-500/50 to-slate-400/40 border-t-2 border-l border-r border-slate-300/80 rounded-t-xl flex flex-col items-center justify-center shadow-md">
+                            <span className="font-serif font-black text-xs sm:text-sm text-slate-100 drop-shadow">2</span>
+                            <span className="text-[8px] sm:text-[9px] uppercase font-bold text-slate-300 tracking-wider">Á KHOA</span>
                           </div>
-                        );
-                      })}
-
-                      {bannerTopCandidates.length < 3 && (
-                        <div className="p-2 rounded-xl bg-white/5 border border-dashed border-white/15 text-center text-[11px] text-heritage-gold-200/70">
-                          🌟 Còn {3 - bannerTopCandidates.length} vị trí trên Bảng Vàng Top 3 đang chờ đón em!
                         </div>
-                      )}
+
+                        {/* 🥇 BỤC HẠNG 1: THỦ KHOA (GIỮA, CAO NHẤT) */}
+                        <div className="flex flex-col items-center text-center">
+                          {bannerTopCandidates[0] ? (
+                            <>
+                              <div className="relative mb-1.5">
+                                <span className="text-sm sm:text-base block -mb-0.5 animate-bounce">👑</span>
+                                <div className="w-12 h-12 sm:w-13 sm:h-13 rounded-full bg-gradient-to-br from-heritage-gold-300 via-amber-400 to-heritage-gold-500 text-heritage-red-950 font-black text-sm sm:text-base flex items-center justify-center shadow-lg ring-3 ring-heritage-gold-300">
+                                  {bannerTopCandidates[0].studentName.trim().split(' ').slice(-1)[0][0]}
+                                </div>
+                                <span className="absolute bottom-0 right-0 text-xs">🥇</span>
+                              </div>
+                              <h5 className="font-serif font-black text-xs sm:text-sm text-amber-200 truncate max-w-[95px] sm:max-w-[120px]" title={bannerTopCandidates[0].studentName}>
+                                {bannerTopCandidates[0].studentName}
+                              </h5>
+                              <span className="text-[10px] text-amber-100 font-bold block truncate max-w-[90px]">
+                                Lớp {bannerTopCandidates[0].studentClass}
+                              </span>
+                              <span className="font-mono text-xs font-black text-heritage-gold-300 mb-1.5 block">
+                                {getStandardizedScore10(bannerTopCandidates[0])} Điểm ({bannerTopCandidates[0].score}/{bannerTopCandidates[0].totalQuestions}c)
+                              </span>
+                            </>
+                          ) : (
+                            <div className="h-20 flex flex-col items-center justify-center text-[10px] text-white/40 italic">
+                              <span>🥇</span>
+                              <span>Chờ Thủ khoa</span>
+                            </div>
+                          )}
+                          <div className="w-full h-16 sm:h-18 bg-gradient-to-t from-amber-700/90 via-heritage-gold-500/60 to-heritage-gold-400/70 border-t-2 border-l border-r border-heritage-gold-300 rounded-t-xl flex flex-col items-center justify-center shadow-xl">
+                            <span className="font-serif font-black text-sm sm:text-base text-white drop-shadow">1</span>
+                            <span className="text-[8px] sm:text-[9px] uppercase font-black text-heritage-red-950 bg-heritage-gold-300 px-1.5 py-0.2 rounded-full tracking-wider">THỦ KHOA</span>
+                          </div>
+                        </div>
+
+                        {/* 🥉 BỤC HẠNG 3: Á KHOA 2 (PHẢI) */}
+                        <div className="flex flex-col items-center text-center">
+                          {bannerTopCandidates[2] ? (
+                            <>
+                              <div className="relative mb-1.5">
+                                <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-gradient-to-br from-amber-600 via-amber-700 to-amber-800 text-amber-100 font-black text-xs sm:text-sm flex items-center justify-center shadow-md ring-2 ring-amber-600/80">
+                                  {bannerTopCandidates[2].studentName.trim().split(' ').slice(-1)[0][0]}
+                                </div>
+                                <span className="absolute -top-1 -right-1 text-xs">🥉</span>
+                              </div>
+                              <h5 className="font-serif font-bold text-[11px] sm:text-xs text-white truncate max-w-[85px] sm:max-w-[105px]" title={bannerTopCandidates[2].studentName}>
+                                {bannerTopCandidates[2].studentName}
+                              </h5>
+                              <span className="text-[10px] text-amber-200/90 font-medium block truncate max-w-[80px]">
+                                Lớp {bannerTopCandidates[2].studentClass}
+                              </span>
+                              <span className="font-mono text-[10px] font-bold text-amber-300 mb-1.5 block">
+                                {getStandardizedScore10(bannerTopCandidates[2])}đ • {formatTime(bannerTopCandidates[2].timeSpentSeconds)}
+                              </span>
+                            </>
+                          ) : (
+                            <div className="h-16 flex flex-col items-center justify-center text-[10px] text-white/40 italic">
+                              <span>🥉</span>
+                              <span>Chờ Á khoa 2</span>
+                            </div>
+                          )}
+                          <div className="w-full h-8 sm:h-10 bg-gradient-to-t from-amber-900/90 via-amber-800/60 to-amber-700/50 border-t-2 border-l border-r border-amber-500/80 rounded-t-xl flex flex-col items-center justify-center shadow-md">
+                            <span className="font-serif font-black text-xs sm:text-sm text-amber-100 drop-shadow">3</span>
+                            <span className="text-[8px] sm:text-[9px] uppercase font-bold text-amber-300 tracking-wider">HẠNG 3</span>
+                          </div>
+                        </div>
+                      </div>
                     </div>
                   ) : (
                     <div className="p-6 rounded-xl bg-white/5 border border-white/10 text-center text-xs text-heritage-gold-200/80">
@@ -1525,73 +1552,193 @@ export const OnlineContest: React.FC = () => {
                     : 'Chưa có bài thi nào nộp vào hội thi này. Em hãy là người đầu tiên tham gia!'}
                 </div>
               ) : (
-                <div className="space-y-2.5">
-                  {displayIndividuals.map((sub, idx) => {
-                    const isTop1 = idx === 0 && !leaderboardSearch;
-                    const isTop2 = idx === 1 && !leaderboardSearch;
-                    const isTop3 = idx === 2 && !leaderboardSearch;
-                    const isMyRecentSub = latestSubmission && sub.id === latestSubmission.id;
-                    const s10 = getStandardizedScore10(sub);
-
-                    return (
-                      <div
-                        key={sub.id}
-                        className={`p-3.5 sm:p-4 rounded-2xl border transition-all flex items-center justify-between ${
-                          isMyRecentSub
-                            ? 'bg-gradient-to-r from-amber-100 via-amber-50 to-white border-2 border-heritage-gold-500 shadow-md ring-2 ring-heritage-gold-400/50'
-                            : isTop1
-                            ? 'bg-gradient-to-r from-amber-100/90 via-amber-50 to-white border-amber-400 shadow-md ring-1 ring-amber-400'
-                            : isTop2
-                            ? 'bg-gradient-to-r from-slate-100/90 via-slate-50 to-white border-slate-300 shadow-sm'
-                            : isTop3
-                            ? 'bg-gradient-to-r from-orange-100/70 via-orange-50 to-white border-orange-300 shadow-sm'
-                            : 'bg-white border-heritage-ivory-300 hover:border-heritage-gold-400'
-                        }`}
-                      >
-                        <div className="flex items-center space-x-3.5 min-w-0">
-                          {/* Vị trí xếp hạng */}
-                          <div className={`w-8 h-8 sm:w-9 sm:h-9 rounded-full flex items-center justify-center font-bold text-xs sm:text-sm flex-shrink-0 ${
-                            isTop1
-                              ? 'bg-amber-400 text-amber-950 shadow'
-                              : isTop2
-                              ? 'bg-slate-300 text-slate-900'
-                              : isTop3
-                              ? 'bg-orange-300 text-orange-950'
-                              : isMyRecentSub
-                              ? 'bg-heritage-red-700 text-white shadow'
-                              : 'bg-heritage-ivory-200 text-heritage-ink-700'
-                          }`}>
-                            {isTop1 ? '🥇' : isTop2 ? '🥈' : isTop3 ? '🥉' : idx + 1}
+                <div className="space-y-4">
+                  {/* ========================================================================= */}
+                  {/* BỤC VINH DANH TOP 3 XUẤT SẮC NHẤT (CHỈ HIỂN THỊ KHI KHÔNG TÌM KIẾM)        */}
+                  {/* ========================================================================= */}
+                  {!leaderboardSearch && displayIndividuals.length > 0 && (
+                    <div className="bg-gradient-to-b from-amber-50/60 via-white to-amber-50/40 p-4 sm:p-5 rounded-3xl border-2 border-heritage-gold-400/80 shadow-md">
+                      <div className="flex items-center justify-between pb-3 mb-4 border-b border-heritage-gold-300/50">
+                        <div className="flex items-center space-x-2">
+                          <div className="w-7 h-7 rounded-lg bg-heritage-gold-400 text-heritage-red-950 flex items-center justify-center font-bold shadow-xs">
+                            <Trophy className="w-4 h-4" />
                           </div>
+                          <span className="font-serif font-black text-xs sm:text-sm uppercase tracking-wide text-heritage-red-950">
+                            Bục Vinh Danh Top 3 Xuất Sắc Nhất
+                          </span>
+                        </div>
+                        <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-heritage-gold-100 text-heritage-red-950 border border-heritage-gold-300">
+                          Thế Hệ Bác Hồ Khuyên
+                        </span>
+                      </div>
 
-                          <div className="min-w-0">
-                            <div className="flex items-center space-x-2">
-                              <h4 className="font-serif text-xs sm:text-sm font-bold text-heritage-ink-900 truncate">
-                                {sub.studentName}
+                      {/* Bố cục bục vinh danh 3 cột: Á Khoa 1 (Trái) - Thủ Khoa (Giữa) - Á Khoa 2 (Phải) */}
+                      <div className="grid grid-cols-3 gap-2 sm:gap-3 items-end pt-1 pb-1">
+                        {/* 🥈 BỤC HẠNG 2: Á KHOA 1 */}
+                        <div className="flex flex-col items-center text-center">
+                          {displayIndividuals[1] ? (
+                            <>
+                              <div className="relative mb-2">
+                                <div className="w-11 h-11 sm:w-13 sm:h-13 rounded-full bg-gradient-to-br from-slate-100 via-slate-200 to-slate-400 text-slate-900 font-black text-sm sm:text-base flex items-center justify-center shadow-md ring-3 ring-slate-300">
+                                  {displayIndividuals[1].studentName.trim().split(' ').slice(-1)[0][0]}
+                                </div>
+                                <span className="absolute -top-1 -right-1 text-sm">🥈</span>
+                              </div>
+                              <h4 className="font-serif font-bold text-xs sm:text-sm text-heritage-ink-900 truncate max-w-[95px] sm:max-w-[140px]" title={displayIndividuals[1].studentName}>
+                                {displayIndividuals[1].studentName}
                               </h4>
-                              {isMyRecentSub && (
-                                <span className="px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider bg-heritage-gold-400 text-heritage-red-950 flex-shrink-0 animate-pulse">
-                                  Bài thi của em
-                                </span>
-                              )}
+                              <span className="text-[10px] sm:text-[11px] text-heritage-ink-600 font-bold block truncate max-w-[90px] sm:max-w-[130px]">
+                                Chi đội {displayIndividuals[1].studentClass}
+                              </span>
+                              <span className="font-mono text-xs font-black text-slate-700 mb-2 block">
+                                {getStandardizedScore10(displayIndividuals[1])} Điểm ({formatTime(displayIndividuals[1].timeSpentSeconds)})
+                              </span>
+                            </>
+                          ) : (
+                            <div className="h-20 flex flex-col items-center justify-center text-[10px] text-heritage-ink-400 italic">
+                              <span>🥈</span>
+                              <span>Đang chờ Á khoa 1</span>
                             </div>
-                            <p className="text-[11px] text-heritage-ink-500 font-medium mt-0.5">
-                              Chi đội Lớp {sub.studentClass} • Nộp lúc {sub.submittedAt}
-                            </p>
+                          )}
+                          <div className="w-full h-14 sm:h-16 bg-gradient-to-t from-slate-400/80 via-slate-300/60 to-slate-200/50 border-t-2 border-l border-r border-slate-300 rounded-t-2xl flex flex-col items-center justify-center shadow-md">
+                            <span className="font-serif font-black text-base sm:text-lg text-slate-800">2</span>
+                            <span className="text-[9px] uppercase font-black text-slate-700 tracking-wider">Á KHOA 1</span>
                           </div>
                         </div>
 
-                        <div className="text-right flex-shrink-0 pl-2">
-                          <span className="font-serif font-black text-sm sm:text-base text-heritage-red-700 block">
-                            {s10} điểm
-                          </span>
-                          <span className="text-[11px] text-heritage-ink-600 block">
-                            {sub.score}/{sub.totalQuestions} câu • ⏱️ {formatTime(sub.timeSpentSeconds)}
-                          </span>
+                        {/* 🥇 BỤC HẠNG 1: THỦ KHOA */}
+                        <div className="flex flex-col items-center text-center">
+                          {displayIndividuals[0] ? (
+                            <>
+                              <div className="relative mb-2">
+                                <span className="text-base sm:text-lg block -mb-0.5 animate-bounce">👑</span>
+                                <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-gradient-to-br from-heritage-gold-300 via-amber-400 to-heritage-gold-500 text-heritage-red-950 font-black text-base sm:text-lg flex items-center justify-center shadow-xl ring-4 ring-heritage-gold-400 animate-pulse">
+                                  {displayIndividuals[0].studentName.trim().split(' ').slice(-1)[0][0]}
+                                </div>
+                                <span className="absolute bottom-0 right-0 text-base">🥇</span>
+                              </div>
+                              <h4 className="font-serif font-black text-xs sm:text-base text-heritage-red-950 truncate max-w-[105px] sm:max-w-[160px]" title={displayIndividuals[0].studentName}>
+                                {displayIndividuals[0].studentName}
+                              </h4>
+                              <span className="text-[10px] sm:text-[11px] text-heritage-red-800 font-bold block truncate max-w-[100px] sm:max-w-[150px]">
+                                Chi đội {displayIndividuals[0].studentClass}
+                              </span>
+                              <span className="font-mono text-xs sm:text-sm font-black text-heritage-red-700 mb-2 block">
+                                {getStandardizedScore10(displayIndividuals[0])} Điểm ({displayIndividuals[0].score}/{displayIndividuals[0].totalQuestions}c • {formatTime(displayIndividuals[0].timeSpentSeconds)})
+                              </span>
+                            </>
+                          ) : (
+                            <div className="h-24 flex flex-col items-center justify-center text-[10px] text-heritage-ink-400 italic">
+                              <span>🥇</span>
+                              <span>Đang chờ Thủ khoa</span>
+                            </div>
+                          )}
+                          <div className="w-full h-20 sm:h-24 bg-gradient-to-t from-amber-500/90 via-heritage-gold-400/80 to-amber-300/80 border-t-2 border-l border-r border-heritage-gold-400 rounded-t-2xl flex flex-col items-center justify-center shadow-xl">
+                            <span className="font-serif font-black text-lg sm:text-xl text-heritage-red-950">1</span>
+                            <span className="text-[9px] uppercase font-black text-heritage-red-950 bg-white/70 px-2 py-0.5 rounded-full tracking-wider">THỦ KHOA</span>
+                          </div>
+                        </div>
+
+                        {/* 🥉 BỤC HẠNG 3: Á KHOA 2 */}
+                        <div className="flex flex-col items-center text-center">
+                          {displayIndividuals[2] ? (
+                            <>
+                              <div className="relative mb-2">
+                                <div className="w-11 h-11 sm:w-13 sm:h-13 rounded-full bg-gradient-to-br from-amber-600 via-amber-700 to-amber-800 text-amber-100 font-black text-sm sm:text-base flex items-center justify-center shadow-md ring-3 ring-amber-600/80">
+                                  {displayIndividuals[2].studentName.trim().split(' ').slice(-1)[0][0]}
+                                </div>
+                                <span className="absolute -top-1 -right-1 text-sm">🥉</span>
+                              </div>
+                              <h4 className="font-serif font-bold text-xs sm:text-sm text-heritage-ink-900 truncate max-w-[95px] sm:max-w-[140px]" title={displayIndividuals[2].studentName}>
+                                {displayIndividuals[2].studentName}
+                              </h4>
+                              <span className="text-[10px] sm:text-[11px] text-heritage-ink-600 font-bold block truncate max-w-[90px] sm:max-w-[130px]">
+                                Chi đội {displayIndividuals[2].studentClass}
+                              </span>
+                              <span className="font-mono text-xs font-black text-amber-800 mb-2 block">
+                                {getStandardizedScore10(displayIndividuals[2])} Điểm ({formatTime(displayIndividuals[2].timeSpentSeconds)})
+                              </span>
+                            </>
+                          ) : (
+                            <div className="h-20 flex flex-col items-center justify-center text-[10px] text-heritage-ink-400 italic">
+                              <span>🥉</span>
+                              <span>Đang chờ Á khoa 2</span>
+                            </div>
+                          )}
+                          <div className="w-full h-11 sm:h-13 bg-gradient-to-t from-amber-700/80 via-amber-600/60 to-amber-500/50 border-t-2 border-l border-r border-amber-600 rounded-t-2xl flex flex-col items-center justify-center shadow-md">
+                            <span className="font-serif font-black text-base sm:text-lg text-amber-100">3</span>
+                            <span className="text-[9px] uppercase font-black text-amber-100 tracking-wider">Á KHOA 2</span>
+                          </div>
                         </div>
                       </div>
-                    );
-                  })}
+                    </div>
+                  )}
+
+                  {/* ========================================================================= */}
+                  {/* DANH SÁCH BẢNG VÀNG TIẾP THEO (TỪ HẠNG 4 TRỞ ĐI HOẶC KẾT QUẢ TÌM KIẾM)    */}
+                  {/* ========================================================================= */}
+                  <div className="space-y-2.5">
+                    {/* Tiêu đề danh sách tiếp theo nếu có bục vinh danh */}
+                    {!leaderboardSearch && displayIndividuals.length > 3 && (
+                      <div className="flex items-center space-x-2 pt-2 pb-1 text-xs font-bold uppercase tracking-wider text-heritage-red-800">
+                        <Sparkles className="w-3.5 h-3.5 text-heritage-gold-600" />
+                        <span>Danh Sách Thí Sinh Tiếp Theo (Từ Hạng 4)</span>
+                      </div>
+                    )}
+
+                    {(!leaderboardSearch ? displayIndividuals.slice(3) : displayIndividuals).map((sub, listIdx) => {
+                      const actualRank = !leaderboardSearch ? listIdx + 4 : listIdx + 1;
+                      const isMyRecentSub = latestSubmission && sub.id === latestSubmission.id;
+                      const s10 = getStandardizedScore10(sub);
+
+                      return (
+                        <div
+                          key={sub.id}
+                          className={`p-3 sm:p-3.5 rounded-2xl border transition-all flex items-center justify-between ${
+                            isMyRecentSub
+                              ? 'bg-gradient-to-r from-amber-100 via-amber-50 to-white border-2 border-heritage-gold-500 shadow-md ring-2 ring-heritage-gold-400/50'
+                              : 'bg-white border-heritage-ivory-300 hover:border-heritage-gold-400 shadow-2xs hover:shadow-xs'
+                          }`}
+                        >
+                          <div className="flex items-center space-x-3.5 min-w-0">
+                            {/* Vị trí xếp hạng */}
+                            <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs flex-shrink-0 ${
+                              isMyRecentSub
+                                ? 'bg-heritage-red-700 text-white shadow'
+                                : 'bg-heritage-ivory-200 text-heritage-ink-800 font-mono'
+                            }`}>
+                              #{actualRank}
+                            </div>
+
+                            <div className="min-w-0">
+                              <div className="flex items-center space-x-2">
+                                <h4 className="font-serif text-xs sm:text-sm font-bold text-heritage-ink-900 truncate">
+                                  {sub.studentName}
+                                </h4>
+                                {isMyRecentSub && (
+                                  <span className="px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider bg-heritage-gold-400 text-heritage-red-950 flex-shrink-0 animate-pulse">
+                                    Bài thi của em
+                                  </span>
+                                )}
+                              </div>
+                              <p className="text-[11px] text-heritage-ink-500 font-medium mt-0.5">
+                                Chi đội Lớp {sub.studentClass} • Nộp lúc {sub.submittedAt}
+                              </p>
+                            </div>
+                          </div>
+
+                          <div className="text-right flex-shrink-0 pl-2">
+                            <span className="font-serif font-black text-sm sm:text-base text-heritage-red-700 block">
+                              {s10} điểm
+                            </span>
+                            <span className="text-[11px] text-heritage-ink-600 block">
+                              {sub.score}/{sub.totalQuestions} câu • ⏱️ {formatTime(sub.timeSpentSeconds)}
+                            </span>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
                 </div>
               )}
 
