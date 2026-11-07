@@ -50,7 +50,7 @@ export const Timeline: React.FC = () => {
             <Sparkles className="w-3.5 h-3.5 text-heritage-red-700" />
             <span>Chủ Tịch Hồ Chí Minh</span>
           </div>
-          <h2 className="font-serif text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-heritage-ink-900 tracking-tight whitespace-normal sm:whitespace-nowrap">
+          <h2 className="font-serif text-lg min-[400px]:text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-heritage-ink-900 tracking-tight whitespace-nowrap">
             Cuộc Đời Và Sự Nghiệp Cách Mạng Vĩ Đại
           </h2>
           <div className="w-16 h-1 bg-heritage-gold-400 mx-auto mt-4 rounded-full" />

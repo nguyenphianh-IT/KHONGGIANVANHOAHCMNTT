@@ -35,7 +35,7 @@ export const About: React.FC = () => {
             <Landmark className="w-3.5 h-3.5 text-heritage-red-700" />
             <span>Về Không Gian Văn Hóa Số</span>
           </div>
-          <h2 className="font-serif text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-heritage-ink-900 tracking-tight whitespace-normal md:whitespace-nowrap">
+          <h2 className="font-serif text-lg min-[400px]:text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-heritage-ink-900 tracking-tight whitespace-nowrap">
             Nền Tảng Giáo Dục Truyền Thống Trong Kỷ Nguyên Số
           </h2>
           <div className="w-16 h-1 bg-heritage-gold-400 mx-auto mt-4 rounded-full" />

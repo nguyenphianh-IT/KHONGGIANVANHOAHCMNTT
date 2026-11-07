@@ -67,7 +67,7 @@ export const LearningCorner: React.FC = () => {
             <span>KHÔNG GIAN RÈN ĐỨC LUYỆN TÀI • TRƯỜNG THCS NGUYỄN TRUNG TRỰC</span>
           </div>
 
-          <h2 className="font-serif text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black text-heritage-ink-950 tracking-tight whitespace-normal sm:whitespace-nowrap drop-shadow-2xs">
+          <h2 className="font-serif text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black text-heritage-ink-950 tracking-tight whitespace-nowrap drop-shadow-2xs">
             Góc Học Tập & Rèn Luyện
           </h2>
 

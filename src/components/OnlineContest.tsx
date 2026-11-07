@@ -722,12 +722,12 @@ export const OnlineContest: React.FC = () => {
             {/* BỐ CỤC 2 CỘT DƯỚI: THÔNG SỐ + NÚT BẤM (TRÁI) VÀ BẢNG VÀNG (PHẢI) */}
             {/* ========================================================= */}
             <div className="flex flex-col lg:flex-row items-stretch gap-6 lg:gap-8">
-              {/* CỘT TRÁI (THÔNG SỐ & NÚT DỰ THI) */}
-              <div className="flex-1 flex flex-col justify-between space-y-6">
+              {/* CỘT TRÁI (THÔNG SỐ & NÚT DỰ THI) - ĐỊNH DẠNG GỌN GÀNG, 2 Ô TRÊN 2 Ô DƯỚI */}
+              <div className="w-full lg:w-[420px] xl:w-[450px] flex-shrink-0 flex flex-col justify-between space-y-5">
                 <div>
-                  {/* 4 Khối thông số thi được thiết kế đẳng cấp dạng Frosted Glass */}
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3 mb-6">
-                    {/* 1. Thời lượng */}
+                  {/* 4 Khối thông số thi bố cục 2 ô trên, 2 ô dưới theo yêu cầu */}
+                  <div className="grid grid-cols-2 gap-3 mb-5">
+                    {/* Ô TRÊN 1: Thời lượng */}
                     <div className="bg-black/35 backdrop-blur-md p-3 sm:p-3.5 rounded-2xl border border-heritage-gold-400/30 hover:border-heritage-gold-400/60 transition shadow-inner">
                       <div className="flex items-center space-x-1.5 text-heritage-gold-300 text-[10px] sm:text-[11px] uppercase font-bold tracking-wider mb-1">
                         <Clock className="w-3.5 h-3.5 text-heritage-gold-400 flex-shrink-0" />
@@ -739,7 +739,7 @@ export const OnlineContest: React.FC = () => {
                       <span className="text-[10px] text-heritage-gold-200/70 block mt-0.5">Đếm ngược tự động</span>
                     </div>
 
-                    {/* 2. Số câu hỏi */}
+                    {/* Ô TRÊN 2: Số câu hỏi */}
                     <div className="bg-black/35 backdrop-blur-md p-3 sm:p-3.5 rounded-2xl border border-heritage-gold-400/30 hover:border-heritage-gold-400/60 transition shadow-inner">
                       <div className="flex items-center space-x-1.5 text-heritage-gold-300 text-[10px] sm:text-[11px] uppercase font-bold tracking-wider mb-1">
                         <BookOpen className="w-3.5 h-3.5 text-heritage-gold-400 flex-shrink-0" />
@@ -753,28 +753,28 @@ export const OnlineContest: React.FC = () => {
                       </span>
                     </div>
 
-                    {/* 3. Đối tượng dự thi */}
+                    {/* Ô DƯỚI 1: Đối tượng dự thi */}
                     <div className="bg-black/35 backdrop-blur-md p-3 sm:p-3.5 rounded-2xl border border-heritage-gold-400/30 hover:border-heritage-gold-400/60 transition shadow-inner">
                       <div className="flex items-center space-x-1.5 text-heritage-gold-300 text-[10px] sm:text-[11px] uppercase font-bold tracking-wider mb-1">
                         <Users className="w-3.5 h-3.5 text-heritage-gold-400 flex-shrink-0" />
                         <span>Đối tượng</span>
                       </div>
-                      <span className="font-serif text-xs sm:text-sm font-bold text-white truncate block mt-0.5" title={contestInfo.targetAudience || 'Khối 6, 7, 8, 9 THCS'}>
+                      <span className="font-serif text-xs sm:text-sm font-bold text-white block mt-0.5 leading-snug" title={contestInfo.targetAudience || 'Khối 6, 7, 8, 9 THCS'}>
                         {contestInfo.targetAudience || 'Khối 6, 7, 8, 9'}
                       </span>
-                      <span className="text-[10px] text-heritage-gold-200/70 block mt-0.5 truncate">THCS Nguyễn Trung Trực</span>
+                      <span className="text-[10px] text-heritage-gold-200/70 block mt-0.5">THCS Nguyễn Trung Trực</span>
                     </div>
 
-                    {/* 4. Giải thưởng & Khen thưởng */}
+                    {/* Ô DƯỚI 2: Giải thưởng & Khen thưởng */}
                     <div className="bg-black/35 backdrop-blur-md p-3 sm:p-3.5 rounded-2xl border border-emerald-400/40 hover:border-emerald-400/60 transition shadow-inner">
                       <div className="flex items-center space-x-1.5 text-emerald-300 text-[10px] sm:text-[11px] uppercase font-bold tracking-wider mb-1">
                         <Award className="w-3.5 h-3.5 text-emerald-400 flex-shrink-0" />
                         <span>Khen thưởng</span>
                       </div>
-                      <span className="font-serif text-xs sm:text-sm font-bold text-emerald-300 block truncate mt-0.5">
+                      <span className="font-serif text-xs sm:text-sm font-bold text-emerald-300 block mt-0.5 leading-snug">
                         Giấy khen điện tử
                       </span>
-                      <span className="text-[10px] text-emerald-200/70 block mt-0.5 truncate">
+                      <span className="text-[10px] text-emerald-200/70 block mt-0.5">
                         Đạt từ {Math.ceil(targetExamQuestionCount * 0.7)}/{targetExamQuestionCount} câu (≥70%)
                       </span>
                     </div>
@@ -782,7 +782,7 @@ export const OnlineContest: React.FC = () => {
 
                   {/* Thông báo khi cổng đóng */}
                   {contestInfo.isOpen === false && (
-                    <div className="mb-6 p-4 rounded-2xl bg-amber-500/20 border border-amber-400/50 text-amber-200 text-xs sm:text-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-md">
+                    <div className="mb-5 p-4 rounded-2xl bg-amber-500/20 border border-amber-400/50 text-amber-200 text-xs sm:text-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-md">
                       <div className="flex items-center space-x-2">
                         <span className="text-lg">🔒</span>
                         <span>Cổng thi trực tuyến hiện đang tạm đóng theo thông báo của Ban Tổ Chức.</span>
@@ -803,11 +803,11 @@ export const OnlineContest: React.FC = () => {
                 </div>
 
                 {/* Các nút hành động chính */}
-                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 pt-2">
+                <div className="flex flex-col gap-2.5 pt-1">
                   <button
                     onClick={() => setScreen('register')}
                     disabled={contestInfo.isOpen === false}
-                    className={`px-8 py-4 font-black text-sm sm:text-base rounded-2xl shadow-xl transition-all transform active:scale-95 flex items-center justify-center space-x-2.5 ${
+                    className={`w-full py-3.5 sm:py-4 px-6 font-black text-sm sm:text-base rounded-2xl shadow-xl transition-all transform active:scale-95 flex items-center justify-center space-x-2.5 ${
                       contestInfo.isOpen !== false
                         ? 'bg-gradient-to-r from-heritage-gold-400 via-amber-300 to-heritage-gold-500 hover:from-amber-300 hover:to-heritage-gold-400 text-heritage-red-950 shadow-amber-950/40 hover:shadow-2xl hover:shadow-amber-400/30 hover:-translate-y-0.5'
                         : 'bg-white/20 text-white/50 cursor-not-allowed'
@@ -818,95 +818,97 @@ export const OnlineContest: React.FC = () => {
                     <ChevronRight className="w-5 h-5 text-heritage-red-950" />
                   </button>
 
-                  <button
-                    onClick={() => {
-                      setLeaderboardContestId(contestInfo.id);
-                      setScreen('leaderboard');
-                    }}
-                    className="px-6 py-4 bg-white/10 hover:bg-white/20 text-heritage-gold-100 hover:text-white font-bold text-xs sm:text-sm rounded-2xl border border-heritage-gold-400/40 hover:border-heritage-gold-400/80 transition-all flex items-center justify-center space-x-2 backdrop-blur-sm shadow-sm"
-                  >
-                    <Trophy className="w-4 h-4 text-heritage-gold-400" />
-                    <span>Xem Bảng Xếp Hạng ({activeContestSubmissionsCount} Lượt thi)</span>
-                  </button>
-
-                  {isStaff && (
+                  <div className="flex flex-col sm:flex-row gap-2.5">
                     <button
                       onClick={() => {
-                        setManagerInitialTab('questions');
-                        setIsManagerOpen(true);
+                        setLeaderboardContestId(contestInfo.id);
+                        setScreen('leaderboard');
                       }}
-                      className="px-4 py-4 bg-black/40 hover:bg-black/60 text-heritage-gold-300 font-bold text-xs rounded-2xl border border-heritage-gold-400/40 transition-all flex items-center justify-center space-x-1.5"
-                      title="Bảng điều khiển dành cho Giáo viên & Ban Tổ Chức"
+                      className="flex-1 py-3 px-4 bg-white/10 hover:bg-white/20 text-heritage-gold-100 hover:text-white font-bold text-xs sm:text-sm rounded-2xl border border-heritage-gold-400/40 hover:border-heritage-gold-400/80 transition-all flex items-center justify-center space-x-2 backdrop-blur-sm shadow-sm"
                     >
-                      <Settings className="w-4 h-4" />
-                      <span>Quản Trị Toàn Diện</span>
+                      <Trophy className="w-4 h-4 text-heritage-gold-400" />
+                      <span>Xem Bảng Xếp Hạng ({activeContestSubmissionsCount} Lượt thi)</span>
                     </button>
-                  )}
+
+                    {isStaff && (
+                      <button
+                        onClick={() => {
+                          setManagerInitialTab('questions');
+                          setIsManagerOpen(true);
+                        }}
+                        className="py-3 px-3.5 bg-black/40 hover:bg-black/60 text-heritage-gold-300 font-bold text-xs rounded-2xl border border-heritage-gold-400/40 transition-all flex items-center justify-center space-x-1.5"
+                        title="Bảng điều khiển dành cho Giáo viên & Ban Tổ Chức"
+                      >
+                        <Settings className="w-4 h-4" />
+                        <span>Quản Trị</span>
+                      </button>
+                    )}
+                  </div>
                 </div>
               </div>
 
             {/* ========================================================= */}
-            {/* CỘT PHẢI: BẢNG VÀNG VINH DANH TOP 3 HỌC ĐƯỜNG (PODIUM)    */}
+            {/* CỘT PHẢI: BẢNG VÀNG VINH DANH TOP 3 HỌC ĐƯỜNG (PODIUM RỘNG) */}
             {/* ========================================================= */}
-            <div className="lg:w-[420px] xl:w-[460px] flex-shrink-0 flex flex-col justify-between">
+            <div className="flex-1 min-w-0 flex flex-col justify-between">
               <div className="bg-gradient-to-b from-black/55 via-black/45 to-black/60 backdrop-blur-md rounded-2xl p-4 sm:p-5 border-2 border-heritage-gold-400/40 shadow-xl relative overflow-hidden flex flex-col justify-between h-full">
                 {/* Vệt sáng trang trí góc thẻ */}
-                <div className="absolute top-0 right-0 w-40 h-40 bg-heritage-gold-400/15 rounded-full blur-2xl pointer-events-none" />
+                <div className="absolute top-0 right-0 w-48 h-48 bg-heritage-gold-400/15 rounded-full blur-2xl pointer-events-none" />
 
                 <div>
                   {/* Header thẻ Bảng vàng */}
                   <div className="flex items-center justify-between pb-3 border-b border-white/15 mb-3.5">
-                    <div className="flex items-center space-x-2">
-                      <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-heritage-gold-400 to-amber-600 text-heritage-red-950 flex items-center justify-center shadow-sm">
-                        <Trophy className="w-4 h-4" />
+                    <div className="flex items-center space-x-2.5">
+                      <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-heritage-gold-400 to-amber-600 text-heritage-red-950 flex items-center justify-center shadow-md">
+                        <Trophy className="w-4.5 h-4.5" />
                       </div>
                       <div>
-                        <span className="font-serif font-black text-xs sm:text-sm uppercase tracking-wide text-heritage-gold-300 block">
-                          Bảng Vàng Học Đường • Top 3
+                        <span className="font-serif font-black text-xs sm:text-sm md:text-base uppercase tracking-wide text-heritage-gold-300 block">
+                          Bảng Vàng Học Đường • Top 3 Vinh Danh
                         </span>
-                        <span className="text-[10px] text-white/70 block">
-                          Thi đua rèn đức luyện tài
+                        <span className="text-[10px] sm:text-xs text-white/70 block">
+                          Thi đua rèn đức luyện tài • Dẫn đầu phong trào học đường
                         </span>
                       </div>
                     </div>
-                    <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-400/40 flex items-center space-x-1">
-                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span>
+                    <span className="text-[10px] sm:text-xs font-bold px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-400/40 flex items-center space-x-1.5 shadow-sm">
+                      <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
                       <span>Live Sync</span>
                     </span>
                   </div>
 
-                  {/* BỤC VINH DANH TOP 3 (OLYMPIC PODIUM SHOWCASE) */}
+                  {/* BỤC VINH DANH TOP 3 (OLYMPIC PODIUM SHOWCASE RỘNG RÃI & SANG TRỌNG) */}
                   {bannerTopCandidates.length > 0 ? (
-                    <div className="pt-2 pb-1">
-                      <div className="grid grid-cols-3 gap-2 sm:gap-2.5 items-end">
+                    <div className="pt-2 pb-2">
+                      <div className="grid grid-cols-3 gap-3 sm:gap-4 md:gap-6 items-end">
                         {/* 🥈 BỤC HẠNG 2: Á KHOA 1 (TRÁI) */}
                         <div className="flex flex-col items-center text-center">
                           {bannerTopCandidates[1] ? (
                             <>
-                              <div className="relative mb-1.5">
-                                <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-gradient-to-br from-slate-200 via-slate-300 to-slate-400 text-slate-900 font-black text-xs sm:text-sm flex items-center justify-center shadow-md ring-2 ring-slate-300/80">
+                              <div className="relative mb-2">
+                                <div className="w-11 h-11 sm:w-13 sm:h-13 rounded-full bg-gradient-to-br from-slate-200 via-slate-300 to-slate-400 text-slate-900 font-black text-xs sm:text-sm flex items-center justify-center shadow-md ring-2 ring-slate-300/80">
                                   {bannerTopCandidates[1].studentName.trim().split(' ').slice(-1)[0][0]}
                                 </div>
-                                <span className="absolute -top-1 -right-1 text-xs">🥈</span>
+                                <span className="absolute -top-1 -right-1 text-sm">🥈</span>
                               </div>
-                              <h5 className="font-serif font-bold text-[11px] sm:text-xs text-white truncate max-w-[85px] sm:max-w-[105px]" title={bannerTopCandidates[1].studentName}>
+                              <h5 className="font-serif font-bold text-xs sm:text-sm text-white truncate max-w-[105px] sm:max-w-[150px] md:max-w-[180px]" title={bannerTopCandidates[1].studentName}>
                                 {bannerTopCandidates[1].studentName}
                               </h5>
-                              <span className="text-[10px] text-slate-300 font-medium block truncate max-w-[80px]">
+                              <span className="text-[10px] sm:text-xs text-slate-300 font-medium block truncate max-w-[100px] sm:max-w-[140px]">
                                 Lớp {bannerTopCandidates[1].studentClass}
                               </span>
-                              <span className="font-mono text-[10px] font-bold text-slate-200 mb-1.5 block">
+                              <span className="font-mono text-[10px] sm:text-xs font-bold text-slate-200 mb-2 block">
                                 {getStandardizedScore10(bannerTopCandidates[1])}đ • {formatTime(bannerTopCandidates[1].timeSpentSeconds)}
                               </span>
                             </>
                           ) : (
-                            <div className="h-16 flex flex-col items-center justify-center text-[10px] text-white/40 italic">
-                              <span>🥈</span>
+                            <div className="h-16 flex flex-col items-center justify-center text-[10px] sm:text-xs text-white/40 italic">
+                              <span className="text-base mb-1">🥈</span>
                               <span>Chờ Á khoa 1</span>
                             </div>
                           )}
-                          <div className="w-full h-11 sm:h-13 bg-gradient-to-t from-slate-700/80 via-slate-500/50 to-slate-400/40 border-t-2 border-l border-r border-slate-300/80 rounded-t-xl flex flex-col items-center justify-center shadow-md">
-                            <span className="font-serif font-black text-xs sm:text-sm text-slate-100 drop-shadow">2</span>
+                          <div className="w-full h-12 sm:h-14 bg-gradient-to-t from-slate-700/80 via-slate-500/50 to-slate-400/40 border-t-2 border-l border-r border-slate-300/80 rounded-t-xl flex flex-col items-center justify-center shadow-md">
+                            <span className="font-serif font-black text-sm sm:text-base text-slate-100 drop-shadow">2</span>
                             <span className="text-[8px] sm:text-[9px] uppercase font-bold text-slate-300 tracking-wider">Á KHOA</span>
                           </div>
                         </div>
@@ -915,32 +917,32 @@ export const OnlineContest: React.FC = () => {
                         <div className="flex flex-col items-center text-center">
                           {bannerTopCandidates[0] ? (
                             <>
-                              <div className="relative mb-1.5">
-                                <span className="text-sm sm:text-base block -mb-0.5 animate-bounce">👑</span>
-                                <div className="w-12 h-12 sm:w-13 sm:h-13 rounded-full bg-gradient-to-br from-heritage-gold-300 via-amber-400 to-heritage-gold-500 text-heritage-red-950 font-black text-sm sm:text-base flex items-center justify-center shadow-lg ring-3 ring-heritage-gold-300">
+                              <div className="relative mb-2">
+                                <span className="text-base sm:text-lg block -mb-0.5 animate-bounce">👑</span>
+                                <div className="w-13 h-13 sm:w-15 sm:h-15 rounded-full bg-gradient-to-br from-heritage-gold-300 via-amber-400 to-heritage-gold-500 text-heritage-red-950 font-black text-sm sm:text-base flex items-center justify-center shadow-lg ring-3 ring-heritage-gold-300">
                                   {bannerTopCandidates[0].studentName.trim().split(' ').slice(-1)[0][0]}
                                 </div>
-                                <span className="absolute bottom-0 right-0 text-xs">🥇</span>
+                                <span className="absolute bottom-0 right-0 text-sm">🥇</span>
                               </div>
-                              <h5 className="font-serif font-black text-xs sm:text-sm text-amber-200 truncate max-w-[95px] sm:max-w-[120px]" title={bannerTopCandidates[0].studentName}>
+                              <h5 className="font-serif font-black text-xs sm:text-base text-amber-200 truncate max-w-[120px] sm:max-w-[180px] md:max-w-[220px]" title={bannerTopCandidates[0].studentName}>
                                 {bannerTopCandidates[0].studentName}
                               </h5>
-                              <span className="text-[10px] text-amber-100 font-bold block truncate max-w-[90px]">
+                              <span className="text-[10px] sm:text-xs text-amber-100 font-bold block truncate max-w-[110px] sm:max-w-[160px]">
                                 Lớp {bannerTopCandidates[0].studentClass}
                               </span>
-                              <span className="font-mono text-xs font-black text-heritage-gold-300 mb-1.5 block">
+                              <span className="font-mono text-xs sm:text-sm font-black text-heritage-gold-300 mb-2 block">
                                 {getStandardizedScore10(bannerTopCandidates[0])} Điểm ({bannerTopCandidates[0].score}/{bannerTopCandidates[0].totalQuestions}c)
                               </span>
                             </>
                           ) : (
-                            <div className="h-20 flex flex-col items-center justify-center text-[10px] text-white/40 italic">
-                              <span>🥇</span>
+                            <div className="h-20 flex flex-col items-center justify-center text-[10px] sm:text-xs text-white/40 italic">
+                              <span className="text-xl mb-1">🥇</span>
                               <span>Chờ Thủ khoa</span>
                             </div>
                           )}
-                          <div className="w-full h-16 sm:h-18 bg-gradient-to-t from-amber-700/90 via-heritage-gold-500/60 to-heritage-gold-400/70 border-t-2 border-l border-r border-heritage-gold-300 rounded-t-xl flex flex-col items-center justify-center shadow-xl">
-                            <span className="font-serif font-black text-sm sm:text-base text-white drop-shadow">1</span>
-                            <span className="text-[8px] sm:text-[9px] uppercase font-black text-heritage-red-950 bg-heritage-gold-300 px-1.5 py-0.2 rounded-full tracking-wider">THỦ KHOA</span>
+                          <div className="w-full h-18 sm:h-20 bg-gradient-to-t from-amber-700/90 via-heritage-gold-500/60 to-heritage-gold-400/70 border-t-2 border-l border-r border-heritage-gold-300 rounded-t-xl flex flex-col items-center justify-center shadow-xl">
+                            <span className="font-serif font-black text-base sm:text-lg text-white drop-shadow">1</span>
+                            <span className="text-[8px] sm:text-[9px] uppercase font-black text-heritage-red-950 bg-heritage-gold-300 px-2 py-0.5 rounded-full tracking-wider">THỦ KHOA</span>
                           </div>
                         </div>
 
@@ -948,30 +950,30 @@ export const OnlineContest: React.FC = () => {
                         <div className="flex flex-col items-center text-center">
                           {bannerTopCandidates[2] ? (
                             <>
-                              <div className="relative mb-1.5">
-                                <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-gradient-to-br from-amber-600 via-amber-700 to-amber-800 text-amber-100 font-black text-xs sm:text-sm flex items-center justify-center shadow-md ring-2 ring-amber-600/80">
+                              <div className="relative mb-2">
+                                <div className="w-11 h-11 sm:w-13 sm:h-13 rounded-full bg-gradient-to-br from-amber-600 via-amber-700 to-amber-800 text-amber-100 font-black text-xs sm:text-sm flex items-center justify-center shadow-md ring-2 ring-amber-600/80">
                                   {bannerTopCandidates[2].studentName.trim().split(' ').slice(-1)[0][0]}
                                 </div>
-                                <span className="absolute -top-1 -right-1 text-xs">🥉</span>
+                                <span className="absolute -top-1 -right-1 text-sm">🥉</span>
                               </div>
-                              <h5 className="font-serif font-bold text-[11px] sm:text-xs text-white truncate max-w-[85px] sm:max-w-[105px]" title={bannerTopCandidates[2].studentName}>
+                              <h5 className="font-serif font-bold text-xs sm:text-sm text-white truncate max-w-[105px] sm:max-w-[150px] md:max-w-[180px]" title={bannerTopCandidates[2].studentName}>
                                 {bannerTopCandidates[2].studentName}
                               </h5>
-                              <span className="text-[10px] text-amber-200/90 font-medium block truncate max-w-[80px]">
+                              <span className="text-[10px] sm:text-xs text-amber-200/90 font-medium block truncate max-w-[100px] sm:max-w-[140px]">
                                 Lớp {bannerTopCandidates[2].studentClass}
                               </span>
-                              <span className="font-mono text-[10px] font-bold text-amber-300 mb-1.5 block">
+                              <span className="font-mono text-[10px] sm:text-xs font-bold text-amber-300 mb-2 block">
                                 {getStandardizedScore10(bannerTopCandidates[2])}đ • {formatTime(bannerTopCandidates[2].timeSpentSeconds)}
                               </span>
                             </>
                           ) : (
-                            <div className="h-16 flex flex-col items-center justify-center text-[10px] text-white/40 italic">
-                              <span>🥉</span>
+                            <div className="h-16 flex flex-col items-center justify-center text-[10px] sm:text-xs text-white/40 italic">
+                              <span className="text-base mb-1">🥉</span>
                               <span>Chờ Á khoa 2</span>
                             </div>
                           )}
-                          <div className="w-full h-8 sm:h-10 bg-gradient-to-t from-amber-900/90 via-amber-800/60 to-amber-700/50 border-t-2 border-l border-r border-amber-500/80 rounded-t-xl flex flex-col items-center justify-center shadow-md">
-                            <span className="font-serif font-black text-xs sm:text-sm text-amber-100 drop-shadow">3</span>
+                          <div className="w-full h-9 sm:h-11 bg-gradient-to-t from-amber-900/90 via-amber-800/60 to-amber-700/50 border-t-2 border-l border-r border-amber-500/80 rounded-t-xl flex flex-col items-center justify-center shadow-md">
+                            <span className="font-serif font-black text-sm text-amber-100 drop-shadow">3</span>
                             <span className="text-[8px] sm:text-[9px] uppercase font-bold text-amber-300 tracking-wider">HẠNG 3</span>
                           </div>
                         </div>
