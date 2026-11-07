@@ -11,7 +11,7 @@ export const Hero: React.FC<HeroProps> = ({ onExplore, onViewResources }) => {
     <section
       id="hero"
       aria-label="Phần giới thiệu đầu trang"
-      className="relative pt-20 pb-10 sm:pt-24 sm:pb-14 md:pt-28 md:pb-16 overflow-hidden text-white bg-heritage-red-950"
+      className="relative pt-20 pb-8 sm:pt-22 sm:pb-10 md:pt-24 md:pb-12 overflow-hidden text-white bg-heritage-red-950"
     >
       {/* Background Image Layer: Anchored to TOP so Uncle Ho's full head and face are completely preserved without being cut */}
       <div 

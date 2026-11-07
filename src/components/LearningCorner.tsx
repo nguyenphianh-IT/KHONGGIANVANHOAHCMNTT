@@ -58,10 +58,10 @@ export const LearningCorner: React.FC = () => {
   };
 
   return (
-    <section id="learning" className="py-16 md:py-24 bg-white border-b border-heritage-ivory-300">
+    <section id="learning" className="py-8 sm:py-10 md:py-12 bg-white border-b border-heritage-ivory-300">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header - Nâng cấp nhận diện trang trọng, uy nghiêm */}
-        <div className="text-center max-w-4xl lg:max-w-5xl mx-auto mb-8 sm:mb-10">
+        <div className="text-center max-w-4xl lg:max-w-5xl mx-auto mb-6 sm:mb-8">
           <div className="inline-flex items-center space-x-2 text-xs uppercase tracking-wider text-heritage-red-700 font-bold bg-heritage-red-50 px-3.5 py-1.5 rounded-full border border-heritage-red-200 mb-3.5 shadow-2xs">
             <Sparkles className="w-3.5 h-3.5 text-heritage-red-700" />
             <span>KHÔNG GIAN RÈN ĐỨC LUYỆN TÀI • TRƯỜNG THCS NGUYỄN TRUNG TRỰC</span>
@@ -90,7 +90,7 @@ export const LearningCorner: React.FC = () => {
         <div 
           role="tablist" 
           aria-label="Các phân khu chức năng Góc học tập và rèn luyện"
-          className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-5 mb-8 sm:mb-10"
+          className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-5 mb-6 sm:mb-8"
         >
           {/* THẺ 1: HỘI THI & BẢNG XẾP HẠNG */}
           <button

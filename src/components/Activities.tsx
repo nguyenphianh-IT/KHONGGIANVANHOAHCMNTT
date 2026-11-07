@@ -93,10 +93,10 @@ export const Activities: React.FC = () => {
   };
 
   return (
-    <section id="activities" className="py-16 md:py-24 bg-heritage-ivory-100 border-b border-heritage-ivory-300">
+    <section id="activities" className="py-8 sm:py-10 md:py-12 bg-heritage-ivory-100 border-b border-heritage-ivory-300">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
-        <div className="text-center max-w-4xl lg:max-w-5xl mx-auto mb-12">
+        <div className="text-center max-w-4xl lg:max-w-5xl mx-auto mb-6 sm:mb-8">
           <div className="inline-flex items-center space-x-1.5 text-xs uppercase tracking-wider text-heritage-red-700 font-bold bg-heritage-red-50 px-3 py-1 rounded-full border border-heritage-red-200 mb-3">
             <Award className="w-3.5 h-3.5 text-heritage-red-700" />
             <span>Phong Trào Học Đường</span>

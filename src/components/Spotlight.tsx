@@ -117,12 +117,12 @@ export const Spotlight: React.FC = () => {
   };
 
   return (
-    <section id="spotlight" className="py-14 sm:py-18 md:py-20 bg-heritage-ivory-50 border-b border-heritage-ivory-300">
+    <section id="spotlight" className="py-8 sm:py-10 md:py-12 bg-heritage-ivory-50 border-b border-heritage-ivory-300">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* ========================================================================= */}
         {/* SỨ MỆNH GIÁO DỤC CỦA NHÀ TRƯỜNG (Khung đỏ di sản theo chuẩn thiết kế)     */}
         {/* ========================================================================= */}
-        <div className="mb-10 bg-gradient-to-r from-heritage-red-800 to-heritage-red-900 rounded-2xl p-6 sm:p-10 text-white shadow-xl relative overflow-hidden border border-heritage-gold-400/30">
+        <div className="mb-6 sm:mb-8 bg-gradient-to-r from-heritage-red-800 to-heritage-red-900 rounded-2xl p-6 sm:p-8 text-white shadow-xl relative overflow-hidden border border-heritage-gold-400/30">
           <div className="relative z-10 max-w-4xl">
             <span className="text-xs font-bold uppercase tracking-wider text-heritage-gold-300 block mb-2 font-sans">
               Sứ mệnh giáo dục của nhà trường
