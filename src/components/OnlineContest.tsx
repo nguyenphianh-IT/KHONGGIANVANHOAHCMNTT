@@ -667,165 +667,172 @@ export const OnlineContest: React.FC = () => {
           <div className="absolute -left-20 -bottom-20 w-80 h-80 rounded-full bg-red-600/20 pointer-events-none blur-3xl" />
           <div className="absolute inset-0 bg-[radial-gradient(#d4af37_1px,transparent_1px)] [background-size:24px_24px] opacity-10 pointer-events-none" />
 
-          <div className="relative z-10 flex flex-col lg:flex-row items-stretch gap-8 lg:gap-10">
+          <div className="relative z-10 space-y-6 sm:space-y-7">
             {/* ========================================================= */}
-            {/* CỘT TRÁI (60%): TIÊU ĐỀ, QUY CHẾ VÀ NÚT BẮT ĐẦU DỰ THI  */}
+            {/* KHỐI TIÊU ĐỀ TRẢI RỘNG TOÀN KHUNG ĐẢM BẢO 1 DÒNG DUY NHẤT */}
             {/* ========================================================= */}
-            <div className="flex-1 flex flex-col justify-between">
-              <div>
-                {/* Huy hiệu hội thi & Trạng thái mở cổng */}
-                <div className="flex flex-wrap items-center gap-2 mb-4">
-                  <div className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-gradient-to-r from-heritage-gold-400/25 to-amber-500/20 text-heritage-gold-300 border border-heritage-gold-400/40 text-xs font-bold uppercase tracking-wider shadow-xs">
-                    <Sparkles className="w-3.5 h-3.5 text-heritage-gold-400" />
-                    <span>{contestInfo.bannerTag || 'HỘI THI TRỰC TUYẾN CHÍNH THỨC'}</span>
-                  </div>
-                  
-                  {contestInfo.isOpen !== false ? (
-                    <span className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-400/40 text-xs font-bold shadow-xs">
-                      <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                      <span>Đang mở nhận bài dự thi</span>
-                    </span>
-                  ) : (
-                    <span className="inline-flex items-center space-x-1 px-3 py-1 rounded-full bg-red-500/30 text-red-200 border border-red-400/50 text-xs font-bold">
-                      <Lock className="w-3.5 h-3.5 text-red-300" />
-                      <span>Cổng thi đang tạm đóng</span>
-                    </span>
-                  )}
-
-                  <span className="hidden sm:inline-flex items-center space-x-1 px-2.5 py-1 rounded-full bg-white/10 text-heritage-gold-200 text-xs font-medium border border-white/10">
-                    <span>Niên khóa 2025 - 2026</span>
+            <div className="border-b border-white/10 pb-5 sm:pb-6">
+              {/* Huy hiệu hội thi & Trạng thái mở cổng */}
+              <div className="flex flex-wrap items-center gap-2 mb-3.5">
+                <div className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-gradient-to-r from-heritage-gold-400/25 to-amber-500/20 text-heritage-gold-300 border border-heritage-gold-400/40 text-xs font-bold uppercase tracking-wider shadow-xs">
+                  <Sparkles className="w-3.5 h-3.5 text-heritage-gold-400" />
+                  <span>{contestInfo.bannerTag || 'HỘI THI TRỰC TUYẾN CHÍNH THỨC'}</span>
+                </div>
+                
+                {contestInfo.isOpen !== false ? (
+                  <span className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-400/40 text-xs font-bold shadow-xs">
+                    <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                    <span>Đang mở nhận bài dự thi</span>
                   </span>
-                </div>
-
-                {/* Tiêu đề chính */}
-                <h3 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-black text-heritage-ivory-50 tracking-tight leading-tight mb-3 drop-shadow-sm">
-                  {contestInfo.title}
-                </h3>
-
-                {/* Mô tả phong trào thi đua */}
-                <p className="text-heritage-gold-100/90 font-medium text-xs sm:text-sm lg:text-base mb-6 leading-relaxed max-w-2xl">
-                  {contestInfo.subtitle}
-                </p>
-
-                {/* 4 Khối thông số thi được thiết kế đẳng cấp dạng Frosted Glass */}
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3 mb-6">
-                  {/* 1. Thời lượng */}
-                  <div className="bg-black/35 backdrop-blur-md p-3 sm:p-3.5 rounded-2xl border border-heritage-gold-400/30 hover:border-heritage-gold-400/60 transition shadow-inner">
-                    <div className="flex items-center space-x-1.5 text-heritage-gold-300 text-[10px] sm:text-[11px] uppercase font-bold tracking-wider mb-1">
-                      <Clock className="w-3.5 h-3.5 text-heritage-gold-400 flex-shrink-0" />
-                      <span>Thời lượng</span>
-                    </div>
-                    <span className="font-serif text-base sm:text-xl font-black text-white block">
-                      {contestInfo.durationMinutes} Phút
-                    </span>
-                    <span className="text-[10px] text-heritage-gold-200/70 block mt-0.5">Đếm ngược tự động</span>
-                  </div>
-
-                  {/* 2. Số câu hỏi */}
-                  <div className="bg-black/35 backdrop-blur-md p-3 sm:p-3.5 rounded-2xl border border-heritage-gold-400/30 hover:border-heritage-gold-400/60 transition shadow-inner">
-                    <div className="flex items-center space-x-1.5 text-heritage-gold-300 text-[10px] sm:text-[11px] uppercase font-bold tracking-wider mb-1">
-                      <BookOpen className="w-3.5 h-3.5 text-heritage-gold-400 flex-shrink-0" />
-                      <span>Số câu hỏi</span>
-                    </div>
-                    <span className="font-serif text-base sm:text-xl font-black text-white block">
-                      {targetExamQuestionCount} Câu hỏi
-                    </span>
-                    <span className="text-[10px] text-heritage-gold-200/70 block mt-0.5">
-                      {questions.length > targetExamQuestionCount ? `Rút từ kho ${questions.length} câu` : 'Trắc nghiệm 4 lựa chọn'}
-                    </span>
-                  </div>
-
-                  {/* 3. Đơn vị tổ chức */}
-                  <div className="bg-black/35 backdrop-blur-md p-3 sm:p-3.5 rounded-2xl border border-heritage-gold-400/30 hover:border-heritage-gold-400/60 transition shadow-inner">
-                    <div className="flex items-center space-x-1.5 text-heritage-gold-300 text-[10px] sm:text-[11px] uppercase font-bold tracking-wider mb-1">
-                      <Users className="w-3.5 h-3.5 text-heritage-gold-400 flex-shrink-0" />
-                      <span>Tổ chức</span>
-                    </div>
-                    <span className="font-serif text-xs sm:text-sm font-bold text-white truncate block mt-0.5" title={contestInfo.organizer}>
-                      Liên đội trường
-                    </span>
-                    <span className="text-[10px] text-heritage-gold-200/70 block mt-0.5 truncate">THCS Nguyễn Trung Trực</span>
-                  </div>
-
-                  {/* 4. Vinh danh */}
-                  <div className="bg-black/35 backdrop-blur-md p-3 sm:p-3.5 rounded-2xl border border-emerald-400/40 hover:border-emerald-400/60 transition shadow-inner">
-                    <div className="flex items-center space-x-1.5 text-emerald-300 text-[10px] sm:text-[11px] uppercase font-bold tracking-wider mb-1">
-                      <Award className="w-3.5 h-3.5 text-emerald-400 flex-shrink-0" />
-                      <span>Khen thưởng</span>
-                    </div>
-                    <span className="font-serif text-xs sm:text-sm font-bold text-emerald-300 block truncate mt-0.5">
-                      Giấy khen số
-                    </span>
-                    <span className="text-[10px] text-emerald-200/70 block mt-0.5 truncate">
-                      Đạt từ {Math.ceil(targetExamQuestionCount * 0.7)}/{targetExamQuestionCount} câu (70%)
-                    </span>
-                  </div>
-                </div>
-
-                {/* Thông báo khi cổng đóng */}
-                {contestInfo.isOpen === false && (
-                  <div className="mb-6 p-4 rounded-2xl bg-amber-500/20 border border-amber-400/50 text-amber-200 text-xs sm:text-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-md">
-                    <div className="flex items-center space-x-2">
-                      <span className="text-lg">🔒</span>
-                      <span>Cổng thi trực tuyến hiện đang tạm đóng theo thông báo của Ban Tổ Chức.</span>
-                    </div>
-                    {isStaff && (
-                      <button
-                        onClick={() => {
-                          setManagerInitialTab('contest');
-                          setIsManagerOpen(true);
-                        }}
-                        className="px-3.5 py-1.5 bg-amber-400 text-amber-950 font-bold text-xs rounded-xl hover:bg-amber-300 transition whitespace-nowrap shadow"
-                      >
-                        Mở cổng thi
-                      </button>
-                    )}
-                  </div>
+                ) : (
+                  <span className="inline-flex items-center space-x-1 px-3 py-1 rounded-full bg-red-500/30 text-red-200 border border-red-400/50 text-xs font-bold">
+                    <Lock className="w-3.5 h-3.5 text-red-300" />
+                    <span>Cổng thi đang tạm đóng</span>
+                  </span>
                 )}
+
+                <span className="hidden sm:inline-flex items-center space-x-1 px-2.5 py-1 rounded-full bg-white/10 text-heritage-gold-200 text-xs font-medium border border-white/10">
+                  <span>Niên khóa 2025 - 2026</span>
+                </span>
               </div>
 
-              {/* Các nút hành động chính */}
-              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 pt-2">
-                <button
-                  onClick={() => setScreen('register')}
-                  disabled={contestInfo.isOpen === false}
-                  className={`px-8 py-4 font-black text-sm sm:text-base rounded-2xl shadow-xl transition-all transform active:scale-95 flex items-center justify-center space-x-2.5 ${
-                    contestInfo.isOpen !== false
-                      ? 'bg-gradient-to-r from-heritage-gold-400 via-amber-300 to-heritage-gold-500 hover:from-amber-300 hover:to-heritage-gold-400 text-heritage-red-950 shadow-amber-950/40 hover:shadow-2xl hover:shadow-amber-400/30 hover:-translate-y-0.5'
-                      : 'bg-white/20 text-white/50 cursor-not-allowed'
-                  }`}
-                >
-                  <Sparkles className="w-5 h-5 text-heritage-red-950" />
-                  <span>Tham Gia Dự Thi Ngay</span>
-                  <ChevronRight className="w-5 h-5 text-heritage-red-950" />
-                </button>
+              {/* Tiêu đề chính hội thi - Tối ưu 1 dòng duy nhất */}
+              <h3 className="font-serif text-lg sm:text-2xl md:text-3xl lg:text-3xl xl:text-4xl font-black text-heritage-ivory-50 tracking-tight leading-tight mb-2 drop-shadow-sm whitespace-normal md:whitespace-nowrap overflow-hidden text-ellipsis">
+                {contestInfo.title}
+              </h3>
 
-                <button
-                  onClick={() => {
-                    setLeaderboardContestId(contestInfo.id);
-                    setScreen('leaderboard');
-                  }}
-                  className="px-6 py-4 bg-white/10 hover:bg-white/20 text-heritage-gold-100 hover:text-white font-bold text-xs sm:text-sm rounded-2xl border border-heritage-gold-400/40 hover:border-heritage-gold-400/80 transition-all flex items-center justify-center space-x-2 backdrop-blur-sm shadow-sm"
-                >
-                  <Trophy className="w-4 h-4 text-heritage-gold-400" />
-                  <span>Xem Bảng Xếp Hạng ({activeContestSubmissionsCount} Lượt thi)</span>
-                </button>
+              {/* Mô tả phong trào thi đua */}
+              <p className="text-heritage-gold-100/90 font-medium text-xs sm:text-sm lg:text-base leading-relaxed max-w-4xl">
+                {contestInfo.subtitle}
+              </p>
+            </div>
 
-                {isStaff && (
+            {/* ========================================================= */}
+            {/* BỐ CỤC 2 CỘT DƯỚI: THÔNG SỐ + NÚT BẤM (TRÁI) VÀ BẢNG VÀNG (PHẢI) */}
+            {/* ========================================================= */}
+            <div className="flex flex-col lg:flex-row items-stretch gap-6 lg:gap-8">
+              {/* CỘT TRÁI (THÔNG SỐ & NÚT DỰ THI) */}
+              <div className="flex-1 flex flex-col justify-between space-y-6">
+                <div>
+                  {/* 4 Khối thông số thi được thiết kế đẳng cấp dạng Frosted Glass */}
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3 mb-6">
+                    {/* 1. Thời lượng */}
+                    <div className="bg-black/35 backdrop-blur-md p-3 sm:p-3.5 rounded-2xl border border-heritage-gold-400/30 hover:border-heritage-gold-400/60 transition shadow-inner">
+                      <div className="flex items-center space-x-1.5 text-heritage-gold-300 text-[10px] sm:text-[11px] uppercase font-bold tracking-wider mb-1">
+                        <Clock className="w-3.5 h-3.5 text-heritage-gold-400 flex-shrink-0" />
+                        <span>Thời lượng</span>
+                      </div>
+                      <span className="font-serif text-base sm:text-xl font-black text-white block">
+                        {contestInfo.durationMinutes} Phút
+                      </span>
+                      <span className="text-[10px] text-heritage-gold-200/70 block mt-0.5">Đếm ngược tự động</span>
+                    </div>
+
+                    {/* 2. Số câu hỏi */}
+                    <div className="bg-black/35 backdrop-blur-md p-3 sm:p-3.5 rounded-2xl border border-heritage-gold-400/30 hover:border-heritage-gold-400/60 transition shadow-inner">
+                      <div className="flex items-center space-x-1.5 text-heritage-gold-300 text-[10px] sm:text-[11px] uppercase font-bold tracking-wider mb-1">
+                        <BookOpen className="w-3.5 h-3.5 text-heritage-gold-400 flex-shrink-0" />
+                        <span>Số câu hỏi</span>
+                      </div>
+                      <span className="font-serif text-base sm:text-xl font-black text-white block">
+                        {targetExamQuestionCount} Câu hỏi
+                      </span>
+                      <span className="text-[10px] text-heritage-gold-200/70 block mt-0.5">
+                        {questions.length > targetExamQuestionCount ? `Rút từ kho ${questions.length} câu` : 'Trắc nghiệm 4 lựa chọn'}
+                      </span>
+                    </div>
+
+                    {/* 3. Đơn vị tổ chức */}
+                    <div className="bg-black/35 backdrop-blur-md p-3 sm:p-3.5 rounded-2xl border border-heritage-gold-400/30 hover:border-heritage-gold-400/60 transition shadow-inner">
+                      <div className="flex items-center space-x-1.5 text-heritage-gold-300 text-[10px] sm:text-[11px] uppercase font-bold tracking-wider mb-1">
+                        <Users className="w-3.5 h-3.5 text-heritage-gold-400 flex-shrink-0" />
+                        <span>Tổ chức</span>
+                      </div>
+                      <span className="font-serif text-xs sm:text-sm font-bold text-white truncate block mt-0.5" title={contestInfo.organizer}>
+                        Liên đội trường
+                      </span>
+                      <span className="text-[10px] text-heritage-gold-200/70 block mt-0.5 truncate">THCS Nguyễn Trung Trực</span>
+                    </div>
+
+                    {/* 4. Vinh danh */}
+                    <div className="bg-black/35 backdrop-blur-md p-3 sm:p-3.5 rounded-2xl border border-emerald-400/40 hover:border-emerald-400/60 transition shadow-inner">
+                      <div className="flex items-center space-x-1.5 text-emerald-300 text-[10px] sm:text-[11px] uppercase font-bold tracking-wider mb-1">
+                        <Award className="w-3.5 h-3.5 text-emerald-400 flex-shrink-0" />
+                        <span>Khen thưởng</span>
+                      </div>
+                      <span className="font-serif text-xs sm:text-sm font-bold text-emerald-300 block truncate mt-0.5">
+                        Giấy khen số
+                      </span>
+                      <span className="text-[10px] text-emerald-200/70 block mt-0.5 truncate">
+                        Đạt từ {Math.ceil(targetExamQuestionCount * 0.7)}/{targetExamQuestionCount} câu (70%)
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Thông báo khi cổng đóng */}
+                  {contestInfo.isOpen === false && (
+                    <div className="mb-6 p-4 rounded-2xl bg-amber-500/20 border border-amber-400/50 text-amber-200 text-xs sm:text-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-md">
+                      <div className="flex items-center space-x-2">
+                        <span className="text-lg">🔒</span>
+                        <span>Cổng thi trực tuyến hiện đang tạm đóng theo thông báo của Ban Tổ Chức.</span>
+                      </div>
+                      {isStaff && (
+                        <button
+                          onClick={() => {
+                            setManagerInitialTab('contest');
+                            setIsManagerOpen(true);
+                          }}
+                          className="px-3.5 py-1.5 bg-amber-400 text-amber-950 font-bold text-xs rounded-xl hover:bg-amber-300 transition whitespace-nowrap shadow"
+                        >
+                          Mở cổng thi
+                        </button>
+                      )}
+                    </div>
+                  )}
+                </div>
+
+                {/* Các nút hành động chính */}
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 pt-2">
+                  <button
+                    onClick={() => setScreen('register')}
+                    disabled={contestInfo.isOpen === false}
+                    className={`px-8 py-4 font-black text-sm sm:text-base rounded-2xl shadow-xl transition-all transform active:scale-95 flex items-center justify-center space-x-2.5 ${
+                      contestInfo.isOpen !== false
+                        ? 'bg-gradient-to-r from-heritage-gold-400 via-amber-300 to-heritage-gold-500 hover:from-amber-300 hover:to-heritage-gold-400 text-heritage-red-950 shadow-amber-950/40 hover:shadow-2xl hover:shadow-amber-400/30 hover:-translate-y-0.5'
+                        : 'bg-white/20 text-white/50 cursor-not-allowed'
+                    }`}
+                  >
+                    <Sparkles className="w-5 h-5 text-heritage-red-950" />
+                    <span>Tham Gia Dự Thi Ngay</span>
+                    <ChevronRight className="w-5 h-5 text-heritage-red-950" />
+                  </button>
+
                   <button
                     onClick={() => {
-                      setManagerInitialTab('questions');
-                      setIsManagerOpen(true);
+                      setLeaderboardContestId(contestInfo.id);
+                      setScreen('leaderboard');
                     }}
-                    className="px-4 py-4 bg-black/40 hover:bg-black/60 text-heritage-gold-300 font-bold text-xs rounded-2xl border border-heritage-gold-400/40 transition-all flex items-center justify-center space-x-1.5"
-                    title="Bảng điều khiển dành cho Giáo viên & Ban Tổ Chức"
+                    className="px-6 py-4 bg-white/10 hover:bg-white/20 text-heritage-gold-100 hover:text-white font-bold text-xs sm:text-sm rounded-2xl border border-heritage-gold-400/40 hover:border-heritage-gold-400/80 transition-all flex items-center justify-center space-x-2 backdrop-blur-sm shadow-sm"
                   >
-                    <Settings className="w-4 h-4" />
-                    <span>Quản Trị Toàn Diện</span>
+                    <Trophy className="w-4 h-4 text-heritage-gold-400" />
+                    <span>Xem Bảng Xếp Hạng ({activeContestSubmissionsCount} Lượt thi)</span>
                   </button>
-                )}
+
+                  {isStaff && (
+                    <button
+                      onClick={() => {
+                        setManagerInitialTab('questions');
+                        setIsManagerOpen(true);
+                      }}
+                      className="px-4 py-4 bg-black/40 hover:bg-black/60 text-heritage-gold-300 font-bold text-xs rounded-2xl border border-heritage-gold-400/40 transition-all flex items-center justify-center space-x-1.5"
+                      title="Bảng điều khiển dành cho Giáo viên & Ban Tổ Chức"
+                    >
+                      <Settings className="w-4 h-4" />
+                      <span>Quản Trị Toàn Diện</span>
+                    </button>
+                  )}
+                </div>
               </div>
-            </div>
 
             {/* ========================================================= */}
             {/* CỘT PHẢI (40%): BẢNG VÀNG VINH DANH & GIẤY KHEN ĐIỆN TỬ   */}
@@ -931,7 +938,8 @@ export const OnlineContest: React.FC = () => {
             </div>
           </div>
         </div>
-      )}
+      </div>
+    )}
 
       {/* 2. MÀN HÌNH ĐĂNG KÝ THI (KẾT HỢP GIẢI PHÁP 1 & GIẢI PHÁP 2) */}
       {screen === 'register' && (
@@ -941,7 +949,7 @@ export const OnlineContest: React.FC = () => {
               <User className="w-3.5 h-3.5" />
               <span>Định danh Thí Sinh Dự Thi</span>
             </div>
-            <h3 className="font-serif text-xl sm:text-2xl font-bold text-heritage-ink-900">
+            <h3 className="font-serif text-xl sm:text-2xl font-bold text-heritage-ink-900 whitespace-nowrap">
               Nhập Thông Tin Học Sinh
             </h3>
             <p className="text-xs sm:text-sm text-heritage-ink-600 mt-1">
@@ -1297,7 +1305,7 @@ export const OnlineContest: React.FC = () => {
                   </div>
                 )}
               </div>
-              <h3 className="font-serif text-xl sm:text-2xl font-bold text-heritage-ink-900">
+              <h3 className="font-serif text-xl sm:text-2xl font-bold text-heritage-ink-900 whitespace-nowrap">
                 Bảng Xếp Hạng Hội Thi Trực Tuyến
               </h3>
             </div>
