@@ -879,11 +879,17 @@ export const OnlineContest: React.FC = () => {
                         <div className="flex flex-col items-center text-center">
                           {bannerTopCandidates[1] ? (
                             <>
-                              <div className="relative mb-2">
-                                <div className="w-11 h-11 sm:w-13 sm:h-13 rounded-full bg-gradient-to-br from-slate-200 via-slate-300 to-slate-400 text-slate-900 font-black text-xs sm:text-sm flex items-center justify-center shadow-md ring-2 ring-slate-300/80">
-                                  {bannerTopCandidates[1].studentName.trim().split(' ').slice(-1)[0][0]}
+                              <div className="relative mb-2 flex flex-col items-center">
+                                <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-gradient-to-br from-slate-100 via-slate-200 to-slate-400 p-1 shadow-[0_0_15px_rgba(203,213,225,0.4)] ring-3 ring-slate-200/90 relative flex items-center justify-center transition-transform hover:scale-105">
+                                  <div className="w-full h-full rounded-full border border-dashed border-slate-300 bg-gradient-to-tr from-slate-400 via-slate-200 to-slate-100 flex flex-col items-center justify-center relative shadow-inner overflow-hidden">
+                                    <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/40 to-transparent pointer-events-none" />
+                                    <Award className="w-6 h-6 sm:w-7 sm:h-7 text-slate-800 drop-shadow-[0_1px_2px_rgba(255,255,255,0.6)]" />
+                                    <span className="text-[8px] sm:text-[9px] font-black text-slate-800 tracking-wider font-serif uppercase -mt-0.5">TOP 2</span>
+                                  </div>
+                                  <span className="absolute -bottom-1 -right-1 w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-gradient-to-br from-slate-200 to-slate-400 border border-white flex items-center justify-center text-xs shadow-md">
+                                    🥈
+                                  </span>
                                 </div>
-                                <span className="absolute -top-1 -right-1 text-sm">🥈</span>
                               </div>
                               <h5 className="font-serif font-bold text-xs sm:text-sm text-white truncate max-w-[105px] sm:max-w-[150px] md:max-w-[180px]" title={bannerTopCandidates[1].studentName}>
                                 {bannerTopCandidates[1].studentName}
@@ -891,7 +897,7 @@ export const OnlineContest: React.FC = () => {
                               <span className="text-[10px] sm:text-xs text-slate-300 font-medium block truncate max-w-[100px] sm:max-w-[140px]">
                                 Lớp {bannerTopCandidates[1].studentClass}
                               </span>
-                              <span className="font-mono text-[10px] sm:text-xs font-bold text-slate-200 mb-2 block">
+                              <span className="font-mono text-[10px] sm:text-xs font-bold text-slate-200 mb-2 block whitespace-nowrap">
                                 {getStandardizedScore10(bannerTopCandidates[1])}đ • {formatTime(bannerTopCandidates[1].timeSpentSeconds)}
                               </span>
                             </>
@@ -911,12 +917,18 @@ export const OnlineContest: React.FC = () => {
                         <div className="flex flex-col items-center text-center">
                           {bannerTopCandidates[0] ? (
                             <>
-                              <div className="relative mb-2">
-                                <span className="text-base sm:text-lg block -mb-0.5 animate-bounce">👑</span>
-                                <div className="w-13 h-13 sm:w-15 sm:h-15 rounded-full bg-gradient-to-br from-heritage-gold-300 via-amber-400 to-heritage-gold-500 text-heritage-red-950 font-black text-sm sm:text-base flex items-center justify-center shadow-lg ring-3 ring-heritage-gold-300">
-                                  {bannerTopCandidates[0].studentName.trim().split(' ').slice(-1)[0][0]}
+                              <div className="relative mb-2 flex flex-col items-center">
+                                <span className="text-xl sm:text-2xl block -mb-1 animate-bounce select-none filter drop-shadow">👑</span>
+                                <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-gradient-to-br from-amber-200 via-amber-400 to-amber-600 p-1 sm:p-1.5 shadow-[0_0_25px_rgba(251,191,36,0.6)] ring-4 ring-amber-300/90 relative flex items-center justify-center transition-transform hover:scale-105">
+                                  <div className="w-full h-full rounded-full border-2 border-dashed border-amber-200/90 bg-gradient-to-tr from-amber-600 via-amber-400 to-amber-200 flex flex-col items-center justify-center relative shadow-inner overflow-hidden">
+                                    <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/40 to-transparent pointer-events-none" />
+                                    <Trophy className="w-7 h-7 sm:w-9 sm:h-9 text-amber-950 drop-shadow-[0_1px_2px_rgba(255,255,255,0.4)]" />
+                                    <span className="text-[9px] sm:text-[10px] font-black text-amber-950 tracking-wider font-serif uppercase -mt-0.5 sm:-mt-1">TOP 1</span>
+                                  </div>
+                                  <span className="absolute -bottom-1 -right-1 w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-gradient-to-br from-amber-300 to-amber-600 border border-white flex items-center justify-center text-xs shadow-md">
+                                    🥇
+                                  </span>
                                 </div>
-                                <span className="absolute bottom-0 right-0 text-sm">🥇</span>
                               </div>
                               <h5 className="font-serif font-black text-xs sm:text-base text-amber-200 truncate max-w-[120px] sm:max-w-[180px] md:max-w-[220px]" title={bannerTopCandidates[0].studentName}>
                                 {bannerTopCandidates[0].studentName}
@@ -924,8 +936,8 @@ export const OnlineContest: React.FC = () => {
                               <span className="text-[10px] sm:text-xs text-amber-100 font-bold block truncate max-w-[110px] sm:max-w-[160px]">
                                 Lớp {bannerTopCandidates[0].studentClass}
                               </span>
-                              <span className="font-mono text-xs sm:text-sm font-black text-heritage-gold-300 mb-2 block">
-                                {getStandardizedScore10(bannerTopCandidates[0])} Điểm ({bannerTopCandidates[0].score}/{bannerTopCandidates[0].totalQuestions}c)
+                              <span className="font-mono text-xs sm:text-sm font-black text-heritage-gold-300 mb-2 block whitespace-nowrap" title={`${bannerTopCandidates[0].score}/${bannerTopCandidates[0].totalQuestions} câu`}>
+                                {getStandardizedScore10(bannerTopCandidates[0])} Điểm • {formatTime(bannerTopCandidates[0].timeSpentSeconds)}
                               </span>
                             </>
                           ) : (
@@ -944,11 +956,17 @@ export const OnlineContest: React.FC = () => {
                         <div className="flex flex-col items-center text-center">
                           {bannerTopCandidates[2] ? (
                             <>
-                              <div className="relative mb-2">
-                                <div className="w-11 h-11 sm:w-13 sm:h-13 rounded-full bg-gradient-to-br from-amber-600 via-amber-700 to-amber-800 text-amber-100 font-black text-xs sm:text-sm flex items-center justify-center shadow-md ring-2 ring-amber-600/80">
-                                  {bannerTopCandidates[2].studentName.trim().split(' ').slice(-1)[0][0]}
+                              <div className="relative mb-2 flex flex-col items-center">
+                                <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-gradient-to-br from-amber-600 via-amber-700 to-amber-900 p-1 shadow-[0_0_15px_rgba(180,83,9,0.4)] ring-3 ring-amber-500/80 relative flex items-center justify-center transition-transform hover:scale-105">
+                                  <div className="w-full h-full rounded-full border border-dashed border-amber-400/60 bg-gradient-to-tr from-amber-900 via-amber-700 to-amber-600 flex flex-col items-center justify-center relative shadow-inner overflow-hidden">
+                                    <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/30 to-transparent pointer-events-none" />
+                                    <Medal className="w-6 h-6 sm:w-7 sm:h-7 text-amber-100 drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]" />
+                                    <span className="text-[8px] sm:text-[9px] font-black text-amber-200 tracking-wider font-serif uppercase -mt-0.5">TOP 3</span>
+                                  </div>
+                                  <span className="absolute -bottom-1 -right-1 w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-gradient-to-br from-amber-600 to-amber-800 border border-amber-300 flex items-center justify-center text-xs shadow-md">
+                                    🥉
+                                  </span>
                                 </div>
-                                <span className="absolute -top-1 -right-1 text-sm">🥉</span>
                               </div>
                               <h5 className="font-serif font-bold text-xs sm:text-sm text-white truncate max-w-[105px] sm:max-w-[150px] md:max-w-[180px]" title={bannerTopCandidates[2].studentName}>
                                 {bannerTopCandidates[2].studentName}
@@ -956,7 +974,7 @@ export const OnlineContest: React.FC = () => {
                               <span className="text-[10px] sm:text-xs text-amber-200/90 font-medium block truncate max-w-[100px] sm:max-w-[140px]">
                                 Lớp {bannerTopCandidates[2].studentClass}
                               </span>
-                              <span className="font-mono text-[10px] sm:text-xs font-bold text-amber-300 mb-2 block">
+                              <span className="font-mono text-[10px] sm:text-xs font-bold text-amber-300 mb-2 block whitespace-nowrap">
                                 {getStandardizedScore10(bannerTopCandidates[2])}đ • {formatTime(bannerTopCandidates[2].timeSpentSeconds)}
                               </span>
                             </>
@@ -1574,11 +1592,17 @@ export const OnlineContest: React.FC = () => {
                         <div className="flex flex-col items-center text-center">
                           {displayIndividuals[1] ? (
                             <>
-                              <div className="relative mb-2">
-                                <div className="w-11 h-11 sm:w-13 sm:h-13 rounded-full bg-gradient-to-br from-slate-100 via-slate-200 to-slate-400 text-slate-900 font-black text-sm sm:text-base flex items-center justify-center shadow-md ring-3 ring-slate-300">
-                                  {displayIndividuals[1].studentName.trim().split(' ').slice(-1)[0][0]}
+                              <div className="relative mb-2 flex flex-col items-center">
+                                <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-gradient-to-br from-slate-100 via-slate-200 to-slate-400 p-1 shadow-[0_0_15px_rgba(203,213,225,0.4)] ring-3 ring-slate-300 relative flex items-center justify-center transition-transform hover:scale-105">
+                                  <div className="w-full h-full rounded-full border border-dashed border-slate-300 bg-gradient-to-tr from-slate-400 via-slate-200 to-slate-100 flex flex-col items-center justify-center relative shadow-inner overflow-hidden">
+                                    <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/40 to-transparent pointer-events-none" />
+                                    <Award className="w-6 h-6 sm:w-7 sm:h-7 text-slate-800 drop-shadow-[0_1px_2px_rgba(255,255,255,0.6)]" />
+                                    <span className="text-[8px] sm:text-[9px] font-black text-slate-800 tracking-wider font-serif uppercase -mt-0.5">TOP 2</span>
+                                  </div>
+                                  <span className="absolute -bottom-1 -right-1 w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-gradient-to-br from-slate-200 to-slate-400 border border-white flex items-center justify-center text-xs shadow-md">
+                                    🥈
+                                  </span>
                                 </div>
-                                <span className="absolute -top-1 -right-1 text-sm">🥈</span>
                               </div>
                               <h4 className="font-serif font-bold text-xs sm:text-sm text-heritage-ink-900 truncate max-w-[95px] sm:max-w-[140px]" title={displayIndividuals[1].studentName}>
                                 {displayIndividuals[1].studentName}
@@ -1586,13 +1610,13 @@ export const OnlineContest: React.FC = () => {
                               <span className="text-[10px] sm:text-[11px] text-heritage-ink-600 font-bold block truncate max-w-[90px] sm:max-w-[130px]">
                                 Chi đội {displayIndividuals[1].studentClass}
                               </span>
-                              <span className="font-mono text-xs font-black text-slate-700 mb-2 block">
+                              <span className="font-mono text-xs font-black text-slate-700 mb-2 block whitespace-nowrap">
                                 {getStandardizedScore10(displayIndividuals[1])} Điểm ({formatTime(displayIndividuals[1].timeSpentSeconds)})
                               </span>
                             </>
                           ) : (
                             <div className="h-20 flex flex-col items-center justify-center text-[10px] text-heritage-ink-400 italic">
-                              <span>🥈</span>
+                              <span className="text-base mb-1">🥈</span>
                               <span>Đang chờ Á khoa 1</span>
                             </div>
                           )}
@@ -1606,12 +1630,18 @@ export const OnlineContest: React.FC = () => {
                         <div className="flex flex-col items-center text-center">
                           {displayIndividuals[0] ? (
                             <>
-                              <div className="relative mb-2">
-                                <span className="text-base sm:text-lg block -mb-0.5 animate-bounce">👑</span>
-                                <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-gradient-to-br from-heritage-gold-300 via-amber-400 to-heritage-gold-500 text-heritage-red-950 font-black text-base sm:text-lg flex items-center justify-center shadow-xl ring-4 ring-heritage-gold-400 animate-pulse">
-                                  {displayIndividuals[0].studentName.trim().split(' ').slice(-1)[0][0]}
+                              <div className="relative mb-2 flex flex-col items-center">
+                                <span className="text-xl sm:text-2xl block -mb-1 animate-bounce select-none filter drop-shadow">👑</span>
+                                <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-gradient-to-br from-amber-200 via-amber-400 to-amber-600 p-1 sm:p-1.5 shadow-[0_0_25px_rgba(251,191,36,0.6)] ring-4 ring-amber-400 relative flex items-center justify-center transition-transform hover:scale-105">
+                                  <div className="w-full h-full rounded-full border-2 border-dashed border-amber-200/90 bg-gradient-to-tr from-amber-600 via-amber-400 to-amber-200 flex flex-col items-center justify-center relative shadow-inner overflow-hidden">
+                                    <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/40 to-transparent pointer-events-none" />
+                                    <Trophy className="w-7 h-7 sm:w-9 sm:h-9 text-amber-950 drop-shadow-[0_1px_2px_rgba(255,255,255,0.4)]" />
+                                    <span className="text-[9px] sm:text-[10px] font-black text-amber-950 tracking-wider font-serif uppercase -mt-0.5 sm:-mt-1">TOP 1</span>
+                                  </div>
+                                  <span className="absolute -bottom-1 -right-1 w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-gradient-to-br from-amber-300 to-amber-600 border border-white flex items-center justify-center text-xs shadow-md">
+                                    🥇
+                                  </span>
                                 </div>
-                                <span className="absolute bottom-0 right-0 text-base">🥇</span>
                               </div>
                               <h4 className="font-serif font-black text-xs sm:text-base text-heritage-red-950 truncate max-w-[105px] sm:max-w-[160px]" title={displayIndividuals[0].studentName}>
                                 {displayIndividuals[0].studentName}
@@ -1619,13 +1649,13 @@ export const OnlineContest: React.FC = () => {
                               <span className="text-[10px] sm:text-[11px] text-heritage-red-800 font-bold block truncate max-w-[100px] sm:max-w-[150px]">
                                 Chi đội {displayIndividuals[0].studentClass}
                               </span>
-                              <span className="font-mono text-xs sm:text-sm font-black text-heritage-red-700 mb-2 block">
-                                {getStandardizedScore10(displayIndividuals[0])} Điểm ({displayIndividuals[0].score}/{displayIndividuals[0].totalQuestions}c • {formatTime(displayIndividuals[0].timeSpentSeconds)})
+                              <span className="font-mono text-xs sm:text-sm font-black text-heritage-red-700 mb-2 block whitespace-nowrap" title={`${displayIndividuals[0].score}/${displayIndividuals[0].totalQuestions} câu`}>
+                                {getStandardizedScore10(displayIndividuals[0])} Điểm ({formatTime(displayIndividuals[0].timeSpentSeconds)})
                               </span>
                             </>
                           ) : (
                             <div className="h-24 flex flex-col items-center justify-center text-[10px] text-heritage-ink-400 italic">
-                              <span>🥇</span>
+                              <span className="text-xl mb-1">🥇</span>
                               <span>Đang chờ Thủ khoa</span>
                             </div>
                           )}
@@ -1639,11 +1669,17 @@ export const OnlineContest: React.FC = () => {
                         <div className="flex flex-col items-center text-center">
                           {displayIndividuals[2] ? (
                             <>
-                              <div className="relative mb-2">
-                                <div className="w-11 h-11 sm:w-13 sm:h-13 rounded-full bg-gradient-to-br from-amber-600 via-amber-700 to-amber-800 text-amber-100 font-black text-sm sm:text-base flex items-center justify-center shadow-md ring-3 ring-amber-600/80">
-                                  {displayIndividuals[2].studentName.trim().split(' ').slice(-1)[0][0]}
+                              <div className="relative mb-2 flex flex-col items-center">
+                                <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-gradient-to-br from-amber-600 via-amber-700 to-amber-900 p-1 shadow-[0_0_15px_rgba(180,83,9,0.4)] ring-3 ring-amber-600/80 relative flex items-center justify-center transition-transform hover:scale-105">
+                                  <div className="w-full h-full rounded-full border border-dashed border-amber-400/60 bg-gradient-to-tr from-amber-900 via-amber-700 to-amber-600 flex flex-col items-center justify-center relative shadow-inner overflow-hidden">
+                                    <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/30 to-transparent pointer-events-none" />
+                                    <Medal className="w-6 h-6 sm:w-7 sm:h-7 text-amber-100 drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]" />
+                                    <span className="text-[8px] sm:text-[9px] font-black text-amber-200 tracking-wider font-serif uppercase -mt-0.5">TOP 3</span>
+                                  </div>
+                                  <span className="absolute -bottom-1 -right-1 w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-gradient-to-br from-amber-600 to-amber-800 border border-amber-300 flex items-center justify-center text-xs shadow-md">
+                                    🥉
+                                  </span>
                                 </div>
-                                <span className="absolute -top-1 -right-1 text-sm">🥉</span>
                               </div>
                               <h4 className="font-serif font-bold text-xs sm:text-sm text-heritage-ink-900 truncate max-w-[95px] sm:max-w-[140px]" title={displayIndividuals[2].studentName}>
                                 {displayIndividuals[2].studentName}
@@ -1651,13 +1687,13 @@ export const OnlineContest: React.FC = () => {
                               <span className="text-[10px] sm:text-[11px] text-heritage-ink-600 font-bold block truncate max-w-[90px] sm:max-w-[130px]">
                                 Chi đội {displayIndividuals[2].studentClass}
                               </span>
-                              <span className="font-mono text-xs font-black text-amber-800 mb-2 block">
+                              <span className="font-mono text-xs font-black text-amber-800 mb-2 block whitespace-nowrap">
                                 {getStandardizedScore10(displayIndividuals[2])} Điểm ({formatTime(displayIndividuals[2].timeSpentSeconds)})
                               </span>
                             </>
                           ) : (
                             <div className="h-20 flex flex-col items-center justify-center text-[10px] text-heritage-ink-400 italic">
-                              <span>🥉</span>
+                              <span className="text-base mb-1">🥉</span>
                               <span>Đang chờ Á khoa 2</span>
                             </div>
                           )}
