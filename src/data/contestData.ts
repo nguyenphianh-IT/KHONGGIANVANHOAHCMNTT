@@ -1019,6 +1019,37 @@ export function formatTime(seconds: number): string {
   return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
 }
 
+/**
+ * Chuẩn hóa điểm bài thi về thang điểm 10 chuẩn giáo dục THCS
+ * (Đảm bảo sự công bằng tuyệt đối giữa các đề thi 5 câu, 10 câu, 15 câu, 20 câu)
+ */
+export function getStandardizedScore10(sub: ContestSubmission): number {
+  const total = sub.totalQuestions && sub.totalQuestions > 0 ? sub.totalQuestions : 10;
+  return Number(((sub.score / total) * 10).toFixed(2));
+}
+
+/**
+ * Hàm so sánh chuẩn xếp hạng thí sinh:
+ * 1. Điểm chuẩn hóa thang 10 cao hơn xếp trước
+ * 2. Cùng điểm thì thí sinh hoàn thành nhanh hơn (thời gian ít hơn) xếp trước
+ * 3. Cùng thời gian thì số câu đúng thực tế nhiều hơn xếp trước
+ * 4. Cùng tất cả thì nộp trước xếp trước
+ */
+export function compareSubmissions(a: ContestSubmission, b: ContestSubmission): number {
+  const scoreA = getStandardizedScore10(a);
+  const scoreB = getStandardizedScore10(b);
+  if (Math.abs(scoreB - scoreA) > 0.001) {
+    return scoreB - scoreA;
+  }
+  if (a.timeSpentSeconds !== b.timeSpentSeconds) {
+    return a.timeSpentSeconds - b.timeSpentSeconds;
+  }
+  if (b.score !== a.score) {
+    return b.score - a.score;
+  }
+  return (a.id || '').localeCompare(b.id || '');
+}
+
 // ==============================================================================
 // ĐỒNG BỘ HAI CHIỀU VỚI SUPABASE CLOUD DATABASE
 // ==============================================================================
@@ -1068,7 +1099,19 @@ export async function fetchSupabaseContestData(): Promise<{
       }
 
       if (Array.isArray(cloudData.submissions) && cloudData.submissions.length > 0) {
-        localStorage.setItem(STORAGE_KEY_CONTEST, JSON.stringify(cloudData.submissions));
+        // Hợp nhất thông minh (Smart Merge): Giữ lại các bài thi mới nộp tại trình duyệt (chưa đồng bộ lên Cloud)
+        const localSubs = getContestSubmissions();
+        const mergedMap = new Map<string, ContestSubmission>();
+        // Ưu tiên nạp danh sách từ Cloud
+        cloudData.submissions.forEach((s) => mergedMap.set(s.id, s));
+        // Bổ sung các bài nộp cục bộ (tránh việc F5 làm mất bài thi mới của học sinh)
+        localSubs.forEach((s) => {
+          if (!mergedMap.has(s.id)) {
+            mergedMap.set(s.id, s);
+          }
+        });
+        const mergedSubs = Array.from(mergedMap.values());
+        localStorage.setItem(STORAGE_KEY_CONTEST, JSON.stringify(mergedSubs));
       }
 
       if (typeof window !== 'undefined') {
@@ -1078,7 +1121,7 @@ export async function fetchSupabaseContestData(): Promise<{
       return {
         success: true,
         contests: cloudData.contests || getStoredContestsList(),
-        submissions: cloudData.submissions || getContestSubmissions(),
+        submissions: getContestSubmissions(),
       };
     }
 

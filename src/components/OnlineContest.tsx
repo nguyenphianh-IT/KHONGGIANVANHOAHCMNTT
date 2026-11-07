@@ -16,6 +16,8 @@ import {
   getContestSubmissions,
   saveContestSubmission,
   formatTime,
+  getStandardizedScore10,
+  compareSubmissions,
   EVENT_CONTEST_DATA_CHANGED,
   fetchSupabaseContestData,
   fetchSupabaseQuestions,
@@ -23,7 +25,7 @@ import {
 import {
   Trophy, Award, Clock, CheckCircle2, AlertTriangle, ChevronRight,
   User, Printer, Settings, BookOpen, Layers, FolderArchive, Cloud, Lock,
-  Users, Sparkles, Medal
+  Users, Sparkles, Medal, Search, Filter
 } from 'lucide-react';
 import { ContestManagerModal } from './cms/ContestManagerModal';
 import { useAuth } from '../context/AuthContext';
@@ -102,6 +104,10 @@ export const OnlineContest: React.FC = () => {
 
   // Bảng xếp hạng & Trạng thái Supabase Cloud
   const [leaderboardTab, setLeaderboardTab] = useState<'individual' | 'class'>('individual');
+  const [leaderboardFilterMode, setLeaderboardFilterMode] = useState<'best' | 'all'>('best');
+  const [leaderboardViewMode, setLeaderboardViewMode] = useState<'top10' | 'all'>('top10');
+  const [leaderboardSearch, setLeaderboardSearch] = useState<string>('');
+  const [classSortMode, setClassSortMode] = useState<'movement' | 'avg' | 'participants'>('movement');
   const [isCloudConnected, setIsCloudConnected] = useState<boolean>(true);
 
   // Kéo dữ liệu câu hỏi và hội thi từ Supabase Cloud khi người dùng truy cập
@@ -323,47 +329,130 @@ export const OnlineContest: React.FC = () => {
     return submissions.filter((s) => s.contestId === leaderboardContestId);
   }, [submissions, leaderboardContestId]);
 
-  // Tính bảng xếp hạng cá nhân Top 10 (Sắp xếp: Điểm cao nhất -> Thời gian nhanh nhất)
-  const sortedIndividuals = useMemo(() => {
-    return [...activeLeaderboardSubmissions].sort((a, b) => {
-      if (b.score !== a.score) {
-        return b.score - a.score;
-      }
-      return a.timeSpentSeconds - b.timeSpentSeconds;
-    }).slice(0, 10);
-  }, [activeLeaderboardSubmissions]);
+  // Danh sách thí sinh sau khi lọc/gộp theo chế độ "Mỗi em 1 bài cao nhất" hoặc "Tất cả lượt thi"
+  const processedIndividuals = useMemo(() => {
+    let list = [...activeLeaderboardSubmissions];
+
+    if (leaderboardFilterMode === 'best') {
+      // Mỗi học sinh (theo Họ tên + Lớp) chỉ lấy bài thi có kết quả tốt nhất
+      const bestMap = new Map<string, ContestSubmission>();
+      list.forEach((sub) => {
+        const key = `${sub.studentName.trim().toLowerCase()}__${sub.studentClass.trim().toLowerCase()}`;
+        const existing = bestMap.get(key);
+        if (!existing) {
+          bestMap.set(key, sub);
+        } else {
+          // So sánh, nếu sub tốt hơn existing thì thay thế
+          if (compareSubmissions(sub, existing) < 0) {
+            bestMap.set(key, sub);
+          }
+        }
+      });
+      list = Array.from(bestMap.values());
+    }
+
+    // Sắp xếp chuẩn theo xếp hạng: Thang 10 cao nhất -> Thời gian nhanh nhất -> Nộp trước
+    list.sort(compareSubmissions);
+
+    // Tìm kiếm nếu có gõ từ khóa
+    if (leaderboardSearch.trim()) {
+      const q = leaderboardSearch.trim().toLowerCase();
+      list = list.filter((s) =>
+        s.studentName.toLowerCase().includes(q) ||
+        s.studentClass.toLowerCase().includes(q)
+      );
+    }
+
+    return list;
+  }, [activeLeaderboardSubmissions, leaderboardFilterMode, leaderboardSearch]);
+
+  // Danh sách hiển thị trên Bảng xếp hạng cá nhân (Top 10 hoặc Toàn bộ)
+  const displayIndividuals = useMemo(() => {
+    if (leaderboardViewMode === 'top10' && !leaderboardSearch.trim()) {
+      return processedIndividuals.slice(0, 10);
+    }
+    return processedIndividuals;
+  }, [processedIndividuals, leaderboardViewMode, leaderboardSearch]);
+
+  // Thủ khoa dẫn đầu của Hội thi đang hiển thị trên Banner
+  const bannerTopCandidate = useMemo(() => {
+    const contestSubs = submissions.filter((s) => s.contestId === contestInfo.id);
+    if (contestSubs.length === 0) return null;
+    return [...contestSubs].sort(compareSubmissions)[0];
+  }, [submissions, contestInfo.id]);
+
+  // Tra cứu thứ hạng của bài thi vừa nộp
+  const candidateRankInfo = useMemo(() => {
+    if (!latestSubmission) return null;
+    const allSorted = [...activeLeaderboardSubmissions].sort(compareSubmissions);
+    const idx = allSorted.findIndex((s) => s.id === latestSubmission.id);
+    if (idx === -1) return null;
+    return {
+      rank: idx + 1,
+      total: allSorted.length,
+      isTop10: idx < 10,
+    };
+  }, [latestSubmission, activeLeaderboardSubmissions]);
 
   // Tính bảng xếp hạng thi đua tập thể theo Chi đội / Lớp
   const classLeaderboard = useMemo(() => {
-    const classMap: Record<string, { totalScore: number; count: number; perfectCount: number }> = {};
+    const classMap: Record<string, {
+      totalScore10: number;
+      submissionsCount: number;
+      uniqueStudents: Set<string>;
+      perfectCount: number;
+    }> = {};
 
     activeLeaderboardSubmissions.forEach((sub) => {
-      if (!classMap[sub.studentClass]) {
-        classMap[sub.studentClass] = { totalScore: 0, count: 0, perfectCount: 0 };
+      const cls = sub.studentClass;
+      if (!classMap[cls]) {
+        classMap[cls] = {
+          totalScore10: 0,
+          submissionsCount: 0,
+          uniqueStudents: new Set<string>(),
+          perfectCount: 0,
+        };
       }
-      classMap[sub.studentClass].totalScore += sub.score;
-      classMap[sub.studentClass].count += 1;
-      if (sub.score === sub.totalQuestions && sub.totalQuestions > 0) {
-        classMap[sub.studentClass].perfectCount += 1;
+      const score10 = getStandardizedScore10(sub);
+      classMap[cls].totalScore10 += score10;
+      classMap[cls].submissionsCount += 1;
+      classMap[cls].uniqueStudents.add(sub.studentName.trim().toLowerCase());
+      if (score10 >= 9.99 || (sub.score === sub.totalQuestions && sub.totalQuestions > 0)) {
+        classMap[cls].perfectCount += 1;
       }
     });
 
     const list = Object.keys(classMap).map((cls) => {
       const item = classMap[cls];
-      const avg = (item.totalScore / item.count).toFixed(1);
+      const count = item.submissionsCount;
+      const studentCount = item.uniqueStudents.size;
+      const avg = Number((item.totalScore10 / count).toFixed(1));
+      // Điểm phong trào toàn diện: ĐTB x 10 + Số học sinh x 5 + Số điểm 10 x 10
+      const movementScore = Math.round((avg * 10) + (studentCount * 5) + (item.perfectCount * 10));
       return {
         className: cls,
-        participantsCount: item.count,
-        avgScore: parseFloat(avg),
+        participantsCount: studentCount,
+        submissionsCount: count,
+        avgScore: avg,
         perfectCount: item.perfectCount,
+        movementScore,
       };
     });
 
     return list.sort((a, b) => {
-      if (b.avgScore !== a.avgScore) return b.avgScore - a.avgScore;
-      return b.participantsCount - a.participantsCount;
+      if (classSortMode === 'movement') {
+        if (b.movementScore !== a.movementScore) return b.movementScore - a.movementScore;
+        if (b.avgScore !== a.avgScore) return b.avgScore - a.avgScore;
+        return b.participantsCount - a.participantsCount;
+      }
+      if (classSortMode === 'avg') {
+        if (b.avgScore !== a.avgScore) return b.avgScore - a.avgScore;
+        return b.participantsCount - a.participantsCount;
+      }
+      if (b.participantsCount !== a.participantsCount) return b.participantsCount - a.participantsCount;
+      return b.avgScore - a.avgScore;
     });
-  }, [activeLeaderboardSubmissions]);
+  }, [activeLeaderboardSubmissions, classSortMode]);
 
   // In / Tải giấy khen
   const handlePrintCertificate = () => {
@@ -712,7 +801,10 @@ export const OnlineContest: React.FC = () => {
                 </button>
 
                 <button
-                  onClick={() => setScreen('leaderboard')}
+                  onClick={() => {
+                    setLeaderboardContestId(contestInfo.id);
+                    setScreen('leaderboard');
+                  }}
                   className="px-6 py-4 bg-white/10 hover:bg-white/20 text-heritage-gold-100 hover:text-white font-bold text-xs sm:text-sm rounded-2xl border border-heritage-gold-400/40 hover:border-heritage-gold-400/80 transition-all flex items-center justify-center space-x-2 backdrop-blur-sm shadow-sm"
                 >
                   <Trophy className="w-4 h-4 text-heritage-gold-400" />
@@ -766,8 +858,8 @@ export const OnlineContest: React.FC = () => {
                     </span>
                   </div>
 
-                  {/* Thủ khoa dẫn đầu toàn trường */}
-                  {sortedIndividuals.length > 0 ? (
+                  {/* Thủ khoa dẫn đầu hội thi đang xem */}
+                  {bannerTopCandidate ? (
                     <div className="bg-gradient-to-r from-amber-500/20 via-amber-400/10 to-transparent p-3.5 rounded-xl border border-heritage-gold-400/40 mb-3 shadow-xs">
                       <div className="flex items-center justify-between text-[11px] font-bold text-heritage-gold-300 mb-1.5">
                         <span className="flex items-center space-x-1">
@@ -775,19 +867,19 @@ export const OnlineContest: React.FC = () => {
                           <span className="uppercase tracking-wider">Thủ Khoa Đang Dẫn Đầu</span>
                         </span>
                         <span className="font-mono text-emerald-300 font-bold">
-                          {sortedIndividuals[0].score}/{sortedIndividuals[0].totalQuestions} Điểm ({formatTime(sortedIndividuals[0].timeSpentSeconds)})
+                          {getStandardizedScore10(bannerTopCandidate)} Điểm ({bannerTopCandidate.score}/{bannerTopCandidate.totalQuestions} câu • {formatTime(bannerTopCandidate.timeSpentSeconds)})
                         </span>
                       </div>
                       <div className="flex items-center space-x-3">
                         <div className="w-10 h-10 rounded-full bg-gradient-to-br from-heritage-gold-300 to-heritage-gold-500 text-heritage-red-950 font-black text-base flex items-center justify-center shadow border-2 border-white/40 flex-shrink-0">
-                          {sortedIndividuals[0].studentName.split(' ').slice(-1)[0][0]}
+                          {bannerTopCandidate.studentName.split(' ').slice(-1)[0][0]}
                         </div>
                         <div className="min-w-0">
                           <h4 className="font-serif font-bold text-sm sm:text-base text-white truncate">
-                            {sortedIndividuals[0].studentName}
+                            {bannerTopCandidate.studentName}
                           </h4>
                           <p className="text-[11px] text-heritage-gold-200/80 truncate">
-                            Chi đội: <strong>Lớp {sortedIndividuals[0].studentClass}</strong> • Nộp: {sortedIndividuals[0].submittedAt}
+                            Chi đội: <strong>Lớp {bannerTopCandidate.studentClass}</strong> • Nộp: {bannerTopCandidate.submittedAt}
                           </p>
                         </div>
                       </div>
@@ -826,7 +918,7 @@ export const OnlineContest: React.FC = () => {
                 <div className="mt-3.5 pt-3 border-t border-white/15 flex items-center justify-between text-xs text-heritage-gold-200">
                   <div className="flex items-center space-x-1.5">
                     <Users className="w-3.5 h-3.5 text-heritage-gold-400" />
-                    <span>Đã nộp: <strong className="text-white font-bold">{submissions.length} bài</strong></span>
+                    <span>Đã nộp: <strong className="text-white font-bold">{activeContestSubmissionsCount} bài</strong></span>
                   </div>
                   {classLeaderboard.length > 0 && (
                     <div className="flex items-center space-x-1.5">
@@ -1105,27 +1197,49 @@ export const OnlineContest: React.FC = () => {
             Chi đội: Lớp {latestSubmission.studentClass} • Trường THCS Nguyễn Trung Trực
           </p>
 
-          {/* Hộp điểm số */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 max-w-md mx-auto mb-8">
-            <div className="p-4 bg-white rounded-2xl border border-heritage-ivory-300 shadow-sm">
-              <span className="text-xs text-heritage-ink-500 block">Số câu đúng</span>
-              <span className="font-serif text-2xl sm:text-3xl font-black text-heritage-red-700">
-                {latestSubmission.score} <span className="text-sm text-heritage-ink-400 font-normal">/ {latestSubmission.totalQuestions}</span>
+          {/* Hộp điểm số & Thứ hạng thi đua */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 max-w-2xl mx-auto mb-8">
+            <div className="p-3.5 bg-white rounded-2xl border border-heritage-ivory-300 shadow-sm">
+              <span className="text-[11px] text-heritage-ink-500 font-bold uppercase tracking-wider block">Điểm thang 10</span>
+              <span className="font-serif text-2xl sm:text-3xl font-black text-heritage-red-700 block mt-0.5">
+                {getStandardizedScore10(latestSubmission)}
+                <span className="text-xs text-heritage-ink-400 font-normal ml-0.5">/ 10</span>
+              </span>
+              <span className="text-[10px] text-heritage-ink-500 font-medium">
+                {latestSubmission.score}/{latestSubmission.totalQuestions} câu đúng
               </span>
             </div>
-            <div className="p-4 bg-white rounded-2xl border border-heritage-ivory-300 shadow-sm">
-              <span className="text-xs text-heritage-ink-500 block">Thời gian thi</span>
-              <span className="font-mono text-2xl sm:text-3xl font-black text-heritage-ink-900">
+
+            <div className="p-3.5 bg-white rounded-2xl border border-heritage-ivory-300 shadow-sm">
+              <span className="text-[11px] text-heritage-ink-500 font-bold uppercase tracking-wider block">Thời gian thi</span>
+              <span className="font-mono text-2xl sm:text-3xl font-black text-heritage-ink-900 block mt-0.5">
                 {formatTime(latestSubmission.timeSpentSeconds)}
               </span>
+              <span className="text-[10px] text-heritage-ink-500 font-medium">
+                {latestSubmission.submittedAt}
+              </span>
             </div>
-            <div className="col-span-2 sm:col-span-1 p-4 bg-white rounded-2xl border border-heritage-ivory-300 shadow-sm">
-              <span className="text-xs text-heritage-ink-500 block">Đánh giá</span>
-              <span className="font-serif text-base sm:text-lg font-bold text-emerald-700">
+
+            <div className="p-3.5 bg-gradient-to-br from-amber-50 to-white rounded-2xl border-2 border-heritage-gold-400 shadow-sm">
+              <span className="text-[11px] text-heritage-red-800 font-black uppercase tracking-wider block">Xếp hạng hiện tại</span>
+              <span className="font-serif text-2xl sm:text-3xl font-black text-heritage-red-900 block mt-0.5">
+                #{candidateRankInfo?.rank || 1}
+              </span>
+              <span className="text-[10px] text-heritage-ink-600 font-semibold">
+                /{candidateRankInfo?.total || activeLeaderboardSubmissions.length} lượt thi
+              </span>
+            </div>
+
+            <div className="p-3.5 bg-white rounded-2xl border border-heritage-ivory-300 shadow-sm">
+              <span className="text-[11px] text-heritage-ink-500 font-bold uppercase tracking-wider block">Đánh giá</span>
+              <span className="font-serif text-base sm:text-lg font-bold text-emerald-700 block mt-1.5">
                 {(() => {
-                  const ratio = latestSubmission.totalQuestions > 0 ? latestSubmission.score / latestSubmission.totalQuestions : 0;
-                  return ratio >= 0.9 ? '⭐ Xuất sắc' : ratio >= 0.7 ? 'Giỏi' : ratio >= 0.5 ? 'Đạt' : 'Cần cố gắng';
+                  const s10 = getStandardizedScore10(latestSubmission);
+                  return s10 >= 9.99 ? '⭐ Xuất sắc' : s10 >= 8 ? 'Giỏi' : s10 >= 5 ? 'Đạt chuẩn' : 'Cần cố gắng';
                 })()}
+              </span>
+              <span className="text-[10px] text-emerald-600 font-medium">
+                {latestSubmission.score >= Math.ceil(latestSubmission.totalQuestions * 0.7) ? 'Đủ đ/k cấp giấy khen' : 'Chưa đạt 70%'}
               </span>
             </div>
           </div>
@@ -1143,7 +1257,12 @@ export const OnlineContest: React.FC = () => {
             )}
 
             <button
-              onClick={() => setScreen('leaderboard')}
+              onClick={() => {
+                if (latestSubmission?.contestId) {
+                  setLeaderboardContestId(latestSubmission.contestId);
+                }
+                setScreen('leaderboard');
+              }}
               className="px-6 py-3 bg-heritage-red-700 hover:bg-heritage-red-800 text-white font-bold text-xs sm:text-sm rounded-xl shadow-md transition-all flex items-center space-x-2"
             >
               <Trophy className="w-4 h-4 text-heritage-gold-300" />
@@ -1291,95 +1410,270 @@ export const OnlineContest: React.FC = () => {
 
           {/* TAB 1: BẢNG XẾP HẠNG CÁ NHÂN */}
           {leaderboardTab === 'individual' && (
-            <div className="space-y-2.5">
-              {sortedIndividuals.map((sub, idx) => {
-                const isTop1 = idx === 0;
-                const isTop2 = idx === 1;
-                const isTop3 = idx === 2;
+            <div className="space-y-4">
+              {/* Thanh điều khiển bộ lọc & Tra cứu nhanh cá nhân */}
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5 bg-white p-3 rounded-2xl border border-heritage-ivory-300 shadow-2xs">
+                {/* Ô tìm kiếm học sinh / lớp */}
+                <div className="relative flex-1">
+                  <Search className="w-4 h-4 text-heritage-ink-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                  <input
+                    type="text"
+                    value={leaderboardSearch}
+                    onChange={(e) => setLeaderboardSearch(e.target.value)}
+                    placeholder="Tìm tên học sinh hoặc lớp..."
+                    className="w-full pl-9 pr-3 py-1.5 text-xs sm:text-sm bg-heritage-ivory-100 border border-heritage-ivory-300 rounded-xl focus:outline-none focus:border-heritage-red-700 font-medium"
+                  />
+                  {leaderboardSearch && (
+                    <button
+                      onClick={() => setLeaderboardSearch('')}
+                      className="absolute right-2.5 top-1/2 -translate-y-1/2 text-xs text-heritage-ink-400 hover:text-heritage-ink-700"
+                    >
+                      ✕
+                    </button>
+                  )}
+                </div>
 
-                return (
-                  <div
-                    key={sub.id}
-                    className={`p-3.5 sm:p-4 rounded-2xl border transition-all flex items-center justify-between ${
-                      isTop1
-                        ? 'bg-gradient-to-r from-amber-100/90 via-amber-50 to-white border-amber-400 shadow-md ring-1 ring-amber-400'
-                        : isTop2
-                        ? 'bg-gradient-to-r from-slate-100/90 via-slate-50 to-white border-slate-300 shadow-sm'
-                        : isTop3
-                        ? 'bg-gradient-to-r from-orange-100/70 via-orange-50 to-white border-orange-300 shadow-sm'
-                        : 'bg-white border-heritage-ivory-300 hover:border-heritage-gold-400'
-                    }`}
+                <div className="flex flex-wrap items-center gap-1.5">
+                  {/* Chế độ gom thành tích: Mỗi em 1 bài cao nhất vs Tất cả lượt thi */}
+                  <div className="inline-flex rounded-xl bg-heritage-ivory-200 p-0.5 text-[11px] font-bold">
+                    <button
+                      type="button"
+                      onClick={() => setLeaderboardFilterMode('best')}
+                      className={`px-2.5 py-1 rounded-lg transition ${
+                        leaderboardFilterMode === 'best'
+                          ? 'bg-heritage-red-700 text-white shadow-2xs'
+                          : 'text-heritage-ink-700 hover:text-heritage-red-700'
+                      }`}
+                      title="Mỗi học sinh chỉ hiển thị 01 bài thi có điểm cao nhất và nhanh nhất"
+                    >
+                      ⭐ Mỗi em 1 bài cao nhất
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setLeaderboardFilterMode('all')}
+                      className={`px-2.5 py-1 rounded-lg transition ${
+                        leaderboardFilterMode === 'all'
+                          ? 'bg-heritage-red-700 text-white shadow-2xs'
+                          : 'text-heritage-ink-700 hover:text-heritage-red-700'
+                      }`}
+                      title="Hiển thị toàn bộ các lượt làm bài thi"
+                    >
+                      📋 Tất cả ({activeLeaderboardSubmissions.length})
+                    </button>
+                  </div>
+
+                  {/* Chế độ xem Top 10 vs Toàn bộ danh sách */}
+                  <button
+                    type="button"
+                    onClick={() => setLeaderboardViewMode(leaderboardViewMode === 'top10' ? 'all' : 'top10')}
+                    className="px-2.5 py-1 rounded-xl text-[11px] font-bold border border-heritage-ivory-300 bg-white text-heritage-ink-700 hover:bg-heritage-ivory-100 transition"
                   >
-                    <div className="flex items-center space-x-3.5 min-w-0">
-                      {/* Vị trí xếp hạng */}
-                      <div className={`w-8 h-8 sm:w-9 sm:h-9 rounded-full flex items-center justify-center font-bold text-xs sm:text-sm flex-shrink-0 ${
-                        isTop1
-                          ? 'bg-amber-400 text-amber-950 shadow'
-                          : isTop2
-                          ? 'bg-slate-300 text-slate-900'
-                          : isTop3
-                          ? 'bg-orange-300 text-orange-950'
-                          : 'bg-heritage-ivory-200 text-heritage-ink-700'
-                      }`}>
-                        {isTop1 ? '🥇' : isTop2 ? '🥈' : isTop3 ? '🥉' : idx + 1}
-                      </div>
+                    {leaderboardViewMode === 'top10' ? `Xem tất cả (${processedIndividuals.length})` : 'Chỉ xem Top 10'}
+                  </button>
+                </div>
+              </div>
 
-                      <div className="min-w-0">
-                        <h4 className="font-serif text-xs sm:text-sm font-bold text-heritage-ink-900 truncate">
-                          {sub.studentName}
-                        </h4>
-                        <p className="text-[11px] text-heritage-ink-500 font-medium">
-                          Lớp {sub.studentClass} • {sub.submittedAt}
-                        </p>
+              {/* Danh sách thí sinh xếp hạng */}
+              {displayIndividuals.length === 0 ? (
+                <div className="bg-white p-8 rounded-2xl border border-heritage-ivory-300 text-center text-heritage-ink-500 text-xs sm:text-sm">
+                  {leaderboardSearch
+                    ? `Không tìm thấy thí sinh nào với từ khóa "${leaderboardSearch}"!`
+                    : 'Chưa có bài thi nào nộp vào hội thi này. Em hãy là người đầu tiên tham gia!'}
+                </div>
+              ) : (
+                <div className="space-y-2.5">
+                  {displayIndividuals.map((sub, idx) => {
+                    const isTop1 = idx === 0 && !leaderboardSearch;
+                    const isTop2 = idx === 1 && !leaderboardSearch;
+                    const isTop3 = idx === 2 && !leaderboardSearch;
+                    const isMyRecentSub = latestSubmission && sub.id === latestSubmission.id;
+                    const s10 = getStandardizedScore10(sub);
+
+                    return (
+                      <div
+                        key={sub.id}
+                        className={`p-3.5 sm:p-4 rounded-2xl border transition-all flex items-center justify-between ${
+                          isMyRecentSub
+                            ? 'bg-gradient-to-r from-amber-100 via-amber-50 to-white border-2 border-heritage-gold-500 shadow-md ring-2 ring-heritage-gold-400/50'
+                            : isTop1
+                            ? 'bg-gradient-to-r from-amber-100/90 via-amber-50 to-white border-amber-400 shadow-md ring-1 ring-amber-400'
+                            : isTop2
+                            ? 'bg-gradient-to-r from-slate-100/90 via-slate-50 to-white border-slate-300 shadow-sm'
+                            : isTop3
+                            ? 'bg-gradient-to-r from-orange-100/70 via-orange-50 to-white border-orange-300 shadow-sm'
+                            : 'bg-white border-heritage-ivory-300 hover:border-heritage-gold-400'
+                        }`}
+                      >
+                        <div className="flex items-center space-x-3.5 min-w-0">
+                          {/* Vị trí xếp hạng */}
+                          <div className={`w-8 h-8 sm:w-9 sm:h-9 rounded-full flex items-center justify-center font-bold text-xs sm:text-sm flex-shrink-0 ${
+                            isTop1
+                              ? 'bg-amber-400 text-amber-950 shadow'
+                              : isTop2
+                              ? 'bg-slate-300 text-slate-900'
+                              : isTop3
+                              ? 'bg-orange-300 text-orange-950'
+                              : isMyRecentSub
+                              ? 'bg-heritage-red-700 text-white shadow'
+                              : 'bg-heritage-ivory-200 text-heritage-ink-700'
+                          }`}>
+                            {isTop1 ? '🥇' : isTop2 ? '🥈' : isTop3 ? '🥉' : idx + 1}
+                          </div>
+
+                          <div className="min-w-0">
+                            <div className="flex items-center space-x-2">
+                              <h4 className="font-serif text-xs sm:text-sm font-bold text-heritage-ink-900 truncate">
+                                {sub.studentName}
+                              </h4>
+                              {isMyRecentSub && (
+                                <span className="px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider bg-heritage-gold-400 text-heritage-red-950 flex-shrink-0 animate-pulse">
+                                  Bài thi của em
+                                </span>
+                              )}
+                            </div>
+                            <p className="text-[11px] text-heritage-ink-500 font-medium mt-0.5">
+                              Chi đội Lớp {sub.studentClass} • Nộp lúc {sub.submittedAt}
+                            </p>
+                          </div>
+                        </div>
+
+                        <div className="text-right flex-shrink-0 pl-2">
+                          <span className="font-serif font-black text-sm sm:text-base text-heritage-red-700 block">
+                            {s10} điểm
+                          </span>
+                          <span className="text-[11px] text-heritage-ink-600 block">
+                            {sub.score}/{sub.totalQuestions} câu • ⏱️ {formatTime(sub.timeSpentSeconds)}
+                          </span>
+                        </div>
                       </div>
+                    );
+                  })}
+                </div>
+              )}
+
+              {/* Thông báo vị trí nếu bài thi vừa nộp nằm ngoài Top 10 đang xem */}
+              {latestSubmission && candidateRankInfo && candidateRankInfo.rank > 10 && leaderboardViewMode === 'top10' && !leaderboardSearch && (
+                <div className="mt-4 p-4 rounded-2xl bg-gradient-to-r from-amber-50 to-heritage-ivory-100 border-2 border-heritage-gold-400 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-3 animate-fadeIn">
+                  <div className="flex items-center space-x-3">
+                    <div className="w-9 h-9 rounded-full bg-heritage-red-700 text-white font-black text-xs flex items-center justify-center flex-shrink-0">
+                      #{candidateRankInfo.rank}
                     </div>
-
-                    <div className="text-right flex-shrink-0">
-                      <span className="font-serif font-black text-sm sm:text-base text-heritage-red-700 block">
-                        {sub.score} / {sub.totalQuestions} điểm
-                      </span>
-                      <span className="font-mono text-[11px] text-heritage-ink-500">
-                        ⏱️ {formatTime(sub.timeSpentSeconds)}
-                      </span>
+                    <div>
+                      <div className="flex items-center space-x-2">
+                        <span className="font-serif font-bold text-xs sm:text-sm text-heritage-red-950">
+                          {latestSubmission.studentName}
+                        </span>
+                        <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-heritage-gold-400 text-heritage-red-950">
+                          Bài vừa nộp của em
+                        </span>
+                      </div>
+                      <p className="text-[11px] text-heritage-ink-600 mt-0.5">
+                        Em đạt <strong>{getStandardizedScore10(latestSubmission)} điểm</strong> ({latestSubmission.score}/{latestSubmission.totalQuestions} câu đúng) • Chi đội Lớp {latestSubmission.studentClass}
+                      </p>
                     </div>
                   </div>
-                );
-              })}
+
+                  <button
+                    onClick={() => setLeaderboardViewMode('all')}
+                    className="px-3.5 py-1.5 bg-heritage-red-700 hover:bg-heritage-red-800 text-white font-bold text-xs rounded-xl transition self-start sm:self-auto shadow-2xs whitespace-nowrap"
+                  >
+                    Xem vị trí trong toàn bộ bảng điểm →
+                  </button>
+                </div>
+              )}
             </div>
           )}
 
           {/* TAB 2: BẢNG XẾP HẠNG THI ĐUA CHI ĐỘI LỚP */}
           {leaderboardTab === 'class' && (
-            <div className="space-y-2.5">
-              {classLeaderboard.map((cls, idx) => (
-                <div
-                  key={cls.className}
-                  className="p-3.5 sm:p-4 rounded-2xl bg-white border border-heritage-ivory-300 shadow-sm flex items-center justify-between"
-                >
-                  <div className="flex items-center space-x-3">
-                    <span className="w-7 h-7 rounded-full bg-heritage-red-50 text-heritage-red-700 font-bold text-xs flex items-center justify-center">
-                      #{idx + 1}
-                    </span>
-                    <div>
-                      <h4 className="font-serif text-sm font-bold text-heritage-ink-900">
-                        Chi đội Lớp {cls.className}
-                      </h4>
-                      <p className="text-[11px] text-heritage-ink-500">
-                        {cls.participantsCount} học sinh tham gia • {cls.perfectCount} điểm 10 tuyệt đối
-                      </p>
+            <div className="space-y-4">
+              {/* Bộ lọc sắp xếp thi đua chi đội */}
+              <div className="flex flex-wrap items-center justify-between gap-2 bg-white p-3 rounded-2xl border border-heritage-ivory-300 shadow-2xs">
+                <span className="text-[11px] font-bold uppercase tracking-wider text-heritage-ink-700 flex items-center space-x-1">
+                  <Filter className="w-3.5 h-3.5 text-heritage-red-700" />
+                  <span>Tiêu chí xếp hạng chi đội:</span>
+                </span>
+
+                <div className="inline-flex rounded-xl bg-heritage-ivory-200 p-0.5 text-[11px] font-bold">
+                  <button
+                    type="button"
+                    onClick={() => setClassSortMode('movement')}
+                    className={`px-2.5 py-1 rounded-lg transition ${
+                      classSortMode === 'movement'
+                        ? 'bg-heritage-red-700 text-white shadow-2xs'
+                        : 'text-heritage-ink-700 hover:text-heritage-red-700'
+                    }`}
+                    title="Xếp theo điểm phong trào toàn diện (kết hợp ĐTB, số lượng học sinh tham gia và số điểm 10)"
+                  >
+                    🏆 Phong trào toàn diện
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setClassSortMode('avg')}
+                    className={`px-2.5 py-1 rounded-lg transition ${
+                      classSortMode === 'avg'
+                        ? 'bg-heritage-red-700 text-white shadow-2xs'
+                        : 'text-heritage-ink-700 hover:text-heritage-red-700'
+                    }`}
+                    title="Xếp theo Điểm trung bình (ĐTB) cao nhất"
+                  >
+                    📈 Điểm trung bình (ĐTB)
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setClassSortMode('participants')}
+                    className={`px-2.5 py-1 rounded-lg transition ${
+                      classSortMode === 'participants'
+                        ? 'bg-heritage-red-700 text-white shadow-2xs'
+                        : 'text-heritage-ink-700 hover:text-heritage-red-700'
+                    }`}
+                    title="Xếp theo số lượng học sinh tham gia đông nhất"
+                  >
+                    👥 Sĩ số tham gia
+                  </button>
+                </div>
+              </div>
+
+              {/* Danh sách lớp thi đua */}
+              <div className="space-y-2.5">
+                {classLeaderboard.map((cls, idx) => (
+                  <div
+                    key={cls.className}
+                    className="p-3.5 sm:p-4 rounded-2xl bg-white border border-heritage-ivory-300 shadow-sm flex items-center justify-between"
+                  >
+                    <div className="flex items-center space-x-3 min-w-0">
+                      <span className={`w-8 h-8 rounded-full font-black text-xs sm:text-sm flex items-center justify-center flex-shrink-0 ${
+                        idx === 0
+                          ? 'bg-amber-400 text-amber-950 shadow'
+                          : idx === 1
+                          ? 'bg-slate-300 text-slate-900'
+                          : idx === 2
+                          ? 'bg-orange-300 text-orange-950'
+                          : 'bg-heritage-ivory-200 text-heritage-ink-700'
+                      }`}>
+                        {idx === 0 ? '🥇' : idx === 1 ? '🥈' : idx === 2 ? '🥉' : `#${idx + 1}`}
+                      </span>
+                      <div className="min-w-0">
+                        <h4 className="font-serif text-xs sm:text-sm font-bold text-heritage-ink-900 truncate">
+                          Chi đội Lớp {cls.className}
+                        </h4>
+                        <p className="text-[11px] text-heritage-ink-500 mt-0.5">
+                          {cls.participantsCount} học sinh tham gia ({cls.submissionsCount} lượt nộp) • {cls.perfectCount} điểm 10 tuyệt đối
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="text-right flex-shrink-0 pl-2">
+                      <span className="font-serif font-black text-sm text-heritage-gold-700 block">
+                        ĐTB: {cls.avgScore} / 10
+                      </span>
+                      <span className="text-[10px] text-heritage-red-800 font-bold bg-amber-50 px-2 py-0.5 rounded border border-heritage-gold-300 block mt-0.5">
+                        {cls.movementScore} điểm thi đua
+                      </span>
                     </div>
                   </div>
-
-                  <div className="text-right">
-                    <span className="font-serif font-black text-sm text-heritage-gold-700 block">
-                      ĐTB: {cls.avgScore} / 10
-                    </span>
-                    <span className="text-[10px] text-emerald-700 font-semibold bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
-                      Tích cực
-                    </span>
-                  </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
           )}
 

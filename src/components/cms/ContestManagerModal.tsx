@@ -47,6 +47,8 @@ import {
   deleteContestSubmission,
   resetContestSubmissions,
   formatTime,
+  getStandardizedScore10,
+  compareSubmissions,
   EVENT_CONTEST_DATA_CHANGED,
   syncContestsAndSubmissionsToSupabase,
   fetchSupabaseContestData
@@ -257,7 +259,7 @@ export const ContestManagerModal: React.FC<ContestManagerModalProps> = ({
   }, [questions, questionSearch, questionCategoryFilter]);
 
   const filteredSubmissions = useMemo(() => {
-    return submissions.filter((s) => {
+    const list = submissions.filter((s) => {
       const matchContest =
         selectedContestFilter === 'all' || s.contestId === selectedContestFilter;
       const matchSearch = s.studentName.toLowerCase().includes(submissionSearch.toLowerCase());
@@ -265,6 +267,8 @@ export const ContestManagerModal: React.FC<ContestManagerModalProps> = ({
         submissionClassFilter === 'all' || s.studentClass === submissionClassFilter;
       return matchContest && matchSearch && matchClass;
     });
+    // Sắp xếp chuẩn theo xếp hạng: Điểm thang 10 cao nhất -> Thời gian nhanh nhất -> Nộp sớm nhất
+    return [...list].sort(compareSubmissions);
   }, [submissions, selectedContestFilter, submissionSearch, submissionClassFilter]);
 
   // Thống kê của Hội thi đang được chọn
@@ -283,8 +287,13 @@ export const ContestManagerModal: React.FC<ContestManagerModalProps> = ({
     }
 
     const total = list.length;
-    const avgScore = (list.reduce((acc, curr) => acc + curr.score, 0) / total).toFixed(1);
-    const perfectCount = list.filter((s) => s.score === s.totalQuestions && s.totalQuestions > 0).length;
+    // Chuẩn hóa điểm từng bài về thang điểm 10 trước khi tính ĐTB
+    const totalScore10 = list.reduce((acc, curr) => acc + getStandardizedScore10(curr), 0);
+    const avgScore = (totalScore10 / total).toFixed(1);
+    const perfectCount = list.filter((s) => {
+      const s10 = getStandardizedScore10(s);
+      return s10 >= 9.99 || (s.score === s.totalQuestions && s.totalQuestions > 0);
+    }).length;
 
     const classCountMap: Record<string, number> = {};
     list.forEach((s) => {
@@ -575,7 +584,8 @@ export const ContestManagerModal: React.FC<ContestManagerModalProps> = ({
       'STT / Hạng',
       'Họ và Tên Học Sinh',
       'Lớp / Chi Đội',
-      'Điểm Số',
+      'Điểm Thang 10',
+      'Số Câu Đúng',
       'Tổng Số Câu',
       'Thời Gian Làm Bài',
       'Thời Điểm Nộp Bài',
@@ -583,17 +593,22 @@ export const ContestManagerModal: React.FC<ContestManagerModalProps> = ({
       'Tên Hội Thi'
     ];
 
-    const rows = filteredSubmissions.map((s, idx) => [
-      idx + 1,
-      `"${s.studentName.replace(/"/g, '""')}"`,
-      `"${s.studentClass}"`,
-      s.score,
-      s.totalQuestions,
-      `"${formatTime(s.timeSpentSeconds)}"`,
-      `"${s.submittedAt}"`,
-      `"${s.award || (s.score === 10 ? 'Xuất Sắc (10/10)' : s.score >= 8 ? 'Giỏi' : s.score >= 5 ? 'Đạt Chuẩn' : 'Cần Rèn Luyện')}"`,
-      `"${(contestsList.find((c) => c.id === s.contestId)?.title || targetContest.title).replace(/"/g, '""')}"`
-    ]);
+    const rows = filteredSubmissions.map((s, idx) => {
+      const s10 = getStandardizedScore10(s);
+      const defaultAward = s10 >= 9.99 ? 'Xuất Sắc (Điểm 10)' : s10 >= 8 ? 'Giỏi' : s10 >= 5 ? 'Đạt Chuẩn' : 'Cần Rèn Luyện';
+      return [
+        idx + 1,
+        `"${s.studentName.replace(/"/g, '""')}"`,
+        `"${s.studentClass}"`,
+        s10,
+        s.score,
+        s.totalQuestions,
+        `"${formatTime(s.timeSpentSeconds)}"`,
+        `"${s.submittedAt}"`,
+        `"${s.award || defaultAward}"`,
+        `"${(contestsList.find((c) => c.id === s.contestId)?.title || targetContest.title).replace(/"/g, '""')}"`
+      ];
+    });
 
     const titleBlock = [
       `"TRƯỜNG THCS NGUYỄN TRUNG TRỰC - PHƯỜNG THỚI AN - THÀNH PHỐ HỒ CHÍ MINH"`,
@@ -1313,10 +1328,12 @@ export const ContestManagerModal: React.FC<ContestManagerModalProps> = ({
                               </span>
                             </td>
                             <td className="py-3 px-3 sm:px-4">
-                              <span className="font-bold text-heritage-red-700">
-                                {sub.score}
+                              <span className="font-bold text-heritage-red-700 block text-xs sm:text-sm">
+                                {getStandardizedScore10(sub)} điểm
                               </span>
-                              <span className="text-heritage-ink-400">/{sub.totalQuestions}</span>
+                              <span className="text-[11px] text-heritage-ink-500">
+                                {sub.score}/{sub.totalQuestions} câu đúng
+                              </span>
                             </td>
                             <td className="py-3 px-3 sm:px-4 text-heritage-ink-600 font-mono text-xs">
                               {formatTime(sub.timeSpentSeconds)}
