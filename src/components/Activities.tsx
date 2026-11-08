@@ -101,7 +101,7 @@ export const Activities: React.FC = () => {
             <Award className="w-3.5 h-3.5 text-heritage-red-700" />
             <span>Phong Trào Học Đường</span>
           </div>
-          <h2 className="font-serif text-lg min-[400px]:text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-heritage-ink-900 tracking-tight whitespace-nowrap">
+          <h2 className="font-serif text-lg sm:text-2xl md:text-3xl lg:text-4xl font-bold text-heritage-ink-900 tracking-tight leading-snug">
             Hoạt Động Văn Hóa & Giáo Dục Truyền Thống
           </h2>
           <div className="w-16 h-1 bg-heritage-gold-400 mx-auto mt-4 rounded-full" />
