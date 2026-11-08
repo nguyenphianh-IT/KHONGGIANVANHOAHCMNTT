@@ -2264,7 +2264,7 @@ export const OnlineContest: React.FC = () => {
           <div className="flex items-center space-x-1.5">
             <Award className="w-3.5 h-3.5 text-heritage-gold-600" />
             <span className="font-medium text-heritage-ink-600">
-              Hội thi học đường • Liên đội Trường THCS Nguyễn Trung Trực (Phường Thới An, Q.12)
+              Hội thi học đường • Liên đội Trường THCS Nguyễn Trung Trực (Phường Thới An)
             </span>
           </div>
           <button

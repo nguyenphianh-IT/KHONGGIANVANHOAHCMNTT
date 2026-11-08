@@ -84,8 +84,8 @@ export const Header: React.FC<HeaderProps> = ({ onOpenChatbotPreview, onOpenAuth
               KHÔNG GIAN VĂN HÓA HỒ CHÍ MINH
             </span>
             {/* Dòng 2: Tên trường THCS Nguyễn Trung Trực */}
-            <span className="text-[10px] sm:text-[11px] md:text-xs xl:text-[11px] 2xl:text-[12px] font-medium text-[#DCC77B] leading-tight mt-0.5 tracking-wide whitespace-nowrap">
-              THCS Nguyễn Trung Trực • Thới An, Q.12
+            <span className="text-[9.5px] min-[360px]:text-[10px] sm:text-[11px] md:text-xs xl:text-[11px] 2xl:text-[12px] font-medium text-[#DCC77B] leading-tight mt-0.5 tracking-wide whitespace-nowrap">
+              Trường THCS Nguyễn Trung Trực - Phường Thới An
             </span>
           </div>
         </div>
