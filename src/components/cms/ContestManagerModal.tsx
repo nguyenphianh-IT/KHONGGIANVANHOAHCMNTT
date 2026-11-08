@@ -22,6 +22,7 @@ import {
   FileSpreadsheet,
   Cloud,
   CloudUpload,
+  CloudDownload,
   RefreshCw,
   Settings,
   BookOpen,
@@ -153,7 +154,9 @@ export const ContestManagerModal: React.FC<ContestManagerModalProps> = ({
         if (res.questions) setQuestions(res.questions);
         if (res.classes && res.classes.length > 0) setClassesList(res.classes);
         if (res.roster && Object.keys(res.roster).length > 0) setRoster(res.roster);
-        const successMsg = 'Đã tải thành công dữ liệu mới nhất từ Supabase Cloud!';
+        const classCount = res.classes?.length || 56;
+        const rosterCount = Object.keys(res.roster || {}).length;
+        const successMsg = `Đã đồng bộ thành công ${classCount} lớp và ${rosterCount} danh bạ lớp học từ Cloud Database!`;
         setCloudSyncStatus(successMsg);
         setToastMsg({ type: 'success', text: successMsg });
       } else {
@@ -271,6 +274,13 @@ export const ContestManagerModal: React.FC<ContestManagerModalProps> = ({
   useEffect(() => {
     if (initialTab) setActiveTab(initialTab);
   }, [initialTab]);
+
+  // Tự động kéo dữ liệu Cloud mới nhất về máy khi Thầy/Cô mở bảng Quản trị
+  useEffect(() => {
+    if (isOpen) {
+      handlePullFromCloud();
+    }
+  }, [isOpen]);
 
   // Toast auto-hide
   useEffect(() => {
@@ -976,23 +986,24 @@ export const ContestManagerModal: React.FC<ContestManagerModalProps> = ({
               onClick={handleSyncToCloud}
               disabled={isSyncingCloud}
               className="px-3 py-1.5 bg-emerald-700 hover:bg-emerald-800 disabled:opacity-50 text-white font-bold text-xs rounded-xl shadow-xs transition flex items-center space-x-1.5"
-              title="Đẩy toàn bộ hội thi và bài thi học sinh lên Supabase Cloud Database"
+              title="Đẩy toàn bộ dữ liệu máy này lên Supabase Cloud Database"
             >
               {isSyncingCloud ? (
                 <RefreshCw className="w-3.5 h-3.5 animate-spin" />
               ) : (
                 <CloudUpload className="w-3.5 h-3.5" />
               )}
-              <span>Đồng Bộ Cloud</span>
+              <span>Đẩy Lên Cloud</span>
             </button>
 
             <button
               onClick={handlePullFromCloud}
               disabled={isSyncingCloud}
-              className="p-1.5 bg-white hover:bg-heritage-ivory-200 text-heritage-ink-700 border border-heritage-gold-300 rounded-xl transition shadow-xs"
-              title="Tải lại dữ liệu mới nhất từ Supabase Cloud"
+              className="px-3 py-1.5 bg-blue-700 hover:bg-blue-800 disabled:opacity-50 text-white font-bold text-xs rounded-xl shadow-xs transition flex items-center space-x-1.5"
+              title="Tải và đồng bộ toàn bộ dữ liệu mới nhất từ Supabase Cloud Database về máy này"
             >
               <RefreshCw className={`w-3.5 h-3.5 ${isSyncingCloud ? 'animate-spin' : ''}`} />
+              <span>Tải Về Máy</span>
             </button>
           </div>
         </div>
@@ -1802,8 +1813,18 @@ export const ContestManagerModal: React.FC<ContestManagerModalProps> = ({
                     className="inline-flex items-center justify-center space-x-1.5 px-3.5 py-2 bg-emerald-700 hover:bg-emerald-800 disabled:opacity-50 text-white font-bold rounded-xl text-xs shadow-xs transition"
                     title="Đẩy toàn bộ danh mục lớp và học sinh lên Supabase Cloud Database để điện thoại học sinh cập nhật ngay"
                   >
-                    <Cloud className={`w-4 h-4 ${isSyncingCloud ? 'animate-spin' : ''}`} />
+                    <CloudUpload className={`w-4 h-4 ${isSyncingCloud ? 'animate-spin' : ''}`} />
                     <span>{isSyncingCloud ? 'Đang đồng bộ...' : 'Đồng Bộ Lên Cloud Database'}</span>
+                  </button>
+
+                  <button
+                    onClick={handlePullFromCloud}
+                    disabled={isSyncingCloud}
+                    className="inline-flex items-center justify-center space-x-1.5 px-3.5 py-2 bg-blue-700 hover:bg-blue-800 disabled:opacity-50 text-white font-bold rounded-xl text-xs shadow-xs transition"
+                    title="Tải lại toàn bộ danh mục 56 lớp và danh bạ học sinh đã thực hiện từ Supabase Cloud Database về máy tính này"
+                  >
+                    <CloudDownload className={`w-4 h-4 ${isSyncingCloud ? 'animate-bounce' : ''}`} />
+                    <span>{isSyncingCloud ? 'Đang tải...' : 'Tải / Khôi Phục Từ Cloud Database'}</span>
                   </button>
 
                   <button

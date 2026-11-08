@@ -5,6 +5,7 @@ import {
   saveStoredClasses,
   getStoredStudentsByClass,
   saveStoredStudentsByClass,
+  EVENT_STUDENTS_ROSTER_CHANGED,
 } from './studentsData';
 
 // ==============================================================================
@@ -1367,6 +1368,7 @@ export async function fetchSupabaseContestData(): Promise<{
 
       if (typeof window !== 'undefined') {
         window.dispatchEvent(new Event(EVENT_CONTEST_DATA_CHANGED));
+        window.dispatchEvent(new Event(EVENT_STUDENTS_ROSTER_CHANGED));
       }
 
       return {

@@ -71,10 +71,25 @@ export const OnlineContest: React.FC = () => {
   const [submissions, setSubmissions] = useState<ContestSubmission[]>(getContestSubmissions);
   const [leaderboardContestId, setLeaderboardContestId] = useState<string>(() => getStoredContestInfo().id);
 
-  // Thông tin đăng ký dự thi
-  const [selectedClass, setSelectedClass] = useState<string>('');
+  // Thông tin đăng ký dự thi (Tự động nạp lớp & học sinh đã chọn trước đó hoặc mặc định lớp 8A1)
+  const [selectedClass, setSelectedClass] = useState<string>(() => {
+    try {
+      const stored = localStorage.getItem('hcm_last_selected_class');
+      if (stored) return stored;
+    } catch {}
+    const cls = getStoredClasses();
+    return cls.find((c) => c.id === '8A1')?.id || cls[0]?.id || '8A1';
+  });
   const [useManualName, setUseManualName] = useState<boolean>(false);
-  const [selectedPresetName, setSelectedPresetName] = useState<string>('');
+  const [selectedPresetName, setSelectedPresetName] = useState<string>(() => {
+    try {
+      const storedName = localStorage.getItem('hcm_last_selected_student');
+      if (storedName) return storedName;
+    } catch {}
+    const initCls = localStorage.getItem('hcm_last_selected_class') || '8A1';
+    const students = getStoredStudentsByClass()[initCls] || [];
+    return students[0] || '';
+  });
   const [customNameInput, setCustomNameInput] = useState<string>('');
   const [validationError, setValidationError] = useState<string | null>(null);
 
@@ -150,9 +165,19 @@ export const OnlineContest: React.FC = () => {
             // ĐỒNG BỘ DANH MỤC LỚP VÀ DANH BẠ HỌC SINH TỪ SUPABASE CLOUD DATABASE
             if (cloudData.classes && cloudData.classes.length > 0) {
               setClassesList(cloudData.classes);
+              setSelectedClass((prev) => {
+                if (prev && cloudData.classes!.some((c) => c.id === prev)) return prev;
+                return cloudData.classes!.find((c) => c.id === '8A1')?.id || cloudData.classes![0].id;
+              });
             }
             if (cloudData.roster && Object.keys(cloudData.roster).length > 0) {
               setRoster(cloudData.roster);
+              setSelectedPresetName((prev) => {
+                const activeCls = selectedClass || '8A1';
+                const classStudents = cloudData.roster![activeCls] || [];
+                if (prev && classStudents.includes(prev)) return prev;
+                return classStudents[0] || '';
+              });
             }
           }
           if (cloudQuestions && cloudQuestions.length > 0) {
@@ -197,11 +222,20 @@ export const OnlineContest: React.FC = () => {
     }
   }, [contestInfo?.id]);
 
-  // Reset họ tên khi đổi lớp
+  // Cập nhật họ tên phù hợp khi đổi lớp và lưu trạng thái lớp đã chọn
   useEffect(() => {
-    setSelectedPresetName('');
-    setValidationError(null);
-  }, [selectedClass]);
+    if (selectedClass) {
+      try {
+        localStorage.setItem('hcm_last_selected_class', selectedClass);
+      } catch {}
+      const availableStudents = roster[selectedClass] || [];
+      setSelectedPresetName((prev) => {
+        if (prev && availableStudents.includes(prev)) return prev;
+        return availableStudents[0] || '';
+      });
+      setValidationError(null);
+    }
+  }, [selectedClass, roster]);
 
   // Đồng hồ đếm ngược phòng thi
   useEffect(() => {
@@ -1061,6 +1095,10 @@ export const OnlineContest: React.FC = () => {
             <p className="text-xs sm:text-sm text-heritage-ink-600 mt-1">
               Thông tin sẽ được ghi nhận lên Bảng vinh danh và Giấy chứng nhận của nhà trường.
             </p>
+            <div className="flex items-center justify-center space-x-2 text-[11px] text-emerald-800 bg-emerald-50 py-1 px-3 rounded-full border border-emerald-200 mt-2.5 mx-auto max-w-fit shadow-xs">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+              <span>Đã đồng bộ {classesList.length} lớp & danh bạ học sinh từ Cloud Database</span>
+            </div>
           </div>
 
           <div className="space-y-4 sm:space-y-5">
@@ -1072,13 +1110,21 @@ export const OnlineContest: React.FC = () => {
               <select
                 value={selectedClass}
                 onChange={(e) => {
-                  setSelectedClass(e.target.value);
-                  setSelectedPresetName('');
+                  const val = e.target.value;
+                  setSelectedClass(val);
+                  try {
+                    localStorage.setItem('hcm_last_selected_class', val);
+                  } catch {}
+                  const availableStudents = roster[val] || [];
+                  const defaultStudent = availableStudents[0] || '';
+                  setSelectedPresetName(defaultStudent);
+                  if (defaultStudent) {
+                    try { localStorage.setItem('hcm_last_selected_student', defaultStudent); } catch {}
+                  }
                   setValidationError(null);
                 }}
                 className="w-full px-4 py-3 bg-white border border-heritage-gold-400 rounded-xl text-base sm:text-sm font-bold text-heritage-ink-900 outline-none focus:ring-2 focus:ring-heritage-red-600 shadow-sm touch-manipulation"
               >
-                <option value="">-- Em hãy chọn Lớp / Chi đội của mình --</option>
                 {classesList.map((cls) => (
                   <option key={cls.id} value={cls.id}>
                     {cls.name}
@@ -1111,7 +1157,11 @@ export const OnlineContest: React.FC = () => {
                   <select
                     value={selectedPresetName}
                     onChange={(e) => {
-                      setSelectedPresetName(e.target.value);
+                      const val = e.target.value;
+                      setSelectedPresetName(val);
+                      if (val) {
+                        try { localStorage.setItem('hcm_last_selected_student', val); } catch {}
+                      }
                       setValidationError(null);
                     }}
                     disabled={!selectedClass}
@@ -1123,7 +1173,7 @@ export const OnlineContest: React.FC = () => {
                       <option value="">-- Lớp chưa có danh bạ, em hãy bấm Tự nhập bên dưới --</option>
                     ) : (
                       <>
-                        <option value="">-- Em hãy chọn Họ và Tên của mình --</option>
+                        <option value="">-- Chọn Họ và Tên ({roster[selectedClass]?.length} học sinh) --</option>
                         {(roster[selectedClass] || []).map((name) => (
                           <option key={name} value={name}>
                             {name} ({selectedClass})
