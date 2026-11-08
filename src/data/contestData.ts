@@ -1,4 +1,11 @@
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
+import {
+  ClassInfo,
+  getStoredClasses,
+  saveStoredClasses,
+  getStoredStudentsByClass,
+  saveStoredStudentsByClass,
+} from './studentsData';
 
 // ==============================================================================
 // DỰ ÁN: KHÔNG GIAN VĂN HÓA HỒ CHÍ MINH - TRƯỜNG THCS NGUYỄN TRUNG TRỰC
@@ -1282,6 +1289,8 @@ export async function fetchSupabaseContestData(): Promise<{
   contests?: ContestInfo[];
   submissions?: ContestSubmission[];
   questions?: ContestQuestion[];
+  classes?: ClassInfo[];
+  roster?: Record<string, string[]>;
   error?: string;
 }> {
   if (!isSupabaseConfigured) {
@@ -1309,6 +1318,8 @@ export async function fetchSupabaseContestData(): Promise<{
         submissions?: ContestSubmission[];
         questions?: ContestQuestion[];
         questionBanks?: QuestionBank[];
+        classes?: ClassInfo[];
+        roster?: Record<string, string[]>;
         activeContestId?: string;
       };
 
@@ -1344,6 +1355,16 @@ export async function fetchSupabaseContestData(): Promise<{
         localStorage.setItem(STORAGE_KEY_CONTEST_QUESTIONS, JSON.stringify(cloudData.questions));
       }
 
+      // ĐỒNG BỘ DANH MỤC LỚP HỌC TỪ SUPABASE CLOUD
+      if (Array.isArray(cloudData.classes) && cloudData.classes.length > 0) {
+        saveStoredClasses(cloudData.classes);
+      }
+
+      // ĐỒNG BỘ DANH SÁCH HỌC SINH TỪ SUPABASE CLOUD
+      if (cloudData.roster && typeof cloudData.roster === 'object' && Object.keys(cloudData.roster).length > 0) {
+        saveStoredStudentsByClass(cloudData.roster);
+      }
+
       if (typeof window !== 'undefined') {
         window.dispatchEvent(new Event(EVENT_CONTEST_DATA_CHANGED));
       }
@@ -1353,6 +1374,8 @@ export async function fetchSupabaseContestData(): Promise<{
         contests: cloudData.contests || getStoredContestsList(),
         submissions: getContestSubmissions(),
         questions: cloudData.questions || getStoredContestQuestions(),
+        classes: cloudData.classes || getStoredClasses(),
+        roster: cloudData.roster || getStoredStudentsByClass(),
       };
     }
 
@@ -1424,7 +1447,9 @@ export async function fetchSupabaseQuestions(): Promise<ContestQuestion[]> {
 export async function syncContestsAndSubmissionsToSupabase(
   contests: ContestInfo[],
   submissions: ContestSubmission[],
-  questions?: ContestQuestion[]
+  questions?: ContestQuestion[],
+  classes?: ClassInfo[],
+  roster?: Record<string, string[]>
 ): Promise<{ success: boolean; message: string; version?: number }> {
   if (!isSupabaseConfigured) {
     return { success: false, message: 'Supabase chưa được cấu hình biến môi trường.' };
@@ -1469,6 +1494,9 @@ export async function syncContestsAndSubmissionsToSupabase(
 
     // 3. Tạo bản sửa đổi (draft revision)
     const questionsToSync = questions && questions.length > 0 ? questions : getStoredContestQuestions();
+    const classesToSync = classes && classes.length > 0 ? classes : getStoredClasses();
+    const rosterToSync = roster && Object.keys(roster).length > 0 ? roster : getStoredStudentsByClass();
+
     const insertRes = await fetch(`${supabaseUrl}/rest/v1/content_revisions`, {
       method: 'POST',
       headers: {
@@ -1489,6 +1517,8 @@ export async function syncContestsAndSubmissionsToSupabase(
             submissions,
             questions: questionsToSync,
             questionBanks: getStoredQuestionBanks(),
+            classes: classesToSync,
+            roster: rosterToSync,
             activeContestId: contests.find((c) => c.status === 'active')?.id || 'hoi-thi-2024-tuoi-tre-bac-ho',
             syncedAt: new Date().toISOString(),
           },

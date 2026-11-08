@@ -10,7 +10,15 @@ export interface ClassInfo {
 }
 
 export const SCHOOL_CLASSES: ClassInfo[] = [
-  // Khối 6
+  // Khối 6 (Định dạng TP.HCM và Chi đội)
+  { id: '6/1', name: 'Lớp 6/1', grade: '6' },
+  { id: '6/2', name: 'Lớp 6/2', grade: '6' },
+  { id: '6/3', name: 'Lớp 6/3', grade: '6' },
+  { id: '6/4', name: 'Lớp 6/4', grade: '6' },
+  { id: '6/5', name: 'Lớp 6/5', grade: '6' },
+  { id: '6/6', name: 'Lớp 6/6', grade: '6' },
+  { id: '6/7', name: 'Lớp 6/7', grade: '6' },
+  { id: '6/8', name: 'Lớp 6/8', grade: '6' },
   { id: '6A1', name: 'Lớp 6A1 (Chi đội Kim Đồng)', grade: '6' },
   { id: '6A2', name: 'Lớp 6A2 (Chi đội Lê Văn Tám)', grade: '6' },
   { id: '6A3', name: 'Lớp 6A3 (Chi đội Võ Thị Sáu)', grade: '6' },
@@ -19,6 +27,14 @@ export const SCHOOL_CLASSES: ClassInfo[] = [
   { id: '6A6', name: 'Lớp 6A6', grade: '6' },
 
   // Khối 7
+  { id: '7/1', name: 'Lớp 7/1', grade: '7' },
+  { id: '7/2', name: 'Lớp 7/2', grade: '7' },
+  { id: '7/3', name: 'Lớp 7/3', grade: '7' },
+  { id: '7/4', name: 'Lớp 7/4', grade: '7' },
+  { id: '7/5', name: 'Lớp 7/5', grade: '7' },
+  { id: '7/6', name: 'Lớp 7/6', grade: '7' },
+  { id: '7/7', name: 'Lớp 7/7', grade: '7' },
+  { id: '7/8', name: 'Lớp 7/8', grade: '7' },
   { id: '7A1', name: 'Lớp 7A1 (Chi đội Vừ A Dính)', grade: '7' },
   { id: '7A2', name: 'Lớp 7A2 (Chi đội Nguyễn Viết Xuân)', grade: '7' },
   { id: '7A3', name: 'Lớp 7A3', grade: '7' },
@@ -27,6 +43,14 @@ export const SCHOOL_CLASSES: ClassInfo[] = [
   { id: '7A6', name: 'Lớp 7A6', grade: '7' },
 
   // Khối 8
+  { id: '8/1', name: 'Lớp 8/1', grade: '8' },
+  { id: '8/2', name: 'Lớp 8/2', grade: '8' },
+  { id: '8/3', name: 'Lớp 8/3', grade: '8' },
+  { id: '8/4', name: 'Lớp 8/4', grade: '8' },
+  { id: '8/5', name: 'Lớp 8/5', grade: '8' },
+  { id: '8/6', name: 'Lớp 8/6', grade: '8' },
+  { id: '8/7', name: 'Lớp 8/7', grade: '8' },
+  { id: '8/8', name: 'Lớp 8/8', grade: '8' },
   { id: '8A1', name: 'Lớp 8A1 (Chi đội Lý Tự Trọng)', grade: '8' },
   { id: '8A2', name: 'Lớp 8A2 (Chi đội Nguyễn Bá Ngọc)', grade: '8' },
   { id: '8A3', name: 'Lớp 8A3 (Chi đội Trần Văn Ơn)', grade: '8' },
@@ -35,6 +59,14 @@ export const SCHOOL_CLASSES: ClassInfo[] = [
   { id: '8A6', name: 'Lớp 8A6', grade: '8' },
 
   // Khối 9
+  { id: '9/1', name: 'Lớp 9/1', grade: '9' },
+  { id: '9/2', name: 'Lớp 9/2', grade: '9' },
+  { id: '9/3', name: 'Lớp 9/3', grade: '9' },
+  { id: '9/4', name: 'Lớp 9/4', grade: '9' },
+  { id: '9/5', name: 'Lớp 9/5', grade: '9' },
+  { id: '9/6', name: 'Lớp 9/6', grade: '9' },
+  { id: '9/7', name: 'Lớp 9/7', grade: '9' },
+  { id: '9/8', name: 'Lớp 9/8', grade: '9' },
   { id: '9A1', name: 'Lớp 9A1 (Chi đội Nguyễn Trung Trực)', grade: '9' },
   { id: '9A2', name: 'Lớp 9A2 (Chi đội Bến Nhà Rồng)', grade: '9' },
   { id: '9A3', name: 'Lớp 9A3', grade: '9' },
@@ -128,6 +160,33 @@ export function resetClasses(): ClassInfo[] {
 // GIẢI PHÁP 1: DANH SÁCH HỌC SINH MẪU THEO LỚP ĐỂ CHỌN NHANH (TRIỆT TIÊU TỰ GÕ BẬY)
 // ------------------------------------------------------------------------------
 export const SAMPLE_STUDENTS_BY_CLASS: Record<string, string[]> = {
+  '6/1': [
+    'Nguyễn Đắc Đô',
+    'Trần Ngọc Diệp',
+    'Nguyễn Quốc Khánh',
+    'Nguyễn Ngọc Anh',
+  ],
+  '6/5': [
+    'Nguyễn Thanh Khang',
+    'Đỗ Gia Bảo',
+    'Lê Gia Bảo',
+    'Vũ Hoàng Yến',
+  ],
+  '7/4': [
+    'Lê Thị Khánh An',
+    'Nguyễn Hải Đăng',
+    'Trần Như Ý',
+    'Lê Tuấn Hưng',
+  ],
+  '9/2': [
+    'Mai Trọng Hải Anh',
+    'Vũ Minh Trí',
+    'Lê Gia Huy',
+    'Đặng Thanh Mai',
+    'Bùi Quốc Thái',
+    'Nguyễn Phương Linh',
+    'Phan Đình Khải',
+  ],
   '8A1': [
     'Nguyễn Minh Khang',
     'Trần Bảo Ngọc',
@@ -143,6 +202,7 @@ export const SAMPLE_STUDENTS_BY_CLASS: Record<string, string[]> = {
   '8A2': [
     'Nguyễn Tuấn Kiệt',
     'Phan Quỳnh Anh',
+    'Phạm Quỳnh Anh',
     'Trần Đình Trọng',
     'Đỗ Thu Hà',
     'Ngô Tiến Đạt',
@@ -162,21 +222,16 @@ export const SAMPLE_STUDENTS_BY_CLASS: Record<string, string[]> = {
   ],
   '9A1': [
     'Trần Văn An',
+    'Đỗ Ngọc Hân',
     'Nguyễn Thị Kim Ngân',
     'Lê Quang Huy',
     'Phạm Ngọc Hân',
     'Hoàng Nhật Minh',
     'Đỗ Bảo Châu',
   ],
-  '9A2': [
-    'Vũ Minh Trí',
-    'Đặng Thanh Mai',
-    'Bùi Quốc Thái',
-    'Nguyễn Phương Linh',
-    'Phan Đình Khải',
-  ],
   '7A1': [
     'Nguyễn Hải Đăng',
+    'Hoàng Mai Chi',
     'Trần Như Ý',
     'Lê Tuấn Hưng',
     'Phạm Thảo Vy',
@@ -190,6 +245,7 @@ export const SAMPLE_STUDENTS_BY_CLASS: Record<string, string[]> = {
   ],
   '6A1': [
     'Lê Minh Quân',
+    'Vũ Đức Trọng',
     'Nguyễn Thục Quyên',
     'Trần Đức Thịnh',
     'Phạm Hoài An',

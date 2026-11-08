@@ -3,6 +3,7 @@ import {
   ClassInfo,
   getStoredClasses,
   getStoredStudentsByClass,
+  addStudentToClassRoster,
   validateStudentName,
   EVENT_STUDENTS_ROSTER_CHANGED,
 } from '../data/studentsData';
@@ -71,7 +72,7 @@ export const OnlineContest: React.FC = () => {
   const [leaderboardContestId, setLeaderboardContestId] = useState<string>(() => getStoredContestInfo().id);
 
   // Thông tin đăng ký dự thi
-  const [selectedClass, setSelectedClass] = useState<string>('8A1');
+  const [selectedClass, setSelectedClass] = useState<string>('');
   const [useManualName, setUseManualName] = useState<boolean>(false);
   const [selectedPresetName, setSelectedPresetName] = useState<string>('');
   const [customNameInput, setCustomNameInput] = useState<string>('');
@@ -146,6 +147,13 @@ export const OnlineContest: React.FC = () => {
             setIsCloudConnected(true);
             if (cloudData.contests) setContestsList(cloudData.contests);
             if (cloudData.submissions) setSubmissions(cloudData.submissions);
+            // ĐỒNG BỘ DANH MỤC LỚP VÀ DANH BẠ HỌC SINH TỪ SUPABASE CLOUD DATABASE
+            if (cloudData.classes && cloudData.classes.length > 0) {
+              setClassesList(cloudData.classes);
+            }
+            if (cloudData.roster && Object.keys(cloudData.roster).length > 0) {
+              setRoster(cloudData.roster);
+            }
           }
           if (cloudQuestions && cloudQuestions.length > 0) {
             setQuestions(cloudQuestions);
@@ -189,16 +197,11 @@ export const OnlineContest: React.FC = () => {
     }
   }, [contestInfo?.id]);
 
-  // Đặt tên mặc định khi đổi lớp hoặc khi danh sách lớp cập nhật
+  // Reset họ tên khi đổi lớp
   useEffect(() => {
-    const list = roster[selectedClass] || [];
-    if (list && list.length > 0) {
-      setSelectedPresetName(list[0]);
-    } else {
-      setSelectedPresetName('');
-    }
+    setSelectedPresetName('');
     setValidationError(null);
-  }, [selectedClass, roster]);
+  }, [selectedClass]);
 
   // Đồng hồ đếm ngược phòng thi
   useEffect(() => {
@@ -233,8 +236,14 @@ export const OnlineContest: React.FC = () => {
 
     setValidationError(null);
 
+    if (!selectedClass) {
+      setValidationError('Vui lòng chọn Lớp / Chi đội của em!');
+      return;
+    }
+
     let finalName = '';
-    if (!useManualName) {
+    const classHasPreset = (roster[selectedClass] || []).length > 0;
+    if (!useManualName && classHasPreset) {
       // GIẢI PHÁP 1: Chọn từ danh sách chuẩn của lớp
       if (!selectedPresetName) {
         setValidationError('Vui lòng chọn tên của em từ danh sách lớp!');
@@ -331,6 +340,9 @@ export const OnlineContest: React.FC = () => {
     setLatestSubmission(newSub);
     const updated = saveContestSubmission(newSub);
     setSubmissions(updated);
+    if (newSub.studentClass && newSub.studentName) {
+      addStudentToClassRoster(newSub.studentClass, newSub.studentName);
+    }
     setScreen('result');
   };
 
@@ -1059,9 +1071,14 @@ export const OnlineContest: React.FC = () => {
               </label>
               <select
                 value={selectedClass}
-                onChange={(e) => setSelectedClass(e.target.value)}
+                onChange={(e) => {
+                  setSelectedClass(e.target.value);
+                  setSelectedPresetName('');
+                  setValidationError(null);
+                }}
                 className="w-full px-4 py-3 bg-white border border-heritage-gold-400 rounded-xl text-base sm:text-sm font-bold text-heritage-ink-900 outline-none focus:ring-2 focus:ring-heritage-red-600 shadow-sm touch-manipulation"
               >
+                <option value="">-- Em hãy chọn Lớp / Chi đội của mình --</option>
                 {classesList.map((cls) => (
                   <option key={cls.id} value={cls.id}>
                     {cls.name}
@@ -1093,23 +1110,48 @@ export const OnlineContest: React.FC = () => {
                 <div className="space-y-1.5">
                   <select
                     value={selectedPresetName}
-                    onChange={(e) => setSelectedPresetName(e.target.value)}
-                    className="w-full px-4 py-3 bg-white border border-heritage-gold-400 rounded-xl text-base sm:text-sm font-bold text-heritage-ink-900 outline-none focus:ring-2 focus:ring-heritage-red-600 shadow-sm touch-manipulation"
+                    onChange={(e) => {
+                      setSelectedPresetName(e.target.value);
+                      setValidationError(null);
+                    }}
+                    disabled={!selectedClass}
+                    className="w-full px-4 py-3 bg-white border border-heritage-gold-400 rounded-xl text-base sm:text-sm font-bold text-heritage-ink-900 outline-none focus:ring-2 focus:ring-heritage-red-600 shadow-sm touch-manipulation disabled:bg-heritage-ivory-200/60 disabled:text-heritage-ink-400"
                   >
-                    {(roster[selectedClass] || []).map((name) => (
-                      <option key={name} value={name}>
-                        {name} ({selectedClass})
-                      </option>
-                    ))}
+                    {!selectedClass ? (
+                      <option value="">-- Vui lòng chọn Lớp ở trên trước --</option>
+                    ) : (roster[selectedClass] || []).length === 0 ? (
+                      <option value="">-- Lớp chưa có danh bạ, em hãy bấm Tự nhập bên dưới --</option>
+                    ) : (
+                      <>
+                        <option value="">-- Em hãy chọn Họ và Tên của mình --</option>
+                        {(roster[selectedClass] || []).map((name) => (
+                          <option key={name} value={name}>
+                            {name} ({selectedClass})
+                          </option>
+                        ))}
+                      </>
+                    )}
                   </select>
-                  <p className="text-[11px] text-emerald-800 flex items-center space-x-1">
-                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 flex-shrink-0" />
-                    <span>Tên đã được xác thực chuẩn mực từ danh sách lớp {selectedClass}.</span>
-                  </p>
+                  {selectedPresetName ? (
+                    <p className="text-[11px] text-emerald-800 flex items-center space-x-1">
+                      <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 flex-shrink-0" />
+                      <span>Tên đã được xác thực chuẩn mực từ danh sách lớp {selectedClass}.</span>
+                    </p>
+                  ) : selectedClass && (roster[selectedClass] || []).length > 0 ? (
+                    <p className="text-[11px] text-heritage-ink-600">
+                      * Em hãy chọn đúng tên của mình trong danh sách lớp {selectedClass} ở trên.
+                    </p>
+                  ) : null}
                 </div>
               ) : (
                 /* GIẢI PHÁP 2: Tự nhập có bộ lọc kiểm tra nghiêm ngặt */
                 <div className="space-y-1.5">
+                  {(roster[selectedClass] || []).length === 0 && !useManualName && (
+                    <div className="p-2.5 bg-amber-50 border border-amber-200 rounded-xl text-xs text-amber-900 mb-2 flex items-center gap-2">
+                      <AlertTriangle className="w-4 h-4 text-amber-600 flex-shrink-0" />
+                      <span>Lớp {selectedClass || 'này'} chưa có danh sách tên sẵn. Em hãy nhập Họ và Tên bên dưới để bắt đầu thi!</span>
+                    </div>
+                  )}
                   <input
                     type="text"
                     value={customNameInput}

@@ -118,7 +118,13 @@ export const ContestManagerModal: React.FC<ContestManagerModalProps> = ({
     setIsSyncingCloud(true);
     setCloudSyncStatus(null);
     try {
-      const res = await syncContestsAndSubmissionsToSupabase(contestsList, submissions, questions);
+      const res = await syncContestsAndSubmissionsToSupabase(
+        contestsList,
+        submissions,
+        questions,
+        classesList,
+        roster
+      );
       if (res.success) {
         setCloudSyncStatus(res.message);
         setToastMsg({ type: 'success', text: res.message });
@@ -145,6 +151,8 @@ export const ContestManagerModal: React.FC<ContestManagerModalProps> = ({
         if (res.contests) setContestsList(res.contests);
         if (res.submissions) setSubmissions(res.submissions);
         if (res.questions) setQuestions(res.questions);
+        if (res.classes && res.classes.length > 0) setClassesList(res.classes);
+        if (res.roster && Object.keys(res.roster).length > 0) setRoster(res.roster);
         const successMsg = 'Đã tải thành công dữ liệu mới nhất từ Supabase Cloud!';
         setCloudSyncStatus(successMsg);
         setToastMsg({ type: 'success', text: successMsg });
@@ -1786,6 +1794,16 @@ export const ContestManagerModal: React.FC<ContestManagerModalProps> = ({
                   >
                     <FileSpreadsheet className="w-4 h-4 text-heritage-red-900" />
                     <span>Dán Danh Sách Từ Excel</span>
+                  </button>
+
+                  <button
+                    onClick={handleSyncToCloud}
+                    disabled={isSyncingCloud}
+                    className="inline-flex items-center justify-center space-x-1.5 px-3.5 py-2 bg-emerald-700 hover:bg-emerald-800 disabled:opacity-50 text-white font-bold rounded-xl text-xs shadow-xs transition"
+                    title="Đẩy toàn bộ danh mục lớp và học sinh lên Supabase Cloud Database để điện thoại học sinh cập nhật ngay"
+                  >
+                    <Cloud className={`w-4 h-4 ${isSyncingCloud ? 'animate-spin' : ''}`} />
+                    <span>{isSyncingCloud ? 'Đang đồng bộ...' : 'Đồng Bộ Lên Cloud Database'}</span>
                   </button>
 
                   <button
