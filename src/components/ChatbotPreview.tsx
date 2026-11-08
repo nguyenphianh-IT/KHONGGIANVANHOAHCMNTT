@@ -40,14 +40,15 @@ export const ChatbotPreview: React.FC<ChatbotPreviewProps> = ({ isOpen, onClose,
 
   return (
     <>
-      {/* Floating Action Button */}
-      <div className="fixed bottom-[4.25rem] right-3.5 xl:bottom-6 xl:right-6 z-40">
+      {/* Floating Action Button - Tối ưu kích thước gọn gàng, không che khuất nội dung trang */}
+      <div className="fixed bottom-[4.25rem] right-3 sm:bottom-[4.5rem] sm:right-3.5 xl:bottom-6 xl:right-5 2xl:right-8 z-40">
         <button
           onClick={onOpen}
-          className="group relative flex items-center space-x-2.5 px-3.5 py-2.5 sm:px-4 sm:py-3 rounded-full bg-gradient-to-r from-heritage-red-700 to-heritage-red-900 text-white shadow-xl hover:shadow-heritage-gold-400/30 border-2 border-heritage-gold-400 hover:scale-105 active:scale-95 transition-all duration-300"
+          className="group relative flex items-center justify-center p-2.5 min-[1440px]:px-4 min-[1440px]:py-2.5 rounded-full bg-gradient-to-r from-heritage-red-700 to-heritage-red-900 text-white shadow-xl hover:shadow-heritage-gold-400/30 border-2 border-heritage-gold-400 hover:scale-105 active:scale-95 transition-all duration-300"
           aria-label="Mở thông tin Bạn đồng hành văn hóa Hồ Chí Minh"
+          title="Bạn đồng hành văn hóa Hồ Chí Minh"
         >
-          <div className="relative">
+          <div className="relative flex items-center justify-center">
             <Bot className="w-5 h-5 text-heritage-gold-300 group-hover:rotate-12 transition-transform" />
             <span className="absolute -top-1 -right-1 flex h-2 w-2">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-heritage-gold-400 opacity-75" />
@@ -55,18 +56,11 @@ export const ChatbotPreview: React.FC<ChatbotPreviewProps> = ({ isOpen, onClose,
             </span>
           </div>
 
-          <div className="text-left hidden sm:block">
-            <span className="block text-[10px] text-heritage-gold-200 uppercase tracking-wider font-semibold leading-none">
-              Trợ lý ảo học đường
-            </span>
-            <span className="block text-xs font-bold font-serif text-heritage-ivory-50 mt-0.5">
-              Bạn đồng hành văn hóa Hồ Chí Minh
+          <div className="text-left hidden min-[1440px]:flex items-center ml-2">
+            <span className="text-xs font-bold font-serif text-heritage-ivory-50 whitespace-nowrap">
+              Bạn đồng hành AI
             </span>
           </div>
-
-          <span className="sm:hidden text-xs font-bold text-heritage-gold-200">
-            Bạn đồng hành AI
-          </span>
         </button>
       </div>
 

@@ -36,8 +36,8 @@ const MainLayout: React.FC = () => {
         onOpenCmsDashboard={() => setIsCmsDashboardOpen(true)}
       />
 
-      {/* Main Content Sections */}
-      <main className="flex-grow pb-14 xl:pb-0">
+      {/* Main Content Sections - pb-20 sm:pb-24 để không bị thanh BottomNav che khuất trên di động */}
+      <main className="flex-grow pb-20 sm:pb-24 xl:pb-0">
         {/* 1. Hero Section */}
         <Hero
           onExplore={() => scrollToSection('spotlight')}
