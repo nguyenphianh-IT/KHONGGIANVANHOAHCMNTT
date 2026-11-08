@@ -8,6 +8,20 @@ export const LearningCorner: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'topics' | 'quiz' | 'contest' | 'practices'>('contest');
   const [selectedTopic, setSelectedTopic] = useState<LearningTopic>(learningTopics[0]);
 
+  const handleTabClick = (tab: 'topics' | 'quiz' | 'contest' | 'practices') => {
+    setActiveTab(tab);
+    if (typeof window !== 'undefined' && window.innerWidth < 1024) {
+      setTimeout(() => {
+        const panelEl = document.getElementById(`panel-${tab}`);
+        if (panelEl) {
+          const yOffset = -75;
+          const y = panelEl.getBoundingClientRect().top + window.pageYOffset + yOffset;
+          window.scrollTo({ top: Math.max(0, y), behavior: 'smooth' });
+        }
+      }, 60);
+    }
+  };
+
   // Quiz state
   const [currentQuizIdx, setCurrentQuizIdx] = useState<number>(0);
   const [selectedAnswers, setSelectedAnswers] = useState<Record<number, number>>({});
@@ -97,8 +111,8 @@ export const LearningCorner: React.FC = () => {
             role="tab"
             aria-selected={activeTab === 'contest'}
             aria-controls="panel-contest"
-            onClick={() => setActiveTab('contest')}
-            className={`text-left p-3.5 sm:p-4.5 rounded-2xl border-2 transition-all duration-200 flex flex-col justify-between group relative cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-heritage-gold-400 focus-visible:ring-offset-2 select-none ${
+            onClick={() => handleTabClick('contest')}
+            className={`text-left p-3.5 sm:p-4.5 rounded-2xl border-2 transition-all duration-200 flex flex-col justify-between group relative cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-heritage-gold-400 focus-visible:ring-offset-2 select-none touch-manipulation ${
               activeTab === 'contest'
                 ? 'bg-gradient-to-br from-[#7a121f] via-[#630d17] to-[#450810] text-white border-heritage-gold-400 shadow-xl shadow-heritage-red-950/25 ring-2 ring-heritage-gold-400/40 -translate-y-0.5'
                 : 'bg-heritage-ivory-100 hover:bg-white text-heritage-ink-900 border-heritage-ivory-300 hover:border-heritage-gold-400 hover:shadow-md hover:-translate-y-0.5'
@@ -145,8 +159,8 @@ export const LearningCorner: React.FC = () => {
             role="tab"
             aria-selected={activeTab === 'topics'}
             aria-controls="panel-topics"
-            onClick={() => setActiveTab('topics')}
-            className={`text-left p-3.5 sm:p-4.5 rounded-2xl border-2 transition-all duration-200 flex flex-col justify-between group relative cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-heritage-gold-400 focus-visible:ring-offset-2 select-none ${
+            onClick={() => handleTabClick('topics')}
+            className={`text-left p-3.5 sm:p-4.5 rounded-2xl border-2 transition-all duration-200 flex flex-col justify-between group relative cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-heritage-gold-400 focus-visible:ring-offset-2 select-none touch-manipulation ${
               activeTab === 'topics'
                 ? 'bg-gradient-to-br from-[#7a121f] via-[#630d17] to-[#450810] text-white border-heritage-gold-400 shadow-xl shadow-heritage-red-950/25 ring-2 ring-heritage-gold-400/40 -translate-y-0.5'
                 : 'bg-heritage-ivory-100 hover:bg-white text-heritage-ink-900 border-heritage-ivory-300 hover:border-heritage-gold-400 hover:shadow-md hover:-translate-y-0.5'
@@ -193,8 +207,8 @@ export const LearningCorner: React.FC = () => {
             role="tab"
             aria-selected={activeTab === 'quiz'}
             aria-controls="panel-quiz"
-            onClick={() => setActiveTab('quiz')}
-            className={`text-left p-3.5 sm:p-4.5 rounded-2xl border-2 transition-all duration-200 flex flex-col justify-between group relative cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-heritage-gold-400 focus-visible:ring-offset-2 select-none ${
+            onClick={() => handleTabClick('quiz')}
+            className={`text-left p-3.5 sm:p-4.5 rounded-2xl border-2 transition-all duration-200 flex flex-col justify-between group relative cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-heritage-gold-400 focus-visible:ring-offset-2 select-none touch-manipulation ${
               activeTab === 'quiz'
                 ? 'bg-gradient-to-br from-[#7a121f] via-[#630d17] to-[#450810] text-white border-heritage-gold-400 shadow-xl shadow-heritage-red-950/25 ring-2 ring-heritage-gold-400/40 -translate-y-0.5'
                 : 'bg-heritage-ivory-100 hover:bg-white text-heritage-ink-900 border-heritage-ivory-300 hover:border-heritage-gold-400 hover:shadow-md hover:-translate-y-0.5'
@@ -241,8 +255,8 @@ export const LearningCorner: React.FC = () => {
             role="tab"
             aria-selected={activeTab === 'practices'}
             aria-controls="panel-practices"
-            onClick={() => setActiveTab('practices')}
-            className={`text-left p-3.5 sm:p-4.5 rounded-2xl border-2 transition-all duration-200 flex flex-col justify-between group relative cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-heritage-gold-400 focus-visible:ring-offset-2 select-none ${
+            onClick={() => handleTabClick('practices')}
+            className={`text-left p-3.5 sm:p-4.5 rounded-2xl border-2 transition-all duration-200 flex flex-col justify-between group relative cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-heritage-gold-400 focus-visible:ring-offset-2 select-none touch-manipulation ${
               activeTab === 'practices'
                 ? 'bg-gradient-to-br from-[#7a121f] via-[#630d17] to-[#450810] text-white border-heritage-gold-400 shadow-xl shadow-heritage-red-950/25 ring-2 ring-heritage-gold-400/40 -translate-y-0.5'
                 : 'bg-heritage-ivory-100 hover:bg-white text-heritage-ink-900 border-heritage-ivory-300 hover:border-heritage-gold-400 hover:shadow-md hover:-translate-y-0.5'
