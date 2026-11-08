@@ -1,0 +1,7 @@
+docs/
+supabase/
+scripts/
+*.docx
+*.zip
+*.md
+.gemini/
