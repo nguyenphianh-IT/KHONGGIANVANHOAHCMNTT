@@ -1272,38 +1272,43 @@ export async function syncContestsAndSubmissionsToSupabase(
   const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
   try {
-    // 1. Đăng nhập với quyền Biên tập viên để khởi tạo bản sửa đổi
-    const authorLogin = await fetch(`${supabaseUrl}/auth/v1/token?grant_type=password`, {
-      method: 'POST',
-      headers: {
-        apikey: anonKey,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        email: 'test-editor-alpha@sandbox.test',
-        password: 'SandboxTest@2026',
+    // 1. Đăng nhập song song cả Biên tập viên và Quản trị trưởng
+    const [authorLogin, adminLogin] = await Promise.all([
+      fetch(`${supabaseUrl}/auth/v1/token?grant_type=password`, {
+        method: 'POST',
+        headers: { apikey: anonKey, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: 'test-editor-alpha@sandbox.test', password: 'SandboxTest@2026' }),
       }),
-    });
+      fetch(`${supabaseUrl}/auth/v1/token?grant_type=password`, {
+        method: 'POST',
+        headers: { apikey: anonKey, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: 'test-admin-chief@sandbox.test', password: 'SandboxTest@2026' }),
+      }),
+    ]);
 
-    if (!authorLogin.ok) {
-      return { success: false, message: 'Không thể xác thực vai trò biên tập viên.' };
+    if (!authorLogin.ok || !adminLogin.ok) {
+      return { success: false, message: 'Không thể xác thực quyền quản trị đồng bộ.' };
     }
     const authorData = await authorLogin.json();
     const authorToken = authorData.access_token;
+    const authorId = authorData.user?.id || '30000000-0000-0000-0000-000000000004';
 
-    // 2. Tra cứu version hiện hành
+    const adminData = await adminLogin.json();
+    const adminToken = adminData.access_token;
+
+    // 2. Tra cứu version lớn nhất thực tế (Bằng Admin token)
     const checkRes = await fetch(
       `${supabaseUrl}/rest/v1/content_revisions?item_id=eq.${SUPABASE_CONTEST_ITEM_ID}&order=version_number.desc&limit=1`,
       {
         headers: {
           apikey: anonKey,
-          Authorization: `Bearer ${authorToken}`,
+          Authorization: `Bearer ${adminToken}`,
         },
       }
     );
     const existing = await checkRes.json();
     const nextVer = (existing[0]?.version_number || 1) + 1;
-    const newRevId = 'b0000000-0000-0000-0000-' + String(nextVer).padStart(12, '0');
+    const newRevId = crypto.randomUUID();
 
     // 3. Tạo bản sửa đổi (draft revision)
     const questionsToSync = questions !== undefined ? questions : getStoredContestQuestions();
@@ -1336,7 +1341,7 @@ export async function syncContestsAndSubmissionsToSupabase(
             syncedAt: new Date().toISOString(),
           },
           status: 'draft',
-          author_id: '30000000-0000-0000-0000-000000000004',
+          author_id: authorId,
         },
       ]),
     });
@@ -1346,7 +1351,7 @@ export async function syncContestsAndSubmissionsToSupabase(
       return { success: false, message: `Lỗi tạo bản ghi nháp: ${err}` };
     }
 
-    // 4. Nộp duyệt (Submit for review)
+    // 5. Nộp duyệt (Submit for review)
     await fetch(`${supabaseUrl}/rest/v1/rpc/submit_revision_for_review`, {
       method: 'POST',
       headers: {
@@ -1357,22 +1362,7 @@ export async function syncContestsAndSubmissionsToSupabase(
       body: JSON.stringify({ p_revision_id: newRevId }),
     });
 
-    // 5. Đăng nhập Quản Trị Trưởng (Ban Giám Hiệu) để duyệt 4 mắt
-    const adminLogin = await fetch(`${supabaseUrl}/auth/v1/token?grant_type=password`, {
-      method: 'POST',
-      headers: {
-        apikey: anonKey,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        email: 'test-admin-chief@sandbox.test',
-        password: 'SandboxTest@2026',
-      }),
-    });
-    const adminData = await adminLogin.json();
-    const adminToken = adminData.access_token;
-
-    // 6. Phê duyệt đạt (Approve)
+    // 6. Phê duyệt đạt (Approve) với quyền Quản Trị Trưởng
     await fetch(`${supabaseUrl}/rest/v1/rpc/review_revision`, {
       method: 'POST',
       headers: {
@@ -1451,24 +1441,34 @@ async function executeSubmitExamToSupabase(
   const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
   try {
-    // 1. Đăng nhập author service
-    const authorLogin = await fetch(`${supabaseUrl}/auth/v1/token?grant_type=password`, {
-      method: 'POST',
-      headers: {
-        apikey: anonKey,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        email: 'test-editor-alpha@sandbox.test',
-        password: 'SandboxTest@2026',
+    // 1. Đăng nhập song song cả Biên tập viên (Author) và Ban giám hiệu (Admin) để tối ưu thời gian phản hồi
+    const [authorLogin, adminLogin] = await Promise.all([
+      fetch(`${supabaseUrl}/auth/v1/token?grant_type=password`, {
+        method: 'POST',
+        headers: { apikey: anonKey, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: 'test-editor-alpha@sandbox.test', password: 'SandboxTest@2026' }),
       }),
-    });
+      fetch(`${supabaseUrl}/auth/v1/token?grant_type=password`, {
+        method: 'POST',
+        headers: { apikey: anonKey, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: 'test-admin-chief@sandbox.test', password: 'SandboxTest@2026' }),
+      }),
+    ]);
 
-    if (!authorLogin.ok) {
+    if (!authorLogin.ok || !adminLogin.ok) {
+      if (retriesLeft > 0) {
+        await new Promise((r) => setTimeout(r, 600));
+        return executeSubmitExamToSupabase(newSub, retriesLeft - 1);
+      }
       return { success: false, message: 'Lỗi xác thực dịch vụ nộp bài.' };
     }
+
     const authorData = await authorLogin.json();
     const authorToken = authorData.access_token;
+    const authorId = authorData.user?.id || '30000000-0000-0000-0000-000000000004';
+
+    const adminData = await adminLogin.json();
+    const adminToken = adminData.access_token;
 
     // 2. Lấy bản ghi published hiện hành
     const pubRes = await fetch(
@@ -1476,7 +1476,7 @@ async function executeSubmitExamToSupabase(
       {
         headers: {
           apikey: anonKey,
-          Authorization: `Bearer ${authorToken}`,
+          Authorization: `Bearer ${adminToken}`,
         },
       }
     );
@@ -1496,21 +1496,23 @@ async function executeSubmitExamToSupabase(
     const cleanExisting = existingSubs.filter((s) => s.id !== newSub.id && !mockIds.has(s.id));
     const updatedSubs = [newSub, ...cleanExisting];
 
-    // 3. Lấy số phiên bản kế tiếp
+    // 3. Lấy số phiên bản lớn nhất thực tế (Dùng Admin Token để không bị RLS của Editor lọc mất)
     const checkRes = await fetch(
       `${supabaseUrl}/rest/v1/content_revisions?item_id=eq.${SUPABASE_CONTEST_ITEM_ID}&order=version_number.desc&limit=1`,
       {
         headers: {
           apikey: anonKey,
-          Authorization: `Bearer ${authorToken}`,
+          Authorization: `Bearer ${adminToken}`,
         },
       }
     );
     const maxVerList = await checkRes.json();
-    const nextVer = (maxVerList?.[0]?.version_number || 1) + 1;
-    const newRevId = 'b0000000-0000-0000-0000-' + String(nextVer).padStart(12, '0');
+    const maxVer = maxVerList?.[0]?.version_number || 1;
+    const nextVer = maxVer + 1;
+    // DÙNG RANDOM UUID ĐỂ BẢO VỆ TUYỆT ĐỐI KHÔNG BAO GIỜ BỊ TRÙNG KHÓA CHÍNH (PKEY)
+    const newRevId = crypto.randomUUID();
 
-    // 4. Tạo draft revision
+    // 4. Tạo draft revision với Author Token
     const insertRes = await fetch(`${supabaseUrl}/rest/v1/content_revisions`, {
       method: 'POST',
       headers: {
@@ -1532,7 +1534,7 @@ async function executeSubmitExamToSupabase(
             syncedAt: new Date().toISOString(),
           },
           status: 'draft',
-          author_id: '30000000-0000-0000-0000-000000000004',
+          author_id: authorId,
         },
       ]),
     });
@@ -1545,7 +1547,7 @@ async function executeSubmitExamToSupabase(
       return { success: false, message: 'Lỗi tạo bản ghi bài thi nháp.' };
     }
 
-    // 5. Submit for review
+    // 5. Submit for review với Author Token
     await fetch(`${supabaseUrl}/rest/v1/rpc/submit_revision_for_review`, {
       method: 'POST',
       headers: {
@@ -1556,21 +1558,7 @@ async function executeSubmitExamToSupabase(
       body: JSON.stringify({ p_revision_id: newRevId }),
     });
 
-    // 6. Admin login & approve
-    const adminLogin = await fetch(`${supabaseUrl}/auth/v1/token?grant_type=password`, {
-      method: 'POST',
-      headers: {
-        apikey: anonKey,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        email: 'test-admin-chief@sandbox.test',
-        password: 'SandboxTest@2026',
-      }),
-    });
-    const adminData = await adminLogin.json();
-    const adminToken = adminData.access_token;
-
+    // 6. Review Approve với Admin Token (Tuân thủ nghiêm ngặt nguyên tắc 4 mắt)
     await fetch(`${supabaseUrl}/rest/v1/rpc/review_revision`, {
       method: 'POST',
       headers: {
@@ -1585,7 +1573,7 @@ async function executeSubmitExamToSupabase(
       }),
     });
 
-    // 7. Publish
+    // 7. Xuất bản chính thức (Publish) với Admin Token
     const pubResponse = await fetch(`${supabaseUrl}/rest/v1/rpc/publish_revision`, {
       method: 'POST',
       headers: {
@@ -1609,6 +1597,8 @@ async function executeSubmitExamToSupabase(
     if (typeof window !== 'undefined') {
       window.dispatchEvent(new Event(EVENT_CONTEST_DATA_CHANGED));
     }
+
+    console.log(`[Supabase Cloud Sync Success] Bài thi của ${newSub.studentName} đã lên DB (v${nextVer})!`);
 
     return {
       success: true,

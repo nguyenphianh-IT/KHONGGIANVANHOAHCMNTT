@@ -150,6 +150,34 @@ export const OnlineContest: React.FC = () => {
   const [isCloudConnected, setIsCloudConnected] = useState<boolean>(true);
   const [isRefreshingCloud, setIsRefreshingCloud] = useState<boolean>(false);
   const [lastRefreshedAt, setLastRefreshedAt] = useState<Date>(new Date());
+  const [cloudSyncStatus, setCloudSyncStatus] = useState<'idle' | 'syncing' | 'synced' | 'error'>('idle');
+  const [cloudSyncMessage, setCloudSyncMessage] = useState<string>('');
+
+  // Hàm thử gửi lại bài thi lên Database Cloud nếu mạng bị gián đoạn
+  const handleRetryCloudSync = () => {
+    if (!latestSubmission) return;
+    setCloudSyncStatus('syncing');
+    setCloudSyncMessage('Đang thử gửi lại bài thi lên Database Cloud...');
+    submitContestExamToSupabase(latestSubmission)
+      .then((res) => {
+        if (res.success) {
+          setCloudSyncStatus('synced');
+          setCloudSyncMessage(res.message || 'Đã lưu thành công bài thi lên Database Cloud!');
+          fetchSupabaseContestData().then((cData) => {
+            if (cData.success && cData.submissions) {
+              setSubmissions(cData.submissions);
+            }
+          });
+        } else {
+          setCloudSyncStatus('error');
+          setCloudSyncMessage(res.message || 'Chưa gửi được lên Cloud.');
+        }
+      })
+      .catch((err) => {
+        setCloudSyncStatus('error');
+        setCloudSyncMessage(err?.message || 'Lỗi kết nối.');
+      });
+  };
 
   // Hàm làm mới trực tiếp kết quả Bảng Vàng và Bảng Điểm từ Supabase Cloud Database
   const handleManualRefreshCloud = async () => {
@@ -428,18 +456,27 @@ export const OnlineContest: React.FC = () => {
     setScreen('result');
 
     // TỰ ĐỘNG GỬI BÀI THI LÊN SUPABASE CLOUD DATABASE TOÀN TRƯỜNG NGAY LẬP TỨC
+    setCloudSyncStatus('syncing');
+    setCloudSyncMessage('Đang tự động đồng bộ kết quả lên Bảng Vàng Database toàn trường...');
     submitContestExamToSupabase(newSub)
       .then((res) => {
         if (res.success) {
+          setCloudSyncStatus('synced');
+          setCloudSyncMessage(res.message || 'Đã lưu thành công bài thi lên Database toàn trường!');
           console.log('[Supabase Cloud Sync] Bài thi của học sinh đã được ghi nhận trực tiếp vào Database!');
           fetchSupabaseContestData().then((cData) => {
             if (cData.success && cData.submissions) {
               setSubmissions(cData.submissions);
             }
           });
+        } else {
+          setCloudSyncStatus('error');
+          setCloudSyncMessage(res.message || 'Chưa gửi được lên Cloud.');
         }
       })
       .catch((err) => {
+        setCloudSyncStatus('error');
+        setCloudSyncMessage(err?.message || 'Lỗi mạng khi lưu bài thi.');
         console.warn('[Supabase Auto Post Sub Warning]', err);
       });
   };
@@ -1461,9 +1498,41 @@ export const OnlineContest: React.FC = () => {
           <h3 className="font-serif text-xl sm:text-3xl font-black text-heritage-ink-900 mt-2 mb-1">
             Chúc Mừng Thí Sinh: {latestSubmission.studentName}
           </h3>
-          <p className="text-xs sm:text-sm font-semibold text-heritage-gold-700 mb-5 sm:mb-6">
+          <p className="text-xs sm:text-sm font-semibold text-heritage-gold-700 mb-3 sm:mb-4">
             Chi đội: Lớp {latestSubmission.studentClass} • Trường THCS Nguyễn Trung Trực
           </p>
+
+          {/* BANNER THÔNG BÁO TRẠNG THÁI GHI NHẬN KẾT QUẢ VÀO SUPABASE DATABASE CLOUD */}
+          {cloudSyncStatus === 'syncing' && (
+            <div className="max-w-xl mx-auto mb-5 p-3 rounded-2xl bg-amber-50 border border-amber-300 text-amber-900 text-xs sm:text-sm flex items-center justify-center space-x-2 shadow-xs">
+              <RefreshCw className="w-4 h-4 animate-spin text-amber-700 flex-shrink-0" />
+              <span className="font-bold">Đang tự động ghi nhận kết quả lên Bảng Vàng Database toàn trường... (Vui lòng không đóng trang)</span>
+            </div>
+          )}
+
+          {cloudSyncStatus === 'synced' && (
+            <div className="max-w-xl mx-auto mb-5 p-3 rounded-2xl bg-emerald-50 border border-emerald-400 text-emerald-900 text-xs sm:text-sm flex items-center justify-center space-x-2 shadow-xs animate-fadeIn">
+              <CheckCircle2 className="w-4 h-4 text-emerald-600 flex-shrink-0" />
+              <span className="font-bold">✅ Kết quả thi đã được cập nhật thành công lên Bảng Vàng Database toàn trường!</span>
+            </div>
+          )}
+
+          {cloudSyncStatus === 'error' && (
+            <div className="max-w-xl mx-auto mb-5 p-3 rounded-2xl bg-red-50 border border-red-300 text-red-900 text-xs sm:text-sm flex flex-col sm:flex-row items-center justify-between gap-2 shadow-xs animate-fadeIn">
+              <div className="flex items-center space-x-2">
+                <AlertTriangle className="w-4 h-4 text-red-600 flex-shrink-0" />
+                <span>Chưa thể gửi kết quả lên Database Cloud ({cloudSyncMessage}).</span>
+              </div>
+              <button
+                type="button"
+                onClick={handleRetryCloudSync}
+                className="px-3.5 py-1.5 bg-red-700 hover:bg-red-800 text-white font-bold text-xs rounded-xl shadow-xs transition active:scale-95 flex items-center space-x-1 cursor-pointer flex-shrink-0"
+              >
+                <RefreshCw className="w-3.5 h-3.5" />
+                <span>Gửi Lại Lên Cloud</span>
+              </button>
+            </div>
+          )}
 
           {/* Hộp điểm số & Thứ hạng thi đua */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3 max-w-2xl mx-auto mb-6 sm:mb-8">
