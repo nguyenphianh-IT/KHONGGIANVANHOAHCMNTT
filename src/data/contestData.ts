@@ -1495,9 +1495,9 @@ export async function syncContestsAndSubmissionsToSupabase(
     const newRevId = 'b0000000-0000-0000-0000-' + String(nextVer).padStart(12, '0');
 
     // 3. Tạo bản sửa đổi (draft revision)
-    const questionsToSync = questions && questions.length > 0 ? questions : getStoredContestQuestions();
-    const classesToSync = classes && classes.length > 0 ? classes : getStoredClasses();
-    const rosterToSync = roster && Object.keys(roster).length > 0 ? roster : getStoredStudentsByClass();
+    const questionsToSync = questions !== undefined ? questions : getStoredContestQuestions();
+    const classesToSync = classes !== undefined ? classes : getStoredClasses();
+    const rosterToSync = roster !== undefined ? roster : getStoredStudentsByClass();
 
     const insertRes = await fetch(`${supabaseUrl}/rest/v1/content_revisions`, {
       method: 'POST',

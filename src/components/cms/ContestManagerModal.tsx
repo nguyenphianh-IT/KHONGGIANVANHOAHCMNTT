@@ -67,9 +67,14 @@ import {
 import {
   ClassInfo,
   getStoredClasses,
+  saveStoredClasses,
   addClass,
   deleteClass,
   resetClasses,
+  clearAllClassesAndRoster,
+  parseBulkClassesFromExcel,
+  parseMasterSchoolRosterFromExcel,
+  bulkSaveMasterSchoolRoster,
   parseBulkStudentNames,
   bulkAddStudentsToClass,
   clearClassRoster,
@@ -249,6 +254,15 @@ export const ContestManagerModal: React.FC<ContestManagerModalProps> = ({
   const [isBulkImportOpen, setIsBulkImportOpen] = useState(false);
   const [bulkImportText, setBulkImportText] = useState('');
   const [bulkImportReplace, setBulkImportReplace] = useState(false);
+
+  // Modal Nhập Toàn Diện Từ Excel (Danh Mục Lớp / Cả Trường Lớp + Học Sinh / 1 Lớp)
+  const [isExcelImportModalOpen, setIsExcelImportModalOpen] = useState(false);
+  const [excelImportMode, setExcelImportMode] = useState<'classes' | 'masterRoster' | 'singleClass'>('classes');
+  const [excelImportText, setExcelImportText] = useState('');
+  const [excelImportReplace, setExcelImportReplace] = useState(true);
+
+  // Modal Xác Nhận Xóa Sạch Danh Mục Lớp & Học Sinh
+  const [isConfirmWipeModalOpen, setIsConfirmWipeModalOpen] = useState(false);
 
   // Sync with changes
   useEffect(() => {
@@ -874,6 +888,101 @@ export const ContestManagerModal: React.FC<ContestManagerModalProps> = ({
       setRoster(updated);
       showToast('info', `Đã dọn sạch danh sách học sinh lớp ${classId}`);
     }
+  };
+
+  // ─── EXCEL BULK PARSING MEMOS & HANDLERS ─────────────────────────
+  const parsedBulkClasses = useMemo(() => {
+    return parseBulkClassesFromExcel(excelImportText);
+  }, [excelImportText]);
+
+  const parsedMasterRoster = useMemo(() => {
+    return parseMasterSchoolRosterFromExcel(excelImportText);
+  }, [excelImportText]);
+
+  const parsedSingleClassStudents = useMemo(() => {
+    return parseBulkStudentNames(excelImportText);
+  }, [excelImportText]);
+
+  const handleSaveExcelImport = () => {
+    try {
+      if (excelImportMode === 'classes') {
+        if (parsedBulkClasses.length === 0) {
+          showToast('error', 'Chưa nhận diện được lớp học nào từ nội dung vừa dán!');
+          return;
+        }
+        let updatedClasses: ClassInfo[] = [];
+        if (excelImportReplace) {
+          updatedClasses = parsedBulkClasses;
+        } else {
+          const map = new Map<string, ClassInfo>();
+          classesList.forEach((c) => map.set(c.id, c));
+          parsedBulkClasses.forEach((c) => map.set(c.id, c));
+          updatedClasses = Array.from(map.values());
+        }
+        saveStoredClasses(updatedClasses);
+        setClassesList(updatedClasses);
+        if (updatedClasses.length > 0 && (!selectedRosterClass || !updatedClasses.some((c) => c.id === selectedRosterClass))) {
+          setSelectedRosterClass(updatedClasses[0].id);
+        }
+        showToast('success', `Đã lưu thành công ${parsedBulkClasses.length} lớp học vào danh mục!`);
+        setIsExcelImportModalOpen(false);
+        setExcelImportText('');
+      } else if (excelImportMode === 'masterRoster') {
+        if (parsedMasterRoster.classes.length === 0) {
+          showToast('error', 'Chưa nhận diện được dữ liệu Lớp và Học sinh từ bảng tính Excel vừa dán!');
+          return;
+        }
+        const res = bulkSaveMasterSchoolRoster(
+          parsedMasterRoster.classes,
+          parsedMasterRoster.roster,
+          excelImportReplace
+        );
+        setClassesList(res.classes);
+        setRoster(res.roster);
+        if (res.classes.length > 0) {
+          setSelectedRosterClass(res.classes[0].id);
+        }
+        showToast(
+          'success',
+          `Đã lưu thành công ${res.classes.length} lớp và ${parsedMasterRoster.totalStudents} học sinh từ Excel!`
+        );
+        setIsExcelImportModalOpen(false);
+        setExcelImportText('');
+      } else {
+        // singleClass
+        if (parsedSingleClassStudents.length === 0) {
+          showToast('error', 'Chưa nhận diện được họ tên học sinh hợp lệ!');
+          return;
+        }
+        const updated = bulkAddStudentsToClass(
+          selectedRosterClass,
+          parsedSingleClassStudents,
+          excelImportReplace
+        );
+        setRoster(updated);
+        showToast(
+          'success',
+          `Đã lưu ${parsedSingleClassStudents.length} học sinh vào lớp ${selectedRosterClass}!`
+        );
+        setIsExcelImportModalOpen(false);
+        setExcelImportText('');
+      }
+    } catch (err: any) {
+      showToast('error', err?.message || 'Có lỗi khi lưu dữ liệu Excel');
+    }
+  };
+
+  const handleWipeAllClassesAndRoster = () => {
+    const res = clearAllClassesAndRoster();
+    setClassesList(res.classes);
+    setRoster(res.roster);
+    setSelectedRosterClass('');
+    setIsConfirmWipeModalOpen(false);
+    showToast('info', 'Đã xóa sạch danh mục lớp và học sinh! Mời Thầy/Cô dán danh sách mới từ Excel.');
+    setExcelImportMode('classes');
+    setExcelImportReplace(true);
+    setExcelImportText('');
+    setIsExcelImportModalOpen(true);
   };
 
   return (
@@ -1790,21 +1899,35 @@ export const ContestManagerModal: React.FC<ContestManagerModalProps> = ({
 
                 <div className="flex items-center flex-wrap gap-2">
                   <button
-                    onClick={handleOpenAddClassModal}
-                    className="inline-flex items-center justify-center space-x-1.5 px-3.5 py-2 bg-heritage-red-700 hover:bg-heritage-red-800 text-white rounded-xl text-xs font-bold shadow-sm transition"
-                    title="Thêm một lớp học mới vào danh mục nhà trường"
+                    onClick={() => {
+                      setExcelImportMode('classes');
+                      setExcelImportText('');
+                      setExcelImportReplace(true);
+                      setIsExcelImportModalOpen(true);
+                    }}
+                    className="inline-flex items-center justify-center space-x-1.5 px-3.5 py-2 bg-heritage-gold-400 hover:bg-heritage-gold-300 text-heritage-red-950 font-black rounded-xl text-xs shadow-xs transition border border-heritage-gold-500"
+                    title="Mở bảng dán danh sách Lớp hoặc Cả Trường từ file Excel"
                   >
-                    <Plus className="w-4 h-4" />
-                    <span>Thêm Lớp Mới</span>
+                    <FileSpreadsheet className="w-4 h-4 text-heritage-red-900" />
+                    <span>Dán Lớp & HS Từ Excel</span>
                   </button>
 
                   <button
-                    onClick={() => setIsBulkImportOpen(!isBulkImportOpen)}
-                    className="inline-flex items-center justify-center space-x-1.5 px-3.5 py-2 bg-heritage-gold-400 hover:bg-heritage-gold-300 text-heritage-red-950 font-black rounded-xl text-xs shadow-xs transition border border-heritage-gold-500"
-                    title="Mở khung dán danh sách học sinh từ file Excel hoặc Word"
+                    onClick={handleOpenAddClassModal}
+                    className="inline-flex items-center justify-center space-x-1.5 px-3 py-2 bg-heritage-ivory-200 hover:bg-heritage-ivory-300 text-heritage-ink-800 rounded-xl text-xs font-bold transition border border-heritage-ivory-300"
+                    title="Thêm một lớp học mới vào danh mục nhà trường"
                   >
-                    <FileSpreadsheet className="w-4 h-4 text-heritage-red-900" />
-                    <span>Dán Danh Sách Từ Excel</span>
+                    <Plus className="w-4 h-4" />
+                    <span>Thêm 1 Lớp</span>
+                  </button>
+
+                  <button
+                    onClick={() => setIsConfirmWipeModalOpen(true)}
+                    className="inline-flex items-center justify-center space-x-1.5 px-3 py-2 bg-rose-50 hover:bg-rose-100 text-rose-700 hover:text-rose-800 border border-rose-300 rounded-xl text-xs font-bold transition shadow-xs"
+                    title="Xóa sạch toàn bộ danh mục lớp và học sinh để cập nhật mới hoàn toàn từ file Excel"
+                  >
+                    <Trash2 className="w-3.5 h-3.5 text-rose-600" />
+                    <span>Xóa Sạch Để Nhập Mới</span>
                   </button>
 
                   <button
@@ -1820,21 +1943,22 @@ export const ContestManagerModal: React.FC<ContestManagerModalProps> = ({
                   <button
                     onClick={handlePullFromCloud}
                     disabled={isSyncingCloud}
-                    className="inline-flex items-center justify-center space-x-1.5 px-3.5 py-2 bg-blue-700 hover:bg-blue-800 disabled:opacity-50 text-white font-bold rounded-xl text-xs shadow-xs transition"
-                    title="Tải lại toàn bộ danh mục 56 lớp và danh bạ học sinh đã thực hiện từ Supabase Cloud Database về máy tính này"
+                    className="inline-flex items-center justify-center space-x-1.5 px-3 py-2 bg-blue-700 hover:bg-blue-800 disabled:opacity-50 text-white font-bold rounded-xl text-xs shadow-xs transition"
+                    title="Tải lại toàn bộ danh mục lớp và danh bạ học sinh từ Supabase Cloud Database về máy tính này"
                   >
                     <CloudDownload className={`w-4 h-4 ${isSyncingCloud ? 'animate-bounce' : ''}`} />
-                    <span>{isSyncingCloud ? 'Đang tải...' : 'Tải / Khôi Phục Từ Cloud Database'}</span>
+                    <span>{isSyncingCloud ? 'Đang tải...' : 'Tải Từ Cloud'}</span>
                   </button>
 
                   <button
                     onClick={() => {
-                      if (confirm('Khôi phục danh mục lớp và danh sách học sinh về mặc định của nhà trường?')) {
+                      if (confirm('Khôi phục danh mục lớp và danh sách học sinh về mặc định của nhà trường (56 lớp học)?')) {
                         const resClasses = resetClasses();
                         setClassesList(resClasses);
                         const resRoster = resetStudentsRoster();
                         setRoster(resRoster);
-                        showToast('success', 'Đã đặt lại danh mục lớp và học sinh về mặc định!');
+                        if (resClasses.length > 0) setSelectedRosterClass(resClasses[0].id);
+                        showToast('success', 'Đã đặt lại danh mục lớp và học sinh về 56 lớp mẫu!');
                       }
                     }}
                     className="inline-flex items-center space-x-1 px-2.5 py-2 bg-heritage-ivory-200 hover:bg-heritage-ivory-300 text-heritage-ink-700 rounded-xl text-xs font-semibold transition"
@@ -1846,8 +1970,76 @@ export const ContestManagerModal: React.FC<ContestManagerModalProps> = ({
                 </div>
               </div>
 
-              {/* Bộ lọc Khối Lớp (Tất cả / Khối 6 / Khối 7 / Khối 8 / Khối 9) */}
-              <div className="bg-white p-3.5 rounded-2xl border border-heritage-gold-300/80 shadow-xs space-y-3">
+              {/* Nếu danh mục lớp đang trống (Thầy/Cô đã xóa sạch để nhập mới) */}
+              {classesList.length === 0 ? (
+                <div className="bg-amber-50/90 border-2 border-dashed border-heritage-gold-400 rounded-2xl p-8 text-center space-y-4 shadow-sm animate-fadeIn">
+                  <div className="w-14 h-14 mx-auto rounded-2xl bg-heritage-red-700 text-white flex items-center justify-center shadow-md">
+                    <FileSpreadsheet className="w-7 h-7 text-heritage-gold-300" />
+                  </div>
+                  <div>
+                    <h4 className="font-serif font-black text-base sm:text-lg text-heritage-red-950">
+                      Danh Mục Lớp Học Hiện Đang Trống
+                    </h4>
+                    <p className="text-xs sm:text-sm text-heritage-ink-700 max-w-lg mx-auto mt-1 leading-relaxed">
+                      Thầy/Cô đã xóa sạch danh sách để cập nhật mới. Hãy chọn một trong các cách dưới đây để nạp nhanh danh mục lớp và học sinh mới từ Excel:
+                    </p>
+                  </div>
+
+                  <div className="flex flex-wrap items-center justify-center gap-2.5 pt-2">
+                    <button
+                      onClick={() => {
+                        setExcelImportMode('classes');
+                        setExcelImportText('');
+                        setExcelImportReplace(true);
+                        setIsExcelImportModalOpen(true);
+                      }}
+                      className="px-4 py-2.5 bg-heritage-gold-400 hover:bg-heritage-gold-300 text-heritage-red-950 font-black text-xs rounded-xl shadow-sm transition flex items-center space-x-1.5 border border-heritage-gold-500"
+                    >
+                      <FileSpreadsheet className="w-4 h-4 text-heritage-red-900" />
+                      <span>📋 Dán Danh Mục Lớp Từ Excel</span>
+                    </button>
+
+                    <button
+                      onClick={() => {
+                        setExcelImportMode('masterRoster');
+                        setExcelImportText('');
+                        setExcelImportReplace(true);
+                        setIsExcelImportModalOpen(true);
+                      }}
+                      className="px-4 py-2.5 bg-heritage-red-700 hover:bg-heritage-red-800 text-white font-bold text-xs rounded-xl shadow-sm transition flex items-center space-x-1.5"
+                    >
+                      <Users className="w-4 h-4" />
+                      <span>👥 Dán Cả Trường (Lớp & HS)</span>
+                    </button>
+
+                    <button
+                      onClick={handleOpenAddClassModal}
+                      className="px-4 py-2.5 bg-white hover:bg-heritage-ivory-100 text-heritage-ink-800 font-bold text-xs rounded-xl transition flex items-center space-x-1.5 border border-heritage-gold-400"
+                    >
+                      <Plus className="w-4 h-4" />
+                      <span>Thêm Từng Lớp</span>
+                    </button>
+
+                    <button
+                      onClick={() => {
+                        const resClasses = resetClasses();
+                        setClassesList(resClasses);
+                        const resRoster = resetStudentsRoster();
+                        setRoster(resRoster);
+                        if (resClasses.length > 0) setSelectedRosterClass(resClasses[0].id);
+                        showToast('success', 'Đã khôi phục 56 lớp học mẫu!');
+                      }}
+                      className="px-3.5 py-2.5 bg-heritage-ivory-200 hover:bg-heritage-ivory-300 text-heritage-ink-700 font-bold text-xs rounded-xl transition flex items-center space-x-1"
+                    >
+                      <RotateCcw className="w-3.5 h-3.5" />
+                      <span>Khôi Phục 56 Lớp Mẫu</span>
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <>
+                  {/* Bộ lọc Khối Lớp (Tất cả / Khối 6 / Khối 7 / Khối 8 / Khối 9) */}
+                  <div className="bg-white p-3.5 rounded-2xl border border-heritage-gold-300/80 shadow-xs space-y-3">
                 <div className="flex flex-wrap items-center justify-between gap-2 border-b border-heritage-ivory-200 pb-2">
                   <div className="flex items-center space-x-1.5">
                     <span className="text-[11px] font-bold uppercase tracking-wider text-heritage-ink-700">
@@ -2128,6 +2320,8 @@ export const ContestManagerModal: React.FC<ContestManagerModalProps> = ({
                   </div>
                 )}
               </div>
+                </>
+              )}
             </div>
           )}
 
@@ -3033,6 +3227,245 @@ export const ContestManagerModal: React.FC<ContestManagerModalProps> = ({
                 className="px-4 py-2 bg-heritage-ivory-200 hover:bg-heritage-ivory-300 text-heritage-ink-800 font-bold rounded-xl text-xs transition"
               >
                 Hoàn Tất & Đóng
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ─────────────────────────────────────────────────────────────────
+          MODAL CON: NHẬP DANH MỤC LỚP & HỌC SINH TỪ EXCEL / COPY-PASTE
+          ───────────────────────────────────────────────────────────────── */}
+      {isExcelImportModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/60 backdrop-blur-xs animate-fadeIn">
+          <div className="relative w-full max-w-2xl bg-white border-2 border-heritage-gold-400 rounded-2xl sm:rounded-3xl shadow-2xl p-4 sm:p-6 space-y-4 max-h-[90vh] flex flex-col overflow-hidden">
+            {/* Modal Header */}
+            <div className="flex items-center justify-between border-b border-heritage-ivory-200 pb-3 flex-shrink-0">
+              <div className="flex items-center space-x-2.5">
+                <div className="w-9 h-9 rounded-xl bg-heritage-red-700 text-white flex items-center justify-center shadow-xs">
+                  <FileSpreadsheet className="w-5 h-5 text-heritage-gold-300" />
+                </div>
+                <div>
+                  <h3 className="font-serif font-bold text-base sm:text-lg text-heritage-red-950">
+                    Nhập Danh Sách Lớp & Học Sinh Từ Excel
+                  </h3>
+                  <p className="text-xs text-heritage-ink-600">
+                    Copy dữ liệu từ Excel / Google Sheets rồi dán vào ô bên dưới
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => setIsExcelImportModalOpen(false)}
+                className="p-1.5 text-heritage-ink-400 hover:text-heritage-red-700 rounded-lg hover:bg-heritage-ivory-200 transition"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Mode Tabs */}
+            <div className="flex flex-wrap gap-2 border-b border-heritage-ivory-200 pb-2.5 flex-shrink-0">
+              <button
+                type="button"
+                onClick={() => setExcelImportMode('classes')}
+                className={`px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center space-x-1.5 ${
+                  excelImportMode === 'classes'
+                    ? 'bg-heritage-red-700 text-white shadow-xs'
+                    : 'bg-heritage-ivory-200 text-heritage-ink-700 hover:bg-heritage-ivory-300'
+                }`}
+              >
+                <span>📋 Dán Danh Mục Lớp</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setExcelImportMode('masterRoster')}
+                className={`px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center space-x-1.5 ${
+                  excelImportMode === 'masterRoster'
+                    ? 'bg-heritage-red-700 text-white shadow-xs'
+                    : 'bg-heritage-ivory-200 text-heritage-ink-700 hover:bg-heritage-ivory-300'
+                }`}
+              >
+                <span>👥 Dán Cả Trường (Lớp & HS)</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setExcelImportMode('singleClass')}
+                className={`px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center space-x-1.5 ${
+                  excelImportMode === 'singleClass'
+                    ? 'bg-heritage-red-700 text-white shadow-xs'
+                    : 'bg-heritage-ivory-200 text-heritage-ink-700 hover:bg-heritage-ivory-300'
+                }`}
+              >
+                <span>👤 Dán HS Cho 1 Lớp</span>
+              </button>
+            </div>
+
+            {/* Instruction Guide per Mode */}
+            <div className="bg-amber-50/80 p-3 rounded-xl border border-amber-200 text-xs text-amber-950 leading-relaxed flex-shrink-0">
+              {excelImportMode === 'classes' && (
+                <p>
+                  💡 <strong>Cách làm:</strong> Copy cột <strong>Mã lớp</strong> từ Excel (ví dụ <code>6/1</code>, <code>6/2</code>, <code>7/1</code>, <code>8A1</code>...). Hệ thống tự động nhận diện Khối 6, 7, 8, 9 và tạo danh mục lớp chuẩn cho nhà trường.
+                </p>
+              )}
+              {excelImportMode === 'masterRoster' && (
+                <p>
+                  💡 <strong>Cách làm:</strong> Copy 2 cột từ file Excel trường: <code>Cột 1: Lớp</code> và <code>Cột 2: Họ và Tên</code> (hoặc copy cả bảng 3 cột <code>STT | Lớp | Họ Tên</code>). Hệ thống sẽ tự động tạo tất cả các lớp và gom học sinh vào đúng lớp của mình!
+                </p>
+              )}
+              {excelImportMode === 'singleClass' && (
+                <div className="flex items-center space-x-2">
+                  <span>Dán danh sách học sinh cho:</span>
+                  <select
+                    value={selectedRosterClass}
+                    onChange={(e) => setSelectedRosterClass(e.target.value)}
+                    className="px-2.5 py-1 bg-white border border-amber-300 rounded-lg font-bold text-heritage-red-950 text-xs"
+                  >
+                    {classesList.map((c) => (
+                      <option key={c.id} value={c.id}>
+                        {c.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
+            </div>
+
+            {/* Textarea Area */}
+            <div className="flex-1 min-h-[160px] flex flex-col">
+              <textarea
+                value={excelImportText}
+                onChange={(e) => setExcelImportText(e.target.value)}
+                placeholder={
+                  excelImportMode === 'classes'
+                    ? `Dán danh sách lớp vào đây (mỗi dòng 1 lớp):\n6/1\n6/2\n6/3\n7/1\n7/2\n8A1\n8A2\n9A1...`
+                    : excelImportMode === 'masterRoster'
+                    ? `Copy 2 cột từ Excel dán vào đây:\n6/1\tNguyễn Đắc Đô\n6/1\tTrần Ngọc Diệp\n6/2\tLê Gia Bảo\n8A1\tNguyễn Minh Khang\n8A1\tTrần Bảo Ngọc...`
+                    : `Dán họ tên học sinh lớp ${selectedRosterClass} (mỗi em 1 dòng):\nNguyễn Minh Khang\nTrần Bảo Ngọc\nLê Hoàng Nam...`
+                }
+                className="w-full flex-1 p-3 bg-white border border-heritage-gold-400 rounded-xl text-xs sm:text-sm font-medium focus:outline-none focus:ring-2 focus:ring-heritage-red-700 shadow-inner resize-none font-mono"
+              />
+            </div>
+
+            {/* Live Parsing Preview & Counters */}
+            <div className="flex flex-wrap items-center justify-between gap-2 pt-1 border-t border-heritage-ivory-200 text-xs flex-shrink-0">
+              <div className="flex items-center space-x-3">
+                {excelImportMode === 'classes' && (
+                  <span className="font-bold text-heritage-red-950 flex items-center space-x-1">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                    <span>Đã nhận diện: <strong className="text-emerald-700 text-sm font-black">{parsedBulkClasses.length}</strong> lớp học</span>
+                  </span>
+                )}
+                {excelImportMode === 'masterRoster' && (
+                  <span className="font-bold text-heritage-red-950 flex items-center space-x-2">
+                    <span className="flex items-center space-x-1">
+                      <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                      <span>Lớp: <strong className="text-emerald-700 text-sm font-black">{parsedMasterRoster.classes.length}</strong></span>
+                    </span>
+                    <span>•</span>
+                    <span>Học sinh: <strong className="text-blue-700 text-sm font-black">{parsedMasterRoster.totalStudents}</strong> em</span>
+                  </span>
+                )}
+                {excelImportMode === 'singleClass' && (
+                  <span className="font-bold text-heritage-red-950 flex items-center space-x-1">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                    <span>Đã nhận diện: <strong className="text-emerald-700 text-sm font-black">{parsedSingleClassStudents.length}</strong> học sinh</span>
+                  </span>
+                )}
+              </div>
+
+              <label className="flex items-center space-x-1.5 cursor-pointer text-heritage-ink-800 font-medium">
+                <input
+                  type="checkbox"
+                  checked={excelImportReplace}
+                  onChange={(e) => setExcelImportReplace(e.target.checked)}
+                  className="w-4 h-4 text-heritage-red-700 rounded focus:ring-heritage-red-500"
+                />
+                <span>
+                  {excelImportMode === 'classes'
+                    ? 'Thay thế toàn bộ danh mục lớp hiện có'
+                    : excelImportMode === 'masterRoster'
+                    ? 'Thay thế toàn bộ Lớp & Học sinh hiện có'
+                    : `Thay thế toàn bộ danh sách lớp ${selectedRosterClass}`}
+                </span>
+              </label>
+            </div>
+
+            {/* Modal Actions */}
+            <div className="flex items-center justify-end space-x-2 pt-2 border-t border-heritage-ivory-200 flex-shrink-0">
+              <button
+                type="button"
+                onClick={() => setIsExcelImportModalOpen(false)}
+                className="px-4 py-2 bg-heritage-ivory-200 hover:bg-heritage-ivory-300 text-heritage-ink-700 rounded-xl text-xs font-semibold transition"
+              >
+                Hủy bỏ
+              </button>
+
+              <button
+                type="button"
+                disabled={
+                  excelImportMode === 'classes'
+                    ? parsedBulkClasses.length === 0
+                    : excelImportMode === 'masterRoster'
+                    ? parsedMasterRoster.classes.length === 0
+                    : parsedSingleClassStudents.length === 0
+                }
+                onClick={handleSaveExcelImport}
+                className="px-5 py-2.5 bg-heritage-red-700 hover:bg-heritage-red-800 disabled:bg-heritage-ivory-300 disabled:text-heritage-ink-400 disabled:cursor-not-allowed text-white font-bold rounded-xl text-xs sm:text-sm shadow-sm transition flex items-center space-x-1.5"
+              >
+                <Check className="w-4 h-4" />
+                <span>
+                  {excelImportMode === 'classes'
+                    ? `Lưu ${parsedBulkClasses.length} Lớp Vào Hệ Thống`
+                    : excelImportMode === 'masterRoster'
+                    ? `Lưu Toàn Trường (${parsedMasterRoster.classes.length} Lớp, ${parsedMasterRoster.totalStudents} HS)`
+                    : `Lưu ${parsedSingleClassStudents.length} HS Vào Lớp ${selectedRosterClass}`}
+                </span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ─────────────────────────────────────────────────────────────────
+          MODAL CON: XÁC NHẬN XÓA SẠCH DANH MỤC LỚP & HỌC SINH
+          ───────────────────────────────────────────────────────────────── */}
+      {isConfirmWipeModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 bg-black/60 backdrop-blur-xs animate-fadeIn">
+          <div className="relative w-full max-w-md bg-white border-2 border-rose-400 rounded-2xl shadow-2xl p-5 sm:p-6 space-y-4">
+            <div className="flex items-center space-x-3 text-rose-700">
+              <div className="w-10 h-10 rounded-full bg-rose-100 flex items-center justify-center flex-shrink-0">
+                <Trash2 className="w-5 h-5 text-rose-600" />
+              </div>
+              <h3 className="font-serif font-bold text-base sm:text-lg text-rose-950">
+                Xác Nhận Xóa Sạch Danh Mục Lớp
+              </h3>
+            </div>
+
+            <p className="text-xs sm:text-sm text-heritage-ink-700 leading-relaxed">
+              Thầy/Cô có chắc chắn muốn <strong>xóa toàn bộ danh mục {classesList.length} lớp học và danh sách học sinh</strong> trên máy này để cập nhật mới hoàn toàn từ file Excel không?
+            </p>
+
+            <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-xl text-xs text-emerald-900 leading-relaxed">
+              🛡️ <strong>Lưu ý bảo vệ dữ liệu:</strong> Toàn bộ <strong>kết quả các bài thi học sinh đã nộp trước đây vẫn được lưu trữ an toàn 100%</strong>. Thầy/Cô có thể dán danh sách mới ngay sau khi xóa.
+            </div>
+
+            <div className="flex items-center justify-end space-x-2 pt-2 border-t border-heritage-ivory-200">
+              <button
+                type="button"
+                onClick={() => setIsConfirmWipeModalOpen(false)}
+                className="px-4 py-2 bg-heritage-ivory-200 hover:bg-heritage-ivory-300 text-heritage-ink-700 rounded-xl text-xs font-semibold transition"
+              >
+                Hủy bỏ (Giữ lại danh sách)
+              </button>
+
+              <button
+                type="button"
+                onClick={handleWipeAllClassesAndRoster}
+                className="px-4 py-2 bg-rose-700 hover:bg-rose-800 text-white font-bold rounded-xl text-xs shadow-sm transition flex items-center space-x-1.5"
+              >
+                <Trash2 className="w-4 h-4" />
+                <span>Xác Nhận Xóa Sạch & Dán Mới</span>
               </button>
             </div>
           </div>

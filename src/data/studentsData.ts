@@ -88,8 +88,14 @@ export function getStoredClasses(): ClassInfo[] {
       return SCHOOL_CLASSES;
     }
     const parsed = JSON.parse(raw);
-    if (Array.isArray(parsed) && parsed.length > 0) {
-      return parsed;
+    if (Array.isArray(parsed)) {
+      // Cho phép danh sách trống nếu quản trị viên đã chủ động xóa sạch để cập nhật mới
+      if (parsed.length === 0 && localStorage.getItem('hcm_classes_customized') === 'true') {
+        return [];
+      }
+      if (parsed.length > 0) {
+        return parsed;
+      }
     }
     return SCHOOL_CLASSES;
   } catch {
@@ -100,6 +106,7 @@ export function getStoredClasses(): ClassInfo[] {
 export function saveStoredClasses(classes: ClassInfo[]): ClassInfo[] {
   try {
     localStorage.setItem(STORAGE_KEY_CLASSES, JSON.stringify(classes));
+    localStorage.setItem('hcm_classes_customized', 'true');
     if (typeof window !== 'undefined') {
       window.dispatchEvent(new Event(EVENT_STUDENTS_ROSTER_CHANGED));
     }
@@ -108,6 +115,22 @@ export function saveStoredClasses(classes: ClassInfo[]): ClassInfo[] {
     console.error('Lỗi lưu danh mục lớp học:', err);
     return classes;
   }
+}
+
+/**
+ * Xóa sạch toàn bộ danh mục lớp và học sinh để Thầy/Cô cập nhật lại từ đầu
+ */
+export function clearAllClassesAndRoster(): { classes: ClassInfo[]; roster: Record<string, string[]> } {
+  const emptyClasses: ClassInfo[] = [];
+  const emptyRoster: Record<string, string[]> = {};
+  saveStoredClasses(emptyClasses);
+  saveStoredStudentsByClass(emptyRoster);
+  try {
+    localStorage.setItem('hcm_classes_customized', 'true');
+    localStorage.removeItem('hcm_last_selected_class');
+    localStorage.removeItem('hcm_last_selected_student');
+  } catch {}
+  return { classes: emptyClasses, roster: emptyRoster };
 }
 
 export function addClass(classInfo: ClassInfo): ClassInfo[] {
@@ -135,9 +158,6 @@ export function updateClass(classInfo: ClassInfo): ClassInfo[] {
 
 export function deleteClass(classId: string): ClassInfo[] {
   const current = getStoredClasses();
-  if (current.length <= 1) {
-    throw new Error('Hệ thống yêu cầu duy trì ít nhất 01 lớp học!');
-  }
   const updated = current.filter((c) => c.id !== classId);
   saveStoredClasses(updated);
 
@@ -153,6 +173,9 @@ export function deleteClass(classId: string): ClassInfo[] {
 }
 
 export function resetClasses(): ClassInfo[] {
+  try {
+    localStorage.removeItem('hcm_classes_customized');
+  } catch {}
   return saveStoredClasses(SCHOOL_CLASSES);
 }
 
@@ -474,4 +497,220 @@ export function clearClassRoster(className: string): Record<string, string[]> {
     [className]: [],
   };
   return saveStoredStudentsByClass(updated);
+}
+
+/**
+ * Tách danh mục các Lớp học từ chuỗi văn bản (copy từ cột Excel)
+ * Hỗ trợ các định dạng:
+ * - Một cột: "6/1", "6A1", "Lớp 7/4"...
+ * - Tab-separated: "6/1 [tab] Lớp 6/1 [tab] 6" hoặc "STT [tab] Mã Lớp [tab] Tên Lớp"
+ */
+export function parseBulkClassesFromExcel(rawText: string): ClassInfo[] {
+  if (!rawText) return [];
+  const lines = rawText.split(/\r?\n/);
+  const classes: ClassInfo[] = [];
+  const seen = new Set<string>();
+
+  for (const line of lines) {
+    let trimmed = line.trim();
+    if (!trimmed) continue;
+    // Bỏ header nếu có
+    if (/^(mã lớp|tên lớp|stt|class|grade|lớp|khối|stt\t)/i.test(trimmed)) {
+      continue;
+    }
+
+    const parts = trimmed.split('\t').map((p) => p.trim()).filter(Boolean);
+    let classId = '';
+    let className = '';
+    let grade: '6' | '7' | '8' | '9' = '6';
+
+    if (parts.length >= 3) {
+      if (/^\d+$/.test(parts[0])) {
+        // Cột 0 là STT
+        classId = parts[1];
+        className = parts[2];
+        if (parts[3] && ['6', '7', '8', '9'].includes(parts[3])) {
+          grade = parts[3] as any;
+        }
+      } else {
+        classId = parts[0];
+        className = parts[1];
+        if (['6', '7', '8', '9'].includes(parts[2])) {
+          grade = parts[2] as any;
+        }
+      }
+    } else if (parts.length === 2) {
+      if (/^\d+$/.test(parts[0])) {
+        classId = parts[1];
+      } else {
+        classId = parts[0];
+        className = parts[1];
+      }
+    } else {
+      let clean = trimmed.replace(/^([\d\.\-\)\/\s\*•]+)/, '').trim();
+      classId = clean;
+    }
+
+    classId = classId.replace(/^lớp\s+/i, '').trim();
+    if (!classId || classId.length > 25) continue;
+
+    // Suy luận khối
+    const gradeMatch = classId.match(/^[6-9]/);
+    if (gradeMatch && ['6', '7', '8', '9'].includes(gradeMatch[0])) {
+      grade = gradeMatch[0] as any;
+    }
+
+    if (!className) {
+      className = `Lớp ${classId}`;
+    } else if (!className.toLowerCase().startsWith('lớp ')) {
+      className = `Lớp ${className}`;
+    }
+
+    const key = classId.toUpperCase();
+    if (!seen.has(key)) {
+      seen.add(key);
+      classes.push({
+        id: classId,
+        name: className,
+        grade,
+      });
+    }
+  }
+
+  return classes;
+}
+
+export interface MasterRosterParseResult {
+  classes: ClassInfo[];
+  roster: Record<string, string[]>;
+  totalStudents: number;
+}
+
+/**
+ * Nhận diện mã lớp học từ chuỗi văn bản
+ */
+function isClassIdentifier(str: string): boolean {
+  if (!str) return false;
+  const s = str.trim().toLowerCase();
+  return /^(lớp\s*)?[6-9][\/\.\-_]?[0-9a-zA-Z]{1,4}$/i.test(s) || /^(lớp\s*)?[6-9][a-zA-Z][0-9]?$/i.test(s);
+}
+
+/**
+ * Phân tích danh bạ toàn trường từ Excel (Bảng gồm Lớp và Họ Tên học sinh)
+ */
+export function parseMasterSchoolRosterFromExcel(rawText: string): MasterRosterParseResult {
+  if (!rawText) return { classes: [], roster: {}, totalStudents: 0 };
+  const lines = rawText.split(/\r?\n/);
+  const roster: Record<string, string[]> = {};
+  const classMap = new Map<string, ClassInfo>();
+  let totalStudents = 0;
+
+  for (const line of lines) {
+    const trimmed = line.trim();
+    if (!trimmed) continue;
+    // Bỏ dòng tiêu đề header
+    if (/^(stt|họ và tên|lớp|class|mã lớp|tên học sinh|họ tên)/i.test(trimmed)) {
+      continue;
+    }
+
+    const parts = trimmed.split('\t').map((p) => p.trim()).filter(Boolean);
+    if (parts.length < 2) continue;
+
+    let classStr = '';
+    let nameStr = '';
+
+    if (parts.length >= 3 && /^\d+$/.test(parts[0])) {
+      if (isClassIdentifier(parts[1])) {
+        classStr = parts[1];
+        nameStr = parts[2];
+      } else if (isClassIdentifier(parts[2])) {
+        nameStr = parts[1];
+        classStr = parts[2];
+      } else {
+        classStr = parts[1];
+        nameStr = parts[2];
+      }
+    } else {
+      if (isClassIdentifier(parts[0]) && !isClassIdentifier(parts[1])) {
+        classStr = parts[0];
+        nameStr = parts[1];
+      } else if (isClassIdentifier(parts[1]) && !isClassIdentifier(parts[0])) {
+        classStr = parts[1];
+        nameStr = parts[0];
+      } else {
+        classStr = parts[0];
+        nameStr = parts[1];
+      }
+    }
+
+    classStr = classStr.replace(/^lớp\s+/i, '').trim();
+    nameStr = nameStr.replace(/^([\d\.\-\)\/\s\*•]+)/, '').trim();
+
+    if (!classStr || !nameStr || nameStr.length < 2) continue;
+
+    const words = nameStr.split(/\s+/);
+    const formattedName = words.map((w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(' ');
+
+    if (!classMap.has(classStr)) {
+      const gradeMatch = classStr.match(/^[6-9]/);
+      const grade = gradeMatch && ['6', '7', '8', '9'].includes(gradeMatch[0]) ? (gradeMatch[0] as any) : '6';
+      classMap.set(classStr, {
+        id: classStr,
+        name: `Lớp ${classStr}`,
+        grade,
+      });
+    }
+
+    if (!roster[classStr]) {
+      roster[classStr] = [];
+    }
+    if (!roster[classStr].includes(formattedName)) {
+      roster[classStr].push(formattedName);
+      totalStudents++;
+    }
+  }
+
+  return {
+    classes: Array.from(classMap.values()),
+    roster,
+    totalStudents,
+  };
+}
+
+/**
+ * Lưu danh sách Lớp và Học Sinh nhập hàng loạt từ Excel
+ */
+export function bulkSaveMasterSchoolRoster(
+  classes: ClassInfo[],
+  roster: Record<string, string[]>,
+  replaceAll: boolean = false
+): { classes: ClassInfo[]; roster: Record<string, string[]> } {
+  let updatedClasses: ClassInfo[] = [];
+  let updatedRoster: Record<string, string[]> = {};
+
+  if (replaceAll) {
+    updatedClasses = classes;
+    updatedRoster = roster;
+  } else {
+    // Hợp nhất lớp
+    const currentClasses = getStoredClasses();
+    const classMap = new Map<string, ClassInfo>();
+    currentClasses.forEach((c) => classMap.set(c.id, c));
+    classes.forEach((c) => classMap.set(c.id, c));
+    updatedClasses = Array.from(classMap.values());
+
+    // Hợp nhất học sinh
+    const currentRoster = getStoredStudentsByClass();
+    updatedRoster = { ...currentRoster };
+    for (const [cls, students] of Object.entries(roster)) {
+      const existing = updatedRoster[cls] || [];
+      const set = new Set(existing);
+      students.forEach((s) => set.add(s));
+      updatedRoster[cls] = Array.from(set);
+    }
+  }
+
+  saveStoredClasses(updatedClasses);
+  saveStoredStudentsByClass(updatedRoster);
+  return { classes: updatedClasses, roster: updatedRoster };
 }

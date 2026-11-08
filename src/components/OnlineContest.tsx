@@ -1125,11 +1125,15 @@ export const OnlineContest: React.FC = () => {
                 }}
                 className="w-full px-4 py-3 bg-white border border-heritage-gold-400 rounded-xl text-base sm:text-sm font-bold text-heritage-ink-900 outline-none focus:ring-2 focus:ring-heritage-red-600 shadow-sm touch-manipulation"
               >
-                {classesList.map((cls) => (
-                  <option key={cls.id} value={cls.id}>
-                    {cls.name}
-                  </option>
-                ))}
+                {classesList.length === 0 ? (
+                  <option value="">-- Danh mục lớp đang được cập nhật --</option>
+                ) : (
+                  classesList.map((cls) => (
+                    <option key={cls.id} value={cls.id}>
+                      {cls.name}
+                    </option>
+                  ))
+                )}
               </select>
             </div>
 
