@@ -23,11 +23,12 @@ import {
   EVENT_CONTEST_DATA_CHANGED,
   fetchSupabaseContestData,
   fetchSupabaseQuestions,
+  submitContestExamToSupabase,
 } from '../data/contestData';
 import {
   Trophy, Award, Clock, CheckCircle2, AlertTriangle, ChevronRight,
   User, Printer, Settings, BookOpen, Layers, FolderArchive, Cloud, Lock,
-  Users, Sparkles, Medal, Search, Filter
+  Users, Sparkles, Medal, Search, Filter, RefreshCw
 } from 'lucide-react';
 import { ContestManagerModal } from './cms/ContestManagerModal';
 import { useAuth } from '../context/AuthContext';
@@ -147,6 +148,29 @@ export const OnlineContest: React.FC = () => {
   const [leaderboardSearch, setLeaderboardSearch] = useState<string>('');
   const [classSortMode, setClassSortMode] = useState<'movement' | 'avg' | 'participants'>('movement');
   const [isCloudConnected, setIsCloudConnected] = useState<boolean>(true);
+  const [isRefreshingCloud, setIsRefreshingCloud] = useState<boolean>(false);
+  const [lastRefreshedAt, setLastRefreshedAt] = useState<Date>(new Date());
+
+  // Hàm làm mới trực tiếp kết quả Bảng Vàng và Bảng Điểm từ Supabase Cloud Database
+  const handleManualRefreshCloud = async () => {
+    if (isRefreshingCloud) return;
+    setIsRefreshingCloud(true);
+    try {
+      const res = await fetchSupabaseContestData();
+      if (res.success) {
+        setIsCloudConnected(true);
+        setLastRefreshedAt(new Date());
+        if (res.submissions) setSubmissions(res.submissions);
+        if (res.classes && res.classes.length > 0) setClassesList(res.classes);
+        if (res.roster && Object.keys(res.roster).length > 0) setRoster(res.roster);
+        if (res.contests && res.contests.length > 0) setContestsList(res.contests);
+      }
+    } catch (err) {
+      console.warn('[Manual Refresh Cloud Error]', err);
+    } finally {
+      setIsRefreshingCloud(false);
+    }
+  };
 
   // Kéo dữ liệu câu hỏi và hội thi từ Supabase Cloud khi người dùng truy cập
   useEffect(() => {
@@ -160,6 +184,7 @@ export const OnlineContest: React.FC = () => {
         if (isMounted) {
           if (cloudData.success) {
             setIsCloudConnected(true);
+            setLastRefreshedAt(new Date());
             if (cloudData.contests) setContestsList(cloudData.contests);
             if (cloudData.submissions) setSubmissions(cloudData.submissions);
             // ĐỒNG BỘ DANH MỤC LỚP VÀ DANH BẠ HỌC SINH TỪ SUPABASE CLOUD DATABASE
@@ -167,13 +192,13 @@ export const OnlineContest: React.FC = () => {
               setClassesList(cloudData.classes);
               setSelectedClass((prev) => {
                 if (prev && cloudData.classes!.some((c) => c.id === prev)) return prev;
-                return cloudData.classes!.find((c) => c.id === '8A1')?.id || cloudData.classes![0].id;
+                return cloudData.classes![0].id;
               });
             }
             if (cloudData.roster && Object.keys(cloudData.roster).length > 0) {
               setRoster(cloudData.roster);
               setSelectedPresetName((prev) => {
-                const activeCls = selectedClass || '8A1';
+                const activeCls = selectedClass || cloudData.classes?.[0]?.id || Object.keys(cloudData.roster!)[0];
                 const classStudents = cloudData.roster![activeCls] || [];
                 if (prev && classStudents.includes(prev)) return prev;
                 return classStudents[0] || '';
@@ -191,6 +216,29 @@ export const OnlineContest: React.FC = () => {
     initCloud();
     return () => { isMounted = false; };
   }, []);
+
+  // Tự động Polling cập nhật kết quả Bảng Vàng & Bảng Xếp Hạng từ Database mỗi 35 giây (Realtime Auto-Sync)
+  useEffect(() => {
+    const pollInterval = setInterval(async () => {
+      if (screen === 'intro' || screen === 'leaderboard') {
+        try {
+          const res = await fetchSupabaseContestData();
+          if (res.success && res.submissions) {
+            setSubmissions((prev) => {
+              if (res.submissions!.length !== prev.length || res.submissions![0]?.id !== prev[0]?.id) {
+                setLastRefreshedAt(new Date());
+                return res.submissions!;
+              }
+              return prev;
+            });
+          }
+        } catch (e) {
+          console.warn('[OnlineContest Auto Polling Warning]', e);
+        }
+      }
+    }, 35000);
+    return () => clearInterval(pollInterval);
+  }, [screen]);
 
   // Lắng nghe sự kiện đồng bộ dữ liệu từ Modal Quản trị hoặc Tab khác
   useEffect(() => {
@@ -364,7 +412,7 @@ export const OnlineContest: React.FC = () => {
       id: `sub-${Date.now()}`,
       contestId: contestInfo.id,
       studentName: currentCandidate?.name || 'Học sinh',
-      studentClass: currentCandidate?.className || '8A1',
+      studentClass: currentCandidate?.className || classesList[0]?.id || '6/1',
       score: correctCount,
       totalQuestions: questionsToScore.length,
       timeSpentSeconds: timeSpentSeconds,
@@ -378,6 +426,22 @@ export const OnlineContest: React.FC = () => {
       addStudentToClassRoster(newSub.studentClass, newSub.studentName);
     }
     setScreen('result');
+
+    // TỰ ĐỘNG GỬI BÀI THI LÊN SUPABASE CLOUD DATABASE TOÀN TRƯỜNG NGAY LẬP TỨC
+    submitContestExamToSupabase(newSub)
+      .then((res) => {
+        if (res.success) {
+          console.log('[Supabase Cloud Sync] Bài thi của học sinh đã được ghi nhận trực tiếp vào Database!');
+          fetchSupabaseContestData().then((cData) => {
+            if (cData.success && cData.submissions) {
+              setSubmissions(cData.submissions);
+            }
+          });
+        }
+      })
+      .catch((err) => {
+        console.warn('[Supabase Auto Post Sub Warning]', err);
+      });
   };
 
   // Lọc danh sách bài thi theo hội thi đang được chọn trên bảng xếp hạng
@@ -927,10 +991,16 @@ export const OnlineContest: React.FC = () => {
                         </span>
                       </div>
                     </div>
-                    <span className="text-[9px] sm:text-xs font-bold px-2 sm:px-3 py-0.5 sm:py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-400/40 flex items-center space-x-1 sm:space-x-1.5 shadow-sm flex-shrink-0 ml-1">
-                      <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-emerald-400 animate-ping"></span>
-                      <span>Live Sync</span>
-                    </span>
+                    <button
+                      type="button"
+                      onClick={handleManualRefreshCloud}
+                      disabled={isRefreshingCloud}
+                      title={`Cập nhật gần nhất lúc ${lastRefreshedAt.toLocaleTimeString('vi-VN')}. Nhấn để tải dữ liệu mới nhất từ Supabase Cloud Database.`}
+                      className="text-[9px] sm:text-xs font-bold px-2 sm:px-3 py-1 sm:py-1 rounded-full bg-emerald-500/20 hover:bg-emerald-500/35 active:scale-95 transition-all text-emerald-300 border border-emerald-400/40 flex items-center space-x-1 sm:space-x-1.5 shadow-sm flex-shrink-0 ml-1 cursor-pointer"
+                    >
+                      <RefreshCw className={`w-2.5 h-2.5 sm:w-3 sm:h-3 text-emerald-400 ${isRefreshingCloud ? 'animate-spin text-emerald-200' : ''}`} />
+                      <span>{isRefreshingCloud ? 'Đang nạp...' : 'Live Sync'}</span>
+                    </button>
                   </div>
 
                   {/* BỤC VINH DANH TOP 3 (OLYMPIC PODIUM SHOWCASE RỘNG RÃI & SANG TRỌNG) */}
@@ -1536,6 +1606,16 @@ export const OnlineContest: React.FC = () => {
                 }`}
               >
                 Thi Đua Chi Đội Lớp
+              </button>
+              <button
+                type="button"
+                onClick={handleManualRefreshCloud}
+                disabled={isRefreshingCloud}
+                className="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-bold text-xs rounded-xl shadow-xs transition flex items-center space-x-1.5 border border-emerald-500/50 cursor-pointer disabled:opacity-60"
+                title="Tải lại kết quả thi mới nhất trực tiếp từ Supabase Cloud Database"
+              >
+                <RefreshCw className={`w-3.5 h-3.5 ${isRefreshingCloud ? 'animate-spin' : ''}`} />
+                <span>{isRefreshingCloud ? 'Đang nạp...' : 'Làm Mới Live'}</span>
               </button>
               {isStaff && (
                 <button

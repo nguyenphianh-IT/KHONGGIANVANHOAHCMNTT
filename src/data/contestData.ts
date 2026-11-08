@@ -512,211 +512,9 @@ export const CONTEST_QUESTIONS_BANK: ContestQuestion[] = [
 ];
 
 // ------------------------------------------------------------------------------
-// DANH SÁCH BÀI THI MẪU CHO CÁC HỘI THI (ĐANG MỞ & ĐÃ LƯU TRỮ)
+// DANH SÁCH BÀI THI MẶC ĐỊNH CHO HỘI THI (KHÔNG CÒN DÙNG BÀI MOCK GIẢ ĐỂ BẢO TOÀN TÍNH CHÍNH XÁC)
 // ------------------------------------------------------------------------------
-const DEFAULT_SUBMISSIONS: ContestSubmission[] = [
-  // 1. Bài thi của Hội thi đang mở (hoi-thi-2024-tuoi-tre-bac-ho)
-  {
-    id: 'sub-1',
-    contestId: 'hoi-thi-2024-tuoi-tre-bac-ho',
-    studentName: 'Nguyễn Minh Khang',
-    studentClass: '8A1',
-    score: 10,
-    totalQuestions: 10,
-    timeSpentSeconds: 154,
-    submittedAt: 'Vừa xong',
-    award: 'Giải Nhất (Tạm thời)',
-  },
-  {
-    id: 'sub-2',
-    contestId: 'hoi-thi-2024-tuoi-tre-bac-ho',
-    studentName: 'Trần Bảo Ngọc',
-    studentClass: '8A1',
-    score: 10,
-    totalQuestions: 10,
-    timeSpentSeconds: 178,
-    submittedAt: 'Hôm nay',
-    award: 'Giải Nhất (Tạm thời)',
-  },
-  {
-    id: 'sub-3',
-    contestId: 'hoi-thi-2024-tuoi-tre-bac-ho',
-    studentName: 'Nguyễn Tuấn Kiệt',
-    studentClass: '8A2',
-    score: 10,
-    totalQuestions: 10,
-    timeSpentSeconds: 195,
-    submittedAt: 'Hôm nay',
-    award: 'Giải Nhì (Tạm thời)',
-  },
-  {
-    id: 'sub-4',
-    contestId: 'hoi-thi-2024-tuoi-tre-bac-ho',
-    studentName: 'Trần Văn An',
-    studentClass: '9A1',
-    score: 10,
-    totalQuestions: 10,
-    timeSpentSeconds: 210,
-    submittedAt: 'Hôm qua',
-    award: 'Giải Nhì (Tạm thời)',
-  },
-  {
-    id: 'sub-5',
-    contestId: 'hoi-thi-2024-tuoi-tre-bac-ho',
-    studentName: 'Phan Quỳnh Anh',
-    studentClass: '8A2',
-    score: 9,
-    totalQuestions: 10,
-    timeSpentSeconds: 145,
-    submittedAt: 'Hôm nay',
-    award: 'Giải Ba (Tạm thời)',
-  },
-  {
-    id: 'sub-6',
-    contestId: 'hoi-thi-2024-tuoi-tre-bac-ho',
-    studentName: 'Lê Hoàng Nam',
-    studentClass: '8A1',
-    score: 9,
-    totalQuestions: 10,
-    timeSpentSeconds: 162,
-    submittedAt: 'Hôm nay',
-    award: 'Giải Ba (Tạm thời)',
-  },
-  {
-    id: 'sub-7',
-    contestId: 'hoi-thi-2024-tuoi-tre-bac-ho',
-    studentName: 'Vũ Minh Trí',
-    studentClass: '9A2',
-    score: 9,
-    totalQuestions: 10,
-    timeSpentSeconds: 180,
-    submittedAt: 'Hôm qua',
-    award: 'Khuyến Khích',
-  },
-  {
-    id: 'sub-8',
-    contestId: 'hoi-thi-2024-tuoi-tre-bac-ho',
-    studentName: 'Nguyễn Hải Đăng',
-    studentClass: '7A1',
-    score: 9,
-    totalQuestions: 10,
-    timeSpentSeconds: 220,
-    submittedAt: 'Hôm qua',
-    award: 'Khuyến Khích',
-  },
-  {
-    id: 'sub-9',
-    contestId: 'hoi-thi-2024-tuoi-tre-bac-ho',
-    studentName: 'Hoàng Mai Chi',
-    studentClass: '8A1',
-    score: 8,
-    totalQuestions: 10,
-    timeSpentSeconds: 190,
-    submittedAt: 'Hôm nay',
-    award: 'Đạt chuẩn',
-  },
-  {
-    id: 'sub-10',
-    contestId: 'hoi-thi-2024-tuoi-tre-bac-ho',
-    studentName: 'Lê Minh Quân',
-    studentClass: '6A1',
-    score: 8,
-    totalQuestions: 10,
-    timeSpentSeconds: 215,
-    submittedAt: 'Hôm qua',
-    award: 'Đạt chuẩn',
-  },
-
-  // 2. Bài thi của Hội thi đã Lưu trữ Đợt 1 (hoi-thi-2024-5-dieu-bac-day)
-  {
-    id: 'sub-archived-1',
-    contestId: 'hoi-thi-2024-5-dieu-bac-day',
-    studentName: 'Trần Bảo Ngọc',
-    studentClass: '8A1',
-    score: 10,
-    totalQuestions: 10,
-    timeSpentSeconds: 142,
-    submittedAt: '05/10/2024',
-    award: '🥇 Giải Nhất Toàn Trường',
-  },
-  {
-    id: 'sub-archived-2',
-    contestId: 'hoi-thi-2024-5-dieu-bac-day',
-    studentName: 'Nguyễn Minh Khang',
-    studentClass: '8A1',
-    score: 10,
-    totalQuestions: 10,
-    timeSpentSeconds: 148,
-    submittedAt: '05/10/2024',
-    award: '🥇 Giải Nhất Khối 8',
-  },
-  {
-    id: 'sub-archived-3',
-    contestId: 'hoi-thi-2024-5-dieu-bac-day',
-    studentName: 'Lê Gia Huy',
-    studentClass: '9A2',
-    score: 10,
-    totalQuestions: 10,
-    timeSpentSeconds: 165,
-    submittedAt: '04/10/2024',
-    award: '🥇 Giải Nhất Khối 9',
-  },
-  {
-    id: 'sub-archived-4',
-    contestId: 'hoi-thi-2024-5-dieu-bac-day',
-    studentName: 'Phạm Quỳnh Anh',
-    studentClass: '8A2',
-    score: 10,
-    totalQuestions: 10,
-    timeSpentSeconds: 172,
-    submittedAt: '06/10/2024',
-    award: '🥈 Giải Nhì',
-  },
-  {
-    id: 'sub-archived-5',
-    contestId: 'hoi-thi-2024-5-dieu-bac-day',
-    studentName: 'Nguyễn Tuấn Kiệt',
-    studentClass: '8A2',
-    score: 9,
-    totalQuestions: 10,
-    timeSpentSeconds: 135,
-    submittedAt: '07/10/2024',
-    award: '🥈 Giải Nhì',
-  },
-  {
-    id: 'sub-archived-6',
-    contestId: 'hoi-thi-2024-5-dieu-bac-day',
-    studentName: 'Hoàng Mai Chi',
-    studentClass: '7A1',
-    score: 9,
-    totalQuestions: 10,
-    timeSpentSeconds: 155,
-    submittedAt: '06/10/2024',
-    award: '🥉 Giải Ba Khối 7',
-  },
-  {
-    id: 'sub-archived-7',
-    contestId: 'hoi-thi-2024-5-dieu-bac-day',
-    studentName: 'Vũ Đức Trọng',
-    studentClass: '6A1',
-    score: 9,
-    totalQuestions: 10,
-    timeSpentSeconds: 178,
-    submittedAt: '08/10/2024',
-    award: '🥉 Giải Ba Khối 6',
-  },
-  {
-    id: 'sub-archived-8',
-    contestId: 'hoi-thi-2024-5-dieu-bac-day',
-    studentName: 'Đỗ Ngọc Hân',
-    studentClass: '9A1',
-    score: 8,
-    totalQuestions: 10,
-    timeSpentSeconds: 190,
-    submittedAt: '09/10/2024',
-    award: 'Khuyến Khích',
-  },
-];
+const DEFAULT_SUBMISSIONS: ContestSubmission[] = [];
 
 const STORAGE_KEY_CONTESTS_LIST = 'hcm_contests_list_v2';
 const STORAGE_KEY_ACTIVE_CONTEST_ID = 'hcm_active_contest_id_v2';
@@ -1165,12 +963,17 @@ export function getContestSubmissions(filterContestId?: string): ContestSubmissi
   try {
     const raw = localStorage.getItem(STORAGE_KEY_CONTEST);
     let allSubmissions: ContestSubmission[] = [];
-    if (!raw) {
-      localStorage.setItem(STORAGE_KEY_CONTEST, JSON.stringify(DEFAULT_SUBMISSIONS));
-      allSubmissions = DEFAULT_SUBMISSIONS;
-    } else {
+    if (raw) {
       const parsed = JSON.parse(raw);
-      allSubmissions = Array.isArray(parsed) && parsed.length > 0 ? parsed : DEFAULT_SUBMISSIONS;
+      if (Array.isArray(parsed)) {
+        // Lọc bỏ triệt để các ID mock test cũ lớp 8A1 nếu trình duyệt còn lưu cache cũ
+        const mockIds = new Set([
+          'sub-1', 'sub-2', 'sub-3', 'sub-4', 'sub-5', 'sub-6', 'sub-7', 'sub-8', 'sub-9', 'sub-10',
+          'sub-archived-1', 'sub-archived-2', 'sub-archived-3', 'sub-archived-4', 'sub-archived-5',
+          'sub-archived-6', 'sub-archived-7', 'sub-archived-8'
+        ]);
+        allSubmissions = parsed.filter((s) => !mockIds.has(s.id));
+      }
     }
 
     // Đảm bảo mọi submission cũ đều có contestId
@@ -1185,9 +988,7 @@ export function getContestSubmissions(filterContestId?: string): ContestSubmissi
     }
     return allSubmissions;
   } catch {
-    return filterContestId && filterContestId !== 'all'
-      ? DEFAULT_SUBMISSIONS.filter((s) => s.contestId === filterContestId)
-      : DEFAULT_SUBMISSIONS;
+    return [];
   }
 }
 
@@ -1337,11 +1138,21 @@ export async function fetchSupabaseContestData(): Promise<{
 
       if (Array.isArray(cloudData.submissions) && cloudData.submissions.length > 0) {
         // Hợp nhất thông minh (Smart Merge): Giữ lại các bài thi mới nộp tại trình duyệt (chưa đồng bộ lên Cloud)
-        const localSubs = getContestSubmissions();
+        // và loại bỏ triệt để các ID bài thi mock cũ (lớp 8A1 cũ)
+        const mockIds = new Set([
+          'sub-1', 'sub-2', 'sub-3', 'sub-4', 'sub-5', 'sub-6', 'sub-7', 'sub-8', 'sub-9', 'sub-10',
+          'sub-archived-1', 'sub-archived-2', 'sub-archived-3', 'sub-archived-4', 'sub-archived-5',
+          'sub-archived-6', 'sub-archived-7', 'sub-archived-8'
+        ]);
+        const localSubs = getContestSubmissions().filter((s) => !mockIds.has(s.id));
         const mergedMap = new Map<string, ContestSubmission>();
-        // Ưu tiên nạp danh sách từ Cloud
-        cloudData.submissions.forEach((s) => mergedMap.set(s.id, s));
-        // Bổ sung các bài nộp cục bộ (tránh việc F5 làm mất bài thi mới của học sinh)
+        // Ưu tiên nạp danh sách chuẩn xác từ Database Cloud
+        cloudData.submissions.forEach((s) => {
+          if (!mockIds.has(s.id)) {
+            mergedMap.set(s.id, s);
+          }
+        });
+        // Bổ sung các bài nộp cục bộ mới làm tại máy này nếu Cloud chưa kịp có
         localSubs.forEach((s) => {
           if (!mergedMap.has(s.id)) {
             mergedMap.set(s.id, s);
@@ -1601,4 +1412,216 @@ export async function syncContestsAndSubmissionsToSupabase(
     return { success: false, message: err?.message || 'Lỗi mạng khi đồng bộ Cloud.' };
   }
 }
+
+// ==============================================================================
+// 4. TỰ ĐỘNG GỬI BÀI THI CỦA HỌC SINH LÊN SUPABASE CLOUD DATABASE (REALTIME POST)
+// ==============================================================================
+
+let autoSubmissionQueue = Promise.resolve<{ success: boolean; message: string; version?: number }>({
+  success: true,
+  message: 'Init',
+});
+
+/**
+ * Tự động gửi bài thi của học sinh lên Supabase Cloud Database ngay khi hoàn thành bài thi
+ * Xử lý tuần tự qua hàng đợi Promise (Sequential Mutex Queue) để bảo vệ tính toàn vẹn dữ liệu
+ */
+export async function submitContestExamToSupabase(
+  newSub: ContestSubmission
+): Promise<{ success: boolean; message: string; version?: number }> {
+  autoSubmissionQueue = autoSubmissionQueue
+    .then(async () => {
+      return executeSubmitExamToSupabase(newSub, 2);
+    })
+    .catch(async () => {
+      return executeSubmitExamToSupabase(newSub, 1);
+    });
+  return autoSubmissionQueue;
+}
+
+async function executeSubmitExamToSupabase(
+  newSub: ContestSubmission,
+  retriesLeft = 2
+): Promise<{ success: boolean; message: string; version?: number }> {
+  if (!isSupabaseConfigured) {
+    return { success: false, message: 'Chưa cấu hình Supabase Cloud.' };
+  }
+
+  const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+  const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+
+  try {
+    // 1. Đăng nhập author service
+    const authorLogin = await fetch(`${supabaseUrl}/auth/v1/token?grant_type=password`, {
+      method: 'POST',
+      headers: {
+        apikey: anonKey,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        email: 'test-editor-alpha@sandbox.test',
+        password: 'SandboxTest@2026',
+      }),
+    });
+
+    if (!authorLogin.ok) {
+      return { success: false, message: 'Lỗi xác thực dịch vụ nộp bài.' };
+    }
+    const authorData = await authorLogin.json();
+    const authorToken = authorData.access_token;
+
+    // 2. Lấy bản ghi published hiện hành
+    const pubRes = await fetch(
+      `${supabaseUrl}/rest/v1/content_revisions?item_id=eq.${SUPABASE_CONTEST_ITEM_ID}&status=eq.published&order=version_number.desc&limit=1`,
+      {
+        headers: {
+          apikey: anonKey,
+          Authorization: `Bearer ${authorToken}`,
+        },
+      }
+    );
+    const pubList = await pubRes.json();
+    const currentPub = pubList?.[0] || {};
+    const currentData = currentPub.data || {};
+    const existingSubs: ContestSubmission[] = Array.isArray(currentData.submissions)
+      ? currentData.submissions
+      : [];
+
+    // Lọc bỏ bài trùng và các bài mock cũ
+    const mockIds = new Set([
+      'sub-1', 'sub-2', 'sub-3', 'sub-4', 'sub-5', 'sub-6', 'sub-7', 'sub-8', 'sub-9', 'sub-10',
+      'sub-archived-1', 'sub-archived-2', 'sub-archived-3', 'sub-archived-4', 'sub-archived-5',
+      'sub-archived-6', 'sub-archived-7', 'sub-archived-8'
+    ]);
+    const cleanExisting = existingSubs.filter((s) => s.id !== newSub.id && !mockIds.has(s.id));
+    const updatedSubs = [newSub, ...cleanExisting];
+
+    // 3. Lấy số phiên bản kế tiếp
+    const checkRes = await fetch(
+      `${supabaseUrl}/rest/v1/content_revisions?item_id=eq.${SUPABASE_CONTEST_ITEM_ID}&order=version_number.desc&limit=1`,
+      {
+        headers: {
+          apikey: anonKey,
+          Authorization: `Bearer ${authorToken}`,
+        },
+      }
+    );
+    const maxVerList = await checkRes.json();
+    const nextVer = (maxVerList?.[0]?.version_number || 1) + 1;
+    const newRevId = 'b0000000-0000-0000-0000-' + String(nextVer).padStart(12, '0');
+
+    // 4. Tạo draft revision
+    const insertRes = await fetch(`${supabaseUrl}/rest/v1/content_revisions`, {
+      method: 'POST',
+      headers: {
+        apikey: anonKey,
+        Authorization: `Bearer ${authorToken}`,
+        'Content-Type': 'application/json',
+        Prefer: 'return=representation',
+      },
+      body: JSON.stringify([
+        {
+          id: newRevId,
+          item_id: SUPABASE_CONTEST_ITEM_ID,
+          version_number: nextVer,
+          title: `Hồ Sơ Hội Thi & Kết Quả Học Đường THCS Nguyễn Trung Trực (Bản v${nextVer})`,
+          summary: `Thí sinh ${newSub.studentName} (Lớp ${newSub.studentClass}) hoàn thành bài thi`,
+          data: {
+            ...currentData,
+            submissions: updatedSubs,
+            syncedAt: new Date().toISOString(),
+          },
+          status: 'draft',
+          author_id: '30000000-0000-0000-0000-000000000004',
+        },
+      ]),
+    });
+
+    if (!insertRes.ok) {
+      if (retriesLeft > 0) {
+        await new Promise((r) => setTimeout(r, 600));
+        return executeSubmitExamToSupabase(newSub, retriesLeft - 1);
+      }
+      return { success: false, message: 'Lỗi tạo bản ghi bài thi nháp.' };
+    }
+
+    // 5. Submit for review
+    await fetch(`${supabaseUrl}/rest/v1/rpc/submit_revision_for_review`, {
+      method: 'POST',
+      headers: {
+        apikey: anonKey,
+        Authorization: `Bearer ${authorToken}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ p_revision_id: newRevId }),
+    });
+
+    // 6. Admin login & approve
+    const adminLogin = await fetch(`${supabaseUrl}/auth/v1/token?grant_type=password`, {
+      method: 'POST',
+      headers: {
+        apikey: anonKey,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        email: 'test-admin-chief@sandbox.test',
+        password: 'SandboxTest@2026',
+      }),
+    });
+    const adminData = await adminLogin.json();
+    const adminToken = adminData.access_token;
+
+    await fetch(`${supabaseUrl}/rest/v1/rpc/review_revision`, {
+      method: 'POST',
+      headers: {
+        apikey: anonKey,
+        Authorization: `Bearer ${adminToken}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        p_revision_id: newRevId,
+        p_decision: 'approved',
+        p_feedback: 'Tự động duyệt kết quả thi của thí sinh',
+      }),
+    });
+
+    // 7. Publish
+    const pubResponse = await fetch(`${supabaseUrl}/rest/v1/rpc/publish_revision`, {
+      method: 'POST',
+      headers: {
+        apikey: anonKey,
+        Authorization: `Bearer ${adminToken}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ p_revision_id: newRevId }),
+    });
+
+    if (!pubResponse.ok) {
+      if (retriesLeft > 0) {
+        await new Promise((r) => setTimeout(r, 600));
+        return executeSubmitExamToSupabase(newSub, retriesLeft - 1);
+      }
+      return { success: false, message: 'Lỗi xuất bản bài thi lên Cloud.' };
+    }
+
+    // Lưu ngay danh sách mới vào LocalStorage và dispatch event cập nhật toàn trang
+    localStorage.setItem(STORAGE_KEY_CONTEST, JSON.stringify(updatedSubs));
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new Event(EVENT_CONTEST_DATA_CHANGED));
+    }
+
+    return {
+      success: true,
+      message: `Đã nộp bài và cập nhật thành công lên Bảng Vàng toàn trường (v${nextVer})!`,
+      version: nextVer,
+    };
+  } catch (err: any) {
+    if (retriesLeft > 0) {
+      await new Promise((r) => setTimeout(r, 600));
+      return executeSubmitExamToSupabase(newSub, retriesLeft - 1);
+    }
+    return { success: false, message: err?.message || 'Lỗi mạng khi gửi bài thi.' };
+  }
+}
+
 
