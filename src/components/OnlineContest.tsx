@@ -45,6 +45,7 @@ export const OnlineContest: React.FC = () => {
 
   // Ref container chính để tự động cuộn mượt mà trên thiết bị di động khi chuyển màn hình
   const contestContainerRef = useRef<HTMLDivElement>(null);
+  const isInitialMount = useRef<boolean>(true);
 
   const scrollToContestTop = () => {
     if (contestContainerRef.current) {
@@ -54,8 +55,12 @@ export const OnlineContest: React.FC = () => {
     }
   };
 
-  // Tự động cuộn lên đầu vùng thi khi chuyển đổi màn hình (giúp trải nghiệm trên mobile không bị hẫng)
+  // Tự động cuộn lên đầu vùng thi khi người dùng chủ động chuyển đổi màn hình (bỏ qua lần render đầu khi tải trang)
   useEffect(() => {
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+      return;
+    }
     scrollToContestTop();
   }, [screen]);
 
