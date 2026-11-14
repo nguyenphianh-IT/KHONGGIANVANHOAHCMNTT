@@ -7,7 +7,9 @@ import { supabase, isSupabaseConfigured } from '../../lib/supabase';
 import {
   RealKnowledgeDocument,
   DocumentChunk,
-  DocumentApprovalStatus
+  DocumentApprovalStatus,
+  RagUserFeedback,
+  RagAnalyticsSummary
 } from '../types/ragTypes';
 import { documentRegistry } from '../knowledge/documentRegistry';
 import { documentIngestion } from '../ingestion/documentIngestion';
@@ -15,6 +17,18 @@ import { documentIngestion } from '../ingestion/documentIngestion';
 export class PersistentRagStore {
   private isSupabaseLive: boolean = false;
   private localChunks: Map<string, DocumentChunk[]> = new Map(); // documentId -> DocumentChunk[]
+  private localFeedbacks: RagUserFeedback[] = [];
+  private localRetrievalLogs: Array<{
+    query: string;
+    evidenceFound: boolean;
+    modelUsed: string;
+    chunksRetrieved: number;
+    chunksUsed: number;
+    retrievalTimeMs: number;
+    generationTimeMs: number;
+    totalTimeMs: number;
+    timestamp: string;
+  }> = [];
 
   constructor() {
     this.isSupabaseLive = isSupabaseConfigured;
@@ -54,48 +68,98 @@ export class PersistentRagStore {
   }
 
   /**
-   * Retrieve all documents (with optional approval status filter)
+   * Helper to strip internal administrative IDs from public outputs
    */
-  public async getDocuments(statusFilter?: DocumentApprovalStatus): Promise<RealKnowledgeDocument[]> {
+  private sanitizeForPublic(doc: RealKnowledgeDocument): RealKnowledgeDocument {
+    const sanitized = { ...doc };
+    delete sanitized.uploadedBy;
+    delete sanitized.approverId;
+    delete sanitized.rejectionReason;
+    return sanitized;
+  }
+
+  /**
+   * Retrieve all documents (with optional approval status filter and public privacy gate)
+   */
+  public async getDocuments(
+    statusFilter?: DocumentApprovalStatus,
+    publicOnly: boolean = false
+  ): Promise<RealKnowledgeDocument[]> {
+    let rawDocs: RealKnowledgeDocument[] = [];
+
     if (this.isSupabaseLive) {
       try {
         let query = supabase.from('rag_documents').select('*');
-        if (statusFilter) {
+        if (publicOnly) {
+          query = query.eq('approval_status', 'APPROVED').eq('is_allowed_for_rag', true);
+        } else if (statusFilter) {
           query = query.eq('approval_status', statusFilter);
         }
         const { data, error } = await query;
         if (!error && data && data.length > 0) {
-          return data.map(this.mapDbToDocument);
+          rawDocs = data.map(this.mapDbToDocument);
         }
       } catch (err) {
         console.warn('[PersistentRagStore] Error fetching from Supabase, using local registry:', err);
       }
     }
 
-    return documentRegistry.getAllDocuments(statusFilter);
+    if (rawDocs.length === 0) {
+      rawDocs = documentRegistry.getAllDocuments(publicOnly ? 'APPROVED' : statusFilter);
+    }
+
+    if (publicOnly) {
+      return rawDocs
+        .filter(d => d.approvalStatus === 'APPROVED' && d.isAllowedForRag === true)
+        .map(d => this.sanitizeForPublic(d));
+    }
+
+    return rawDocs;
   }
 
   /**
-   * Retrieve a single document by ID
+   * Retrieve a single document by ID (with public privacy gate)
    */
-  public async getDocumentById(docId: string): Promise<RealKnowledgeDocument | undefined> {
+  public async getDocumentById(
+    docId: string,
+    publicOnly: boolean = false
+  ): Promise<RealKnowledgeDocument | undefined> {
+    let doc: RealKnowledgeDocument | undefined;
+
     if (this.isSupabaseLive) {
       try {
-        const { data, error } = await supabase
+        let query = supabase
           .from('rag_documents')
           .select('*')
-          .eq('document_id', docId)
-          .single();
+          .eq('document_id', docId);
 
+        if (publicOnly) {
+          query = query.eq('approval_status', 'APPROVED').eq('is_allowed_for_rag', true);
+        }
+
+        const { data, error } = await query.single();
         if (!error && data) {
-          return this.mapDbToDocument(data);
+          doc = this.mapDbToDocument(data);
         }
       } catch (err) {
         // Fallback
       }
     }
 
-    return documentRegistry.getDocumentById(docId);
+    if (!doc) {
+      doc = documentRegistry.getDocumentById(docId);
+    }
+
+    if (!doc) return undefined;
+
+    if (publicOnly) {
+      if (doc.approvalStatus !== 'APPROVED' || !doc.isAllowedForRag) {
+        return undefined; // Hide unapproved document from public visitors
+      }
+      return this.sanitizeForPublic(doc);
+    }
+
+    return doc;
   }
 
   /**
@@ -257,13 +321,122 @@ export class PersistentRagStore {
     generationTimeMs: number;
     totalTimeMs: number;
   }): Promise<void> {
+    const timestamp = new Date().toISOString();
+    this.localRetrievalLogs.unshift({
+      ...log,
+      timestamp
+    });
+    if (this.localRetrievalLogs.length > 200) {
+      this.localRetrievalLogs.pop();
+    }
+
     if (this.isSupabaseLive) {
       try {
-        await supabase.from('rag_retrieval_logs').insert([log]);
+        await supabase.from('rag_retrieval_logs').insert([{ ...log, created_at: timestamp }]);
       } catch (e) {
         // Non-blocking telemetry
       }
     }
+  }
+
+  /**
+   * Phase 04: Save user feedback on answer quality
+   */
+  public async saveFeedback(feedback: RagUserFeedback): Promise<void> {
+    this.localFeedbacks.unshift(feedback);
+    if (this.localFeedbacks.length > 200) {
+      this.localFeedbacks.pop();
+    }
+
+    if (this.isSupabaseLive) {
+      try {
+        await supabase.from('rag_user_feedback').insert([{
+          id: feedback.id,
+          query: feedback.query,
+          answer_snippet: feedback.answerSnippet,
+          is_helpful: feedback.isHelpful,
+          category: feedback.category,
+          comment: feedback.comment,
+          user_role: feedback.userRole,
+          created_at: feedback.createdAt
+        }]);
+      } catch (e) {
+        // Non-blocking feedback storage
+      }
+    }
+  }
+
+  /**
+   * Phase 04: Operational Analytics Summary for Pilot Dashboard
+   */
+  public async getAnalytics(): Promise<RagAnalyticsSummary> {
+    const allDocs = await this.getDocuments(undefined, false);
+    const approvedDocs = allDocs.filter(d => d.approvalStatus === 'APPROVED');
+    const pendingDocs = allDocs.filter(d => d.approvalStatus === 'PENDING_REVIEW');
+    const rejectedDocs = allDocs.filter(d => d.approvalStatus === 'REJECTED');
+    const archivedDocs = allDocs.filter(d => d.approvalStatus === 'ARCHIVED');
+
+    let totalChunks = 0;
+    for (const doc of approvedDocs) {
+      const chunks = this.getChunksByDocumentId(doc.documentId);
+      totalChunks += chunks.length || doc.chunksCount || 0;
+    }
+
+    const totalLogged = this.localRetrievalLogs.length;
+    const evidenceFoundCount = this.localRetrievalLogs.filter(l => l.evidenceFound).length;
+    const fallbackCount = totalLogged - evidenceFoundCount;
+    const evidenceRatePercent = totalLogged > 0 ? Math.round((evidenceFoundCount / totalLogged) * 100) : 100;
+
+    const ungroundedQueries = this.localRetrievalLogs
+      .filter(l => !l.evidenceFound)
+      .slice(0, 15)
+      .map(l => ({ query: l.query, timestamp: l.timestamp }));
+
+    const totalFeedback = this.localFeedbacks.length;
+    const helpfulCount = this.localFeedbacks.filter(f => f.isHelpful).length;
+    const unhelpfulCount = totalFeedback - helpfulCount;
+    const satisfactionRatePercent = totalFeedback > 0 ? Math.round((helpfulCount / totalFeedback) * 100) : 100;
+
+    const recentComments = this.localFeedbacks
+      .filter(f => f.comment && f.comment.trim().length > 0)
+      .slice(0, 10)
+      .map(f => ({
+        comment: f.comment!,
+        isHelpful: f.isHelpful,
+        category: f.category,
+        createdAt: f.createdAt
+      }));
+
+    const health = await this.checkStagingHealth();
+
+    return {
+      documents: {
+        total: allDocs.length,
+        approved: approvedDocs.length,
+        pending: pendingDocs.length,
+        rejected: rejectedDocs.length,
+        archived: archivedDocs.length
+      },
+      totalChunks,
+      queries: {
+        totalLogged,
+        evidenceFoundCount,
+        fallbackCount,
+        evidenceRatePercent
+      },
+      ungroundedQueries,
+      feedback: {
+        total: totalFeedback,
+        helpfulCount,
+        unhelpfulCount,
+        satisfactionRatePercent,
+        recentComments
+      },
+      databaseHealth: {
+        status: health.status,
+        isSupabaseLive: health.isSupabaseLive
+      }
+    };
   }
 
   /**

@@ -77,10 +77,28 @@ export async function validateAdminAuth(
   }
 
   // 2. Sandbox Token check (Dev / Test / Sandbox personas)
+  const isTestOrLocal = (globalThis as any).process?.env?.NODE_ENV === 'test' ||
+                        (globalThis as any).process?.env?.RAG_ALLOW_SANDBOX_PERSONAS === 'true';
+  const isStagingDeployment = (globalThis as any).process?.env?.VERCEL_ENV === 'preview' ||
+                              (globalThis as any).process?.env?.VERCEL_ENV === 'production' ||
+                              (globalThis as any).process?.env?.APP_ENV === 'staging' ||
+                              (globalThis as any).process?.env?.STAGING_MODE === 'true';
+
   if (token) {
     const personaId = token.startsWith('sandbox-access-token-') ? token.replace('sandbox-access-token-', '') : token;
     const persona = SANDBOX_PERSONAS_ROLE_MAP[personaId];
     if (persona) {
+      if (isStagingDeployment && !isTestOrLocal) {
+        return {
+          authorized: false,
+          operatorName: 'Anonymous',
+          operatorId: '',
+          role: 'guest',
+          statusCode: 401,
+          error: 'Môi trường Staging yêu cầu tài khoản Supabase Auth thực tế, không chấp nhận Sandbox Persona token.'
+        };
+      }
+
       const userRank = ROLE_RANKS[persona.role] || 0;
       const requiredRank = ROLE_RANKS[requiredRole] || 3;
       if (userRank >= requiredRank) {
@@ -314,10 +332,20 @@ export async function handleHealthRoute(): Promise<ApiResponse> {
 /**
  * GET /api/rag/documents
  */
-export async function handleGetDocumentsRoute(statusFilter?: string): Promise<ApiResponse> {
+export async function handleGetDocumentsRoute(
+  statusFilter?: string,
+  authHeader?: string,
+  roleHeader?: string
+): Promise<ApiResponse> {
   try {
     await documentRegistry.initialize();
-    const docs = await persistentRagStore.getDocuments(statusFilter as DocumentApprovalStatus);
+    const auth = await validateAdminAuth(authHeader, roleHeader, 'editor');
+    const isStaff = auth.authorized;
+
+    const docs = await persistentRagStore.getDocuments(
+      statusFilter as DocumentApprovalStatus,
+      !isStaff
+    );
     const categories = documentRegistry.getCategories();
 
     return {
@@ -419,9 +447,16 @@ export async function handlePostDocumentRoute(
 /**
  * GET /api/rag/documents/:id
  */
-export async function handleGetDocumentByIdRoute(docId: string): Promise<ApiResponse> {
+export async function handleGetDocumentByIdRoute(
+  docId: string,
+  authHeader?: string,
+  roleHeader?: string
+): Promise<ApiResponse> {
   try {
-    const doc = await persistentRagStore.getDocumentById(docId);
+    const auth = await validateAdminAuth(authHeader, roleHeader, 'editor');
+    const isStaff = auth.authorized;
+
+    const doc = await persistentRagStore.getDocumentById(docId, !isStaff);
     if (!doc) {
       return {
         success: false,
@@ -633,6 +668,84 @@ export async function handleReprocessDocumentRoute(
       success: false,
       statusCode: 500,
       error: `Lỗi xử lý lại tài liệu: ${err?.message || 'Lỗi không xác định'}`
+    };
+  }
+}
+
+/**
+ * POST /api/rag/feedback (User Feedback on Answer Quality)
+ */
+export async function handleFeedbackRoute(body: any): Promise<ApiResponse> {
+  try {
+    const query = typeof body?.query === 'string' ? body.query.trim() : '';
+    const isHelpful = typeof body?.isHelpful === 'boolean' ? body.isHelpful : (body?.isHelpful === 'true');
+    if (!query) {
+      return {
+        success: false,
+        statusCode: 400,
+        error: 'Tham số "query" là bắt buộc.'
+      };
+    }
+
+    const feedbackId = `FB-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`;
+    const feedbackRecord = {
+      id: feedbackId,
+      query,
+      answerSnippet: typeof body?.answerSnippet === 'string' ? body.answerSnippet.slice(0, 500) : '',
+      isHelpful,
+      category: body?.category,
+      comment: typeof body?.comment === 'string' ? body.comment.trim() : undefined,
+      userRole: typeof body?.userRole === 'string' ? body.userRole : 'student',
+      createdAt: new Date().toISOString()
+    };
+
+    await persistentRagStore.saveFeedback(feedbackRecord);
+
+    return {
+      success: true,
+      statusCode: 201,
+      data: {
+        feedbackId,
+        message: 'Cảm ơn bạn đã gửi phản hồi đánh giá câu trả lời!'
+      }
+    };
+  } catch (err: any) {
+    return {
+      success: false,
+      statusCode: 500,
+      error: `Lỗi ghi nhận phản hồi: ${err?.message || 'Lỗi không xác định'}`
+    };
+  }
+}
+
+/**
+ * GET /api/rag/analytics (Protected: Operations Analytics Dashboard)
+ */
+export async function handleAnalyticsRoute(
+  authHeader?: string,
+  roleHeader?: string
+): Promise<ApiResponse> {
+  const auth = await validateAdminAuth(authHeader, roleHeader, 'admin');
+  if (!auth.authorized) {
+    return {
+      success: false,
+      statusCode: auth.statusCode || 403,
+      error: auth.error
+    };
+  }
+
+  try {
+    const summary = await persistentRagStore.getAnalytics();
+    return {
+      success: true,
+      statusCode: 200,
+      data: summary
+    };
+  } catch (err: any) {
+    return {
+      success: false,
+      statusCode: 500,
+      error: `Lỗi truy xuất dữ liệu vận hành: ${err?.message || 'Lỗi không xác định'}`
     };
   }
 }

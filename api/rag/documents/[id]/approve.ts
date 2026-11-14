@@ -10,10 +10,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(204).end();
   }
 
-  if (req.method !== 'POST') {
-    return res.status(405).json({ success: false, error: 'Method Not Allowed' });
-  }
-
   const { id } = req.query;
   const docId = Array.isArray(id) ? id[0] : id;
 
@@ -21,8 +17,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(400).json({ success: false, error: 'Document ID is required' });
   }
 
-  const authHeader = req.headers.authorization;
-  const roleHeader = req.headers['x-user-role'] as string | undefined;
-  const result = await handleApproveDocumentRoute(docId, req.body, authHeader, roleHeader);
-  return res.status(result.statusCode).json(result);
+  if (req.method === 'POST') {
+    const authHeader = req.headers.authorization;
+    const roleHeader = req.headers['x-user-role'] as string | undefined;
+    const result = await handleApproveDocumentRoute(docId, req.body, authHeader, roleHeader);
+    return res.status(result.statusCode).json(result);
+  }
+
+  return res.status(405).json({ success: false, error: 'Method Not Allowed' });
 }

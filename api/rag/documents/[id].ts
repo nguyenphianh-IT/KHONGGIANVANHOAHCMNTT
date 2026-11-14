@@ -18,7 +18,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   if (req.method === 'GET') {
-    const result = await handleGetDocumentByIdRoute(docId);
+    const authHeader = req.headers.authorization;
+    const roleHeader = req.headers['x-user-role'] as string | undefined;
+    const result = await handleGetDocumentByIdRoute(docId, authHeader, roleHeader);
     return res.status(result.statusCode).json(result);
   }
 

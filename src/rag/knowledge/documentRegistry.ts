@@ -49,11 +49,19 @@ export async function seedInitialDocuments(): Promise<RealKnowledgeDocument[]> {
 
   for (const doc of SAMPLE_HCM_DOCUMENTS) {
     const checksum = await computeSha256(doc.content);
+    let docType: DocumentType = 'article';
+    if (doc.id === 'DOC-HCM-001' || doc.id === 'DOC-HCM-008') docType = 'speech';
+    else if (doc.id === 'DOC-HCM-003') docType = 'letter';
+    else if (doc.id === 'DOC-HCM-002' || doc.id === 'DOC-HCM-006' || doc.id === 'DOC-HCM-007') docType = 'book';
+    else if (doc.id === 'DOC-HCM-004') docType = 'instruction';
+    else if (doc.id === 'DOC-HCM-013' || doc.id === 'DOC-HCM-015') docType = 'official_dispatch';
+    else if (doc.id === 'DOC-HCM-011' || doc.id === 'DOC-HCM-012') docType = 'archive';
+
     initialDocs.push({
       documentId: doc.id,
       title: doc.title,
       description: (doc.metadata?.historicalSignificance as string) || doc.title,
-      documentType: (doc.category as DocumentType) || 'article',
+      documentType: docType,
       category: doc.category,
       author: doc.authorOrSource,
       publisher: (doc.metadata?.volume as string) || 'Hội đồng Khoa học Bảo tàng Hồ Chí Minh',

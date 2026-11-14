@@ -1,6 +1,16 @@
 /**
- * ADR-002: Approved Sample Knowledge Corpus
+ * ADR-002 Phase 04: Real Knowledge Base Corpus (Controlled Pilot)
  * Project: Hệ thống Không gian Văn hóa Hồ Chí Minh - Trường THCS Nguyễn Trung Trực
+ *
+ * Fully populated across 8 Standard Categories (HCM_STANDARD_CATEGORIES):
+ * 1. bio-career: Chủ tịch Hồ Chí Minh – Tiểu sử và sự nghiệp
+ * 2. ideology-ethics: Tư tưởng, đạo đức, phong cách Hồ Chí Minh
+ * 3. teachings-children: Những lời dạy của Bác đối với thiếu nhi
+ * 4. cultural-heritage: Di sản văn hóa Hồ Chí Minh
+ * 5. hcm-cultural-space: Không gian văn hóa Hồ Chí Minh TP.HCM
+ * 6. hcmc-history: Lịch sử Thành phố Hồ Chí Minh (và Thới An - Quận 12)
+ * 7. school-education: Hoạt động giáo dục và học tập tại nhà trường
+ * 8. official-dispatches: Tài liệu chính thức của cơ quan quản lý
  *
  * Source criteria:
  * - High authenticity historical documents, official editions, and verified school archives.
@@ -14,8 +24,8 @@ export const SAMPLE_HCM_DOCUMENTS: KnowledgeDocument[] = [
   {
     id: 'DOC-HCM-001',
     title: 'Toàn văn Tuyên ngôn Độc lập ngày 2/9/1945',
-    category: 'speech',
-    categoryLabel: 'Văn kiện & Tuyên ngôn Lịch sử',
+    category: 'ideology-ethics',
+    categoryLabel: 'Tư tưởng, đạo đức, phong cách Hồ Chí Minh',
     authorOrSource: 'Chủ tịch Hồ Chí Minh - Lưu trữ Văn kiện Đảng & Bảo tàng Lịch sử Quốc gia',
     dateOrEra: '02/09/1945',
     status: 'APPROVED',
@@ -39,8 +49,8 @@ Chủ tịch Hồ Chí Minh khẳng định ý chí sắt đá của toàn thể
   {
     id: 'DOC-HCM-002',
     title: 'Di chúc của Chủ tịch Hồ Chí Minh (Bản công bố chính thức)',
-    category: 'book',
-    categoryLabel: 'Bảo vật Quốc gia & Văn kiện Di sản',
+    category: 'cultural-heritage',
+    categoryLabel: 'Di sản văn hóa Hồ Chí Minh',
     authorOrSource: 'Chủ tịch Hồ Chí Minh - Ban Chấp hành Trung ương Đảng công bố',
     dateOrEra: '1965 - 1969',
     status: 'APPROVED',
@@ -66,8 +76,8 @@ VỀ ĐOÀN VIÊN VÀ THANH NIÊN:
   {
     id: 'DOC-HCM-003',
     title: 'Thư gửi các học sinh nhân ngày khai trường đầu tiên của nước Việt Nam Dân chủ Cộng hòa',
-    category: 'letter',
-    categoryLabel: 'Thư từ Lịch sử & Giáo dục Học đường',
+    category: 'teachings-children',
+    categoryLabel: 'Những lời dạy của Bác đối với thiếu nhi',
     authorOrSource: 'Chủ tịch Hồ Chí Minh - Báo Cứu Quốc số 34 & Hồ Chí Minh Toàn tập Tập 4',
     dateOrEra: 'Tháng 9/1945',
     status: 'APPROVED',
@@ -89,8 +99,8 @@ Lời căn dặn thiêng liêng đối với thế hệ tương lai:
   {
     id: 'DOC-HCM-004',
     title: 'Năm Điều Bác Hồ dạy Thiếu niên, Nhi đồng (Nguồn gốc & Nội dung chuẩn)',
-    category: 'instruction',
-    categoryLabel: 'Lời dạy & Chuẩn mực Đạo đức Thiếu nhi',
+    category: 'teachings-children',
+    categoryLabel: 'Những lời dạy của Bác đối với thiếu nhi',
     authorOrSource: 'Trung ương Đoàn TNCS Hồ Chí Minh & Bảo tàng Hồ Chí Minh xác thực',
     dateOrEra: '1961 - 1965',
     status: 'APPROVED',
@@ -118,8 +128,8 @@ Nội dung 5 Điều Bác dạy hiện nay được toàn thể đội viên, h�
   {
     id: 'DOC-HCM-005',
     title: 'Bài viết "Dân vận" đăng trên Báo Sự Thật ngày 15/10/1949',
-    category: 'article',
-    categoryLabel: 'Bài báo & Lý luận Cách mạng',
+    category: 'ideology-ethics',
+    categoryLabel: 'Tư tưởng, đạo đức, phong cách Hồ Chí Minh',
     authorOrSource: 'Bút danh X.Y.Z (Chủ tịch Hồ Chí Minh) - Báo Sự Thật số 120',
     dateOrEra: '15/10/1949',
     status: 'APPROVED',
@@ -144,8 +154,8 @@ Kết luận bất hủ của bài báo:
   {
     id: 'DOC-HCM-006',
     title: 'Tác phẩm "Sửa đổi lối làm việc" (10/1947) - Về Đạo đức Cách mạng',
-    category: 'book',
-    categoryLabel: 'Tác phẩm Lý luận & Rèn luyện Đạo đức',
+    category: 'ideology-ethics',
+    categoryLabel: 'Tư tưởng, đạo đức, phong cách Hồ Chí Minh',
     authorOrSource: 'Bút danh Tân Sinh (Chủ tịch Hồ Chí Minh) - NXB Sự Thật',
     dateOrEra: 'Tháng 10/1947',
     status: 'APPROVED',
@@ -172,8 +182,8 @@ Bác căn dặn: "Cũng như sông thì có nguồn mới có nước, không c�
   {
     id: 'DOC-HCM-007',
     title: 'Tập thơ "Nhật ký trong tù" (Ngục trung nhật ký) - Bài học ý chí và lạc quan',
-    category: 'book',
-    categoryLabel: 'Di sản Văn học & Tác phẩm Nghệ thuật',
+    category: 'cultural-heritage',
+    categoryLabel: 'Di sản văn hóa Hồ Chí Minh',
     authorOrSource: 'Chủ tịch Hồ Chí Minh - Viện Văn học & NXB Văn học',
     dateOrEra: '1942 - 1943',
     status: 'APPROVED',
@@ -210,8 +220,8 @@ Tác phẩm phản ánh tinh thần tự do bất khuất, phong thái ung dung 
   {
     id: 'DOC-HCM-008',
     title: 'Lời kêu gọi Toàn quốc kháng chiến (19/12/1946)',
-    category: 'speech',
-    categoryLabel: 'Hiệu triệu Lịch sử & Kháng chiến Kiến quốc',
+    category: 'cultural-heritage',
+    categoryLabel: 'Di sản văn hóa Hồ Chí Minh',
     authorOrSource: 'Chủ tịch Hồ Chí Minh - Đài Tiếng nói Việt Nam phát thanh đêm 19/12/1946',
     dateOrEra: '19/12/1946',
     status: 'APPROVED',
@@ -234,12 +244,168 @@ Dù phải gian lao kháng chiến, nhưng với một lòng kiên quyết hy si
     }
   },
 
-  // Security test document: PENDING_REVIEW & isAllowedForRag: false
+  {
+    id: 'DOC-HCM-010',
+    title: 'Tiểu sử Chủ tịch Hồ Chí Minh: Thời niên thiếu và Dấu mốc lịch sử Bến Nhà Rồng năm 1911',
+    category: 'bio-career',
+    categoryLabel: 'Chủ tịch Hồ Chí Minh – Tiểu sử và sự nghiệp',
+    authorOrSource: 'Viện Lịch sử Đảng - Học viện Chính trị Quốc gia Hồ Chí Minh',
+    dateOrEra: '1890 - 1911',
+    status: 'APPROVED',
+    isAllowedForRag: true,
+    topics: ['Tiểu sử Bác Hồ', 'Nguyễn Sinh Cung', 'Nguyễn Tất Thành', 'Kim Liên', 'Bến Nhà Rồng', '1911'],
+    sourceUrl: 'https://baotanghochiminh.vn',
+    content: `Chủ tịch Hồ Chí Minh (lúc nhỏ tên là Nguyễn Sinh Cung, đi học lấy tên là Nguyễn Tất Thành) sinh ngày 19 tháng 5 năm 1890 tại quê ngoại làng Hoàng Trù (Chùa), quê nội làng Kim Liên (Sen), huyện Nam Đàn, tỉnh Nghệ An.
+
+Thân phụ là cụ Phó bảng Nguyễn Sinh Sắc, thân mẫu là bà Hoàng Thị Loan. Từ thuở nhỏ, Nguyễn Tất Thành đã chứng kiến nỗi thống khổ của nhân dân dưới ách thực dân phong kiến và sớm nung nấu lòng yêu nước thương dân sâu sắc.
+
+Ngày 5 tháng 6 năm 1911, từ Bến Cảng Nhà Rồng (Sài Gòn - nay là TP. Hồ Chí Minh), trên con tàu buôn Đô đốc Latouche-Tréville, người thanh niên yêu nước Nguyễn Tất Thành với tên gọi Văn Ba đã rời Tổ quốc ra đi tìm con đường cứu nước, cứu dân. Trải qua 30 năm bôn ba qua nhiều châu lục, Người đã tìm thấy chân lý cứu nước và lãnh đạo cách mạng Việt Nam đi đến thắng lợi lịch sử.`,
+    metadata: {
+      birthDate: '19/05/1890',
+      departureDate: '05/06/1911',
+      departurePort: 'Bến Nhà Rồng, Sài Gòn'
+    }
+  },
+
+  {
+    id: 'DOC-HCM-011',
+    title: 'Truyền thống Lịch sử Anh hùng Dân tộc Nguyễn Trung Trực và Vùng đất Thới An - Quận 12',
+    category: 'hcmc-history',
+    categoryLabel: 'Lịch sử Thành phố Hồ Chí Minh',
+    authorOrSource: 'Ban Giám hiệu & Tổ Lịch sử Trường THCS Nguyễn Trung Trực',
+    dateOrEra: '1838 - 1868 & Hiện nay',
+    status: 'APPROVED',
+    isAllowedForRag: true,
+    topics: ['Nguyễn Trung Trực', 'Trường THCS Nguyễn Trung Trực', 'Bảo bối tinh thần', 'Khởi nghĩa kháng Pháp', 'Thới An', 'Quận 12'],
+    sourceUrl: 'https://thcsnguyentrungtruc.hcm.edu.vn',
+    content: `Trường THCS Nguyễn Trung Trực tọa lạc tại phường Thới An, Quận 12, TP. Hồ Chí Minh - vùng đất giàu truyền thống cách mạng Chiến khu An Phú Đông oanh liệt.
+
+Ngôi trường tự hào mang tên người anh hùng nghĩa quân Nam Bộ kiên cường bất khuất trong cuộc kháng chiến chống thực dân Pháp:
+Anh hùng Nguyễn Trung Trực (1838 - 1868) nổi tiếng với hai chiến công vang dội:
+1. Đốt cháy tàu chiến Hy Vọng (Espérance) của thực dân Pháp trên sông Nhật Tảo ngày 10/12/1861.
+2. Đánh úp đồn Rạch Giá ngày 16/6/1868 tiêu diệt tên chủ tỉnh và binh lính thực dân.
+
+Khi bị giặc bắt và hành quyết ngày 27/10/1868 tại chợ Rạch Giá, ông đã hiên ngang tuyên bố câu nói bất hủ:
+"Bao giờ người Tây nhổ hết cỏ nước Nam thì mới hết người Nam đánh Tây!".
+
+Noi gương tinh thần yêu nước quật cường của Anh hùng Nguyễn Trung Trực và lời dạy của Bác Hồ kính yêu, các thế hệ thầy và trò Trường THCS Nguyễn Trung Trực luôn nỗ lực thi đua Dạy tốt - Học tốt, xây dựng môi trường học đường văn minh, kỷ cương và nhân ái.`,
+    metadata: {
+      heroBirthYear: 1838,
+      heroDeathYear: 1868,
+      schoolLocation: 'Phường Thới An, Quận 12, TP.HCM'
+    }
+  },
+
+  {
+    id: 'DOC-HCM-012',
+    title: 'Đề án Xây dựng Không gian Văn hóa Hồ Chí Minh tại Trường THCS Nguyễn Trung Trực',
+    category: 'hcm-cultural-space',
+    categoryLabel: 'Không gian văn hóa Hồ Chí Minh TP.HCM',
+    authorOrSource: 'Chi bộ & Ban Chỉ đạo Không gian Văn hóa HCM - THCS Nguyễn Trung Trực',
+    dateOrEra: '2025 - 2026',
+    status: 'APPROVED',
+    isAllowedForRag: true,
+    topics: ['Không gian Văn hóa HCM', 'Trường học số', 'Thư viện mở', 'Chuyển đổi số', 'Trải nghiệm trực quan'],
+    sourceUrl: 'https://thcsnguyentrungtruc.hcm.edu.vn',
+    content: `Thực hiện Nghị quyết Đại hội Đảng bộ TP. Hồ Chí Minh về xây dựng Không gian Văn hóa Hồ Chí Minh, Trường THCS Nguyễn Trung Trực triển khai mô hình kết hợp hài hòa giữa Không gian vật lý học đường và Không gian số tương tác (Digital Cultural Space).
+
+1. KHÔNG GIAN VẬT LÝ HỌC ĐƯỜNG:
+- Khu trưng bày tượng Bác và triển lãm ảnh tư liệu về cuộc đời hoạt động cách mạng của Bác Hồ.
+- Tủ sách Bác Hồ tại Thư viện trường với hàng trăm đầu sách quý, truyện tranh lịch sử, tác phẩm văn học phù hợp lứa tuổi thiếu niên.
+- Góc rèn luyện "5 Điều Bác Hồ dạy" tại từng chi đội lớp học.
+
+2. KHÔNG GIAN VĂN HÓA SỐ (RAG KNOWLEDGE PLATFORM):
+- Xây dựng kho tư liệu số hóa có thẩm định, lưu trữ văn kiện, audio, hình ảnh và câu chuyện kể về Bác.
+- Tích hợp Trợ lý AI hỏi đáp tư liệu (RAG Chatbot) giúp học sinh và giáo viên tra cứu tài liệu học tập một cách trực quan, chuẩn xác, có trích dẫn nguồn gốc lịch sử rõ ràng.
+- Tổ chức các hội thi trực tuyến tìm hiểu lịch sử, kể chuyện Bác Hồ và rèn luyện đạo đức học sinh.`,
+    metadata: {
+      programCode: 'KG-HCM-NTT-2026',
+      approvalYear: 2026
+    }
+  },
+
+  {
+    id: 'DOC-HCM-013',
+    title: 'Kế hoạch số 48/KH-THCSNTT về Học tập và làm theo tư tưởng, đạo đức, phong cách Hồ Chí Minh',
+    category: 'school-education',
+    categoryLabel: 'Hoạt động giáo dục và học tập tại nhà trường',
+    authorOrSource: 'Hiệu trưởng & Chi bộ Trường THCS Nguyễn Trung Trực ban hành',
+    dateOrEra: 'Năm học 2025 - 2026',
+    status: 'APPROVED',
+    isAllowedForRag: true,
+    topics: ['Kế hoạch 48', 'Chỉ thị 05', 'Học tập Bác Hồ', 'Chi bộ nhà trường', 'Giáo viên', 'Học sinh'],
+    sourceUrl: 'https://thcsnguyentrungtruc.hcm.edu.vn',
+    content: `Kế hoạch số 48/KH-THCSNTT của Trường THCS Nguyễn Trung Trực về việc tiếp tục đẩy mạnh học tập và làm theo tư tưởng, đạo đức, phong cách Hồ Chí Minh trong năm học 2025 - 2026.
+
+MỤC TIÊU TRỌNG TÂM:
+1. Đưa việc học tập và làm theo gương Bác thành nền nếp thường xuyên trong mọi hoạt động sư phạm, giảng dạy và rèn luyện của cán bộ, giáo viên, nhân viên và học sinh toàn trường.
+2. Đổi mới phương pháp dạy học các môn Lịch sử, Ngữ văn, Giáo dục công dân (GDCD) gắn liền với các câu chuyện thực tế về tấm gương đạo đức Bác Hồ.
+3. Ứng dụng công nghệ thông tin và chuyển đổi số trong quản lý, chia sẻ tài liệu học tập tư tưởng Hồ Chí Minh.
+
+TIÊU CHÍ ĐÁNH GIÁ HỌC SINH:
+- Thực hiện nghiêm túc 5 Điều Bác Hồ dạy bằng việc làm cụ thể: trung thực trong thi cử, lễ phép với thầy cô, hòa đồng giúp đỡ bạn bè, bảo vệ môi trường trường học xanh - sạch - đẹp.`,
+    metadata: {
+      dispatchNumber: '48/KH-THCSNTT',
+      signDate: '15/09/2025',
+      signer: 'Hiệu trưởng Trường THCS Nguyễn Trung Trực'
+    }
+  },
+
+  {
+    id: 'DOC-HCM-014',
+    title: 'Phong cách ứng xử và lối sống giản dị của Chủ tịch Hồ Chí Minh: Đôi dép cao su và Chiếc áo nâu sờn',
+    category: 'ideology-ethics',
+    categoryLabel: 'Tư tưởng, đạo đức, phong cách Hồ Chí Minh',
+    authorOrSource: 'Bảo tàng Hồ Chí Minh - Chuyện kể về Bác Hồ',
+    dateOrEra: '1947 - 1969',
+    status: 'APPROVED',
+    isAllowedForRag: true,
+    topics: ['Lối sống giản dị', 'Đôi dép cao su', 'Áo nâu sờn', 'Phong cách Hồ Chí Minh', 'Gần dân'],
+    sourceUrl: 'https://baotanghochiminh.vn',
+    content: `Phong cách sống giản dị, khiêm tốn của Bác Hồ là bài học đạo đức cao đẹp và sâu sắc nhất cho các thế hệ học sinh.
+
+CHUYỆN VỀ ĐÔI DÉP CAO SU:
+Đôi dép của Bác được làm từ lốp ô tô quân sự của thực dân Pháp bị quân ta phục kích tại chiến khu Việt Bắc năm 1947. Đôi dép ấy đã theo chân Bác đi khắp mọi miền đất nước, từ chiến dịch Biên giới năm 1950 đến những chuyến thăm đồng ruộng, công trường, nhà máy và cả trong các chuyến công du ngoại giao quốc tế.
+Khi dép mòn, các đồng chí phục vụ xin Bác đổi dép mới, Bác cười bảo: "Dép còn dùng được, chỉ cần đóng quai lại là đi tốt. Nước ta còn nghèo, đồng bào ta còn vất vả, Bác đi đôi dép này vừa nhẹ, vừa tiện".
+
+BỮA ĂN VÀ CHIẾC ÁO NÂU:
+Bữa ăn hàng ngày của Bác đạm bạc với những món ăn dân dã quê hương như cá kho nghệ, canh cua rau đay, quả cà muối. Bác không bao giờ để thừa một hạt cơm, ăn xong tự tay sắp xếp bát đĩa gọn gàng.
+Chiếc áo nâu sờn vá vai hay chiếc quạt mo cau những trưa hè oi ả chứng minh một vĩ nhân thế giới luôn giữ trọn tấm lòng trong sáng, đồng cam cộng khổ cùng nhân dân.`,
+    metadata: {
+      theme: 'Tấm gương đạo đức và lối sống Bác Hồ',
+      targetAudience: 'Học sinh phổ thông'
+    }
+  },
+
+  {
+    id: 'DOC-HCM-015',
+    title: 'Hướng dẫn Đẩy mạnh Xây dựng Không gian Văn hóa Hồ Chí Minh trong ngành Giáo dục và Đào tạo',
+    category: 'official-dispatches',
+    categoryLabel: 'Tài liệu chính thức của cơ quan quản lý',
+    authorOrSource: 'Sở Giáo dục và Đào tạo TP. Hồ Chí Minh',
+    dateOrEra: '2024 - 2025',
+    status: 'APPROVED',
+    isAllowedForRag: true,
+    topics: ['Hướng dẫn sở GDĐT', 'Không gian văn hóa Hồ Chí Minh', 'Học đường', 'Nghị quyết Thành ủy'],
+    sourceUrl: 'https://hcm.edu.vn',
+    content: `Văn bản hướng dẫn của Sở Giáo dục và Đào tạo TP. Hồ Chí Minh về việc triển khai xây dựng Không gian Văn hóa Hồ Chí Minh trong các cơ sở giáo dục trên toàn địa bàn Thành phố.
+
+YÊU CẦU ĐỐI VỚI CÁC TRƯỜNG THCS:
+1. Xây dựng không gian văn hóa phù hợp với đặc thù tâm lý lứa tuổi học sinh trung học cơ sở, tránh hình thức, phô trương, lãng phí.
+2. Tích hợp giáo dục truyền thống lịch sử, lý tưởng cách mạng thông qua các hoạt động trải nghiệm, tiết sinh hoạt dưới cờ, câu lạc bộ văn hóa - nghệ thuật.
+3. Đẩy mạnh số hóa tài liệu, xây dựng thư viện điện tử và ứng dụng chuyển đổi số nhằm tạo điều kiện cho học sinh tiếp cận tư liệu về Bác Hồ mọi lúc, mọi nơi.`,
+    metadata: {
+      officialDispatchNo: '114/HD-SGDĐT',
+      issuingAuthority: 'Sở Giáo dục và Đào tạo TP. Hồ Chí Minh'
+    }
+  },
+
+  // Security Canary test document: PENDING_REVIEW & isAllowedForRag: false
   // Must NEVER be returned by retrieval engine!
   {
     id: 'DOC-HCM-009',
     title: 'Tài liệu thử nghiệm nội bộ - Chưa qua thẩm định của Hội đồng chuyên môn',
-    category: 'article',
+    category: 'ideology-ethics',
     categoryLabel: 'Dự thảo thẩm định',
     authorOrSource: 'Bản thảo nội bộ phòng kỹ thuật',
     dateOrEra: '2026',

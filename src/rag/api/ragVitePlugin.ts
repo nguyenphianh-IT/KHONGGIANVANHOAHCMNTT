@@ -13,7 +13,9 @@ import {
   handleGetDocumentByIdRoute,
   handlePatchDocumentRoute,
   handleApproveDocumentRoute,
-  handleReprocessDocumentRoute
+  handleReprocessDocumentRoute,
+  handleFeedbackRoute,
+  handleAnalyticsRoute
 } from './ragRoutes';
 
 export function ragDevApiPlugin(): Plugin {
@@ -64,7 +66,7 @@ export function ragDevApiPlugin(): Plugin {
           if (pathname === '/api/rag/documents') {
             if (req.method === 'GET') {
               const status = parsedUrl.searchParams.get('status') || undefined;
-              const result = await handleGetDocumentsRoute(status);
+              const result = await handleGetDocumentsRoute(status, authHeader, roleHeader);
               res.statusCode = result.statusCode;
               res.end(JSON.stringify(result));
               return;
@@ -121,7 +123,7 @@ export function ragDevApiPlugin(): Plugin {
           if (singleDocMatch) {
             const docId = decodeURIComponent(singleDocMatch[1]);
             if (req.method === 'GET') {
-              const result = await handleGetDocumentByIdRoute(docId);
+              const result = await handleGetDocumentByIdRoute(docId, authHeader, roleHeader);
               res.statusCode = result.statusCode;
               res.end(JSON.stringify(result));
               return;
@@ -142,6 +144,32 @@ export function ragDevApiPlugin(): Plugin {
               });
               return;
             }
+          }
+
+          // 5. User Feedback (POST /api/rag/feedback)
+          if (pathname === '/api/rag/feedback' && req.method === 'POST') {
+            let bodyText = '';
+            req.on('data', (chunk: any) => { bodyText += chunk; });
+            req.on('end', async () => {
+              try {
+                const body = bodyText ? JSON.parse(bodyText) : {};
+                const result = await handleFeedbackRoute(body);
+                res.statusCode = result.statusCode;
+                res.end(JSON.stringify(result));
+              } catch (e: any) {
+                res.statusCode = 400;
+                res.end(JSON.stringify({ success: false, statusCode: 400, error: 'JSON không hợp lệ' }));
+              }
+            });
+            return;
+          }
+
+          // 6. Analytics Dashboard (GET /api/rag/analytics)
+          if (pathname === '/api/rag/analytics' && req.method === 'GET') {
+            const result = await handleAnalyticsRoute(authHeader, roleHeader);
+            res.statusCode = result.statusCode;
+            res.end(JSON.stringify(result));
+            return;
           }
 
           // 5. Query

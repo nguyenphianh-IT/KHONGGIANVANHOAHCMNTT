@@ -7,7 +7,9 @@ import {
   ShieldAlert,
   Loader2,
   Database,
-  Info
+  Info,
+  GraduationCap,
+  BookOpen
 } from 'lucide-react';
 import { RagService } from '../../services/ragService';
 import { RagMessageItem, ChatMessage } from './RagMessageItem';
@@ -17,16 +19,23 @@ interface RagChatbotModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSwitchToPreviewRoadmap?: () => void;
+  initialQuery?: string;
+  contextDocumentTitle?: string;
+  defaultRole?: 'student' | 'teacher' | 'guest';
 }
 
 export const RagChatbotModal: React.FC<RagChatbotModalProps> = ({
   isOpen,
   onClose,
-  onSwitchToPreviewRoadmap
+  onSwitchToPreviewRoadmap,
+  initialQuery,
+  contextDocumentTitle,
+  defaultRole = 'student'
 }) => {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [inputQuery, setInputQuery] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [userRole, setUserRole] = useState<'student' | 'teacher' | 'guest'>(defaultRole);
   const [systemStats, setSystemStats] = useState<{
     status: string;
     totalDocuments: number;
@@ -36,6 +45,7 @@ export const RagChatbotModal: React.FC<RagChatbotModalProps> = ({
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const initialQueryTriggered = useRef(false);
 
   // Initialize welcome message & fetch health stats on open
   useEffect(() => {
@@ -45,7 +55,7 @@ export const RagChatbotModal: React.FC<RagChatbotModalProps> = ({
           {
             id: 'msg-welcome',
             sender: 'assistant',
-            text: `Xin chào các em học sinh và quý thầy cô Trường THCS Nguyễn Trung Trực!\n\nTôi là **Bạn Đồng Hành Văn Hóa Hồ Chí Minh** (phiên bản RAG Runtime MVP Thử nghiệm). Tôi được kết nối trực tiếp với kho tư liệu lịch sử đã được kiểm định của nhà trường, sẵn sàng giải đáp các câu hỏi về cuộc đời, sự nghiệp, các tác phẩm và lời dạy của Bác Hồ.\n\n*Em có thể bấm vào các câu hỏi gợi ý bên dưới hoặc tự nhập câu hỏi vào ô bên dưới nhé!*`,
+            text: `Xin chào các em học sinh và quý thầy cô Trường THCS Nguyễn Trung Trực!\n\nTôi là **Bạn Đồng Hành Văn Hóa Hồ Chí Minh** (phiên bản RAG Staging Thử nghiệm). Tôi được kết nối trực tiếp với kho tư liệu lịch sử đã qua thẩm định của nhà trường, sẵn sàng giải đáp các câu hỏi về cuộc đời, sự nghiệp, các tác phẩm và lời dạy của Bác Hồ.\n\n*Em có thể bấm vào các câu hỏi gợi ý bên dưới hoặc tự nhập câu hỏi vào ô bên dưới nhé!*`,
             timestamp: new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })
           }
         ]);
@@ -53,10 +63,19 @@ export const RagChatbotModal: React.FC<RagChatbotModalProps> = ({
 
       RagService.checkHealth().then(setSystemStats).catch(() => {});
 
-      // Focus input
-      setTimeout(() => inputRef.current?.focus(), 150);
+      // If initialQuery is passed, auto-fill or trigger
+      if (initialQuery && !initialQueryTriggered.current) {
+        initialQueryTriggered.current = true;
+        setTimeout(() => {
+          handleSend(initialQuery);
+        }, 300);
+      } else {
+        setTimeout(() => inputRef.current?.focus(), 150);
+      }
+    } else {
+      initialQueryTriggered.current = false;
     }
-  }, [isOpen]);
+  }, [isOpen, initialQuery]);
 
   // Scroll to bottom on new message
   useEffect(() => {
@@ -95,6 +114,7 @@ export const RagChatbotModal: React.FC<RagChatbotModalProps> = ({
         sender: 'assistant',
         text: ragRes.answer,
         ragResponse: ragRes,
+        userQuery: text,
         timestamp: new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })
       };
       setMessages(prev => [...prev, assistantMessage]);
@@ -130,25 +150,25 @@ export const RagChatbotModal: React.FC<RagChatbotModalProps> = ({
       onClick={onClose}
     >
       <div
-        className="bg-heritage-ivory-100 rounded-2xl max-w-2xl w-full h-[92vh] max-h-[800px] flex flex-col shadow-2xl border-2 border-heritage-gold-400 overflow-hidden"
+        className="bg-heritage-ivory-100 rounded-2xl max-w-2xl w-full h-[92vh] max-h-[820px] flex flex-col shadow-2xl border-2 border-heritage-gold-400 overflow-hidden"
         onClick={e => e.stopPropagation()}
         role="dialog"
         aria-modal="true"
         aria-labelledby="rag-dialog-title"
       >
         {/* Header */}
-        <div className="bg-heritage-red-800 text-white p-4 border-b border-heritage-gold-500/40 flex items-center justify-between flex-shrink-0">
+        <div className="bg-heritage-red-800 text-white p-3.5 sm:p-4 border-b border-heritage-gold-500/40 flex items-center justify-between flex-shrink-0">
           <div className="flex items-center space-x-3">
             <div className="w-10 h-10 rounded-xl bg-heritage-red-900 border border-heritage-gold-400 flex items-center justify-center shadow-md">
               <Bot className="w-6 h-6 text-heritage-gold-300" />
             </div>
             <div>
               <div className="flex items-center space-x-2">
-                <h3 id="rag-dialog-title" className="font-serif text-base sm:text-lg font-bold text-heritage-gold-200">
+                <h3 id="rag-dialog-title" className="font-serif text-sm sm:text-lg font-bold text-heritage-gold-200">
                   Bạn Đồng Hành Văn Hóa Hồ Chí Minh
                 </h3>
                 <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-heritage-gold-400/20 text-heritage-gold-300 border border-heritage-gold-400/40">
-                  RAG Staging Runtime
+                  RAG Pilot
                 </span>
               </div>
               <div className="text-[11px] text-heritage-ivory-200 flex items-center space-x-2">
@@ -156,7 +176,7 @@ export const RagChatbotModal: React.FC<RagChatbotModalProps> = ({
                 {systemStats && (
                   <>
                     <span>•</span>
-                    <span className="flex items-center space-x-1 text-heritage-gold-300 font-mono">
+                    <span className="flex items-center space-x-1 text-heritage-gold-300 font-mono text-[10px]">
                       <Database className="w-3 h-3" />
                       <span>{systemStats.approvedDocuments} tài liệu ({systemStats.totalChunks} đoạn đã duyệt)</span>
                     </span>
@@ -172,7 +192,7 @@ export const RagChatbotModal: React.FC<RagChatbotModalProps> = ({
                 type="button"
                 onClick={onSwitchToPreviewRoadmap}
                 className="p-1.5 rounded-lg text-heritage-gold-300 hover:text-white hover:bg-heritage-red-700/60 transition-colors text-xs flex items-center space-x-1"
-                title="Xem thông báo lộ trình chính thức"
+                title="Xem lộ trình"
               >
                 <Info className="w-4 h-4" />
                 <span className="hidden sm:inline text-[11px]">Lộ trình</span>
@@ -199,6 +219,45 @@ export const RagChatbotModal: React.FC<RagChatbotModalProps> = ({
           </div>
         </div>
 
+        {/* Audience Mode Selector Bar */}
+        <div className="bg-heritage-red-900/90 text-white px-4 py-1.5 flex items-center justify-between text-xs border-b border-heritage-gold-500/20">
+          <div className="flex items-center space-x-1.5">
+            <span className="text-heritage-ivory-300 text-[11px]">Chế độ trải nghiệm:</span>
+            <div className="inline-flex rounded-lg bg-heritage-red-950 p-0.5 border border-heritage-gold-500/30 text-[10px]">
+              <button
+                type="button"
+                onClick={() => setUserRole('student')}
+                className={`px-2 py-0.5 rounded-md flex items-center space-x-1 transition-all ${
+                  userRole === 'student'
+                    ? 'bg-heritage-gold-500 text-heritage-red-950 font-bold shadow-sm'
+                    : 'text-heritage-ivory-200 hover:text-white'
+                }`}
+              >
+                <GraduationCap className="w-3 h-3" />
+                <span>Học sinh THCS</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setUserRole('teacher')}
+                className={`px-2 py-0.5 rounded-md flex items-center space-x-1 transition-all ${
+                  userRole === 'teacher'
+                    ? 'bg-heritage-gold-500 text-heritage-red-950 font-bold shadow-sm'
+                    : 'text-heritage-ivory-200 hover:text-white'
+                }`}
+              >
+                <BookOpen className="w-3 h-3" />
+                <span>Giáo viên / Thầy cô</span>
+              </button>
+            </div>
+          </div>
+
+          {contextDocumentTitle && (
+            <div className="text-[10px] text-heritage-gold-300 truncate max-w-[200px] hidden sm:block">
+              Đang xem: <span className="font-medium underline">{contextDocumentTitle}</span>
+            </div>
+          )}
+        </div>
+
         {/* Governance Staging Sandbox Banner */}
         <div className="bg-amber-100/90 border-b border-amber-300 px-4 py-1.5 text-[11px] text-amber-900 flex items-center justify-between flex-shrink-0">
           <div className="flex items-center space-x-2">
@@ -215,7 +274,7 @@ export const RagChatbotModal: React.FC<RagChatbotModalProps> = ({
         {/* Messages Body */}
         <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-heritage-ivory-100">
           {messages.map(msg => (
-            <RagMessageItem key={msg.id} message={msg} />
+            <RagMessageItem key={msg.id} message={msg} userRole={userRole} />
           ))}
 
           {/* Loading indicator */}
@@ -253,7 +312,11 @@ export const RagChatbotModal: React.FC<RagChatbotModalProps> = ({
               type="text"
               value={inputQuery}
               onChange={e => setInputQuery(e.target.value)}
-              placeholder="Đặt câu hỏi về Bác Hồ (ví dụ: Bác Hồ dạy thiếu nhi 5 điều gì?)..."
+              placeholder={
+                userRole === 'teacher'
+                  ? 'Đặt câu hỏi nghiên cứu (ví dụ: Phân tích bối cảnh ra đời của Tác phẩm Sửa đổi lối làm việc 1947)...'
+                  : 'Đặt câu hỏi về Bác Hồ (ví dụ: Bác Hồ dạy thiếu nhi 5 điều gì?)...'
+              }
               disabled={isLoading}
               className="flex-1 px-4 py-2.5 rounded-xl border border-heritage-ivory-400 focus:border-heritage-gold-500 focus:ring-2 focus:ring-heritage-gold-300/30 text-xs sm:text-sm text-heritage-ink-900 bg-heritage-ivory-50 outline-none transition-all disabled:opacity-50"
             />

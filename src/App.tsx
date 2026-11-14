@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { AuthProvider } from './context/AuthContext';
 import { Header } from './components/Header';
 import { Hero } from './components/Hero';
@@ -19,8 +19,21 @@ import { CmsDashboard } from './components/cms/CmsDashboard';
 const MainLayout: React.FC = () => {
   const [isChatbotModalOpen, setIsChatbotModalOpen] = useState(false);
   const [isRagChatbotOpen, setIsRagChatbotOpen] = useState(false);
+  const [ragInitialQuery, setRagInitialQuery] = useState<string | undefined>();
+  const [ragContextDocTitle, setRagContextDocTitle] = useState<string | undefined>();
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [isCmsDashboardOpen, setIsCmsDashboardOpen] = useState(false);
+
+  useEffect(() => {
+    const handler = (e: any) => {
+      const detail = e.detail || {};
+      setRagInitialQuery(detail.initialQuery);
+      setRagContextDocTitle(detail.documentTitle);
+      setIsRagChatbotOpen(true);
+    };
+    window.addEventListener('open-rag-chatbot', handler);
+    return () => window.removeEventListener('open-rag-chatbot', handler);
+  }, []);
 
   const scrollToSection = (id: string) => {
     const element = document.getElementById(id);
@@ -92,10 +105,16 @@ const MainLayout: React.FC = () => {
         onOpenRagMvp={() => setIsRagChatbotOpen(true)}
       />
 
-      {/* RAG Runtime MVP Interactive Chatbot Modal (ADR-002 Implementation Phase 01) */}
+      {/* RAG Runtime MVP Interactive Chatbot Modal (ADR-002 Implementation Phase 01 & Phase 04) */}
       <RagChatbotModal
         isOpen={isRagChatbotOpen}
-        onClose={() => setIsRagChatbotOpen(false)}
+        initialQuery={ragInitialQuery}
+        contextDocumentTitle={ragContextDocTitle}
+        onClose={() => {
+          setIsRagChatbotOpen(false);
+          setRagInitialQuery(undefined);
+          setRagContextDocTitle(undefined);
+        }}
         onSwitchToPreviewRoadmap={() => {
           setIsRagChatbotOpen(false);
           setIsChatbotModalOpen(true);

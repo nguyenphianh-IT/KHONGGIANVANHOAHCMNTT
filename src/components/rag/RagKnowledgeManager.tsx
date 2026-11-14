@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import {
   Upload, ShieldCheck, CheckCircle2, XCircle,
   Search, RefreshCw, AlertCircle,
-  Database, Plus, Lock, Clock
+  Database, Plus, Lock, Clock,
+  BarChart2, Activity, HelpCircle, ThumbsUp, ThumbsDown, MessageSquare, Bot
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { RagService } from '../../services/ragService';
@@ -10,11 +11,16 @@ import {
   RealKnowledgeDocument,
   DocumentChunk,
   DocumentCategoryDefinition,
-  HCM_STANDARD_CATEGORIES
+  HCM_STANDARD_CATEGORIES,
+  RagAnalyticsSummary
 } from '../../rag/types/ragTypes';
 
 export const RagKnowledgeManager: React.FC = () => {
   const { profile, roles } = useAuth();
+
+  const [activeTab, setActiveTab] = useState<'documents' | 'analytics'>('documents');
+  const [analyticsData, setAnalyticsData] = useState<RagAnalyticsSummary | null>(null);
+  const [isLoadingAnalytics, setIsLoadingAnalytics] = useState(false);
 
   const [documents, setDocuments] = useState<RealKnowledgeDocument[]>([]);
   const [categories, setCategories] = useState<DocumentCategoryDefinition[]>(HCM_STANDARD_CATEGORIES);
@@ -66,9 +72,27 @@ export const RagKnowledgeManager: React.FC = () => {
     }
   };
 
+  const loadAnalytics = async () => {
+    setIsLoadingAnalytics(true);
+    try {
+      const summary = await RagService.getAnalytics(userRoleCode);
+      setAnalyticsData(summary);
+    } catch (err) {
+      console.error('Failed to load analytics:', err);
+    } finally {
+      setIsLoadingAnalytics(false);
+    }
+  };
+
   useEffect(() => {
     loadDocuments();
   }, [statusFilter]);
+
+  useEffect(() => {
+    if (activeTab === 'analytics') {
+      loadAnalytics();
+    }
+  }, [activeTab]);
 
   // Handle Inspect Document
   const handleInspect = async (doc: RealKnowledgeDocument) => {
@@ -206,22 +230,25 @@ export const RagKnowledgeManager: React.FC = () => {
               <Database className="w-5 h-5" />
             </div>
             <h2 className="font-serif text-lg md:text-xl font-bold text-heritage-ink-900">
-              Quản Trị Kho Tri Thức RAG (ADR-002 Phase 02)
+              Quản Trị Kho Tri Thức RAG (ADR-002 Phase 04 - Controlled Pilot)
             </h2>
           </div>
           <p className="text-xs text-heritage-ink-500 mt-1">
-            Quản lý tài liệu thực tế, kiểm soát mã băm trùng lặp, chia đoạn tự động và quy trình duyệt 4 Mắt.
+            Quản lý tài liệu thực tế, kiểm soát mã băm trùng lặp, chia đoạn tự động, quy trình duyệt 4 Mắt và giám sát vận hành thí điểm.
           </p>
         </div>
 
         <div className="flex items-center space-x-2 w-full md:w-auto justify-end">
           <button
             type="button"
-            onClick={loadDocuments}
+            onClick={() => {
+              loadDocuments();
+              if (activeTab === 'analytics') loadAnalytics();
+            }}
             className="p-2.5 rounded-xl border border-heritage-ivory-400 text-heritage-ink-700 hover:bg-heritage-ivory-200 transition-colors"
             title="Làm mới danh sách"
           >
-            <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
+            <RefreshCw className={`w-4 h-4 ${isLoading || isLoadingAnalytics ? 'animate-spin' : ''}`} />
           </button>
 
           <button
@@ -234,6 +261,38 @@ export const RagKnowledgeManager: React.FC = () => {
           </button>
         </div>
       </div>
+
+      {/* Sub-tab Switcher */}
+      <div className="flex border-b border-heritage-ivory-300 gap-2">
+        <button
+          type="button"
+          onClick={() => setActiveTab('documents')}
+          className={`px-4 py-2.5 font-medium text-xs sm:text-sm border-b-2 transition-all flex items-center space-x-2 ${
+            activeTab === 'documents'
+              ? 'border-heritage-red-700 text-heritage-red-800 font-bold bg-white rounded-t-xl'
+              : 'border-transparent text-heritage-ink-500 hover:text-heritage-ink-800'
+          }`}
+        >
+          <Database className="w-4 h-4" />
+          <span>Kho Tư Liệu & Duyệt 4 Mắt</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setActiveTab('analytics')}
+          className={`px-4 py-2.5 font-medium text-xs sm:text-sm border-b-2 transition-all flex items-center space-x-2 ${
+            activeTab === 'analytics'
+              ? 'border-heritage-red-700 text-heritage-red-800 font-bold bg-white rounded-t-xl'
+              : 'border-transparent text-heritage-ink-500 hover:text-heritage-ink-800'
+          }`}
+        >
+          <BarChart2 className="w-4 h-4" />
+          <span>Bảng Điều Khiển Vận Hành Thí Điểm (Pilot Analytics)</span>
+        </button>
+      </div>
+
+      {activeTab === 'documents' && (
+        <>
 
       {/* Stats Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
@@ -417,6 +476,169 @@ export const RagKnowledgeManager: React.FC = () => {
           </table>
         </div>
       </div>
+      </>
+      )}
+
+      {activeTab === 'analytics' && (
+        <div className="space-y-6">
+          {/* Analytics Header & Health Status */}
+          <div className="bg-white p-4 rounded-xl border border-heritage-ivory-300 shadow-xs flex flex-wrap items-center justify-between gap-3">
+            <div className="flex items-center space-x-2">
+              <Activity className="w-5 h-5 text-heritage-red-700" />
+              <div>
+                <h3 className="font-bold text-sm text-heritage-ink-900">Chỉ Số Vận Hành Trợ Lý AI RAG</h3>
+                <p className="text-[11px] text-heritage-ink-500">Giám sát chất lượng câu trả lời, câu hỏi chưa có tài liệu và phản hồi người dùng</p>
+              </div>
+            </div>
+
+            <div className="flex items-center space-x-2">
+              <span className={`px-2.5 py-1 rounded-full text-[11px] font-bold flex items-center space-x-1.5 ${
+                analyticsData?.databaseHealth.isSupabaseLive
+                  ? 'bg-emerald-100 text-emerald-800 border border-emerald-300'
+                  : 'bg-amber-100 text-amber-900 border border-amber-300'
+              }`}>
+                <span className={`w-2 h-2 rounded-full ${analyticsData?.databaseHealth.isSupabaseLive ? 'bg-emerald-600' : 'bg-amber-600'}`} />
+                <span>{analyticsData?.databaseHealth.isSupabaseLive ? 'Supabase PostgreSQL Online' : 'Local Persistent Storage Mode'}</span>
+              </span>
+
+              <button
+                type="button"
+                onClick={loadAnalytics}
+                className="p-2 rounded-lg border border-heritage-ivory-400 hover:bg-heritage-ivory-200 transition-colors"
+                title="Làm mới chỉ số"
+              >
+                <RefreshCw className={`w-3.5 h-3.5 ${isLoadingAnalytics ? 'animate-spin' : ''}`} />
+              </button>
+            </div>
+          </div>
+
+          {/* Metric KPI Cards */}
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+            <div className="bg-white p-4 rounded-xl border border-heritage-ivory-300 shadow-xs">
+              <div className="text-[11px] font-bold uppercase tracking-wider text-heritage-ink-500">Tỷ lệ có dẫn chứng</div>
+              <div className="text-xl sm:text-2xl font-bold text-emerald-700 mt-1">
+                {analyticsData?.queries.evidenceRatePercent ?? 100}%
+              </div>
+              <div className="text-[10px] text-heritage-ink-400 mt-0.5">
+                {analyticsData?.queries.evidenceFoundCount ?? 0} / {analyticsData?.queries.totalLogged ?? 0} câu hỏi có nguồn
+              </div>
+            </div>
+
+            <div className="bg-white p-4 rounded-xl border border-heritage-ivory-300 shadow-xs">
+              <div className="text-[11px] font-bold uppercase tracking-wider text-heritage-ink-500">Tổng câu hỏi đã xử lý</div>
+              <div className="text-xl sm:text-2xl font-bold text-heritage-red-800 mt-1">
+                {analyticsData?.queries.totalLogged ?? 0}
+              </div>
+              <div className="text-[10px] text-heritage-ink-400 mt-0.5">Lưu vết truy xuất kiểm toán</div>
+            </div>
+
+            <div className="bg-white p-4 rounded-xl border border-heritage-ivory-300 shadow-xs">
+              <div className="text-[11px] font-bold uppercase tracking-wider text-heritage-ink-500">Tỷ lệ hài lòng (% Thích)</div>
+              <div className="text-xl sm:text-2xl font-bold text-heritage-gold-700 mt-1">
+                {analyticsData?.feedback.satisfactionRatePercent ?? 100}%
+              </div>
+              <div className="text-[10px] text-emerald-600 mt-0.5 flex items-center space-x-1">
+                <ThumbsUp className="w-3 h-3" />
+                <span>{analyticsData?.feedback.helpfulCount ?? 0} lượt thích</span>
+              </div>
+            </div>
+
+            <div className="bg-white p-4 rounded-xl border border-heritage-ivory-300 shadow-xs">
+              <div className="text-[11px] font-bold uppercase tracking-wider text-heritage-ink-500">Tổng phản hồi người dùng</div>
+              <div className="text-xl sm:text-2xl font-bold text-heritage-ink-900 mt-1">
+                {analyticsData?.feedback.total ?? 0}
+              </div>
+              <div className="text-[10px] text-amber-600 mt-0.5 flex items-center space-x-1">
+                <ThumbsDown className="w-3 h-3" />
+                <span>{analyticsData?.feedback.unhelpfulCount ?? 0} góp ý cần cải thiện</span>
+              </div>
+            </div>
+          </div>
+
+          {/* 2 Detailed Panels: Ungrounded Queries & User Feedback */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Left: Ungrounded Queries */}
+            <div className="bg-white p-5 rounded-2xl border border-heritage-ivory-300 shadow-sm flex flex-col">
+              <div className="flex items-center justify-between pb-3 border-b border-heritage-ivory-200 mb-3">
+                <div className="flex items-center space-x-2">
+                  <HelpCircle className="w-4 h-4 text-amber-600" />
+                  <h4 className="font-bold text-xs sm:text-sm text-heritage-ink-900">
+                    Câu hỏi chưa tìm thấy nguồn tư liệu
+                  </h4>
+                </div>
+                <span className="text-[10px] px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 font-bold">
+                  {analyticsData?.ungroundedQueries.length ?? 0} câu hỏi
+                </span>
+              </div>
+
+              <p className="text-[11px] text-heritage-ink-500 mb-3">
+                Danh sách các câu hỏi người dùng đặt ra nhưng kho tư liệu hiện tại chưa có văn bản tương ứng. Thầy cô và quản trị viên có thể căn cứ vào đây để tiếp nhận và bổ sung tài liệu mới.
+              </p>
+
+              <div className="flex-1 overflow-y-auto max-h-[360px] space-y-2">
+                {(!analyticsData?.ungroundedQueries || analyticsData.ungroundedQueries.length === 0) ? (
+                  <div className="p-6 text-center text-heritage-ink-400 text-xs">
+                    Tất cả các câu hỏi được đặt ra đều đã tìm thấy tư liệu kiểm chứng phù hợp!
+                  </div>
+                ) : (
+                  analyticsData.ungroundedQueries.map((uq, idx) => (
+                    <div key={idx} className="p-3 rounded-xl bg-amber-50/50 border border-amber-200/80 text-xs text-heritage-ink-900 flex items-start justify-between gap-2">
+                      <div className="flex-1 font-medium">{uq.query}</div>
+                      <div className="text-[10px] text-heritage-ink-400 whitespace-nowrap">
+                        {new Date(uq.timestamp).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })}
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
+
+            {/* Right: User Feedback Comments */}
+            <div className="bg-white p-5 rounded-2xl border border-heritage-ivory-300 shadow-sm flex flex-col">
+              <div className="flex items-center justify-between pb-3 border-b border-heritage-ivory-200 mb-3">
+                <div className="flex items-center space-x-2">
+                  <MessageSquare className="w-4 h-4 text-heritage-red-700" />
+                  <h4 className="font-bold text-xs sm:text-sm text-heritage-ink-900">
+                    Ý kiến đóng góp & Đánh giá của người dùng
+                  </h4>
+                </div>
+                <span className="text-[10px] px-2 py-0.5 rounded-full bg-heritage-ivory-200 text-heritage-ink-700 font-bold">
+                  {analyticsData?.feedback.recentComments.length ?? 0} phản hồi
+                </span>
+              </div>
+
+              <p className="text-[11px] text-heritage-ink-500 mb-3">
+                Ghi nhận trực tiếp từ học sinh và giáo viên khi tương tác với Trợ lý AI để cải thiện thuật toán và nội dung câu trả lời.
+              </p>
+
+              <div className="flex-1 overflow-y-auto max-h-[360px] space-y-2.5">
+                {(!analyticsData?.feedback.recentComments || analyticsData.feedback.recentComments.length === 0) ? (
+                  <div className="p-6 text-center text-heritage-ink-400 text-xs">
+                    Chưa có phản hồi bình luận nào.
+                  </div>
+                ) : (
+                  analyticsData.feedback.recentComments.map((commentItem, idx) => (
+                    <div key={idx} className="p-3 rounded-xl bg-heritage-ivory-50 border border-heritage-ivory-200 text-xs">
+                      <div className="flex items-center justify-between mb-1.5">
+                        <span className={`px-1.5 py-0.5 rounded text-[10px] font-bold flex items-center space-x-1 ${
+                          commentItem.isHelpful ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'
+                        }`}>
+                          {commentItem.isHelpful ? <ThumbsUp className="w-2.5 h-2.5" /> : <ThumbsDown className="w-2.5 h-2.5" />}
+                          <span>{commentItem.isHelpful ? 'Hài lòng' : (commentItem.category || 'Cần cải thiện')}</span>
+                        </span>
+                        <span className="text-[10px] text-heritage-ink-400">
+                          {new Date(commentItem.createdAt).toLocaleDateString('vi-VN')}
+                        </span>
+                      </div>
+                      <p className="text-heritage-ink-800 italic">"{commentItem.comment}"</p>
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Upload Modal */}
       {isUploadOpen && (
@@ -617,11 +839,27 @@ export const RagKnowledgeManager: React.FC = () => {
               )}
             </div>
 
-            <div className="pt-3 border-t border-heritage-ivory-300 text-right">
+            <div className="pt-3 border-t border-heritage-ivory-300 flex items-center justify-between">
+              {inspectDoc.approvalStatus === 'APPROVED' && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    const query = `Hãy giới thiệu tóm tắt và ý nghĩa lịch sử của tư liệu "${inspectDoc.title}"`;
+                    setInspectDoc(null);
+                    window.dispatchEvent(new CustomEvent('open-rag-chatbot', {
+                      detail: { initialQuery: query, documentTitle: inspectDoc.title }
+                    }));
+                  }}
+                  className="px-3 py-1.5 rounded-lg bg-heritage-gold-500 hover:bg-heritage-gold-600 text-heritage-red-950 font-bold text-xs flex items-center space-x-1.5 shadow-sm transition-colors"
+                >
+                  <Bot className="w-3.5 h-3.5" />
+                  <span>Hỏi AI về tư liệu này</span>
+                </button>
+              )}
               <button
                 type="button"
                 onClick={() => setInspectDoc(null)}
-                className="px-4 py-2 rounded-lg bg-heritage-red-700 text-white font-medium text-xs"
+                className="px-4 py-2 rounded-lg bg-heritage-red-700 text-white font-medium text-xs ml-auto"
               >
                 Đóng
               </button>

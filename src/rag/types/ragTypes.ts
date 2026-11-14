@@ -294,3 +294,50 @@ export interface IRetrievalEngine {
     topics: string[];
   };
 }
+
+/**
+ * Phase 04: User Feedback Contract (Quality Tracking & Governance)
+ */
+export interface RagUserFeedback {
+  id: string;
+  query: string;
+  answerSnippet: string;
+  isHelpful: boolean;
+  category?: 'accurate' | 'inaccurate' | 'unclear' | 'missing_info' | 'positive' | 'other';
+  comment?: string;
+  userRole?: string; // 'student' | 'teacher' | 'guest'
+  createdAt: string;
+}
+
+/**
+ * Phase 04: RAG Pilot Operations Analytics Summary (for Admin Dashboard)
+ */
+export interface RagAnalyticsSummary {
+  documents: {
+    total: number;
+    approved: number;
+    pending: number;
+    rejected: number;
+    archived: number;
+  };
+  totalChunks: number;
+  queries: {
+    totalLogged: number;
+    evidenceFoundCount: number;
+    fallbackCount: number;
+    evidenceRatePercent: number;
+  };
+  ungroundedQueries: Array<{ query: string; timestamp: string }>;
+  feedback: {
+    total: number;
+    helpfulCount: number;
+    unhelpfulCount: number;
+    satisfactionRatePercent: number;
+    recentComments: Array<{ comment: string; isHelpful: boolean; category?: string; createdAt: string }>;
+  };
+  databaseHealth: {
+    status: 'healthy' | 'degraded' | 'offline';
+    isSupabaseLive: boolean;
+  };
+}
+

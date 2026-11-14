@@ -9,7 +9,9 @@ import {
   ScoredChunk,
   RealKnowledgeDocument,
   DocumentChunk,
-  DocumentCategoryDefinition
+  DocumentCategoryDefinition,
+  RagUserFeedback,
+  RagAnalyticsSummary
 } from '../rag/types/ragTypes';
 import { ragRuntime } from '../rag';
 import { documentRegistry } from '../rag/knowledge/documentRegistry';
@@ -319,5 +321,58 @@ export class RagService {
       ragRuntime.reindex(allApprovedChunks);
     }
     return { success: true, chunksCount: newChunks.length };
+  }
+
+  /**
+   * Phase 04: Send user feedback on answer quality
+   */
+  public static async sendFeedback(feedback: Omit<RagUserFeedback, 'id' | 'createdAt'>): Promise<{ success: boolean; message?: string }> {
+    try {
+      const response = await fetch(`${this.apiBase}/feedback`, {
+        method: 'POST',
+        headers: this.getHeaders(feedback.userRole),
+        body: JSON.stringify(feedback)
+      });
+      const json = await response.json();
+      if (json.success) {
+        return { success: true, message: json.data?.message };
+      }
+    } catch (err) {
+      console.warn('[RagService] Feedback API error, saving locally:', err);
+    }
+
+    // Local fallback
+    await persistentRagStore.saveFeedback({
+      id: `FB-${Date.now()}`,
+      query: feedback.query,
+      answerSnippet: feedback.answerSnippet || '',
+      isHelpful: feedback.isHelpful,
+      category: feedback.category,
+      comment: feedback.comment,
+      userRole: feedback.userRole,
+      createdAt: new Date().toISOString()
+    });
+
+    return { success: true, message: 'Đã lưu phản hồi của bạn!' };
+  }
+
+  /**
+   * Phase 04: Fetch Operations Analytics Summary
+   */
+  public static async getAnalytics(userRole?: string): Promise<RagAnalyticsSummary | null> {
+    try {
+      const response = await fetch(`${this.apiBase}/analytics`, {
+        method: 'GET',
+        headers: this.getHeaders(userRole)
+      });
+      const json = await response.json();
+      if (json.success && json.data) {
+        return json.data;
+      }
+    } catch (err) {
+      console.warn('[RagService] Analytics API error, falling back locally:', err);
+    }
+
+    return persistentRagStore.getAnalytics();
   }
 }
