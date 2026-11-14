@@ -665,6 +665,81 @@ Câu nói chân thành, mộc mạc của Người làm các đồng chí có m�
   // Security Canary test document: PENDING_REVIEW & isAllowedForRag: false
   // Must NEVER be returned by retrieval engine!
   {
+    id: 'DOC-HCM-026',
+    title: 'Địa giới hành chính phường Thới An qua các thời kỳ (1997–2025 và hiện hành)',
+    category: 'hcmc-history',
+    categoryLabel: 'Lịch sử Thành phố Hồ Chí Minh',
+    authorOrSource: 'UBND Thành phố Hồ Chí Minh & Ủy ban Thường vụ Quốc hội',
+    dateOrEra: '1997 - 2025 - Hiện hành',
+    status: 'PENDING_REVIEW',
+    isAllowedForRag: false,
+    topics: ['Địa giới hành chính', 'Phường Thới An', 'Phường Thạnh Xuân', 'Quận 12', 'Nghị quyết 1685', 'Quyết định 1195', 'Sắp xếp ĐVHC 2025'],
+    sourceUrl: 'https://xaydungchinhsach.chinhphu.vn/toan-van-nghi-quyet-so-1685-nq-ubtvqh15-sap-xep-cac-dvhc-cap-xa-cua-thanh-pho-ho-chi-minh-nam-2025-119250616211341304.htm',
+    content: `Địa giới hành chính phường Thới An qua các thời kỳ (1997 – 2025 và hiện hành):
+1. Thành lập Quận 12 và phường Thới An năm 1997: Theo Quyết định số 1195/QĐ-UB-NC ngày 18/03/1997 của UBND TP.HCM, phường Thới An được thành lập trên cơ sở 451 ha diện tích tự nhiên và 4.883 nhân khẩu của xã Tân Thới Hiệp cũ thuộc huyện Hóc Môn. Phường Thạnh Xuân được thành lập trên cơ sở toàn bộ 968 ha diện tích và 9.489 nhân khẩu của xã Thạnh Xuân cũ. Trụ sở UBND Quận 12 thời kỳ này được đặt trên địa bàn phường Thới An.
+2. Sắp xếp đơn vị hành chính năm 2025 theo Nghị quyết số 1685/NQ-UBTVQH15 ngày 16/06/2025 của Ủy ban Thường vụ Quốc hội: Nhập toàn bộ diện tích tự nhiên và quy mô dân số của phường Thạnh Xuân vào phường Thới An. Sau khi sắp xếp, phường Thới An giáp phường An Phú Đông, phường Tân Thới Hiệp và tỉnh Bình Dương. Nghị quyết có hiệu lực thi hành từ ngày 01 tháng 07 năm 2025.
+3. Nguyên tắc địa danh và quản lý: Địa danh hiện hành chính thức là "Phường Thới An, Thành phố Hồ Chí Minh". Cụm từ "Phường Thới An, Quận 12" chỉ được dùng khi trích dẫn các văn bản, sự kiện lịch sử ban hành trước ngày 01/07/2025. Phường Thới An hiện nay là đơn vị hành chính cấp xã trực thuộc Thành phố Hồ Chí Minh sau khi hợp nhất với phường Thạnh Xuân, không đồng nhất với toàn bộ địa giới Quận 12 cũ.`,
+    metadata: {
+      candidateCode: 'B-07',
+      legalBasis: ['Quyết định số 1195/QĐ-UB-NC', 'Nghị quyết số 1685/NQ-UBTVQH15'],
+      effectiveDateCurrent: '01/07/2025',
+      copyrightStatus: 'PUBLIC_DOMAIN_CONFIRMED',
+      batch: 'BATCH_B_SELECTIVE_01'
+    }
+  },
+
+  {
+    id: 'DOC-HCM-027',
+    title: 'Lịch sử hình thành và phát triển Trường THCS Nguyễn Trung Trực (2014–nay)',
+    category: 'school-education',
+    categoryLabel: 'Hoạt động giáo dục và học tập tại nhà trường',
+    authorOrSource: 'Trường THCS Nguyễn Trung Trực & UBND Phường Thới An',
+    dateOrEra: '2014 - Hiện nay',
+    status: 'PENDING_REVIEW',
+    isAllowedForRag: false,
+    topics: ['Trường THCS Nguyễn Trung Trực', 'Thành lập năm 2014', 'Quyết định 155', 'Quyết định 76', 'Kế hoạch 01/KH-NTT', 'Không gian Văn hóa HCM', 'Trường học Hạnh phúc'],
+    sourceUrl: 'https://thcsnguyentrungtruc.hcm.edu.vn/gioi-thieu/gioi-thieu-truong-thcs-nguyen-trung-truc/ct/12684/691487',
+    content: `Lịch sử hình thành và phát triển Trường THCS Nguyễn Trung Trực (2014 – nay):
+1. Mốc thành lập và căn cứ pháp lý khởi đầu năm 2014: Trường Trung học cơ sở Nguyễn Trung Trực được chính thức thành lập theo Quyết định số 155/QĐ-UBND ngày 31 tháng 07 năm 2014 của UBND Quận 12. Nhà trường chính thức khai giảng và đi vào hoạt động giảng dạy từ năm học 2014 – 2015. Trường vinh dự mang tên Người anh hùng nghĩa quân Nam Bộ Nguyễn Trung Trực (1838 – 1868) với câu nói bất hủ: "Bao giờ người Tây nhổ hết cỏ nước Nam thì mới hết người Nam đánh Tây".
+2. Quá trình phát triển và kiện toàn tổ chức năm 2025: Trải qua hơn 10 năm phát triển phong trào "Dạy tốt – Học tốt", ngày 01 tháng 07 năm 2025, thực hiện Nghị quyết số 1685/NQ-UBTVQH15 của Quốc hội về việc sắp xếp đơn vị hành chính cấp xã của TP.HCM, UBND Phường Thới An ban hành Quyết định số 76/QĐ-UBND ngày 01/07/2025 về việc quản lý Trường THCS Nguyễn Trung Trực trực thuộc chính quyền địa phương cấp phường (ghi nhận tại Kế hoạch giáo dục nhà trường số 01/KH-NTT ngày 29/08/2025). Quyết định 2014 là mốc khai sinh, quyết định 2025 là kiện toàn thẩm quyền quản lý; đây là sự kế thừa liên tục về lịch sử, đội ngũ và cơ sở vật chất.
+3. Giáo dục truyền thống và Không gian Văn hóa Hồ Chí Minh: Trường xây dựng mô hình Trường học Hạnh phúc, phát triển toàn diện tri thức và nhân cách. Không gian Văn hóa Hồ Chí Minh học đường được triển khai đồng bộ giữa Không gian vật lý (tủ sách Bác Hồ, khu ảnh tư liệu) và Không gian số (Trợ lý AI RAG phục vụ tra cứu có căn cứ xác thực, giáo dục truyền thống cho học sinh).`,
+    metadata: {
+      candidateCode: 'B-10',
+      foundingDecision: 'Quyết định số 155/QĐ-UBND ngày 31/07/2014 của UBND Quận 12',
+      governanceDecisionCurrent: 'Quyết định số 76/QĐ-UBND ngày 01/07/2025 của UBND Phường Thới An',
+      addressCurrent: 'Đường Lê Văn Khương, Phường Thới An, Thành phố Hồ Chí Minh',
+      copyrightStatus: 'OPEN_ACCESS_REUSE_PERMITTED',
+      batch: 'BATCH_B_SELECTIVE_01'
+    }
+  },
+
+  {
+    id: 'DOC-HCM-028',
+    title: 'Trích yếu Lịch sử Sài Gòn – Gia Định thời Nguyễn theo Gia Định thành thông chí',
+    category: 'hcmc-history',
+    categoryLabel: 'Lịch sử Thành phố Hồ Chí Minh',
+    authorOrSource: 'Hiệp biện Đại học sĩ Trịnh Hoài Đức & Hội đồng biên soạn Hội KHLS TP.HCM',
+    dateOrEra: 'Thế kỷ XVII - Giữa thế kỷ XIX (1698 - 1858)',
+    status: 'PENDING_REVIEW',
+    isAllowedForRag: false,
+    topics: ['Gia Định thành thông chí', 'Trịnh Hoài Đức', 'Lễ Thành hầu Nguyễn Hữu Cảnh', 'Năm 1698', 'Phủ Gia Định', 'Bến Nghé', 'Khai hoang mở cõi', 'Thương cảng Sài Gòn'],
+    sourceUrl: 'https://tulieuvankien.dangcongsan.vn',
+    content: `Trích yếu Lịch sử Sài Gòn – Gia Định thời Nguyễn theo Gia Định thành thông chí:
+1. Mốc thiết lập tổ chức hành chính năm 1698: Theo Trịnh Hoài Đức trong tác phẩm "Gia Định thành thông chí" (Cương vực chí), mùa xuân năm Mậu Dần (1698), chúa Nguyễn Phúc Chu sai Thống suất Chưởng cơ Lễ Thành hầu Nguyễn Hữu Cảnh vào kinh lược đất phương Nam. Nguyễn Hữu Cảnh lấy đất Nông Nại đặt làm Phủ Gia Định, lập xứ Đồng Nai làm huyện Phước Long (dựng dinh Trấn Biên), lập xứ Sài Gòn làm huyện Tân Bình (dựng dinh Phiên Trấn). Mốc năm 1698 chính thức đánh dấu việc vùng đất Sài Gòn – Gia Định được đưa vào bản đồ cương vực hành chính Đại Việt.
+2. Thương cảng Bến Nghé và đời sống trù phú: Trong "Sơn xuyên chí", Trịnh Hoài Đức miêu tả vùng sông Bến Nghé tàu buôn qua lại như thoi, ghe thuyền tụ hội "Trên bến dưới thuyền", lúa gạo cá muối khắp nơi tụ về buôn bán sầm uất. Chợ Sài Gòn trở thành trung tâm thương mại tấp nập của xứ Đàng Trong, là nơi giao thoa văn hóa giữa các cộng đồng cư dân.
+3. Ý nghĩa khoa học và giáo dục truyền thống: Gia Định thành thông chí là bộ địa chí kinh điển có giá trị lịch sử và pháp lý cao về cương vực phương Nam. Tư liệu giúp học sinh Trường THCS Nguyễn Trung Trực hiểu rõ công lao khai hoang mở cõi kiên cường của các bậc tiền nhân, bồi đắp lòng biết ơn và tự hào sâu sắc về truyền thống hơn 300 năm của Thành phố mang tên Bác.`,
+    metadata: {
+      candidateCode: 'B-02',
+      chronicleAuthor: 'Trịnh Hoài Đức (1765 - 1825)',
+      keySections: ['Quyển III: Cương vực chí', 'Quyển IV: Sơn xuyên chí'],
+      copyrightStatus: 'PUBLIC_DOMAIN_CONFIRMED',
+      batch: 'BATCH_B_SELECTIVE_01'
+    }
+  },
+
+  // Security Canary test document: PENDING_REVIEW & isAllowedForRag: false
+  // Must NEVER be returned by retrieval engine!
+  {
     id: 'DOC-HCM-009',
     title: 'Tài liệu thử nghiệm nội bộ - Chưa qua thẩm định của Hội đồng chuyên môn',
     category: 'ideology-ethics',

@@ -1575,6 +1575,78 @@ C\xE2u n\xF3i ch\xE2n th\xE0nh, m\u1ED9c m\u1EA1c c\u1EE7a Ng\u01B0\u1EDDi l\xE0
   // Security Canary test document: PENDING_REVIEW & isAllowedForRag: false
   // Must NEVER be returned by retrieval engine!
   {
+    id: "DOC-HCM-026",
+    title: "\u0110\u1ECBa gi\u1EDBi h\xE0nh ch\xEDnh ph\u01B0\u1EDDng Th\u1EDBi An qua c\xE1c th\u1EDDi k\u1EF3 (1997\u20132025 v\xE0 hi\u1EC7n h\xE0nh)",
+    category: "hcmc-history",
+    categoryLabel: "L\u1ECBch s\u1EED Th\xE0nh ph\u1ED1 H\u1ED3 Ch\xED Minh",
+    authorOrSource: "UBND Th\xE0nh ph\u1ED1 H\u1ED3 Ch\xED Minh & \u1EE6y ban Th\u01B0\u1EDDng v\u1EE5 Qu\u1ED1c h\u1ED9i",
+    dateOrEra: "1997 - 2025 - Hi\u1EC7n h\xE0nh",
+    status: "PENDING_REVIEW",
+    isAllowedForRag: false,
+    topics: ["\u0110\u1ECBa gi\u1EDBi h\xE0nh ch\xEDnh", "Ph\u01B0\u1EDDng Th\u1EDBi An", "Ph\u01B0\u1EDDng Th\u1EA1nh Xu\xE2n", "Qu\u1EADn 12", "Ngh\u1ECB quy\u1EBFt 1685", "Quy\u1EBFt \u0111\u1ECBnh 1195", "S\u1EAFp x\u1EBFp \u0110VHC 2025"],
+    sourceUrl: "https://xaydungchinhsach.chinhphu.vn/toan-van-nghi-quyet-so-1685-nq-ubtvqh15-sap-xep-cac-dvhc-cap-xa-cua-thanh-pho-ho-chi-minh-nam-2025-119250616211341304.htm",
+    content: `\u0110\u1ECBa gi\u1EDBi h\xE0nh ch\xEDnh ph\u01B0\u1EDDng Th\u1EDBi An qua c\xE1c th\u1EDDi k\u1EF3 (1997 \u2013 2025 v\xE0 hi\u1EC7n h\xE0nh):
+1. Th\xE0nh l\u1EADp Qu\u1EADn 12 v\xE0 ph\u01B0\u1EDDng Th\u1EDBi An n\u0103m 1997: Theo Quy\u1EBFt \u0111\u1ECBnh s\u1ED1 1195/Q\u0110-UB-NC ng\xE0y 18/03/1997 c\u1EE7a UBND TP.HCM, ph\u01B0\u1EDDng Th\u1EDBi An \u0111\u01B0\u1EE3c th\xE0nh l\u1EADp tr\xEAn c\u01A1 s\u1EDF 451 ha di\u1EC7n t\xEDch t\u1EF1 nhi\xEAn v\xE0 4.883 nh\xE2n kh\u1EA9u c\u1EE7a x\xE3 T\xE2n Th\u1EDBi Hi\u1EC7p c\u0169 thu\u1ED9c huy\u1EC7n H\xF3c M\xF4n. Ph\u01B0\u1EDDng Th\u1EA1nh Xu\xE2n \u0111\u01B0\u1EE3c th\xE0nh l\u1EADp tr\xEAn c\u01A1 s\u1EDF to\xE0n b\u1ED9 968 ha di\u1EC7n t\xEDch v\xE0 9.489 nh\xE2n kh\u1EA9u c\u1EE7a x\xE3 Th\u1EA1nh Xu\xE2n c\u0169. Tr\u1EE5 s\u1EDF UBND Qu\u1EADn 12 th\u1EDDi k\u1EF3 n\xE0y \u0111\u01B0\u1EE3c \u0111\u1EB7t tr\xEAn \u0111\u1ECBa b\xE0n ph\u01B0\u1EDDng Th\u1EDBi An.
+2. S\u1EAFp x\u1EBFp \u0111\u01A1n v\u1ECB h\xE0nh ch\xEDnh n\u0103m 2025 theo Ngh\u1ECB quy\u1EBFt s\u1ED1 1685/NQ-UBTVQH15 ng\xE0y 16/06/2025 c\u1EE7a \u1EE6y ban Th\u01B0\u1EDDng v\u1EE5 Qu\u1ED1c h\u1ED9i: Nh\u1EADp to\xE0n b\u1ED9 di\u1EC7n t\xEDch t\u1EF1 nhi\xEAn v\xE0 quy m\xF4 d\xE2n s\u1ED1 c\u1EE7a ph\u01B0\u1EDDng Th\u1EA1nh Xu\xE2n v\xE0o ph\u01B0\u1EDDng Th\u1EDBi An. Sau khi s\u1EAFp x\u1EBFp, ph\u01B0\u1EDDng Th\u1EDBi An gi\xE1p ph\u01B0\u1EDDng An Ph\xFA \u0110\xF4ng, ph\u01B0\u1EDDng T\xE2n Th\u1EDBi Hi\u1EC7p v\xE0 t\u1EC9nh B\xECnh D\u01B0\u01A1ng. Ngh\u1ECB quy\u1EBFt c\xF3 hi\u1EC7u l\u1EF1c thi h\xE0nh t\u1EEB ng\xE0y 01 th\xE1ng 07 n\u0103m 2025.
+3. Nguy\xEAn t\u1EAFc \u0111\u1ECBa danh v\xE0 qu\u1EA3n l\xFD: \u0110\u1ECBa danh hi\u1EC7n h\xE0nh ch\xEDnh th\u1EE9c l\xE0 "Ph\u01B0\u1EDDng Th\u1EDBi An, Th\xE0nh ph\u1ED1 H\u1ED3 Ch\xED Minh". C\u1EE5m t\u1EEB "Ph\u01B0\u1EDDng Th\u1EDBi An, Qu\u1EADn 12" ch\u1EC9 \u0111\u01B0\u1EE3c d\xF9ng khi tr\xEDch d\u1EABn c\xE1c v\u0103n b\u1EA3n, s\u1EF1 ki\u1EC7n l\u1ECBch s\u1EED ban h\xE0nh tr\u01B0\u1EDBc ng\xE0y 01/07/2025. Ph\u01B0\u1EDDng Th\u1EDBi An hi\u1EC7n nay l\xE0 \u0111\u01A1n v\u1ECB h\xE0nh ch\xEDnh c\u1EA5p x\xE3 tr\u1EF1c thu\u1ED9c Th\xE0nh ph\u1ED1 H\u1ED3 Ch\xED Minh sau khi h\u1EE3p nh\u1EA5t v\u1EDBi ph\u01B0\u1EDDng Th\u1EA1nh Xu\xE2n, kh\xF4ng \u0111\u1ED3ng nh\u1EA5t v\u1EDBi to\xE0n b\u1ED9 \u0111\u1ECBa gi\u1EDBi Qu\u1EADn 12 c\u0169.`,
+    metadata: {
+      candidateCode: "B-07",
+      legalBasis: ["Quy\u1EBFt \u0111\u1ECBnh s\u1ED1 1195/Q\u0110-UB-NC", "Ngh\u1ECB quy\u1EBFt s\u1ED1 1685/NQ-UBTVQH15"],
+      effectiveDateCurrent: "01/07/2025",
+      copyrightStatus: "PUBLIC_DOMAIN_CONFIRMED",
+      batch: "BATCH_B_SELECTIVE_01"
+    }
+  },
+  {
+    id: "DOC-HCM-027",
+    title: "L\u1ECBch s\u1EED h\xECnh th\xE0nh v\xE0 ph\xE1t tri\u1EC3n Tr\u01B0\u1EDDng THCS Nguy\u1EC5n Trung Tr\u1EF1c (2014\u2013nay)",
+    category: "school-education",
+    categoryLabel: "Ho\u1EA1t \u0111\u1ED9ng gi\xE1o d\u1EE5c v\xE0 h\u1ECDc t\u1EADp t\u1EA1i nh\xE0 tr\u01B0\u1EDDng",
+    authorOrSource: "Tr\u01B0\u1EDDng THCS Nguy\u1EC5n Trung Tr\u1EF1c & UBND Ph\u01B0\u1EDDng Th\u1EDBi An",
+    dateOrEra: "2014 - Hi\u1EC7n nay",
+    status: "PENDING_REVIEW",
+    isAllowedForRag: false,
+    topics: ["Tr\u01B0\u1EDDng THCS Nguy\u1EC5n Trung Tr\u1EF1c", "Th\xE0nh l\u1EADp n\u0103m 2014", "Quy\u1EBFt \u0111\u1ECBnh 155", "Quy\u1EBFt \u0111\u1ECBnh 76", "K\u1EBF ho\u1EA1ch 01/KH-NTT", "Kh\xF4ng gian V\u0103n h\xF3a HCM", "Tr\u01B0\u1EDDng h\u1ECDc H\u1EA1nh ph\xFAc"],
+    sourceUrl: "https://thcsnguyentrungtruc.hcm.edu.vn/gioi-thieu/gioi-thieu-truong-thcs-nguyen-trung-truc/ct/12684/691487",
+    content: `L\u1ECBch s\u1EED h\xECnh th\xE0nh v\xE0 ph\xE1t tri\u1EC3n Tr\u01B0\u1EDDng THCS Nguy\u1EC5n Trung Tr\u1EF1c (2014 \u2013 nay):
+1. M\u1ED1c th\xE0nh l\u1EADp v\xE0 c\u0103n c\u1EE9 ph\xE1p l\xFD kh\u1EDFi \u0111\u1EA7u n\u0103m 2014: Tr\u01B0\u1EDDng Trung h\u1ECDc c\u01A1 s\u1EDF Nguy\u1EC5n Trung Tr\u1EF1c \u0111\u01B0\u1EE3c ch\xEDnh th\u1EE9c th\xE0nh l\u1EADp theo Quy\u1EBFt \u0111\u1ECBnh s\u1ED1 155/Q\u0110-UBND ng\xE0y 31 th\xE1ng 07 n\u0103m 2014 c\u1EE7a UBND Qu\u1EADn 12. Nh\xE0 tr\u01B0\u1EDDng ch\xEDnh th\u1EE9c khai gi\u1EA3ng v\xE0 \u0111i v\xE0o ho\u1EA1t \u0111\u1ED9ng gi\u1EA3ng d\u1EA1y t\u1EEB n\u0103m h\u1ECDc 2014 \u2013 2015. Tr\u01B0\u1EDDng vinh d\u1EF1 mang t\xEAn Ng\u01B0\u1EDDi anh h\xF9ng ngh\u0129a qu\xE2n Nam B\u1ED9 Nguy\u1EC5n Trung Tr\u1EF1c (1838 \u2013 1868) v\u1EDBi c\xE2u n\xF3i b\u1EA5t h\u1EE7: "Bao gi\u1EDD ng\u01B0\u1EDDi T\xE2y nh\u1ED5 h\u1EBFt c\u1ECF n\u01B0\u1EDBc Nam th\xEC m\u1EDBi h\u1EBFt ng\u01B0\u1EDDi Nam \u0111\xE1nh T\xE2y".
+2. Qu\xE1 tr\xECnh ph\xE1t tri\u1EC3n v\xE0 ki\u1EC7n to\xE0n t\u1ED5 ch\u1EE9c n\u0103m 2025: Tr\u1EA3i qua h\u01A1n 10 n\u0103m ph\xE1t tri\u1EC3n phong tr\xE0o "D\u1EA1y t\u1ED1t \u2013 H\u1ECDc t\u1ED1t", ng\xE0y 01 th\xE1ng 07 n\u0103m 2025, th\u1EF1c hi\u1EC7n Ngh\u1ECB quy\u1EBFt s\u1ED1 1685/NQ-UBTVQH15 c\u1EE7a Qu\u1ED1c h\u1ED9i v\u1EC1 vi\u1EC7c s\u1EAFp x\u1EBFp \u0111\u01A1n v\u1ECB h\xE0nh ch\xEDnh c\u1EA5p x\xE3 c\u1EE7a TP.HCM, UBND Ph\u01B0\u1EDDng Th\u1EDBi An ban h\xE0nh Quy\u1EBFt \u0111\u1ECBnh s\u1ED1 76/Q\u0110-UBND ng\xE0y 01/07/2025 v\u1EC1 vi\u1EC7c qu\u1EA3n l\xFD Tr\u01B0\u1EDDng THCS Nguy\u1EC5n Trung Tr\u1EF1c tr\u1EF1c thu\u1ED9c ch\xEDnh quy\u1EC1n \u0111\u1ECBa ph\u01B0\u01A1ng c\u1EA5p ph\u01B0\u1EDDng (ghi nh\u1EADn t\u1EA1i K\u1EBF ho\u1EA1ch gi\xE1o d\u1EE5c nh\xE0 tr\u01B0\u1EDDng s\u1ED1 01/KH-NTT ng\xE0y 29/08/2025). Quy\u1EBFt \u0111\u1ECBnh 2014 l\xE0 m\u1ED1c khai sinh, quy\u1EBFt \u0111\u1ECBnh 2025 l\xE0 ki\u1EC7n to\xE0n th\u1EA9m quy\u1EC1n qu\u1EA3n l\xFD; \u0111\xE2y l\xE0 s\u1EF1 k\u1EBF th\u1EEBa li\xEAn t\u1EE5c v\u1EC1 l\u1ECBch s\u1EED, \u0111\u1ED9i ng\u0169 v\xE0 c\u01A1 s\u1EDF v\u1EADt ch\u1EA5t.
+3. Gi\xE1o d\u1EE5c truy\u1EC1n th\u1ED1ng v\xE0 Kh\xF4ng gian V\u0103n h\xF3a H\u1ED3 Ch\xED Minh: Tr\u01B0\u1EDDng x\xE2y d\u1EF1ng m\xF4 h\xECnh Tr\u01B0\u1EDDng h\u1ECDc H\u1EA1nh ph\xFAc, ph\xE1t tri\u1EC3n to\xE0n di\u1EC7n tri th\u1EE9c v\xE0 nh\xE2n c\xE1ch. Kh\xF4ng gian V\u0103n h\xF3a H\u1ED3 Ch\xED Minh h\u1ECDc \u0111\u01B0\u1EDDng \u0111\u01B0\u1EE3c tri\u1EC3n khai \u0111\u1ED3ng b\u1ED9 gi\u1EEFa Kh\xF4ng gian v\u1EADt l\xFD (t\u1EE7 s\xE1ch B\xE1c H\u1ED3, khu \u1EA3nh t\u01B0 li\u1EC7u) v\xE0 Kh\xF4ng gian s\u1ED1 (Tr\u1EE3 l\xFD AI RAG ph\u1EE5c v\u1EE5 tra c\u1EE9u c\xF3 c\u0103n c\u1EE9 x\xE1c th\u1EF1c, gi\xE1o d\u1EE5c truy\u1EC1n th\u1ED1ng cho h\u1ECDc sinh).`,
+    metadata: {
+      candidateCode: "B-10",
+      foundingDecision: "Quy\u1EBFt \u0111\u1ECBnh s\u1ED1 155/Q\u0110-UBND ng\xE0y 31/07/2014 c\u1EE7a UBND Qu\u1EADn 12",
+      governanceDecisionCurrent: "Quy\u1EBFt \u0111\u1ECBnh s\u1ED1 76/Q\u0110-UBND ng\xE0y 01/07/2025 c\u1EE7a UBND Ph\u01B0\u1EDDng Th\u1EDBi An",
+      addressCurrent: "\u0110\u01B0\u1EDDng L\xEA V\u0103n Kh\u01B0\u01A1ng, Ph\u01B0\u1EDDng Th\u1EDBi An, Th\xE0nh ph\u1ED1 H\u1ED3 Ch\xED Minh",
+      copyrightStatus: "OPEN_ACCESS_REUSE_PERMITTED",
+      batch: "BATCH_B_SELECTIVE_01"
+    }
+  },
+  {
+    id: "DOC-HCM-028",
+    title: "Tr\xEDch y\u1EBFu L\u1ECBch s\u1EED S\xE0i G\xF2n \u2013 Gia \u0110\u1ECBnh th\u1EDDi Nguy\u1EC5n theo Gia \u0110\u1ECBnh th\xE0nh th\xF4ng ch\xED",
+    category: "hcmc-history",
+    categoryLabel: "L\u1ECBch s\u1EED Th\xE0nh ph\u1ED1 H\u1ED3 Ch\xED Minh",
+    authorOrSource: "Hi\u1EC7p bi\u1EC7n \u0110\u1EA1i h\u1ECDc s\u0129 Tr\u1ECBnh Ho\xE0i \u0110\u1EE9c & H\u1ED9i \u0111\u1ED3ng bi\xEAn so\u1EA1n H\u1ED9i KHLS TP.HCM",
+    dateOrEra: "Th\u1EBF k\u1EF7 XVII - Gi\u1EEFa th\u1EBF k\u1EF7 XIX (1698 - 1858)",
+    status: "PENDING_REVIEW",
+    isAllowedForRag: false,
+    topics: ["Gia \u0110\u1ECBnh th\xE0nh th\xF4ng ch\xED", "Tr\u1ECBnh Ho\xE0i \u0110\u1EE9c", "L\u1EC5 Th\xE0nh h\u1EA7u Nguy\u1EC5n H\u1EEFu C\u1EA3nh", "N\u0103m 1698", "Ph\u1EE7 Gia \u0110\u1ECBnh", "B\u1EBFn Ngh\xE9", "Khai hoang m\u1EDF c\xF5i", "Th\u01B0\u01A1ng c\u1EA3ng S\xE0i G\xF2n"],
+    sourceUrl: "https://tulieuvankien.dangcongsan.vn",
+    content: `Tr\xEDch y\u1EBFu L\u1ECBch s\u1EED S\xE0i G\xF2n \u2013 Gia \u0110\u1ECBnh th\u1EDDi Nguy\u1EC5n theo Gia \u0110\u1ECBnh th\xE0nh th\xF4ng ch\xED:
+1. M\u1ED1c thi\u1EBFt l\u1EADp t\u1ED5 ch\u1EE9c h\xE0nh ch\xEDnh n\u0103m 1698: Theo Tr\u1ECBnh Ho\xE0i \u0110\u1EE9c trong t\xE1c ph\u1EA9m "Gia \u0110\u1ECBnh th\xE0nh th\xF4ng ch\xED" (C\u01B0\u01A1ng v\u1EF1c ch\xED), m\xF9a xu\xE2n n\u0103m M\u1EADu D\u1EA7n (1698), ch\xFAa Nguy\u1EC5n Ph\xFAc Chu sai Th\u1ED1ng su\u1EA5t Ch\u01B0\u1EDFng c\u01A1 L\u1EC5 Th\xE0nh h\u1EA7u Nguy\u1EC5n H\u1EEFu C\u1EA3nh v\xE0o kinh l\u01B0\u1EE3c \u0111\u1EA5t ph\u01B0\u01A1ng Nam. Nguy\u1EC5n H\u1EEFu C\u1EA3nh l\u1EA5y \u0111\u1EA5t N\xF4ng N\u1EA1i \u0111\u1EB7t l\xE0m Ph\u1EE7 Gia \u0110\u1ECBnh, l\u1EADp x\u1EE9 \u0110\u1ED3ng Nai l\xE0m huy\u1EC7n Ph\u01B0\u1EDBc Long (d\u1EF1ng dinh Tr\u1EA5n Bi\xEAn), l\u1EADp x\u1EE9 S\xE0i G\xF2n l\xE0m huy\u1EC7n T\xE2n B\xECnh (d\u1EF1ng dinh Phi\xEAn Tr\u1EA5n). M\u1ED1c n\u0103m 1698 ch\xEDnh th\u1EE9c \u0111\xE1nh d\u1EA5u vi\u1EC7c v\xF9ng \u0111\u1EA5t S\xE0i G\xF2n \u2013 Gia \u0110\u1ECBnh \u0111\u01B0\u1EE3c \u0111\u01B0a v\xE0o b\u1EA3n \u0111\u1ED3 c\u01B0\u01A1ng v\u1EF1c h\xE0nh ch\xEDnh \u0110\u1EA1i Vi\u1EC7t.
+2. Th\u01B0\u01A1ng c\u1EA3ng B\u1EBFn Ngh\xE9 v\xE0 \u0111\u1EDDi s\u1ED1ng tr\xF9 ph\xFA: Trong "S\u01A1n xuy\xEAn ch\xED", Tr\u1ECBnh Ho\xE0i \u0110\u1EE9c mi\xEAu t\u1EA3 v\xF9ng s\xF4ng B\u1EBFn Ngh\xE9 t\xE0u bu\xF4n qua l\u1EA1i nh\u01B0 thoi, ghe thuy\u1EC1n t\u1EE5 h\u1ED9i "Tr\xEAn b\u1EBFn d\u01B0\u1EDBi thuy\u1EC1n", l\xFAa g\u1EA1o c\xE1 mu\u1ED1i kh\u1EAFp n\u01A1i t\u1EE5 v\u1EC1 bu\xF4n b\xE1n s\u1EA7m u\u1EA5t. Ch\u1EE3 S\xE0i G\xF2n tr\u1EDF th\xE0nh trung t\xE2m th\u01B0\u01A1ng m\u1EA1i t\u1EA5p n\u1EADp c\u1EE7a x\u1EE9 \u0110\xE0ng Trong, l\xE0 n\u01A1i giao thoa v\u0103n h\xF3a gi\u1EEFa c\xE1c c\u1ED9ng \u0111\u1ED3ng c\u01B0 d\xE2n.
+3. \xDD ngh\u0129a khoa h\u1ECDc v\xE0 gi\xE1o d\u1EE5c truy\u1EC1n th\u1ED1ng: Gia \u0110\u1ECBnh th\xE0nh th\xF4ng ch\xED l\xE0 b\u1ED9 \u0111\u1ECBa ch\xED kinh \u0111i\u1EC3n c\xF3 gi\xE1 tr\u1ECB l\u1ECBch s\u1EED v\xE0 ph\xE1p l\xFD cao v\u1EC1 c\u01B0\u01A1ng v\u1EF1c ph\u01B0\u01A1ng Nam. T\u01B0 li\u1EC7u gi\xFAp h\u1ECDc sinh Tr\u01B0\u1EDDng THCS Nguy\u1EC5n Trung Tr\u1EF1c hi\u1EC3u r\xF5 c\xF4ng lao khai hoang m\u1EDF c\xF5i ki\xEAn c\u01B0\u1EDDng c\u1EE7a c\xE1c b\u1EADc ti\u1EC1n nh\xE2n, b\u1ED3i \u0111\u1EAFp l\xF2ng bi\u1EBFt \u01A1n v\xE0 t\u1EF1 h\xE0o s\xE2u s\u1EAFc v\u1EC1 truy\u1EC1n th\u1ED1ng h\u01A1n 300 n\u0103m c\u1EE7a Th\xE0nh ph\u1ED1 mang t\xEAn B\xE1c.`,
+    metadata: {
+      candidateCode: "B-02",
+      chronicleAuthor: "Tr\u1ECBnh Ho\xE0i \u0110\u1EE9c (1765 - 1825)",
+      keySections: ["Quy\u1EC3n III: C\u01B0\u01A1ng v\u1EF1c ch\xED", "Quy\u1EC3n IV: S\u01A1n xuy\xEAn ch\xED"],
+      copyrightStatus: "PUBLIC_DOMAIN_CONFIRMED",
+      batch: "BATCH_B_SELECTIVE_01"
+    }
+  },
+  // Security Canary test document: PENDING_REVIEW & isAllowedForRag: false
+  // Must NEVER be returned by retrieval engine!
+  {
     id: "DOC-HCM-009",
     title: "T\xE0i li\u1EC7u th\u1EED nghi\u1EC7m n\u1ED9i b\u1ED9 - Ch\u01B0a qua th\u1EA9m \u0111\u1ECBnh c\u1EE7a H\u1ED9i \u0111\u1ED3ng chuy\xEAn m\xF4n",
     category: "ideology-ethics",
