@@ -307,6 +307,7 @@ export interface RagUserFeedback {
   comment?: string;
   userRole?: string; // 'student' | 'teacher' | 'guest'
   createdAt: string;
+  persisted?: boolean;
 }
 
 /**
@@ -334,6 +335,8 @@ export interface RagAnalyticsSummary {
     unhelpfulCount: number;
     satisfactionRatePercent: number;
     recentComments: Array<{ comment: string; isHelpful: boolean; category?: string; createdAt: string }>;
+    dataSource?: 'supabase_persistent' | 'local_in_memory_unpersisted';
+    isPersisted?: boolean;
   };
   databaseHealth: {
     status: 'healthy' | 'degraded' | 'offline';

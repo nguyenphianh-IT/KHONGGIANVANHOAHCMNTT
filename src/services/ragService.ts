@@ -326,7 +326,7 @@ export class RagService {
   /**
    * Phase 04: Send user feedback on answer quality
    */
-  public static async sendFeedback(feedback: Omit<RagUserFeedback, 'id' | 'createdAt'>): Promise<{ success: boolean; message?: string }> {
+  public static async sendFeedback(feedback: Omit<RagUserFeedback, 'id' | 'createdAt'>): Promise<{ success: boolean; message?: string; persisted?: boolean }> {
     try {
       const response = await fetch(`${this.apiBase}/feedback`, {
         method: 'POST',
@@ -334,26 +334,26 @@ export class RagService {
         body: JSON.stringify(feedback)
       });
       const json = await response.json();
-      if (json.success) {
-        return { success: true, message: json.data?.message };
+      if (json.success && json.data?.persisted) {
+        return {
+          success: true,
+          message: json.data?.message || 'Cảm ơn bạn đã gửi phản hồi đánh giá câu trả lời!',
+          persisted: true
+        };
       }
-    } catch (err) {
-      console.warn('[RagService] Feedback API error, saving locally:', err);
+      return {
+        success: false,
+        message: json.error || 'Không thể lưu phản hồi vào cơ sở dữ liệu.',
+        persisted: false
+      };
+    } catch (err: any) {
+      console.warn('[RagService] Feedback API network error:', err);
+      return {
+        success: false,
+        message: 'Lỗi kết nối khi gửi phản hồi đánh giá.',
+        persisted: false
+      };
     }
-
-    // Local fallback
-    await persistentRagStore.saveFeedback({
-      id: `FB-${Date.now()}`,
-      query: feedback.query,
-      answerSnippet: feedback.answerSnippet || '',
-      isHelpful: feedback.isHelpful,
-      category: feedback.category,
-      comment: feedback.comment,
-      userRole: feedback.userRole,
-      createdAt: new Date().toISOString()
-    });
-
-    return { success: true, message: 'Đã lưu phản hồi của bạn!' };
   }
 
   /**

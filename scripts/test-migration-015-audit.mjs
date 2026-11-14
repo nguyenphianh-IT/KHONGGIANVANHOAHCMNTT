@@ -156,7 +156,7 @@ async function runLiveApiTests() {
     const jsonLongComment = await resLongComment.json();
     assert(resLongComment.status === 400 && jsonLongComment.success === false, 'Live API rejects oversized comment (>4000 chars) with 400 Bad Request');
 
-    // 4. Valid feedback submission from student/guest via API
+    // 4. Valid feedback submission from student/guest via API: strictly enforces real persistence
     const resValid = await fetch(baseUrl, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'X-Forwarded-For': '10.0.0.4' },
@@ -169,7 +169,11 @@ async function runLiveApiTests() {
       })
     });
     const jsonValid = await resValid.json();
-    assert(resValid.status === 201 && jsonValid.success === true, 'Live API successfully accepts valid user feedback');
+    assert(
+      (resValid.status === 201 && jsonValid.data?.persisted === true) ||
+      (resValid.status === 503 && jsonValid.data?.persisted === false),
+      'Live API strictly validates persistent status (201 when persisted, 503 when DB unconfigured)'
+    );
 
     // 5. Rate limiting test: sending multiple requests rapidly from 10.0.0.5
     let rateLimited = false;

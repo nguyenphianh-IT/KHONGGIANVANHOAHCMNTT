@@ -15,6 +15,28 @@ import {
 import { documentRegistry } from '../knowledge/documentRegistry';
 import { documentIngestion } from '../ingestion/documentIngestion';
 
+/**
+ * Custom Error Class for Database Persistence Operations
+ */
+export class PersistenceError extends Error {
+  public statusCode: number;
+  public code: 'PERSISTENCE_UNAVAILABLE' | 'DATABASE_REJECTED' | 'NETWORK_ERROR';
+  public details?: { code?: string; message?: string; hint?: string };
+
+  constructor(
+    message: string,
+    statusCode: number,
+    code: 'PERSISTENCE_UNAVAILABLE' | 'DATABASE_REJECTED' | 'NETWORK_ERROR',
+    details?: { code?: string; message?: string; hint?: string }
+  ) {
+    super(message);
+    this.name = 'PersistenceError';
+    this.statusCode = statusCode;
+    this.code = code;
+    this.details = details;
+  }
+}
+
 export class PersistentRagStore {
   private isSupabaseLive: boolean = false;
   private localChunks: Map<string, DocumentChunk[]> = new Map(); // documentId -> DocumentChunk[]
@@ -408,30 +430,68 @@ export class PersistentRagStore {
 
   /**
    * Phase 04: Save user feedback on answer quality
+   * Strictly enforces real persistence into Supabase public.rag_user_feedback.
+   * Does NOT swallow errors or treat in-memory storage as persistence.
    */
   public async saveFeedback(feedback: RagUserFeedback): Promise<void> {
-    this.localFeedbacks.unshift(feedback);
-    if (this.localFeedbacks.length > 200) {
-      this.localFeedbacks.pop();
+    // 1. Verify privileged Supabase Admin client availability
+    const supabaseAdmin = getSupabaseAdmin();
+    if (!supabaseAdmin) {
+      console.warn('[PersistentStore] Supabase Admin Client is unavailable (missing credentials). Rejecting persistent feedback save.');
+      throw new PersistenceError(
+        'Dịch vụ lưu trữ cơ sở dữ liệu tạm thời chưa sẵn sàng (Chưa cấu hình Supabase Admin).',
+        503,
+        'PERSISTENCE_UNAVAILABLE'
+      );
     }
 
-    // Backend-Only Architecture: Save directly to Supabase using privileged service_role client
-    const supabaseAdmin = getSupabaseAdmin();
-    if (supabaseAdmin) {
-      try {
-        await supabaseAdmin.from('rag_user_feedback').insert([{
-          id: feedback.id,
-          query: feedback.query,
-          answer_snippet: feedback.answerSnippet,
-          is_helpful: feedback.isHelpful,
-          category: feedback.category,
-          comment: feedback.comment,
-          user_role: feedback.userRole,
-          created_at: feedback.createdAt
-        }]);
-      } catch (e: any) {
-        console.warn('[PersistentStore] Remote service_role feedback insert error (non-blocking):', e?.message);
-      }
+    // 2. Perform INSERT into public.rag_user_feedback
+    let insertResult: { data: any; error: any };
+    try {
+      insertResult = await supabaseAdmin.from('rag_user_feedback').insert([{
+        id: feedback.id,
+        query: feedback.query,
+        answer_snippet: feedback.answerSnippet,
+        is_helpful: feedback.isHelpful,
+        category: feedback.category,
+        comment: feedback.comment,
+        user_role: feedback.userRole,
+        created_at: feedback.createdAt
+      }]);
+    } catch (netErr: any) {
+      console.error('[PersistentStore] Network/connection exception during feedback insert:', netErr?.message || netErr);
+      throw new PersistenceError(
+        'Lỗi kết nối mạng khi gửi dữ liệu phản hồi tới cơ sở dữ liệu.',
+        500,
+        'NETWORK_ERROR',
+        { message: netErr?.message }
+      );
+    }
+
+    // 3. Inspect database response error (Mandatory error check)
+    if (insertResult.error) {
+      const dbErr = insertResult.error;
+      console.error(`[PersistentStore] Supabase INSERT rejected: code=${dbErr.code}, message=${dbErr.message}, hint=${dbErr.hint || 'none'}`);
+      throw new PersistenceError(
+        'Cơ sở dữ liệu từ chối lưu phản hồi.',
+        502,
+        'DATABASE_REJECTED',
+        {
+          code: dbErr.code,
+          message: dbErr.message,
+          hint: dbErr.hint
+        }
+      );
+    }
+
+    // 4. ONLY UPON CONFIRMED INSERT: Update local in-memory cache marked as persisted: true
+    const persistedRecord: RagUserFeedback = {
+      ...feedback,
+      persisted: true
+    };
+    this.localFeedbacks.unshift(persistedRecord);
+    if (this.localFeedbacks.length > 200) {
+      this.localFeedbacks.pop();
     }
   }
 
@@ -473,18 +533,25 @@ export class PersistentRagStore {
         createdAt: f.createdAt
       }));
 
+    let isPersistedSource = false;
+    let analyticsDataSource: 'supabase_persistent' | 'local_in_memory_unpersisted' = 'local_in_memory_unpersisted';
+
     // If server-side service_role client is active, query remote statistics securely
     const supabaseAdmin = getSupabaseAdmin();
     if (supabaseAdmin) {
       try {
-        const { data: remoteData, count } = await supabaseAdmin
+        const { data: remoteData, error: remoteErr, count } = await supabaseAdmin
           .from('rag_user_feedback')
           .select('is_helpful, comment, category, created_at', { count: 'exact' })
           .order('created_at', { ascending: false })
           .limit(20);
 
-        if (typeof count === 'number' && count > 0) {
+        if (remoteErr) {
+          console.warn('[PersistentStore] Remote feedback analytics query returned error:', remoteErr.message);
+        } else if (typeof count === 'number') {
           totalFeedback = count;
+          isPersistedSource = true;
+          analyticsDataSource = 'supabase_persistent';
           if (remoteData && remoteData.length > 0) {
             helpfulCount = remoteData.filter((r: any) => r.is_helpful).length;
             recentComments = remoteData
@@ -496,10 +563,13 @@ export class PersistentRagStore {
                 category: r.category,
                 createdAt: r.created_at
               }));
+          } else {
+            helpfulCount = 0;
+            recentComments = [];
           }
         }
-      } catch (e) {
-        // Fallback to local memory analytics seamlessly
+      } catch (e: any) {
+        console.warn('[PersistentStore] Remote feedback analytics query exception:', e?.message);
       }
     }
 
@@ -529,7 +599,9 @@ export class PersistentRagStore {
         helpfulCount,
         unhelpfulCount,
         satisfactionRatePercent,
-        recentComments
+        recentComments,
+        dataSource: analyticsDataSource,
+        isPersisted: isPersistedSource
       },
       databaseHealth: {
         status: health.status,

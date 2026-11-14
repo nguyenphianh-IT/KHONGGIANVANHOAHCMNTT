@@ -2298,7 +2298,48 @@ var supabase = createClient(validUrl, validKey, {
   }
 });
 
+// src/lib/supabaseBackend.ts
+import { createClient as createClient2 } from "@supabase/supabase-js";
+var getEnv2 = (key) => {
+  try {
+    if (typeof process !== "undefined" && process.env && process.env[key]) {
+      return process.env[key];
+    }
+  } catch {
+  }
+  return void 0;
+};
+var _supabaseAdmin = null;
+var getSupabaseAdmin = () => {
+  if (_supabaseAdmin) return _supabaseAdmin;
+  const url = getEnv2("SUPABASE_URL") || getEnv2("VITE_SUPABASE_URL");
+  const serviceKey = getEnv2("SUPABASE_SERVICE_ROLE_KEY") || getEnv2("SUPABASE_SERVICE_KEY");
+  if (!url || !serviceKey || serviceKey.trim() === "") {
+    return null;
+  }
+  _supabaseAdmin = createClient2(url, serviceKey.trim(), {
+    auth: {
+      persistSession: false,
+      autoRefreshToken: false,
+      detectSessionInUrl: false
+    }
+  });
+  return _supabaseAdmin;
+};
+
 // src/rag/storage/persistentStore.ts
+var PersistenceError = class extends Error {
+  statusCode;
+  code;
+  details;
+  constructor(message, statusCode, code, details) {
+    super(message);
+    this.name = "PersistenceError";
+    this.statusCode = statusCode;
+    this.code = code;
+    this.details = details;
+  }
+};
 var PersistentRagStore = class {
   isSupabaseLive = false;
   localChunks = /* @__PURE__ */ new Map();
@@ -2589,26 +2630,61 @@ var PersistentRagStore = class {
   }
   /**
    * Phase 04: Save user feedback on answer quality
+   * Strictly enforces real persistence into Supabase public.rag_user_feedback.
+   * Does NOT swallow errors or treat in-memory storage as persistence.
    */
   async saveFeedback(feedback) {
-    this.localFeedbacks.unshift(feedback);
+    const supabaseAdmin = getSupabaseAdmin();
+    if (!supabaseAdmin) {
+      console.warn("[PersistentStore] Supabase Admin Client is unavailable (missing credentials). Rejecting persistent feedback save.");
+      throw new PersistenceError(
+        "D\u1ECBch v\u1EE5 l\u01B0u tr\u1EEF c\u01A1 s\u1EDF d\u1EEF li\u1EC7u t\u1EA1m th\u1EDDi ch\u01B0a s\u1EB5n s\xE0ng (Ch\u01B0a c\u1EA5u h\xECnh Supabase Admin).",
+        503,
+        "PERSISTENCE_UNAVAILABLE"
+      );
+    }
+    let insertResult;
+    try {
+      insertResult = await supabaseAdmin.from("rag_user_feedback").insert([{
+        id: feedback.id,
+        query: feedback.query,
+        answer_snippet: feedback.answerSnippet,
+        is_helpful: feedback.isHelpful,
+        category: feedback.category,
+        comment: feedback.comment,
+        user_role: feedback.userRole,
+        created_at: feedback.createdAt
+      }]);
+    } catch (netErr) {
+      console.error("[PersistentStore] Network/connection exception during feedback insert:", netErr?.message || netErr);
+      throw new PersistenceError(
+        "L\u1ED7i k\u1EBFt n\u1ED1i m\u1EA1ng khi g\u1EEDi d\u1EEF li\u1EC7u ph\u1EA3n h\u1ED3i t\u1EDBi c\u01A1 s\u1EDF d\u1EEF li\u1EC7u.",
+        500,
+        "NETWORK_ERROR",
+        { message: netErr?.message }
+      );
+    }
+    if (insertResult.error) {
+      const dbErr = insertResult.error;
+      console.error(`[PersistentStore] Supabase INSERT rejected: code=${dbErr.code}, message=${dbErr.message}, hint=${dbErr.hint || "none"}`);
+      throw new PersistenceError(
+        "C\u01A1 s\u1EDF d\u1EEF li\u1EC7u t\u1EEB ch\u1ED1i l\u01B0u ph\u1EA3n h\u1ED3i.",
+        502,
+        "DATABASE_REJECTED",
+        {
+          code: dbErr.code,
+          message: dbErr.message,
+          hint: dbErr.hint
+        }
+      );
+    }
+    const persistedRecord = {
+      ...feedback,
+      persisted: true
+    };
+    this.localFeedbacks.unshift(persistedRecord);
     if (this.localFeedbacks.length > 200) {
       this.localFeedbacks.pop();
-    }
-    if (this.isSupabaseLive) {
-      try {
-        await supabase.from("rag_user_feedback").insert([{
-          id: feedback.id,
-          query: feedback.query,
-          answer_snippet: feedback.answerSnippet,
-          is_helpful: feedback.isHelpful,
-          category: feedback.category,
-          comment: feedback.comment,
-          user_role: feedback.userRole,
-          created_at: feedback.createdAt
-        }]);
-      } catch (e) {
-      }
     }
   }
   /**
@@ -2630,16 +2706,45 @@ var PersistentRagStore = class {
     const fallbackCount = totalLogged - evidenceFoundCount;
     const evidenceRatePercent = totalLogged > 0 ? Math.round(evidenceFoundCount / totalLogged * 100) : 100;
     const ungroundedQueries = this.localRetrievalLogs.filter((l) => !l.evidenceFound).slice(0, 15).map((l) => ({ query: l.query, timestamp: l.timestamp }));
-    const totalFeedback = this.localFeedbacks.length;
-    const helpfulCount = this.localFeedbacks.filter((f) => f.isHelpful).length;
-    const unhelpfulCount = totalFeedback - helpfulCount;
-    const satisfactionRatePercent = totalFeedback > 0 ? Math.round(helpfulCount / totalFeedback * 100) : 100;
-    const recentComments = this.localFeedbacks.filter((f) => f.comment && f.comment.trim().length > 0).slice(0, 10).map((f) => ({
+    let totalFeedback = this.localFeedbacks.length;
+    let helpfulCount = this.localFeedbacks.filter((f) => f.isHelpful).length;
+    let recentComments = this.localFeedbacks.filter((f) => f.comment && f.comment.trim().length > 0).slice(0, 10).map((f) => ({
       comment: f.comment,
       isHelpful: f.isHelpful,
       category: f.category,
       createdAt: f.createdAt
     }));
+    let isPersistedSource = false;
+    let analyticsDataSource = "local_in_memory_unpersisted";
+    const supabaseAdmin = getSupabaseAdmin();
+    if (supabaseAdmin) {
+      try {
+        const { data: remoteData, error: remoteErr, count } = await supabaseAdmin.from("rag_user_feedback").select("is_helpful, comment, category, created_at", { count: "exact" }).order("created_at", { ascending: false }).limit(20);
+        if (remoteErr) {
+          console.warn("[PersistentStore] Remote feedback analytics query returned error:", remoteErr.message);
+        } else if (typeof count === "number") {
+          totalFeedback = count;
+          isPersistedSource = true;
+          analyticsDataSource = "supabase_persistent";
+          if (remoteData && remoteData.length > 0) {
+            helpfulCount = remoteData.filter((r) => r.is_helpful).length;
+            recentComments = remoteData.filter((r) => r.comment && r.comment.trim().length > 0).slice(0, 10).map((r) => ({
+              comment: r.comment,
+              isHelpful: r.is_helpful,
+              category: r.category,
+              createdAt: r.created_at
+            }));
+          } else {
+            helpfulCount = 0;
+            recentComments = [];
+          }
+        }
+      } catch (e) {
+        console.warn("[PersistentStore] Remote feedback analytics query exception:", e?.message);
+      }
+    }
+    const unhelpfulCount = totalFeedback - helpfulCount;
+    const satisfactionRatePercent = totalFeedback > 0 ? Math.round(helpfulCount / totalFeedback * 100) : 100;
     const health = await this.checkStagingHealth();
     return {
       documents: {
@@ -2662,7 +2767,9 @@ var PersistentRagStore = class {
         helpfulCount,
         unhelpfulCount,
         satisfactionRatePercent,
-        recentComments
+        recentComments,
+        dataSource: analyticsDataSource,
+        isPersisted: isPersistedSource
       },
       databaseHealth: {
         status: health.status,
@@ -2894,7 +3001,8 @@ async function validateAdminAuth(authHeader, roleHeader, requiredRole = "admin")
           error: `Phi\xEAn \u0111\u0103ng nh\u1EADp kh\xF4ng h\u1EE3p l\u1EC7 ho\u1EB7c \u0111\xE3 h\u1EBFt h\u1EA1n: ${authErr?.message || "X\xE1c th\u1EF1c th\u1EA5t b\u1EA1i"}`
         };
       }
-      const { data: rolesData } = await supabase.from("user_roles").select("roles(code)").eq("user_id", user.id);
+      const dbClient = getSupabaseAdmin() || supabase;
+      const { data: rolesData } = await dbClient.from("user_roles").select("roles(code)").eq("user_id", user.id);
       const userRoleCodes = (rolesData || []).map((r) => r.roles?.code).filter(Boolean);
       let effectiveRole = "viewer";
       if (userRoleCodes.includes("super_admin")) {
@@ -3072,6 +3180,7 @@ async function handlePostDocumentRoute(body, authHeader, roleHeader) {
     };
   }
 }
+var FEEDBACK_RATE_LIMIT_WINDOW_MS = 60 * 1e3;
 
 // api/rag/documents.ts
 async function handler(req, res) {

@@ -812,21 +812,45 @@ export async function handleFeedbackRoute(
       createdAt: new Date().toISOString()
     };
 
-    await persistentRagStore.saveFeedback(feedbackRecord);
+    try {
+      await persistentRagStore.saveFeedback(feedbackRecord);
 
-    return {
-      success: true,
-      statusCode: 201,
-      data: {
-        feedbackId,
-        message: 'Cảm ơn bạn đã gửi phản hồi đánh giá câu trả lời!'
+      return {
+        success: true,
+        statusCode: 201,
+        data: {
+          feedbackId,
+          persisted: true,
+          message: 'Cảm ơn bạn đã gửi phản hồi đánh giá câu trả lời!'
+        }
+      };
+    } catch (saveErr: any) {
+      const statusCode = typeof saveErr?.statusCode === 'number' ? saveErr.statusCode : 500;
+      let clientErrorMessage = 'Không thể lưu trữ phản hồi vào cơ sở dữ liệu.';
+
+      if (saveErr?.code === 'PERSISTENCE_UNAVAILABLE' || statusCode === 503) {
+        clientErrorMessage = 'Dịch vụ lưu trữ cơ sở dữ liệu tạm thời chưa sẵn sàng. Vui lòng thử lại sau.';
+      } else if (saveErr?.code === 'DATABASE_REJECTED' || statusCode === 502) {
+        clientErrorMessage = 'Cơ sở dữ liệu từ chối tiếp nhận phản hồi. Vui lòng thử lại sau.';
+      } else if (saveErr?.code === 'NETWORK_ERROR') {
+        clientErrorMessage = 'Lỗi kết nối mạng khi lưu trữ phản hồi.';
       }
-    };
+
+      return {
+        success: false,
+        statusCode,
+        error: clientErrorMessage,
+        data: {
+          feedbackId,
+          persisted: false
+        }
+      };
+    }
   } catch (err: any) {
     return {
       success: false,
       statusCode: 500,
-      error: `Lỗi ghi nhận phản hồi: ${err?.message || 'Lỗi không xác định'}`
+      error: `Lỗi xử lý phản hồi: ${err?.message || 'Lỗi không xác định'}`
     };
   }
 }

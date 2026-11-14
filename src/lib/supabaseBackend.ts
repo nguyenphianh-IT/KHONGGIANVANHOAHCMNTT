@@ -50,3 +50,10 @@ export const isServiceRoleConfigured = (): boolean => {
   const serviceKey = getEnv('SUPABASE_SERVICE_ROLE_KEY') || getEnv('SUPABASE_SERVICE_KEY');
   return Boolean(serviceKey && serviceKey.trim() !== '');
 };
+
+/**
+ * Reset or override the singleton Supabase admin client (for testing & environment reload)
+ */
+export const resetSupabaseAdmin = (client?: SupabaseClient | null): void => {
+  _supabaseAdmin = client !== undefined ? client : null;
+};
