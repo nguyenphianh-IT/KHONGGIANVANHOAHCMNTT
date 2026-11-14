@@ -32,8 +32,8 @@ export const Timeline: React.FC = () => {
   const filterOptions = [
     { id: 'all', label: 'Tất cả các mốc' },
     { id: 'tuoi-tre', label: 'Thời niên thiếu (1890)' },
-    { id: 'cuu-nuoc', label: 'Hành trình cứu nước (1911 - 1920)' },
-    { id: 'lanh-dao', label: 'Lãnh đạo cách mạng (1930 - 1954)' },
+    { id: 'cuu-nuoc', label: 'Hành trình cứu nước (1911 - 1925)' },
+    { id: 'lanh-dao', label: 'Lãnh đạo cách mạng (1930 - 1968)' },
     { id: 'di-chuc', label: 'Di chúc & Tưởng niệm (1969 - Nay)' },
   ];
 

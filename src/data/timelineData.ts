@@ -28,6 +28,19 @@ export const timelineData: TimelineEvent[] = [
     category: 'cuu-nuoc'
   },
   {
+    year: '1919',
+    exactDate: '18/06/1919',
+    title: 'Gửi bản Yêu sách của nhân dân An Nam tới Hội nghị Versailles',
+    shortDescription: 'Thay mặt Hội những người Việt Nam yêu nước tại Pháp, Nguyễn Ái Quốc gửi bản Yêu sách 8 điểm đòi các quyền tự do, bình đẳng và dân chủ.',
+    fullDetail: 'Ngày 18/6/1919, nhân dịp các nước thắng trận trong Chiến tranh thế giới thứ nhất họp Hội nghị hòa bình tại Versailles (Pháp), thay mặt "Nhóm những người Việt Nam yêu nước", đồng chí Nguyễn Ái Quốc đã gửi tới Hội nghị bản "Yêu sách của nhân dân An Nam" (Revendications du peuple annamite) gồm 8 điểm. Bản Yêu sách đòi quyền bình đẳng pháp lý, tự do báo chí, tự do hội họp, lập hội, tự do cư trú, mở trường học và ân xá tù chính trị. Dù không được chấp thuận, bản Yêu sách đã gây tiếng vang lớn trên trường quốc tế và đánh dấu lần đầu tiên cái tên Nguyễn Ái Quốc xuất hiện công khai gắn liền với cuộc đấu tranh vì độc lập dân tộc.',
+    significance: 'Bước đột phá mở đầu cuộc đấu tranh chính trị trực diện trên trường quốc tế; tên gọi Nguyễn Ái Quốc chính thức xuất hiện gắn liền với vận mệnh non sông.',
+    location: 'Cung điện Versailles, Paris, Cộng hòa Pháp',
+    imageUrl: '/images/yeu-sach-an-nam-1919.jpg',
+    imageCaption: 'Bản "Yêu sách của nhân dân An Nam" (Revendications du peuple annamite) gồm 8 điểm ký tên Nguyễn Ái Quốc gửi Hội nghị Versailles ngày 18/6/1919 (Tư liệu lưu trữ)',
+    imagePosition: 'object-top',
+    category: 'cuu-nuoc'
+  },
+  {
     year: '1920',
     exactDate: 'Tháng 12/1920',
     title: 'Bỏ phiếu tán thành Quốc tế III, tìm ra con đường cứu nước',
@@ -37,6 +50,19 @@ export const timelineData: TimelineEvent[] = [
     location: 'Tours, Cộng hòa Pháp',
     imageUrl: '/images/nguyen-ai-quoc-dai-hoi-tours-1920.jpg',
     imageCaption: 'Đồng chí Nguyễn Ái Quốc phát biểu tại Đại hội lần thứ XVIII Đảng Xã hội Pháp ở thành phố Tours, tháng 12/1920',
+    imagePosition: 'object-top',
+    category: 'cuu-nuoc'
+  },
+  {
+    year: '1925',
+    exactDate: 'Tháng 06/1925',
+    title: 'Thành lập Hội Việt Nam Cách mạng Thanh niên tại Quảng Châu',
+    shortDescription: 'Nguyễn Ái Quốc sáng lập tổ chức tiền thân của Đảng, xuất bản tuần báo Thanh Niên và trực tiếp huấn luyện cán bộ cốt cán.',
+    fullDetail: 'Tháng 6/1925, tại Quảng Châu (Trung Quốc), đồng chí Nguyễn Ái Quốc thành lập Hội Việt Nam Cách mạng Thanh niên - tổ chức cách mạng theo khuynh hướng vô sản đầu tiên của Việt Nam. Người trực tiếp mở các lớp huấn luyện chính trị cho thanh niên yêu nước (đào tạo các chiến sĩ kiên trung như Trần Phú, Lê Hồng Phong...); sáng lập tuần báo "Thanh Niên" (số 1 ra ngày 21/6/1925, mốc son mở đầu Báo chí Cách mạng Việt Nam) và sau đó xuất bản tác phẩm "Đường Kách mệnh" (1927). Hội là bước chuẩn bị quyết định về tư tưởng, chính trị và tổ chức cho sự ra đời của Đảng Cộng sản Việt Nam.',
+    significance: 'Tổ chức tiền thân trực tiếp chuẩn bị đội ngũ cán bộ, đường lối lý luận và cơ sở tổ chức dẫn tới thành lập Đảng Cộng sản Việt Nam mùa xuân năm 1930.',
+    location: 'Quảng Châu, Trung Quốc',
+    imageUrl: '/images/bao-thanh-nien-1925.jpg',
+    imageCaption: 'Tuần báo "Thanh Niên" - Cơ quan ngôn luận của Hội Việt Nam Cách mạng Thanh niên do Nguyễn Ái Quốc sáng lập tại Quảng Châu năm 1925',
     imagePosition: 'object-top',
     category: 'cuu-nuoc'
   },
@@ -89,6 +115,19 @@ export const timelineData: TimelineEvent[] = [
     location: 'Điện Biên Phủ & Chiến khu Việt Bắc',
     imageUrl: '/images/chien-dich-dien-bien-phu-1954.jpg',
     imageCaption: 'Bộ Chính trị Trung ương Đảng họp dưới sự chủ tọa của Chủ tịch Hồ Chí Minh quyết định mở Chiến dịch Điện Biên Phủ (1954)',
+    imagePosition: 'object-top',
+    category: 'lanh-dao'
+  },
+  {
+    year: '1968',
+    exactDate: '19/08/1968',
+    title: 'Chỉ đạo kháng chiến Mậu Thân 1968 & Lời dặn thiêng liêng vì sức khỏe nhân dân',
+    shortDescription: 'Trong cao trào Tổng tiến công Mậu Thân 1968, Bác Hồ chỉ đạo chiến lược kết hợp quân sự - ngoại giao và gửi trọn tấm lòng vì sức khỏe nhân dân, chiến sĩ.',
+    fullDetail: 'Năm 1968 là mốc son mang ý nghĩa bước ngoặt chiến lược với cuộc Tổng tiến công và nổi dậy Xuân Mậu Thân 1968 và các đợt tiến công tiếp nối (đợt 3 nổ súng ngày 17-19/8/1968), buộc đế quốc Mỹ phải tuyên bố chấm dứt không điều kiện chiến tranh phá hoại miền Bắc và chấp nhận đàm phán tại Paris. Giữa bộn bề chỉ đạo chiến sự, chiều 19/8/1968 tại Nhà sàn Phủ Chủ tịch, khi được Trung ương bố trí bác sĩ Lê Ngọc Mẫn về chăm sóc sức khỏe, Bác xúc động nói: "Bác có một mình mà những hai bác sĩ. Trong khi đó ngoài mặt trận bộ đội, thương binh, và nhân dân vùng địch đánh phá còn rất thiếu cán bộ y tế...". Lời dặn mộc mạc khắc họa sáng ngời đạo đức chí công vô tư, cả cuộc đời tận hiến cho nhân dân của Người.',
+    significance: 'Biểu tượng sáng ngời của bản lĩnh lãnh đạo chiến lược kết hợp cùng đạo đức nhân ái bao la, suốt đời lo cho độc lập tự do và sức khỏe, hạnh phúc của nhân dân.',
+    location: 'Nhà sàn Bác Hồ, Phủ Chủ tịch, Hà Nội',
+    imageUrl: '/images/bac-ho-1968.jpg',
+    imageCaption: 'Ảnh tư liệu lịch sử: Chủ tịch Hồ Chí Minh trong giai đoạn lãnh đạo toàn dân, toàn quân kháng chiến (1967 - 1968)',
     imagePosition: 'object-top',
     category: 'lanh-dao'
   },

@@ -26,8 +26,12 @@ const getMilestoneShortLabel = (event: TimelineEvent): string => {
       return 'Làng Sen';
     case '1911':
       return 'Bến Nhà Rồng';
+    case '1919':
+      return 'Yêu sách An Nam';
     case '1920':
       return 'Đại hội Tours';
+    case '1925':
+      return 'Cách mạng Thanh niên';
     case '1930':
       return 'Thành lập Đảng';
     case '1941':
@@ -36,6 +40,8 @@ const getMilestoneShortLabel = (event: TimelineEvent): string => {
       return 'Tuyên ngôn';
     case '1954':
       return 'Điện Biên Phủ';
+    case '1968':
+      return 'Mậu Thân 1968';
     case '1969':
       return 'Di chúc';
     case '1975':
@@ -175,7 +181,7 @@ export const HorizontalTimelineRail: React.FC<HorizontalTimelineRailProps> = ({
           aria-label="Thước đo thời gian các mốc son lịch sử"
         >
           {/* Main Horizontal Track Line */}
-          <div className="relative min-w-[760px] sm:min-w-[860px] md:min-w-[940px] flex items-center justify-between py-2.5 sm:py-3">
+          <div className="relative min-w-[960px] sm:min-w-[1080px] md:min-w-[1180px] flex items-center justify-between py-2.5 sm:py-3">
             {/* The continuous golden-red track running behind the nodes */}
             <div
               className="absolute left-6 right-6 top-1/2 -translate-y-1/2 h-1 bg-gradient-to-r from-heritage-red-700 via-heritage-gold-400 to-heritage-red-700 rounded-full shadow-sm z-0"
@@ -186,7 +192,7 @@ export const HorizontalTimelineRail: React.FC<HorizontalTimelineRailProps> = ({
               aria-hidden="true"
               className="absolute left-8 right-8 top-1/2 -translate-y-1/2 flex justify-between pointer-events-none z-0 opacity-40"
             >
-              {Array.from({ length: 45 }).map((_, i) => (
+              {Array.from({ length: 55 }).map((_, i) => (
                 <span
                   key={i}
                   className={`w-0.5 bg-heritage-gold-600 ${

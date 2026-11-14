@@ -400,6 +400,91 @@ YÊU CẦU ĐỐI VỚI CÁC TRƯỜNG THCS:
     }
   },
 
+  {
+    id: 'DOC-HCM-016',
+    title: 'Bản Yêu sách của nhân dân An Nam gửi Hội nghị Versailles (18/6/1919)',
+    category: 'bio-career',
+    categoryLabel: 'Chủ tịch Hồ Chí Minh – Tiểu sử và sự nghiệp',
+    authorOrSource: 'Nguyễn Ái Quốc (thay mặt Nhóm những người Việt Nam yêu nước tại Pháp)',
+    dateOrEra: '18/06/1919',
+    status: 'APPROVED',
+    isAllowedForRag: true,
+    topics: ['Yêu sách nhân dân An Nam', 'Versailles', '1919', 'Nguyễn Ái Quốc', 'Quyền tự do dân chủ', 'Hội nghị hòa bình'],
+    sourceUrl: 'https://baotanghochiminh.vn',
+    content: `Ngày 18 tháng 6 năm 1919, nhân dịp các nước thắng trận trong Thế chiến thứ nhất họp Hội nghị hòa bình tại Cung điện Versailles (Pháp), thay mặt "Nhóm những người Việt Nam yêu nước" tại Pháp, đồng chí Nguyễn Ái Quốc đã gửi tới Hội nghị bản "Yêu sách của nhân dân An Nam" (Revendications du peuple annamite).
+
+Bản Yêu sách gồm 8 điểm đòi quyền tự do, bình đẳng và dân chủ cơ bản:
+1. Tổng ân xá cho tất cả những người bản xứ bị tù đày chính trị.
+2. Cải cách nền tư pháp ở Đông Dương bằng cách cho người bản xứ được quyền hưởng những bảo đảm tư pháp như người châu Âu; xóa bỏ các tòa án đặc biệt.
+3. Tự do báo chí và tự do ngôn luận.
+4. Tự do lập hội và hội họp.
+5. Tự do cư trú và xuất dương.
+6. Tự do học tập, mở các trường kỹ thuật và chuyên nghiệp cho người bản xứ ở các tỉnh.
+7. Thay thế chế độ cai trị bằng các sắc lệnh bằng chế độ ra các đạo luật.
+8. Có đoàn đại biểu thường trực của người bản xứ do chính người bản xứ bầu ra tại Nghị viện Pháp để phản ánh nguyện vọng địa phương.
+
+Ý nghĩa lịch sử: Đây là lần đầu tiên tên gọi Nguyễn Ái Quốc xuất hiện công khai trên vũ đài chính trị quốc tế, tạo tiếng vang chấn động dư luận Pháp và các thuộc địa, mở đầu thời kỳ đấu tranh chính trị trực diện của dân tộc Việt Nam.`,
+    metadata: {
+      eventDate: '18/06/1919',
+      location: 'Cung điện Versailles, Paris, Cộng hòa Pháp',
+      historicSignificance: 'Mốc son xuất hiện danh xưng Nguyễn Ái Quốc trên trường quốc tế'
+    }
+  },
+
+  {
+    id: 'DOC-HCM-017',
+    title: 'Thành lập Hội Việt Nam Cách mạng Thanh niên (6/1925) & Báo Thanh Niên',
+    category: 'bio-career',
+    categoryLabel: 'Chủ tịch Hồ Chí Minh – Tiểu sử và sự nghiệp',
+    authorOrSource: 'Lãnh tụ Nguyễn Ái Quốc - Quảng Châu, Trung Quốc',
+    dateOrEra: 'Tháng 6/1925',
+    status: 'APPROVED',
+    isAllowedForRag: true,
+    topics: ['Hội Việt Nam Cách mạng Thanh niên', 'Báo Thanh Niên', 'Quảng Châu', '1925', 'Đường Kách mệnh', 'Chuẩn bị thành lập Đảng'],
+    sourceUrl: 'https://tulieuvankien.dangcongsan.vn',
+    content: `Tháng 6 năm 1925, tại thành phố Quảng Châu (Trung Quốc), đồng chí Nguyễn Ái Quốc sáng lập Hội Việt Nam Cách mạng Thanh niên - tổ chức tiền thân có ý nghĩa quyết định trực tiếp tới sự ra đời của Đảng Cộng sản Việt Nam.
+
+Những cống hiến lịch sử tiêu biểu của Hội:
+1. Trực tiếp mở các lớp huấn luyện chính trị cách mạng do đồng chí Nguyễn Ái Quốc trực tiếp giảng dạy, đào tạo đội ngũ cán bộ kiên trung đầu tiên cho cách mạng Việt Nam như Trần Phú, Lê Hồng Phong, Nguyễn Thị Minh Khai...
+2. Xuất bản tuần báo "Thanh Niên" - cơ quan ngôn luận của Tổng bộ Hội, số 1 ra ngày 21/6/1925. Đây là mốc son mở đầu dòng Báo chí Cách mạng Việt Nam, lấy ngày 21/6 làm Ngày Báo chí Cách mạng Việt Nam.
+3. Xuất bản cuốn cẩm nang lý luận kinh điển "Đường Kách mệnh" (năm 1927) tập hợp các bài giảng của Người, chỉ rõ tính chất cách mạng giải phóng dân tộc và vai trò lãnh đạo của Đảng tiên phong.
+
+Hội Việt Nam Cách mạng Thanh niên là cầu nối truyền bá chủ nghĩa Mác - Lênin vào phong trào công nhân và phong trào yêu nước, chuẩn bị chín muồi về chính trị, tư tưởng và tổ chức cho Hội nghị thành lập Đảng đầu năm 1930.`,
+    metadata: {
+      eventDate: 'Tháng 6/1925',
+      pressLaunchDate: '21/06/1925',
+      location: 'Quảng Châu, Trung Quốc',
+      historicSignificance: 'Tổ chức tiền thân trực tiếp chuẩn bị thành lập Đảng Cộng sản Việt Nam'
+    }
+  },
+
+  {
+    id: 'DOC-HCM-018',
+    title: 'Mốc son Lịch sử Năm 1968: Kháng chiến Chống Mỹ & Tấm lòng Bác Hồ vì Sức khỏe Nhân dân',
+    category: 'ideology-ethics',
+    categoryLabel: 'Tư tưởng, đạo đức, phong cách Hồ Chí Minh',
+    authorOrSource: 'Bảo tàng Hồ Chí Minh & Khu di tích Phủ Chủ tịch',
+    dateOrEra: '1968',
+    status: 'APPROVED',
+    isAllowedForRag: true,
+    topics: ['Mậu Thân 1968', '19/8/1968', 'Nhà sàn Bác Hồ', 'Bác sĩ Lê Ngọc Mẫn', 'Vì sức khỏe nhân dân', 'Chí công vô tư'],
+    sourceUrl: 'https://baotanghochiminh.vn',
+    content: `Năm 1968 là mốc son lịch sử có ý nghĩa bước ngoặt chiến lược trong cuộc kháng chiến chống Mỹ, cứu nước của dân tộc Việt Nam:
+
+1. Thắng lợi của cuộc Tổng tiến công và nổi dậy Xuân Mậu Thân 1968 cùng các đợt tiến công tiếp nối (đợt 3 nổ súng ngày 17 - 19/8/1968) đã giáng đòn sấm sét vào ý chí xâm lược của đế quốc Mỹ, buộc Tổng thống Mỹ phải tuyên bố ném bom hạn chế rồi chấm dứt không điều kiện chiến tranh phá hoại miền Bắc và chấp nhận ngồi vào bàn đàm phán tại Paris.
+
+2. Chiều ngày 19 tháng 8 năm 1968, tại Nhà sàn Phủ Chủ tịch (Hà Nội), một câu chuyện cảm động và sâu sắc về đạo đức Bác Hồ đã được ghi lại:
+Khi tổ chức phân công bác sĩ Lê Ngọc Mẫn (chuyên gia y tế) về làm việc chuyên trách chăm sóc sức khỏe cho Bác, Người xúc động nắm tay bác sĩ và căn dặn:
+"Bác có một mình mà những hai bác sĩ. Trong khi đó ở ngoài mặt trận bộ đội, thương binh, và nhân dân vùng địch đánh phá còn rất thiếu cán bộ y tế, thiếu thầy thuốc chữa bệnh...".
+
+Câu nói chân thành, mộc mạc của Người làm các đồng chí có mặt rưng rưng xúc động. Trong bất kỳ hoàn cảnh nào, dù tuổi cao sức yếu giữa khói lửa chiến tranh, Bác Hồ luôn nghĩ về nhân dân, bộ đội, thương binh trước khi nghĩ đến bản thân mình. Đó là bài học ngời sáng về đức tính khiêm tốn, chí công vô tư và tấm lòng bao la của vị Cha già dân tộc.`,
+    metadata: {
+      eventDate: '19/08/1968',
+      location: 'Nhà sàn Bác Hồ, Phủ Chủ tịch, Hà Nội',
+      witnessDoctor: 'Bác sĩ Lê Ngọc Mẫn'
+    }
+  },
+
   // Security Canary test document: PENDING_REVIEW & isAllowedForRag: false
   // Must NEVER be returned by retrieval engine!
   {

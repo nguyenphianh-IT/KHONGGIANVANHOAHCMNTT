@@ -1320,6 +1320,88 @@ Y\xCAU C\u1EA6U \u0110\u1ED0I V\u1EDAI C\xC1C TR\u01AF\u1EDCNG THCS:
       issuingAuthority: "S\u1EDF Gi\xE1o d\u1EE5c v\xE0 \u0110\xE0o t\u1EA1o TP. H\u1ED3 Ch\xED Minh"
     }
   },
+  {
+    id: "DOC-HCM-016",
+    title: "B\u1EA3n Y\xEAu s\xE1ch c\u1EE7a nh\xE2n d\xE2n An Nam g\u1EEDi H\u1ED9i ngh\u1ECB Versailles (18/6/1919)",
+    category: "bio-career",
+    categoryLabel: "Ch\u1EE7 t\u1ECBch H\u1ED3 Ch\xED Minh \u2013 Ti\u1EC3u s\u1EED v\xE0 s\u1EF1 nghi\u1EC7p",
+    authorOrSource: "Nguy\u1EC5n \xC1i Qu\u1ED1c (thay m\u1EB7t Nh\xF3m nh\u1EEFng ng\u01B0\u1EDDi Vi\u1EC7t Nam y\xEAu n\u01B0\u1EDBc t\u1EA1i Ph\xE1p)",
+    dateOrEra: "18/06/1919",
+    status: "APPROVED",
+    isAllowedForRag: true,
+    topics: ["Y\xEAu s\xE1ch nh\xE2n d\xE2n An Nam", "Versailles", "1919", "Nguy\u1EC5n \xC1i Qu\u1ED1c", "Quy\u1EC1n t\u1EF1 do d\xE2n ch\u1EE7", "H\u1ED9i ngh\u1ECB h\xF2a b\xECnh"],
+    sourceUrl: "https://baotanghochiminh.vn",
+    content: `Ng\xE0y 18 th\xE1ng 6 n\u0103m 1919, nh\xE2n d\u1ECBp c\xE1c n\u01B0\u1EDBc th\u1EAFng tr\u1EADn trong Th\u1EBF chi\u1EBFn th\u1EE9 nh\u1EA5t h\u1ECDp H\u1ED9i ngh\u1ECB h\xF2a b\xECnh t\u1EA1i Cung \u0111i\u1EC7n Versailles (Ph\xE1p), thay m\u1EB7t "Nh\xF3m nh\u1EEFng ng\u01B0\u1EDDi Vi\u1EC7t Nam y\xEAu n\u01B0\u1EDBc" t\u1EA1i Ph\xE1p, \u0111\u1ED3ng ch\xED Nguy\u1EC5n \xC1i Qu\u1ED1c \u0111\xE3 g\u1EEDi t\u1EDBi H\u1ED9i ngh\u1ECB b\u1EA3n "Y\xEAu s\xE1ch c\u1EE7a nh\xE2n d\xE2n An Nam" (Revendications du peuple annamite).
+
+B\u1EA3n Y\xEAu s\xE1ch g\u1ED3m 8 \u0111i\u1EC3m \u0111\xF2i quy\u1EC1n t\u1EF1 do, b\xECnh \u0111\u1EB3ng v\xE0 d\xE2n ch\u1EE7 c\u01A1 b\u1EA3n:
+1. T\u1ED5ng \xE2n x\xE1 cho t\u1EA5t c\u1EA3 nh\u1EEFng ng\u01B0\u1EDDi b\u1EA3n x\u1EE9 b\u1ECB t\xF9 \u0111\xE0y ch\xEDnh tr\u1ECB.
+2. C\u1EA3i c\xE1ch n\u1EC1n t\u01B0 ph\xE1p \u1EDF \u0110\xF4ng D\u01B0\u01A1ng b\u1EB1ng c\xE1ch cho ng\u01B0\u1EDDi b\u1EA3n x\u1EE9 \u0111\u01B0\u1EE3c quy\u1EC1n h\u01B0\u1EDFng nh\u1EEFng b\u1EA3o \u0111\u1EA3m t\u01B0 ph\xE1p nh\u01B0 ng\u01B0\u1EDDi ch\xE2u \xC2u; x\xF3a b\u1ECF c\xE1c t\xF2a \xE1n \u0111\u1EB7c bi\u1EC7t.
+3. T\u1EF1 do b\xE1o ch\xED v\xE0 t\u1EF1 do ng\xF4n lu\u1EADn.
+4. T\u1EF1 do l\u1EADp h\u1ED9i v\xE0 h\u1ED9i h\u1ECDp.
+5. T\u1EF1 do c\u01B0 tr\xFA v\xE0 xu\u1EA5t d\u01B0\u01A1ng.
+6. T\u1EF1 do h\u1ECDc t\u1EADp, m\u1EDF c\xE1c tr\u01B0\u1EDDng k\u1EF9 thu\u1EADt v\xE0 chuy\xEAn nghi\u1EC7p cho ng\u01B0\u1EDDi b\u1EA3n x\u1EE9 \u1EDF c\xE1c t\u1EC9nh.
+7. Thay th\u1EBF ch\u1EBF \u0111\u1ED9 cai tr\u1ECB b\u1EB1ng c\xE1c s\u1EAFc l\u1EC7nh b\u1EB1ng ch\u1EBF \u0111\u1ED9 ra c\xE1c \u0111\u1EA1o lu\u1EADt.
+8. C\xF3 \u0111o\xE0n \u0111\u1EA1i bi\u1EC3u th\u01B0\u1EDDng tr\u1EF1c c\u1EE7a ng\u01B0\u1EDDi b\u1EA3n x\u1EE9 do ch\xEDnh ng\u01B0\u1EDDi b\u1EA3n x\u1EE9 b\u1EA7u ra t\u1EA1i Ngh\u1ECB vi\u1EC7n Ph\xE1p \u0111\u1EC3 ph\u1EA3n \xE1nh nguy\u1EC7n v\u1ECDng \u0111\u1ECBa ph\u01B0\u01A1ng.
+
+\xDD ngh\u0129a l\u1ECBch s\u1EED: \u0110\xE2y l\xE0 l\u1EA7n \u0111\u1EA7u ti\xEAn t\xEAn g\u1ECDi Nguy\u1EC5n \xC1i Qu\u1ED1c xu\u1EA5t hi\u1EC7n c\xF4ng khai tr\xEAn v\u0169 \u0111\xE0i ch\xEDnh tr\u1ECB qu\u1ED1c t\u1EBF, t\u1EA1o ti\u1EBFng vang ch\u1EA5n \u0111\u1ED9ng d\u01B0 lu\u1EADn Ph\xE1p v\xE0 c\xE1c thu\u1ED9c \u0111\u1ECBa, m\u1EDF \u0111\u1EA7u th\u1EDDi k\u1EF3 \u0111\u1EA5u tranh ch\xEDnh tr\u1ECB tr\u1EF1c di\u1EC7n c\u1EE7a d\xE2n t\u1ED9c Vi\u1EC7t Nam.`,
+    metadata: {
+      eventDate: "18/06/1919",
+      location: "Cung \u0111i\u1EC7n Versailles, Paris, C\u1ED9ng h\xF2a Ph\xE1p",
+      historicSignificance: "M\u1ED1c son xu\u1EA5t hi\u1EC7n danh x\u01B0ng Nguy\u1EC5n \xC1i Qu\u1ED1c tr\xEAn tr\u01B0\u1EDDng qu\u1ED1c t\u1EBF"
+    }
+  },
+  {
+    id: "DOC-HCM-017",
+    title: "Th\xE0nh l\u1EADp H\u1ED9i Vi\u1EC7t Nam C\xE1ch m\u1EA1ng Thanh ni\xEAn (6/1925) & B\xE1o Thanh Ni\xEAn",
+    category: "bio-career",
+    categoryLabel: "Ch\u1EE7 t\u1ECBch H\u1ED3 Ch\xED Minh \u2013 Ti\u1EC3u s\u1EED v\xE0 s\u1EF1 nghi\u1EC7p",
+    authorOrSource: "L\xE3nh t\u1EE5 Nguy\u1EC5n \xC1i Qu\u1ED1c - Qu\u1EA3ng Ch\xE2u, Trung Qu\u1ED1c",
+    dateOrEra: "Th\xE1ng 6/1925",
+    status: "APPROVED",
+    isAllowedForRag: true,
+    topics: ["H\u1ED9i Vi\u1EC7t Nam C\xE1ch m\u1EA1ng Thanh ni\xEAn", "B\xE1o Thanh Ni\xEAn", "Qu\u1EA3ng Ch\xE2u", "1925", "\u0110\u01B0\u1EDDng K\xE1ch m\u1EC7nh", "Chu\u1EA9n b\u1ECB th\xE0nh l\u1EADp \u0110\u1EA3ng"],
+    sourceUrl: "https://tulieuvankien.dangcongsan.vn",
+    content: `Th\xE1ng 6 n\u0103m 1925, t\u1EA1i th\xE0nh ph\u1ED1 Qu\u1EA3ng Ch\xE2u (Trung Qu\u1ED1c), \u0111\u1ED3ng ch\xED Nguy\u1EC5n \xC1i Qu\u1ED1c s\xE1ng l\u1EADp H\u1ED9i Vi\u1EC7t Nam C\xE1ch m\u1EA1ng Thanh ni\xEAn - t\u1ED5 ch\u1EE9c ti\u1EC1n th\xE2n c\xF3 \xFD ngh\u0129a quy\u1EBFt \u0111\u1ECBnh tr\u1EF1c ti\u1EBFp t\u1EDBi s\u1EF1 ra \u0111\u1EDDi c\u1EE7a \u0110\u1EA3ng C\u1ED9ng s\u1EA3n Vi\u1EC7t Nam.
+
+Nh\u1EEFng c\u1ED1ng hi\u1EBFn l\u1ECBch s\u1EED ti\xEAu bi\u1EC3u c\u1EE7a H\u1ED9i:
+1. Tr\u1EF1c ti\u1EBFp m\u1EDF c\xE1c l\u1EDBp hu\u1EA5n luy\u1EC7n ch\xEDnh tr\u1ECB c\xE1ch m\u1EA1ng do \u0111\u1ED3ng ch\xED Nguy\u1EC5n \xC1i Qu\u1ED1c tr\u1EF1c ti\u1EBFp gi\u1EA3ng d\u1EA1y, \u0111\xE0o t\u1EA1o \u0111\u1ED9i ng\u0169 c\xE1n b\u1ED9 ki\xEAn trung \u0111\u1EA7u ti\xEAn cho c\xE1ch m\u1EA1ng Vi\u1EC7t Nam nh\u01B0 Tr\u1EA7n Ph\xFA, L\xEA H\u1ED3ng Phong, Nguy\u1EC5n Th\u1ECB Minh Khai...
+2. Xu\u1EA5t b\u1EA3n tu\u1EA7n b\xE1o "Thanh Ni\xEAn" - c\u01A1 quan ng\xF4n lu\u1EADn c\u1EE7a T\u1ED5ng b\u1ED9 H\u1ED9i, s\u1ED1 1 ra ng\xE0y 21/6/1925. \u0110\xE2y l\xE0 m\u1ED1c son m\u1EDF \u0111\u1EA7u d\xF2ng B\xE1o ch\xED C\xE1ch m\u1EA1ng Vi\u1EC7t Nam, l\u1EA5y ng\xE0y 21/6 l\xE0m Ng\xE0y B\xE1o ch\xED C\xE1ch m\u1EA1ng Vi\u1EC7t Nam.
+3. Xu\u1EA5t b\u1EA3n cu\u1ED1n c\u1EA9m nang l\xFD lu\u1EADn kinh \u0111i\u1EC3n "\u0110\u01B0\u1EDDng K\xE1ch m\u1EC7nh" (n\u0103m 1927) t\u1EADp h\u1EE3p c\xE1c b\xE0i gi\u1EA3ng c\u1EE7a Ng\u01B0\u1EDDi, ch\u1EC9 r\xF5 t\xEDnh ch\u1EA5t c\xE1ch m\u1EA1ng gi\u1EA3i ph\xF3ng d\xE2n t\u1ED9c v\xE0 vai tr\xF2 l\xE3nh \u0111\u1EA1o c\u1EE7a \u0110\u1EA3ng ti\xEAn phong.
+
+H\u1ED9i Vi\u1EC7t Nam C\xE1ch m\u1EA1ng Thanh ni\xEAn l\xE0 c\u1EA7u n\u1ED1i truy\u1EC1n b\xE1 ch\u1EE7 ngh\u0129a M\xE1c - L\xEAnin v\xE0o phong tr\xE0o c\xF4ng nh\xE2n v\xE0 phong tr\xE0o y\xEAu n\u01B0\u1EDBc, chu\u1EA9n b\u1ECB ch\xEDn mu\u1ED3i v\u1EC1 ch\xEDnh tr\u1ECB, t\u01B0 t\u01B0\u1EDFng v\xE0 t\u1ED5 ch\u1EE9c cho H\u1ED9i ngh\u1ECB th\xE0nh l\u1EADp \u0110\u1EA3ng \u0111\u1EA7u n\u0103m 1930.`,
+    metadata: {
+      eventDate: "Th\xE1ng 6/1925",
+      pressLaunchDate: "21/06/1925",
+      location: "Qu\u1EA3ng Ch\xE2u, Trung Qu\u1ED1c",
+      historicSignificance: "T\u1ED5 ch\u1EE9c ti\u1EC1n th\xE2n tr\u1EF1c ti\u1EBFp chu\u1EA9n b\u1ECB th\xE0nh l\u1EADp \u0110\u1EA3ng C\u1ED9ng s\u1EA3n Vi\u1EC7t Nam"
+    }
+  },
+  {
+    id: "DOC-HCM-018",
+    title: "M\u1ED1c son L\u1ECBch s\u1EED N\u0103m 1968: Kh\xE1ng chi\u1EBFn Ch\u1ED1ng M\u1EF9 & T\u1EA5m l\xF2ng B\xE1c H\u1ED3 v\xEC S\u1EE9c kh\u1ECFe Nh\xE2n d\xE2n",
+    category: "ideology-ethics",
+    categoryLabel: "T\u01B0 t\u01B0\u1EDFng, \u0111\u1EA1o \u0111\u1EE9c, phong c\xE1ch H\u1ED3 Ch\xED Minh",
+    authorOrSource: "B\u1EA3o t\xE0ng H\u1ED3 Ch\xED Minh & Khu di t\xEDch Ph\u1EE7 Ch\u1EE7 t\u1ECBch",
+    dateOrEra: "1968",
+    status: "APPROVED",
+    isAllowedForRag: true,
+    topics: ["M\u1EADu Th\xE2n 1968", "19/8/1968", "Nh\xE0 s\xE0n B\xE1c H\u1ED3", "B\xE1c s\u0129 L\xEA Ng\u1ECDc M\u1EABn", "V\xEC s\u1EE9c kh\u1ECFe nh\xE2n d\xE2n", "Ch\xED c\xF4ng v\xF4 t\u01B0"],
+    sourceUrl: "https://baotanghochiminh.vn",
+    content: `N\u0103m 1968 l\xE0 m\u1ED1c son l\u1ECBch s\u1EED c\xF3 \xFD ngh\u0129a b\u01B0\u1EDBc ngo\u1EB7t chi\u1EBFn l\u01B0\u1EE3c trong cu\u1ED9c kh\xE1ng chi\u1EBFn ch\u1ED1ng M\u1EF9, c\u1EE9u n\u01B0\u1EDBc c\u1EE7a d\xE2n t\u1ED9c Vi\u1EC7t Nam:
+
+1. Th\u1EAFng l\u1EE3i c\u1EE7a cu\u1ED9c T\u1ED5ng ti\u1EBFn c\xF4ng v\xE0 n\u1ED5i d\u1EADy Xu\xE2n M\u1EADu Th\xE2n 1968 c\xF9ng c\xE1c \u0111\u1EE3t ti\u1EBFn c\xF4ng ti\u1EBFp n\u1ED1i (\u0111\u1EE3t 3 n\u1ED5 s\xFAng ng\xE0y 17 - 19/8/1968) \u0111\xE3 gi\xE1ng \u0111\xF2n s\u1EA5m s\xE9t v\xE0o \xFD ch\xED x\xE2m l\u01B0\u1EE3c c\u1EE7a \u0111\u1EBF qu\u1ED1c M\u1EF9, bu\u1ED9c T\u1ED5ng th\u1ED1ng M\u1EF9 ph\u1EA3i tuy\xEAn b\u1ED1 n\xE9m bom h\u1EA1n ch\u1EBF r\u1ED3i ch\u1EA5m d\u1EE9t kh\xF4ng \u0111i\u1EC1u ki\u1EC7n chi\u1EBFn tranh ph\xE1 ho\u1EA1i mi\u1EC1n B\u1EAFc v\xE0 ch\u1EA5p nh\u1EADn ng\u1ED3i v\xE0o b\xE0n \u0111\xE0m ph\xE1n t\u1EA1i Paris.
+
+2. Chi\u1EC1u ng\xE0y 19 th\xE1ng 8 n\u0103m 1968, t\u1EA1i Nh\xE0 s\xE0n Ph\u1EE7 Ch\u1EE7 t\u1ECBch (H\xE0 N\u1ED9i), m\u1ED9t c\xE2u chuy\u1EC7n c\u1EA3m \u0111\u1ED9ng v\xE0 s\xE2u s\u1EAFc v\u1EC1 \u0111\u1EA1o \u0111\u1EE9c B\xE1c H\u1ED3 \u0111\xE3 \u0111\u01B0\u1EE3c ghi l\u1EA1i:
+Khi t\u1ED5 ch\u1EE9c ph\xE2n c\xF4ng b\xE1c s\u0129 L\xEA Ng\u1ECDc M\u1EABn (chuy\xEAn gia y t\u1EBF) v\u1EC1 l\xE0m vi\u1EC7c chuy\xEAn tr\xE1ch ch\u0103m s\xF3c s\u1EE9c kh\u1ECFe cho B\xE1c, Ng\u01B0\u1EDDi x\xFAc \u0111\u1ED9ng n\u1EAFm tay b\xE1c s\u0129 v\xE0 c\u0103n d\u1EB7n:
+"B\xE1c c\xF3 m\u1ED9t m\xECnh m\xE0 nh\u1EEFng hai b\xE1c s\u0129. Trong khi \u0111\xF3 \u1EDF ngo\xE0i m\u1EB7t tr\u1EADn b\u1ED9 \u0111\u1ED9i, th\u01B0\u01A1ng binh, v\xE0 nh\xE2n d\xE2n v\xF9ng \u0111\u1ECBch \u0111\xE1nh ph\xE1 c\xF2n r\u1EA5t thi\u1EBFu c\xE1n b\u1ED9 y t\u1EBF, thi\u1EBFu th\u1EA7y thu\u1ED1c ch\u1EEFa b\u1EC7nh...".
+
+C\xE2u n\xF3i ch\xE2n th\xE0nh, m\u1ED9c m\u1EA1c c\u1EE7a Ng\u01B0\u1EDDi l\xE0m c\xE1c \u0111\u1ED3ng ch\xED c\xF3 m\u1EB7t r\u01B0ng r\u01B0ng x\xFAc \u0111\u1ED9ng. Trong b\u1EA5t k\u1EF3 ho\xE0n c\u1EA3nh n\xE0o, d\xF9 tu\u1ED5i cao s\u1EE9c y\u1EBFu gi\u1EEFa kh\xF3i l\u1EEDa chi\u1EBFn tranh, B\xE1c H\u1ED3 lu\xF4n ngh\u0129 v\u1EC1 nh\xE2n d\xE2n, b\u1ED9 \u0111\u1ED9i, th\u01B0\u01A1ng binh tr\u01B0\u1EDBc khi ngh\u0129 \u0111\u1EBFn b\u1EA3n th\xE2n m\xECnh. \u0110\xF3 l\xE0 b\xE0i h\u1ECDc ng\u1EDDi s\xE1ng v\u1EC1 \u0111\u1EE9c t\xEDnh khi\xEAm t\u1ED1n, ch\xED c\xF4ng v\xF4 t\u01B0 v\xE0 t\u1EA5m l\xF2ng bao la c\u1EE7a v\u1ECB Cha gi\xE0 d\xE2n t\u1ED9c.`,
+    metadata: {
+      eventDate: "19/08/1968",
+      location: "Nh\xE0 s\xE0n B\xE1c H\u1ED3, Ph\u1EE7 Ch\u1EE7 t\u1ECBch, H\xE0 N\u1ED9i",
+      witnessDoctor: "B\xE1c s\u0129 L\xEA Ng\u1ECDc M\u1EABn"
+    }
+  },
   // Security Canary test document: PENDING_REVIEW & isAllowedForRag: false
   // Must NEVER be returned by retrieval engine!
   {
