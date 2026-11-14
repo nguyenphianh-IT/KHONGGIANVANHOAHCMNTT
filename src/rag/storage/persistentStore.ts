@@ -4,6 +4,7 @@
  */
 
 import { supabase, isSupabaseConfigured } from '../../lib/supabase';
+import { getSupabaseAdmin } from '../../lib/supabaseBackend';
 import {
   RealKnowledgeDocument,
   DocumentChunk,
@@ -414,9 +415,11 @@ export class PersistentRagStore {
       this.localFeedbacks.pop();
     }
 
-    if (this.isSupabaseLive) {
+    // Backend-Only Architecture: Save directly to Supabase using privileged service_role client
+    const supabaseAdmin = getSupabaseAdmin();
+    if (supabaseAdmin) {
       try {
-        await supabase.from('rag_user_feedback').insert([{
+        await supabaseAdmin.from('rag_user_feedback').insert([{
           id: feedback.id,
           query: feedback.query,
           answer_snippet: feedback.answerSnippet,
@@ -426,8 +429,8 @@ export class PersistentRagStore {
           user_role: feedback.userRole,
           created_at: feedback.createdAt
         }]);
-      } catch (e) {
-        // Non-blocking feedback storage
+      } catch (e: any) {
+        console.warn('[PersistentStore] Remote service_role feedback insert error (non-blocking):', e?.message);
       }
     }
   }
@@ -458,12 +461,9 @@ export class PersistentRagStore {
       .slice(0, 15)
       .map(l => ({ query: l.query, timestamp: l.timestamp }));
 
-    const totalFeedback = this.localFeedbacks.length;
-    const helpfulCount = this.localFeedbacks.filter(f => f.isHelpful).length;
-    const unhelpfulCount = totalFeedback - helpfulCount;
-    const satisfactionRatePercent = totalFeedback > 0 ? Math.round((helpfulCount / totalFeedback) * 100) : 100;
-
-    const recentComments = this.localFeedbacks
+    let totalFeedback = this.localFeedbacks.length;
+    let helpfulCount = this.localFeedbacks.filter(f => f.isHelpful).length;
+    let recentComments = this.localFeedbacks
       .filter(f => f.comment && f.comment.trim().length > 0)
       .slice(0, 10)
       .map(f => ({
@@ -472,6 +472,39 @@ export class PersistentRagStore {
         category: f.category,
         createdAt: f.createdAt
       }));
+
+    // If server-side service_role client is active, query remote statistics securely
+    const supabaseAdmin = getSupabaseAdmin();
+    if (supabaseAdmin) {
+      try {
+        const { data: remoteData, count } = await supabaseAdmin
+          .from('rag_user_feedback')
+          .select('is_helpful, comment, category, created_at', { count: 'exact' })
+          .order('created_at', { ascending: false })
+          .limit(20);
+
+        if (typeof count === 'number' && count > 0) {
+          totalFeedback = count;
+          if (remoteData && remoteData.length > 0) {
+            helpfulCount = remoteData.filter((r: any) => r.is_helpful).length;
+            recentComments = remoteData
+              .filter((r: any) => r.comment && r.comment.trim().length > 0)
+              .slice(0, 10)
+              .map((r: any) => ({
+                comment: r.comment,
+                isHelpful: r.is_helpful,
+                category: r.category,
+                createdAt: r.created_at
+              }));
+          }
+        }
+      } catch (e) {
+        // Fallback to local memory analytics seamlessly
+      }
+    }
+
+    const unhelpfulCount = totalFeedback - helpfulCount;
+    const satisfactionRatePercent = totalFeedback > 0 ? Math.round((helpfulCount / totalFeedback) * 100) : 100;
 
     const health = await this.checkStagingHealth();
 

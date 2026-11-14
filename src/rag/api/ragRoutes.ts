@@ -18,6 +18,7 @@ import { documentIngestion } from '../ingestion/documentIngestion';
 import { persistentRagStore } from '../storage/persistentStore';
 import { DocumentApprovalStatus, RealKnowledgeDocument } from '../types/ragTypes';
 import { supabase, isSupabaseConfigured } from '../../lib/supabase';
+import { getSupabaseAdmin } from '../../lib/supabaseBackend';
 
 export interface ApiResponse<T = any> {
   success: boolean;
@@ -137,8 +138,9 @@ export async function validateAdminAuth(
         };
       }
 
-      // Query database user_roles table for real server-side role check
-      const { data: rolesData } = await supabase
+      // Query database user_roles table for real server-side role check via service_role or authenticated client
+      const dbClient = getSupabaseAdmin() || supabase;
+      const { data: rolesData } = await dbClient
         .from('user_roles')
         .select('roles(code)')
         .eq('user_id', user.id);
@@ -685,6 +687,12 @@ export async function handleReprocessDocumentRoute(
 }
 
 // Rate limiter map for feedback submissions (IP/client key -> timestamp array)
+// ARCHITECTURAL NOTICE (Section V Compliance):
+// Hiện tại áp dụng cơ chế In-Memory Sliding Window cho từng Serverless Instance / Container (tối đa 15 yêu cầu/phút).
+// Trong môi trường Serverless (Vercel Functions), các instance có thể scale độc lập; bộ nhớ cục bộ này
+// bảo vệ hiệu quả từng container trước các đợt flood/spam tức thời.
+// Đối với kiểm soát tần suất phân tán toàn cục (Global Distributed Rate Limiting) dùng chung giữa tất cả
+// các cold/warm instances, hệ thống có lộ trình tích hợp Upstash Redis hoặc cơ chế RPC DB trong Phase 5.
 const feedbackRateLimitMap = new Map<string, number[]>();
 const FEEDBACK_RATE_LIMIT_WINDOW_MS = 60 * 1000; // 1 minute
 const FEEDBACK_RATE_LIMIT_MAX_REQUESTS = 15; // Max 15 feedback submissions per minute

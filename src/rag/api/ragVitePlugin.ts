@@ -154,7 +154,8 @@ export function ragDevApiPlugin(): Plugin {
             req.on('end', async () => {
               try {
                 const body = bodyText ? JSON.parse(bodyText) : {};
-                const clientIp = req.socket?.remoteAddress || 'localhost';
+                const forwarded = req.headers['x-forwarded-for'];
+                const clientIp = typeof forwarded === 'string' ? forwarded.split(',')[0].trim() : (req.socket?.remoteAddress || 'localhost');
                 const result = await handleFeedbackRoute(body, clientIp, authHeader);
                 res.statusCode = result.statusCode;
                 res.end(JSON.stringify(result));

@@ -1,11 +1,12 @@
 -- ==============================================================================
 -- DỰ ÁN: KHÔNG GIAN VĂN HÓA HỒ CHÍ MINH - TRƯỜNG THCS NGUYỄN TRUNG TRỰC
--- MIGRATION: 015_rag_feedback_least_privilege.sql (REVISED & HARDENED)
+-- MIGRATION: 015_rag_feedback_least_privilege.sql (FINAL REVISION)
+-- GIAI ĐOẠN: RAG FEEDBACK - BACKEND-ONLY ACCESS ARCHITECTURE
 -- MÔI TRƯỜNG: SUPABASE STAGING (Project: ospnskocdlirjqzknkqz)
 -- PHẠM VI: public.rag_user_feedback
--- MỤC TIÊU: KHẮC PHỤC QUYỀN TRUY CẬP QUÁ RỘNG, LOẠI BỎ HOÀN TOÀN USER_METADATA,
---           ÁP DỤNG KIỂM SOÁT TRUY CẬP LEAST PRIVILEGE VÀ RBAC CHUẨN XÁC
--- NGUYÊN TẮC: LEAST PRIVILEGE - ZERO DATA LOSS - IDEMPOTENT EXECUTION
+-- MỤC TIÊU: KHÓA CHẶT 100% TRUY CẬP TRỰC TIẾP TỪ ANON VÀ AUTHENTICATED
+--           TOÀN BỘ ĐỌC/GHI PHẢN HỒI PHẢI THÔNG QUA BACKEND SERVICE ROLE
+-- NGUYÊN TẮC: BACKEND-ONLY ACCESS - ZERO DATA LOSS - LEAST PRIVILEGE - IDEMPOTENT
 -- ==============================================================================
 
 BEGIN;
@@ -13,95 +14,65 @@ BEGIN;
 -- ------------------------------------------------------------------------------
 -- PHẦN 1: BẢO VỆ DỮ LIỆU & KIỂM TRA BẢNG TỒN TẠI
 -- ------------------------------------------------------------------------------
--- Lưu ý an toàn: Không DROP TABLE, không DELETE / TRUNCATE dữ liệu phản hồi của giáo viên/học sinh.
+-- Lưu ý an toàn: Tuyệt đối không dùng DROP TABLE, TRUNCATE hoặc DELETE.
+-- Toàn bộ dữ liệu phản hồi lịch sử của học sinh và thầy cô được bảo toàn nguyên vẹn.
 DO $$
 BEGIN
     IF NOT EXISTS (
         SELECT 1 FROM information_schema.tables 
         WHERE table_schema = 'public' AND table_name = 'rag_user_feedback'
     ) THEN
-        RAISE EXCEPTION 'Bảng public.rag_user_feedback không tồn tại. Vui lòng chạy Migration 013 trước!';
+        RAISE EXCEPTION 'Bảng public.rag_user_feedback không tồn tại. Vui lòng kiểm tra lại schema!';
     END IF;
 END $$;
 
 -- ------------------------------------------------------------------------------
--- PHẦN 2: THU HỒI TOÀN BỘ QUYỀN DƯ THỪA (DAC HARDENING)
+-- PHẦN 2: THU HỒI TOÀN BỘ QUYỀN TRỰC TIẾP (TABLE DAC LOCKDOWN)
 -- ------------------------------------------------------------------------------
--- 1. Thu hồi toàn bộ quyền gán mặc định từ pseudo-role PUBLIC (loại bỏ quyền kế thừa nguy hiểm)
+-- 1. Thu hồi toàn bộ quyền gán mặc định từ pseudo-role PUBLIC (loại bỏ mọi quyền kế thừa)
 REVOKE ALL PRIVILEGES ON TABLE public.rag_user_feedback FROM PUBLIC;
 
--- 2. Thu hồi toàn bộ quyền dư thừa từ role 'anon' (khách vãng lai / chưa đăng nhập)
--- Sau lệnh này: anon không còn SELECT, UPDATE, DELETE, TRUNCATE, TRIGGER, REFERENCES
+-- 2. Khóa toàn bộ quyền của role 'anon' (khách vãng lai / client chưa đăng nhập)
+-- Sau lệnh này: anon KHÔNG CÒN SELECT, INSERT, UPDATE, DELETE, TRUNCATE, TRIGGER, REFERENCES
 REVOKE ALL PRIVILEGES ON TABLE public.rag_user_feedback FROM anon;
 
--- 3. Thu hồi toàn bộ quyền dư thừa từ role 'authenticated' (người dùng đã đăng nhập)
--- Sau lệnh này: authenticated không thể đọc hay thay đổi phản hồi của người khác
+-- 3. Khóa toàn bộ quyền trực tiếp của role 'authenticated' (người dùng đã đăng nhập)
+-- Sau lệnh này: authenticated KHÔNG CÒN SELECT, INSERT, UPDATE, DELETE, TRUNCATE, TRIGGER, REFERENCES
 REVOKE ALL PRIVILEGES ON TABLE public.rag_user_feedback FROM authenticated;
 
 -- ------------------------------------------------------------------------------
--- PHẦN 3: CẤP LẠI ĐÚNG QUYỀN HẠN TỐI THIỂU (LEAST PRIVILEGE GRANT)
+-- PHẦN 3: CẤP QUYỀN ĐỘC QUYỀN CHO SERVICE_ROLE (BACKEND-ONLY ACCESS)
 -- ------------------------------------------------------------------------------
--- 1. Role 'anon': CHỈ ĐƯỢC PHÉP INSERT để gửi phản hồi đánh giá câu trả lời chatbot
-GRANT INSERT ON TABLE public.rag_user_feedback TO anon;
-
--- 2. Role 'authenticated': CHỈ ĐƯỢC PHÉP INSERT để gửi phản hồi
-GRANT INSERT ON TABLE public.rag_user_feedback TO authenticated;
-
--- 3. Role 'service_role': Duy trì toàn quyền cho backend / serverless handlers (quản trị nội bộ)
+-- Chỉ cấp quyền cho role 'service_role' (chạy tại máy chủ backend / serverless handlers)
+-- Phục vụ: POST /api/rag/feedback (ghi) và GET /api/rag/analytics (đọc sau khi kiểm tra RBAC)
 GRANT ALL PRIVILEGES ON TABLE public.rag_user_feedback TO service_role;
 
 -- ------------------------------------------------------------------------------
--- PHẦN 4: THIẾT KẾ LẠI ROW LEVEL SECURITY (RLS) POLICIES
+-- PHẦN 4: THIẾT KẾ ROW LEVEL SECURITY (RLS) THEO NGUYÊN TẮC DEFAULT DENY
 -- ------------------------------------------------------------------------------
--- Đảm bảo Row Level Security luôn được kích hoạt
+-- Đảm bảo Row Level Security luôn luôn được kích hoạt
 ALTER TABLE public.rag_user_feedback ENABLE ROW LEVEL SECURITY;
 
--- Xóa bỏ toàn bộ các Policy cũ quá rộng hoặc có nguy cơ rò rỉ dữ liệu
+-- Xóa bỏ toàn bộ các policy cũ (cả SELECT và INSERT trực tiếp từ client)
 DROP POLICY IF EXISTS "Authenticated users read rag_user_feedback" ON public.rag_user_feedback;
 DROP POLICY IF EXISTS "Public insert rag_user_feedback" ON public.rag_user_feedback;
 DROP POLICY IF EXISTS "rag_user_feedback_insert_policy" ON public.rag_user_feedback;
 DROP POLICY IF EXISTS "rag_user_feedback_admin_select_policy" ON public.rag_user_feedback;
 
--- 1. POLICY INSERT: Cho phép anon và authenticated gửi phản hồi, có kiểm soát dữ liệu chặt chẽ
--- TUYỆT ĐỐI NGĂN CHẶN giả mạo vai trò quản trị (chỉ cho phép ghi nhận 'student' hoặc 'guest')
-CREATE POLICY "rag_user_feedback_insert_policy"
-    ON public.rag_user_feedback
-    FOR INSERT
-    TO anon, authenticated
-    WITH CHECK (
-        query IS NOT NULL
-        AND length(trim(query)) > 0
-        AND length(query) <= 2000
-        AND (category IS NULL OR length(category) <= 64)
-        AND (comment IS NULL OR length(comment) <= 4000)
-        AND (user_role IS NULL OR user_role IN ('student', 'guest'))
-    );
-
--- 2. POLICY SELECT: TUYỆT ĐỐI KHÔNG CẤP CHO ANON HOẶC HỌC SINH / KHÁCH VÃNG LAI.
--- TUYỆT ĐỐI KHÔNG SỬ DỤNG user_metadata (người dùng có thể tự chỉnh sửa).
--- TUYỆT ĐỐI KHÔNG SỬ DỤNG auth.jwt() ->> 'role' = 'service_role' (service_role tự bypass RLS).
--- CHỈ CẤP CHO Quản trị viên thực tế thông qua:
---   a) Bảng phân quyền hệ thống user_roles (thông qua hàm bảo mật public.has_role)
---   b) HOẶC claim an toàn app_metadata do server/admin quản lý.
-CREATE POLICY "rag_user_feedback_admin_select_policy"
-    ON public.rag_user_feedback
-    FOR SELECT
-    TO authenticated
-    USING (
-        (public.has_role('admin') OR public.has_role('super_admin'))
-        OR ((auth.jwt() -> 'app_metadata' ->> 'role') IN ('admin', 'super_admin'))
-    );
-
--- 3. KHÔNG TẠO BẤT KỲ POLICY CHO UPDATE HOẶC DELETE:
+-- KIẾN TRÚC BACKEND-ONLY:
+-- Tuyệt đối KHÔNG tạo bất kỳ policy nào cho anon hoặc authenticated.
 -- Theo nguyên tắc Default Deny của PostgreSQL RLS:
--- Cả 'anon' và 'authenticated' đều KHÔNG THỂ UPDATE hoặc DELETE bất kỳ dòng phản hồi nào.
+-- Mọi truy vấn trực tiếp từ PostgREST API / client-side Supabase SDK đều bị từ chối 100%.
+-- Riêng service_role tại backend sở hữu đặc quyền hệ thống BYPASSRLS trong Supabase,
+-- cho phép các API POST /api/rag/feedback và GET /api/rag/analytics hoạt động thông suốt
+-- sau khi đã hoàn thành xác thực, lọc dữ liệu và kiểm soát tần suất phía máy chủ.
 
 COMMIT;
 
 -- ==============================================================================
 -- TRUY VẤN KIỂM TRA CHỈ ĐỌC (READ-ONLY VERIFICATION QUERIES)
--- Quản trị viên có thể thực thi đoạn script dưới đây sau khi chạy migration
--- để xác nhận trạng thái quyền hạn đã được siết chặt chuẩn xác.
+-- Quản trị viên thực thi đoạn script dưới đây sau khi chạy migration
+-- để xác nhận trạng thái Backend-Only Access đã được thiết lập chuẩn xác.
 -- ==============================================================================
 /*
 -- 1. Kiểm tra quyền hiệu lực (has_table_privilege)
@@ -116,10 +87,10 @@ CROSS JOIN
 ORDER BY 
     r.rolname, p.privilege;
 
--- KẾT QUẢ KỲ VỌNG:
--- anon:         INSERT = true, tất cả các quyền còn lại = false.
--- authenticated:INSERT = true, tất cả các quyền còn lại = false.
--- service_role: Tất cả 7 quyền = true.
+-- KẾT QUẢ KỲ VỌNG (BACKEND-ONLY ARCHITECTURE):
+-- anon:         TẤT CẢ 7 QUYỀN = FALSE (Bị chặn 100% truy cập trực tiếp).
+-- authenticated:TẤT CẢ 7 QUYỀN = FALSE (Bị chặn 100% truy cập trực tiếp).
+-- service_role: TẤT CẢ 7 QUYỀN = TRUE  (Chỉ backend có quyền thao tác).
 
 -- 2. Kiểm tra các Policy RLS đang có hiệu lực trên bảng
 SELECT 
@@ -134,12 +105,9 @@ SELECT
 FROM 
     pg_policies
 WHERE 
-    schemaname = 'public' AND tablename = 'rag_user_feedback'
-ORDER BY 
-    policyname;
+    schemaname = 'public' AND tablename = 'rag_user_feedback';
 
 -- KẾT QUẢ KỲ VỌNG:
--- Policy 1: rag_user_feedback_insert_policy (cmd: INSERT, roles: {anon, authenticated})
--- Policy 2: rag_user_feedback_admin_select_policy (cmd: SELECT, roles: {authenticated}, không dùng user_metadata)
--- Không còn policy "Authenticated users read rag_user_feedback" với USING (true).
+-- 0 rows returned (Không có policy nào cho anon/authenticated -> Default Deny toàn bộ).
+-- service_role tự động BYPASSRLS.
 */
