@@ -181,16 +181,16 @@ export const HorizontalTimelineRail: React.FC<HorizontalTimelineRailProps> = ({
           aria-label="Thước đo thời gian các mốc son lịch sử"
         >
           {/* Main Horizontal Track Line - Fits 100% on desktop/tablet, compact min-w on mobile */}
-          <div className="relative w-full min-w-[700px] md:min-w-0 flex items-center justify-between py-2 sm:py-2.5">
-            {/* The continuous golden-red track running behind the nodes */}
+          <div className="relative w-full min-w-[700px] md:min-w-0 flex items-start justify-between pt-2.5 pb-1">
+            {/* The continuous golden-red track running behind the buttons */}
             <div
-              className="absolute left-3 right-3 sm:left-5 sm:right-5 top-1/2 -translate-y-1/2 h-1 bg-gradient-to-r from-heritage-red-700 via-heritage-gold-400 to-heritage-red-700 rounded-full shadow-sm z-0"
+              className="absolute left-3 right-3 sm:left-5 sm:right-5 top-[25px] sm:top-[28px] -translate-y-1/2 h-1 bg-gradient-to-r from-heritage-red-700 via-heritage-gold-400 to-heritage-red-700 rounded-full shadow-sm z-0"
             />
 
             {/* Subtle Ruler Calibrations (Small tick marks along the rail) */}
             <div
               aria-hidden="true"
-              className="absolute left-4 right-4 sm:left-6 sm:right-6 top-1/2 -translate-y-1/2 flex justify-between pointer-events-none z-0 opacity-35"
+              className="absolute left-4 right-4 sm:left-6 sm:right-6 top-[25px] sm:top-[28px] -translate-y-1/2 flex justify-between pointer-events-none z-0 opacity-40"
             >
               {Array.from({ length: 49 }).map((_, i) => (
                 <span
@@ -215,48 +215,53 @@ export const HorizontalTimelineRail: React.FC<HorizontalTimelineRailProps> = ({
                   className="relative flex flex-col items-center z-10 flex-shrink-0"
                   style={{ width: `${100 / events.length}%` }}
                 >
-                  {/* Active Downward Arrow Pointer Indicator */}
-                  {isActive && (
-                    <div className="absolute -top-2 left-1/2 -translate-x-1/2 text-heritage-red-700 animate-bounce">
-                      <div className="w-1.5 h-1.5 bg-heritage-red-700 rotate-45 border-t border-l border-heritage-gold-400 shadow-xs" />
-                    </div>
-                  )}
-
-                  {/* Circular Milestone Button */}
-                  <button
-                    ref={isActive ? activeNodeRef : null}
-                    onClick={() => {
-                      setActiveIndex(idx);
-                      setIsPlaying(false);
-                    }}
-                    className={`group relative flex items-center justify-center rounded-full transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-heritage-red-700 ${
-                      isActive
-                        ? 'w-8 h-8 sm:w-9 sm:h-9 bg-gradient-to-br from-heritage-red-700 to-heritage-red-900 text-heritage-gold-300 border-2 border-heritage-gold-400 shadow-md scale-110 ring-2 ring-heritage-gold-400/50'
-                        : isPast
-                        ? 'w-6 h-6 sm:w-7 sm:h-7 bg-heritage-red-50 text-heritage-red-800 border-1.5 border-heritage-red-300 hover:border-heritage-gold-500 hover:scale-105'
-                        : 'w-6 h-6 sm:w-7 sm:h-7 bg-white text-heritage-ink-700 border-1.5 border-heritage-gold-400/70 hover:border-heritage-red-700 hover:scale-105 shadow-xs'
-                    }`}
-                    title={`${event.exactDate || event.year}: ${event.title}`}
-                    aria-current={isActive ? 'step' : undefined}
-                  >
-                    {isMemorial ? (
-                      <Star
-                        className={`${
-                          isActive ? 'w-3.5 h-3.5 text-heritage-gold-300 fill-heritage-gold-400 drop-shadow' : 'w-3 h-3 text-heritage-gold-500 fill-heritage-gold-400'
-                        }`}
-                      />
-                    ) : (
-                      <span
-                        className={`font-serif font-black ${
-                          isActive
-                            ? 'text-[9.5px] sm:text-[10.5px] tracking-tight'
-                            : 'text-[8px] sm:text-[9px] font-semibold'
-                        }`}
-                      >
-                        {nodeLabel}
-                      </span>
+                  {/* Button anchor container ensuring perfect vertical centering with track line */}
+                  <div className="relative flex items-center justify-center h-8 sm:h-9">
+                    {/* Active Downward Arrow Pointer Indicator */}
+                    {isActive && (
+                      <div className="absolute -top-2 left-1/2 -translate-x-1/2 text-heritage-red-700 animate-bounce">
+                        <div className="w-1.5 h-1.5 bg-heritage-red-700 rotate-45 border-t border-l border-heritage-gold-400 shadow-xs" />
+                      </div>
                     )}
-                  </button>
+
+                    {/* Circular Milestone Button - Perfectly round with distinct 2px borders */}
+                    <button
+                      ref={isActive ? activeNodeRef : null}
+                      onClick={() => {
+                        setActiveIndex(idx);
+                        setIsPlaying(false);
+                      }}
+                      className={`group relative flex items-center justify-center rounded-full aspect-square flex-shrink-0 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-heritage-red-700 ${
+                        isActive
+                          ? 'w-8 h-8 sm:w-9 sm:h-9 bg-gradient-to-br from-heritage-red-700 to-heritage-red-900 text-heritage-gold-300 border-2 border-heritage-gold-400 shadow-md scale-110 ring-4 ring-heritage-gold-400/40 z-20'
+                          : isPast
+                          ? 'w-7 h-7 sm:w-7.5 sm:h-7.5 bg-heritage-red-50 text-heritage-red-800 border-2 border-heritage-red-300 hover:border-heritage-gold-500 hover:scale-105 shadow-xs z-10'
+                          : 'w-7 h-7 sm:w-7.5 sm:h-7.5 bg-white text-heritage-ink-800 border-2 border-heritage-gold-400/90 hover:border-heritage-red-700 hover:scale-105 shadow-xs z-10'
+                      }`}
+                      title={`${event.exactDate || event.year}: ${event.title}`}
+                      aria-current={isActive ? 'step' : undefined}
+                    >
+                      {isMemorial ? (
+                        <Star
+                          className={`${
+                            isActive
+                              ? 'w-3.5 h-3.5 text-heritage-gold-300 fill-heritage-gold-400 drop-shadow'
+                              : 'w-3 h-3 text-heritage-gold-500 fill-heritage-gold-400'
+                          }`}
+                        />
+                      ) : (
+                        <span
+                          className={`font-serif font-black ${
+                            isActive
+                              ? 'text-[10px] sm:text-[11px] tracking-tight'
+                              : 'text-[8.5px] sm:text-[9.5px]'
+                          }`}
+                        >
+                          {nodeLabel}
+                        </span>
+                      )}
+                    </button>
+                  </div>
 
                   {/* Milestone Micro-Label below the button - 2 lines, no truncation */}
                   <div
