@@ -684,11 +684,56 @@ export async function handleReprocessDocumentRoute(
   }
 }
 
+// Rate limiter map for feedback submissions (IP/client key -> timestamp array)
+const feedbackRateLimitMap = new Map<string, number[]>();
+const FEEDBACK_RATE_LIMIT_WINDOW_MS = 60 * 1000; // 1 minute
+const FEEDBACK_RATE_LIMIT_MAX_REQUESTS = 15; // Max 15 feedback submissions per minute
+
+function isFeedbackRateLimited(clientKey: string): boolean {
+  const now = Date.now();
+  const timestamps = feedbackRateLimitMap.get(clientKey) || [];
+  const activeTimestamps = timestamps.filter(t => now - t < FEEDBACK_RATE_LIMIT_WINDOW_MS);
+
+  if (activeTimestamps.length >= FEEDBACK_RATE_LIMIT_MAX_REQUESTS) {
+    feedbackRateLimitMap.set(clientKey, activeTimestamps);
+    return true;
+  }
+
+  activeTimestamps.push(now);
+  feedbackRateLimitMap.set(clientKey, activeTimestamps);
+
+  // Periodic cleanup of stale entries
+  if (feedbackRateLimitMap.size > 500) {
+    for (const [key, times] of feedbackRateLimitMap.entries()) {
+      if (times.every(t => now - t >= FEEDBACK_RATE_LIMIT_WINDOW_MS)) {
+        feedbackRateLimitMap.delete(key);
+      }
+    }
+  }
+
+  return false;
+}
+
 /**
  * POST /api/rag/feedback (User Feedback on Answer Quality)
  */
-export async function handleFeedbackRoute(body: any): Promise<ApiResponse> {
+export async function handleFeedbackRoute(
+  body: any,
+  clientKey?: string,
+  authHeader?: string
+): Promise<ApiResponse> {
   try {
+    // 1. Sliding window rate limiting check
+    const rateLimitKey = clientKey || 'default-client';
+    if (isFeedbackRateLimited(rateLimitKey)) {
+      return {
+        success: false,
+        statusCode: 429,
+        error: 'Bạn đang gửi phản hồi quá nhanh. Vui lòng chờ 1 phút trước khi thử lại.'
+      };
+    }
+
+    // 2. Input validation: query constraint
     const query = typeof body?.query === 'string' ? body.query.trim() : '';
     const isHelpful = typeof body?.isHelpful === 'boolean' ? body.isHelpful : (body?.isHelpful === 'true');
     if (!query) {
@@ -698,6 +743,54 @@ export async function handleFeedbackRoute(body: any): Promise<ApiResponse> {
         error: 'Tham số "query" là bắt buộc.'
       };
     }
+    if (query.length > 2000) {
+      return {
+        success: false,
+        statusCode: 400,
+        error: 'Nội dung câu hỏi quá dài (tối đa 2000 ký tự).'
+      };
+    }
+
+    // 3. Input validation: comment & category constraints
+    const comment = typeof body?.comment === 'string' ? body.comment.trim() : undefined;
+    if (comment && comment.length > 4000) {
+      return {
+        success: false,
+        statusCode: 400,
+        error: 'Ý kiến đóng góp quá dài (tối đa 4000 ký tự).'
+      };
+    }
+
+    const category = typeof body?.category === 'string' ? body.category.trim() : undefined;
+    if (category && category.length > 64) {
+      return {
+        success: false,
+        statusCode: 400,
+        error: 'Mã danh mục không hợp lệ (tối đa 64 ký tự).'
+      };
+    }
+
+    // 4. Role sanitization: Never trust client-supplied role for administrative claims
+    let sanitizedUserRole = 'student';
+    const rawRole = typeof body?.userRole === 'string' ? body.userRole.toLowerCase().trim() : '';
+
+    if (rawRole === 'teacher' || rawRole === 'guest') {
+      sanitizedUserRole = rawRole;
+    } else if (rawRole === 'admin' || rawRole === 'super_admin' || rawRole === 'editor') {
+      // Elevate to admin/editor ONLY if verified via cryptographic/server-side admin token
+      if (authHeader) {
+        const adminAuth = await validateAdminAuth(authHeader, undefined, 'editor');
+        if (adminAuth.authorized) {
+          sanitizedUserRole = adminAuth.role;
+        } else {
+          sanitizedUserRole = 'guest'; // Client attempted to spoof admin without valid credentials
+        }
+      } else {
+        sanitizedUserRole = 'guest'; // Client attempted to spoof admin without auth header
+      }
+    } else {
+      sanitizedUserRole = 'student';
+    }
 
     const feedbackId = `FB-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`;
     const feedbackRecord = {
@@ -705,9 +798,9 @@ export async function handleFeedbackRoute(body: any): Promise<ApiResponse> {
       query,
       answerSnippet: typeof body?.answerSnippet === 'string' ? body.answerSnippet.slice(0, 500) : '',
       isHelpful,
-      category: body?.category,
-      comment: typeof body?.comment === 'string' ? body.comment.trim() : undefined,
-      userRole: typeof body?.userRole === 'string' ? body.userRole : 'student',
+      category,
+      comment,
+      userRole: sanitizedUserRole,
       createdAt: new Date().toISOString()
     };
 

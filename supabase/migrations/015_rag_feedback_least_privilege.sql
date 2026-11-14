@@ -1,9 +1,10 @@
 -- ==============================================================================
 -- DỰ ÁN: KHÔNG GIAN VĂN HÓA HỒ CHÍ MINH - TRƯỜNG THCS NGUYỄN TRUNG TRỰC
--- MIGRATION: 015_rag_feedback_least_privilege.sql
+-- MIGRATION: 015_rag_feedback_least_privilege.sql (REVISED & HARDENED)
 -- MÔI TRƯỜNG: SUPABASE STAGING (Project: ospnskocdlirjqzknkqz)
 -- PHẠM VI: public.rag_user_feedback
--- MỤC TIÊU: KHẮC PHỤC QUYỀN TRUY CẬP QUÁ RỘNG CỦA ANON VÀ AUTHENTICATED
+-- MỤC TIÊU: KHẮC PHỤC QUYỀN TRUY CẬP QUÁ RỘNG, LOẠI BỎ HOÀN TOÀN USER_METADATA,
+--           ÁP DỤNG KIỂM SOÁT TRUY CẬP LEAST PRIVILEGE VÀ RBAC CHUẨN XÁC
 -- NGUYÊN TẮC: LEAST PRIVILEGE - ZERO DATA LOSS - IDEMPOTENT EXECUTION
 -- ==============================================================================
 
@@ -12,7 +13,7 @@ BEGIN;
 -- ------------------------------------------------------------------------------
 -- PHẦN 1: BẢO VỆ DỮ LIỆU & KIỂM TRA BẢNG TỒN TẠI
 -- ------------------------------------------------------------------------------
--- Lưu ý an toàn: Không DROP TABLE, không DELETE dữ liệu phản hồi của giáo viên/học sinh.
+-- Lưu ý an toàn: Không DROP TABLE, không DELETE / TRUNCATE dữ liệu phản hồi của giáo viên/học sinh.
 DO $$
 BEGIN
     IF NOT EXISTS (
@@ -55,14 +56,14 @@ GRANT ALL PRIVILEGES ON TABLE public.rag_user_feedback TO service_role;
 -- Đảm bảo Row Level Security luôn được kích hoạt
 ALTER TABLE public.rag_user_feedback ENABLE ROW LEVEL SECURITY;
 
--- Xóa bỏ các Policy cũ quá rộng hoặc có nguy cơ rò rỉ dữ liệu
+-- Xóa bỏ toàn bộ các Policy cũ quá rộng hoặc có nguy cơ rò rỉ dữ liệu
 DROP POLICY IF EXISTS "Authenticated users read rag_user_feedback" ON public.rag_user_feedback;
 DROP POLICY IF EXISTS "Public insert rag_user_feedback" ON public.rag_user_feedback;
 DROP POLICY IF EXISTS "rag_user_feedback_insert_policy" ON public.rag_user_feedback;
 DROP POLICY IF EXISTS "rag_user_feedback_admin_select_policy" ON public.rag_user_feedback;
 
 -- 1. POLICY INSERT: Cho phép anon và authenticated gửi phản hồi, có kiểm soát dữ liệu chặt chẽ
--- Ngăn chặn giả mạo dữ liệu, spam nội dung quá dài hoặc gán sai vai trò
+-- TUYỆT ĐỐI NGĂN CHẶN giả mạo vai trò quản trị (chỉ cho phép ghi nhận 'student' hoặc 'guest')
 CREATE POLICY "rag_user_feedback_insert_policy"
     ON public.rag_user_feedback
     FOR INSERT
@@ -73,20 +74,22 @@ CREATE POLICY "rag_user_feedback_insert_policy"
         AND length(query) <= 2000
         AND (category IS NULL OR length(category) <= 64)
         AND (comment IS NULL OR length(comment) <= 4000)
-        AND (user_role IS NULL OR user_role IN ('student', 'teacher', 'admin', 'editor', 'guest'))
+        AND (user_role IS NULL OR user_role IN ('student', 'guest'))
     );
 
--- 2. POLICY SELECT: Tuyệt đối KHÔNG cấp cho anon hoặc học sinh / khách vãng lai.
--- Chỉ cho phép Quản trị viên (Admin/Super Admin) có claim hợp lệ trong JWT xác thực qua Supabase Auth đọc dữ liệu.
--- (Lưu ý: Backend service_role tự động bypass RLS, không bị ảnh hưởng)
+-- 2. POLICY SELECT: TUYỆT ĐỐI KHÔNG CẤP CHO ANON HOẶC HỌC SINH / KHÁCH VÃNG LAI.
+-- TUYỆT ĐỐI KHÔNG SỬ DỤNG user_metadata (người dùng có thể tự chỉnh sửa).
+-- TUYỆT ĐỐI KHÔNG SỬ DỤNG auth.jwt() ->> 'role' = 'service_role' (service_role tự bypass RLS).
+-- CHỈ CẤP CHO Quản trị viên thực tế thông qua:
+--   a) Bảng phân quyền hệ thống user_roles (thông qua hàm bảo mật public.has_role)
+--   b) HOẶC claim an toàn app_metadata do server/admin quản lý.
 CREATE POLICY "rag_user_feedback_admin_select_policy"
     ON public.rag_user_feedback
     FOR SELECT
     TO authenticated
     USING (
-        (auth.jwt() ->> 'role') = 'service_role'
-        OR (auth.jwt() -> 'app_metadata' ->> 'role') IN ('admin', 'super_admin')
-        OR (auth.jwt() -> 'user_metadata' ->> 'role') IN ('admin', 'super_admin')
+        (public.has_role('admin') OR public.has_role('super_admin'))
+        OR ((auth.jwt() -> 'app_metadata' ->> 'role') IN ('admin', 'super_admin'))
     );
 
 -- 3. KHÔNG TẠO BẤT KỲ POLICY CHO UPDATE HOẶC DELETE:
@@ -137,6 +140,6 @@ ORDER BY
 
 -- KẾT QUẢ KỲ VỌNG:
 -- Policy 1: rag_user_feedback_insert_policy (cmd: INSERT, roles: {anon, authenticated})
--- Policy 2: rag_user_feedback_admin_select_policy (cmd: SELECT, roles: {authenticated})
+-- Policy 2: rag_user_feedback_admin_select_policy (cmd: SELECT, roles: {authenticated}, không dùng user_metadata)
 -- Không còn policy "Authenticated users read rag_user_feedback" với USING (true).
 */
