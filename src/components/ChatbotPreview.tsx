@@ -5,9 +5,10 @@ interface ChatbotPreviewProps {
   isOpen: boolean;
   onClose: () => void;
   onOpen: () => void;
+  onOpenRagMvp?: () => void;
 }
 
-export const ChatbotPreview: React.FC<ChatbotPreviewProps> = ({ isOpen, onClose, onOpen }) => {
+export const ChatbotPreview: React.FC<ChatbotPreviewProps> = ({ isOpen, onClose, onOpen, onOpenRagMvp }) => {
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape' && isOpen) onClose();
@@ -166,16 +167,32 @@ export const ChatbotPreview: React.FC<ChatbotPreviewProps> = ({ isOpen, onClose,
             </div>
 
             {/* Footer */}
-            <div className="mt-6 pt-4 border-t border-heritage-ivory-300 flex items-center justify-between">
-              <span className="text-xs text-heritage-ink-500">
+            <div className="mt-6 pt-4 border-t border-heritage-ivory-300 flex flex-col sm:flex-row items-center justify-between gap-3">
+              <span className="text-xs text-heritage-ink-500 text-center sm:text-left">
                 Không gian văn hóa Hồ Chí Minh • Trường THCS Nguyễn Trung Trực
               </span>
-              <button
-                onClick={onClose}
-                className="px-5 py-2 bg-heritage-red-700 hover:bg-heritage-red-800 text-white rounded-lg font-medium text-sm transition-colors"
-              >
-                Tôi đã hiểu
-              </button>
+              <div className="flex items-center space-x-2 w-full sm:w-auto justify-end">
+                {onOpenRagMvp && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      onClose();
+                      onOpenRagMvp();
+                    }}
+                    className="px-4 py-2 bg-gradient-to-r from-heritage-gold-400 to-heritage-gold-500 hover:from-heritage-gold-500 hover:to-heritage-gold-600 text-heritage-ink-950 font-bold text-xs sm:text-sm rounded-lg shadow-sm flex items-center space-x-1.5 transition-all"
+                  >
+                    <Sparkles className="w-4 h-4 text-heritage-ink-900" />
+                    <span>Trải nghiệm Thử nghiệm (RAG MVP)</span>
+                  </button>
+                )}
+                <button
+                  type="button"
+                  onClick={onClose}
+                  className="px-4 py-2 bg-heritage-red-700 hover:bg-heritage-red-800 text-white rounded-lg font-medium text-xs sm:text-sm transition-colors"
+                >
+                  Đóng
+                </button>
+              </div>
             </div>
           </div>
         </div>

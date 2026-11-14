@@ -1,0 +1,219 @@
+BÁO CÁO KIỂM TOÁN TÀI LIỆU ĐỘC LẬP – ROUND 4.8
+
+INDEPENDENT DOCUMENTATION AUDIT REPORT – ROUND 4.8
+
+PHASE 0B.2.3 – CMS PROFESSIONAL EDITORIAL EXPERIENCE REDESIGN
+
+Project: Hệ thống Không gian văn hóa Hồ Chí Minh – Trường THCS Nguyễn Trung Trực
+Audit scope: Round 3.8 Markdown documentation package only
+Audited archive: PHASE_0B_2_3_CMS_REDESIGN_REMEDIATED_ROUND3_8.zip
+Audit method: Direct archive inspection, SHA-256 recomputation, ZIP CRC/decompression test, UTF-8 decoding, filename/manifest reconciliation, targeted cross-document and status-string review.
+Boundary: This audit does not inspect source repository state, application runtime, database, Supabase, deployment, or Git state.
+
+---
+
+1. EXECUTIVE RESULT
+
+Round 4.8 verdict: DOCUMENTATION REMEDIATION: PARTIALLY ACCEPTED – DOCUMENTATION REWORK REQUIRED
+
+The archive container itself passes basic integrity checks. However, the archive contains a material checksum mismatch in both Round 3.8 handover documents, plus manifest inventory defects and residual evidence-classification / historical-claim issues.
+
+Implementation readiness remains:
+
+IMPLEMENTATION READINESS: NOT READY – HARD BLOCK / NOT VERIFIED
+
+No implementation readiness conclusion can be derived from this documentation-only audit.
+
+2. ARCHIVE-LEVEL VERIFICATION
+
+| Check | Independent result | Status |
+|---|---:|---|
+| ZIP file size | 194,395 bytes | PASS |
+| SHA-256 | 8608A90782386454C0C2B6743914EB325E8F0D19AB73C509D77AC45AF982A8D1 | VERIFIED |
+| ZIP entries | 42 | PASS |
+| Markdown entries | 42/42 | PASS |
+| Duplicate entry names | 0 | PASS |
+| Zero-byte entries | 0 | PASS |
+| ZIP CRC / decompression (testzip) | No failing member | PASS |
+| UTF-8 decoding | 42/42 decoded | PASS |
+| Manifest filename inventory | 42 rows; 42 names match archive | PASS, filename-only |
+
+The independently computed SHA-256 and byte size above are derived from the uploaded ZIP itself. They do not validate any project repository, runtime, or deployment state.
+
+3. FINDINGS
+
+R4.8-01 – CRITICAL: Round 3.8 Handover Checksum Does Not Match Delivered ZIP
+
+Evidence
+
+Actual archive SHA-256: 8608A90782386454C0C2B6743914EB325E8F0D19AB73C509D77AC45AF982A8D1
+
+PHASE_0B_2_3_ROUND3_8_HANDOVER.md, Section 9 reports: E20F2E63C7B94F2911F3B03A5EBE7AF68F6E7BBA59383D1B948653639EB4E48A.
+
+PHASE_0B_2_3_ROUND3_8_REMEDIATION_REPORT.md, Section 7 reports the same E20F...E48A value.
+
+The separate Project Team result pasted outside the ZIP reported 8608A907...982A8D1, matching the archive, but that does not correct the contradictory values embedded in the delivered package.
+
+Impact: The handover and remediation report do not seal the actual archive. The critical Round 4.7 checksum reconciliation objective is therefore not fully satisfied for Round 3.8.
+
+Status: FAIL – CRITICAL.
+
+R4.8-02 – HIGH: Manifest Summary and Inventory Metadata Are Internally Inconsistent
+
+Evidence
+
+The manifest table contains 42 filename rows, and all 42 names match ZIP entries.
+
+The manifest summary labels the Architecture &amp; Design group as 5 files but lists 8 filenames.
+
+The summary claims 30 historical dossier files, which does not reconcile with the listed 42-entry inventory and the other stated group counts.
+
+The four core specifications are listed as a four-file group in the summary, but the inventory's origin/category labels do not consistently classify all four as that group.
+
+The manifest row for PHASE_0B_2_3_ROUND3_8_MANIFEST.md states 2 lines; the actual file contains 92 text lines (93 if counting a terminal empty line).
+
+Other listed line counts appear consistently one higher than splitlines() counts, which may reflect a different counting convention; the manifest does not define that convention. This is not independently treated as a separate defect for every row, but the convention should be documented.
+
+Impact: Filename-level reconciliation passes, but category totals and manifest metadata are not reliable as currently presented.
+
+Status: PARTIAL / REWORK REQUIRED.
+
+R4.8-03 – HIGH: Evidence Provenance and Remediation Claims Are Not Fully Reconciled
+
+Evidence
+
+The Round 3.8 report and handover still contain phrases such as “loại bỏ triệt để”, “khắc phục toàn diện”, “giải quyết dứt điểm”, “nhất quán tuyệt đối” when describing the remediation process. In several places these are quoted as historical wording being removed, so their presence alone is not proof of a current completion claim. However, the report should clearly label these as quoted legacy phrases, not use them as affirmative descriptions of the Round 3.8 work.
+
+Historical Round 3.1 and 3.2 delta reports retain assertions including ALL 6 AUDIT FINDINGS ... FULLY RESOLVED and ALL 6 FINDINGS FULLY RESOLVED / ZERO REGRESSION. These may be historical project-team statements, but the current package does not consistently qualify them as historical self-assessments rather than current independent findings.
+
+The Round 3.8 report says the full dossier was reviewed and the overstatement language removed, but the retained historical records are not consistently annotated with provenance and temporal scope.
+
+Impact: Evidence provenance is improved, but the claim that the entire dossier has been fully normalized is not sufficiently demonstrated.
+
+Status: PARTIAL.
+
+R4.8-04 – MEDIUM: Quality Gate Independent-Verification Labels Need Evidence-Bounded Scope
+
+Evidence
+
+The 21/21 Document-Level PASS is explicitly labelled Project Team Self-Assessment. This distinction is accepted.
+
+The independent-verification column labels QG-01 through QG-04 as independently verified in earlier archive-integrity rounds. Archive integrity checks do not, by themselves, establish semantic correctness of the four core specifications or prove harmonization of all 36 Acceptance Criteria.
+
+The cited historical audit rounds may contain additional evidence, but those audit reports are not included in this 42-file package. The claims cannot be re-established from the Round 3.8 archive alone.
+
+QG-05 is attributed to Round 4.1 historical audit. This is a historical carry-forward claim, not a fresh Round 4.8 verification.
+
+Impact: The table should distinguish “historically reported as verified in a prior audit” from “reverified in Round 4.8”. Do not imply archive integrity independently proves semantic or requirement-level conformity.
+
+Status: PARTIAL.
+
+R4.8-05 – LOW: Proposed Workflow Is Clearly Non-Operational, With a Small Residual Wording Risk
+
+Evidence
+
+The Media Library Specification explicitly identifies the pipeline as proposed, not implemented, and not verified.
+
+Step 6 is marked as blocked due to the unverified media_assets schema dependency.
+
+The specification states that retries, rollback, compensation, locks, and cleanup are design proposals, not operational controls.
+
+The mandatory media and idempotency blocker states remain present.
+
+Impact: The principal non-operational boundary is adequately documented. Some workflow steps describe proposed actions in imperative technical language; retaining the nearby “proposed design only” banners is essential.
+
+Status: PASS WITH OBSERVATION.
+
+4. MANDATORY STATUS STRING CHECK
+
+All nine required status strings were found in the archive:
+
+FOUR-EYES: HARD BLOCK – TRUSTED CONTRIBUTOR PROVENANCE NOT VERIFIED
+
+AUDIT LOG IMMUTABILITY: NOT VERIFIED
+
+UPLOAD SECURITY ARCHITECTURE: NOT VERIFIED
+
+MEDIA UPLOAD GATE: BLOCKED
+
+MEDIA DELETION CONCURRENCY SAFETY: NOT VERIFIED
+
+RICH TEXT VIDEO SECURITY: NOT VERIFIED
+
+MEDIA METADATA PERSISTENCE: BLOCKED – SCHEMA DEPENDENCY NOT VERIFIED
+
+IDEMPOTENCY ENFORCEMENT: BLOCKED – PERSISTENT STATE MECHANISM NOT VERIFIED
+
+IMPLEMENTATION READINESS: NOT READY – HARD BLOCK / NOT VERIFIED
+
+Result: Required strings preserved in the archive. Their presence does not constitute verification that the underlying controls exist or operate.
+
+5. ROUND 4.7 FINDING CARRY-FORWARD
+
+| Round 4.7 finding | Round 4.8 result |
+|---|---|
+| R4.7-01 Checksum reconciliation | FAIL for Round 3.8 package: internal handover/report SHA does not match actual ZIP |
+| R4.7-02 Evidence provenance terminology | PARTIAL: improved terminology, historical records need clearer temporal/provenance labels |
+| R4.7-03 Overstated remediation claims | PARTIAL: quoted legacy wording and historical “fully resolved” statements need qualification |
+| R4.7-04 Quality Gate classification | PARTIAL: self-check separated; prior verification labels need evidence-bounded wording |
+| R4.7-05 Proposed workflow non-operational | PASS WITH OBSERVATION |
+
+6. LIMITATIONS AND NON-VERIFIED AREAS
+
+This audit did not and cannot establish from this ZIP alone:
+
+Source/repository integrity or absence of source-code changes.
+
+Database schema existence or state.
+
+Supabase Storage configuration, RLS, RPC, Edge Functions, or security policies.
+
+Runtime behavior, upload security, audit-log immutability, concurrency safety, idempotency enforcement, or rich-text video security.
+
+Deployment status or production readiness.
+
+Four-Eyes trusted contributor identity/provenance.
+
+The Project Team's Zero Mutation declarations remain self-reported and are not independently verified by inspecting the Markdown archive.
+
+7. REQUIRED ROUND 3.9 REMEDIATION
+
+Recompute SHA-256 from the final ZIP and replace the checksum in both Round 3.8 Handover Section 9 and Remediation Report Section 7.
+
+Rebuild the ZIP after editing; then recompute size and SHA-256 again from that final ZIP. Do not copy the prior archive checksum into the rebuilt archive.
+
+Correct Manifest group totals and category labels so all groups are mutually exclusive and sum exactly to 42.
+
+Correct the Manifest self-entry line count and document the line-count convention.
+
+Label retained historical “fully resolved” statements as historical Project Team assertions, not current independent findings.
+
+Clarify that QG-01 to QG-04 prior labels represent historical audit scope and do not imply that archive integrity validates semantic correctness.
+
+Keep all mandatory hard blocks unchanged.
+
+8. FINAL AUDIT VERDICT
+
+DOCUMENTATION REMEDIATION: PARTIALLY ACCEPTED – DOCUMENTATION REWORK REQUIRED
+
+IMPLEMENTATION READINESS: NOT READY – HARD BLOCK / NOT VERIFIED
+
+FOUR-EYES: HARD BLOCK – TRUSTED CONTRIBUTOR PROVENANCE NOT VERIFIED
+
+AUDIT LOG IMMUTABILITY: NOT VERIFIED
+
+UPLOAD SECURITY ARCHITECTURE: NOT VERIFIED
+
+MEDIA UPLOAD GATE: BLOCKED
+
+MEDIA DELETION CONCURRENCY SAFETY: NOT VERIFIED
+
+RICH TEXT VIDEO SECURITY: NOT VERIFIED
+
+MEDIA METADATA PERSISTENCE: BLOCKED – SCHEMA DEPENDENCY NOT VERIFIED
+
+IDEMPOTENCY ENFORCEMENT: BLOCKED – PERSISTENT STATE MECHANISM NOT VERIFIED
+
+---
+
+Independent Audit Round 4.8 – documentation/archive scope only.

@@ -1,0 +1,438 @@
+<USER_REQUEST>
+# PROJECT TEAM REMEDIATION PROMPT – ROUND 3.18
+
+## PHASE 0B.2.3 – CMS PROFESSIONAL EDITORIAL EXPERIENCE REDESIGN
+
+### DOCUMENTATION REMEDIATION – ROUND 3.18
+
+**Căn cứ thực hiện:**
+- Independent Documentation Audit Report – Round 4.17.
+- Implementation Readiness Verdict – Round 4.17.
+- Bốn phát hiện R4.17-01, R4.17-02, R4.17-03 và R4.17-04.
+
+**Dự án:** Hệ thống CMS Không gian văn hóa Hồ Chí Minh – Trường THCS Nguyễn Trung Trực.
+
+**Đơn vị thực hiện:** Project Remediation Team.
+
+**Nguyên tắc bắt buộc:**
+
+`EVIDENCE FIRST – DOCUMENTATION ONLY – ZERO MUTATION – FAIL CLOSED`
+
+---
+
+## 1. VAI TRÒ VÀ MỤC TIÊU
+
+Bạn là Project Remediation Team, chịu trách nhiệm tiếp tục hiệu chỉnh hồ sơ tài liệu theo kết quả Independent Documentation Audit Round 4.17.
+
+Round 3.18 chỉ tập trung khắc phục bốn phát hiện:
+
+| Phát hiện | Nội dung | Mức độ |
+|---|---|---|
+| R4.17-01 | Chưa bàn giao riêng bốn tài liệu Round 3.16 | LOW |
+| R4.17-02 | Không bảo toàn đúng trạng thái Self-Check item 11 = PARTIAL | LOW |
+| R4.17-03 | Metadata Audit Report và Verdict Round 4.16 không khớp | LOW |
+| R4.17-04 | Tuyên bố ZIP Round 3.14 PASS vượt quá bằng chứng hiện có | LOW |
+
+Mục tiêu là hoàn thiện tính nhất quán, khả năng truy xuất và tính xác thực của hồ sơ tài liệu.
+
+Không được tuyên bố Round 3.18 đã đạt yêu cầu kiểm toán độc lập trước khi Independent Documentation Audit thực hiện kiểm tra.
+
+---
+
+## 2. KHẮC PHỤC R4.17-01 – ROUND 3.16 DELIVERABLES NOT PROVIDED AS SEPARATE ATTACHMENTS
+
+### 2.1. Vấn đề
+
+Round 4.17 đã xác nhận bốn tài liệu Round 3.16 tồn tại trong ZIP Round 3.17 và có metadata khớp với bảng checksum.
+
+Tuy nhiên, bốn tài liệu chưa được bàn giao thành các tệp Markdown độc lập như yêu cầu trong Prompt Round 3.17.
+
+### 2.2. Yêu cầu khắc phục
+
+Phải cung cấp trực tiếp bốn tệp Markdown độc lập:
+
+1. `PHASE_0B_2_3_ROUND3_15_REPORT_CHECKSUM.md`
+2. `PHASE_0B_2_3_ROUND3_16_PROJECT_TEAM_REPORT.md`
+3. `PHASE_0B_2_3_ROUND3_16_CHANGELOG.md`
+4. `PHASE_0B_2_3_ROUND3_16_SELF_CHECK_REPORT.md`
+
+Yêu cầu thực hiện:
+
+- Trích xuất đúng tệp từ ZIP Round 3.17 đã được bàn giao.
+- Giữ nguyên nội dung byte-for-byte.
+- Không chỉnh sửa nội dung của các tài liệu Round 3.16 trong quá trình bàn giao.
+- Không đổi tên hoặc thay thế nội dung bằng bản dựng lại.
+- Cung cấp từng tệp dưới dạng Markdown riêng biệt, không chỉ đưa vào ZIP.
+- Tính lại dung lượng byte và SHA-256 từ từng tệp được bàn giao.
+- Đối chiếu với metadata đã được xác minh tại Round 4.17.
+
+### 2.3. Metadata chuẩn để đối chiếu
+
+| Tệp | Bytes | SHA-256 |
+|---|---:|---|
+| `PHASE_0B_2_3_ROUND3_15_REPORT_CHECKSUM.md` | 3.028 | `6B3C497DAB1CD02BD26DBF18BF08D734A3DB4CF3A0517CBFA5C3A110AD45F2BC` |
+| `PHASE_0B_2_3_ROUND3_16_PROJECT_TEAM_REPORT.md` | 21.381 | `BBBD95ECA47840B2A7EE5F8C4ECB71C8CD9091E85B1DFEDB59B24A44632BDC7C` |
+| `PHASE_0B_2_3_ROUND3_16_CHANGELOG.md` | 5.022 | `60B011A0C1E06BB1B3F02818C5B181915225553464B357E9D4E17705A7B0942B` |
+| `PHASE_0B_2_3_ROUND3_16_SELF_CHECK_REPORT.md` | 4.652 | `7E94AF1056FCA9E9F92CC86A202FEC75E93C7B7035D55C1721865B80723AF30B` |
+
+Nếu kết quả đo đạc khác các giá trị trên:
+
+- Không tự ý ghi PASS.
+- Không sửa nội dung gốc để ép checksum khớp.
+- Ghi nhận sai lệch cụ thể.
+- Xác định đúng nguồn tệp và phiên bản.
+- Đánh dấu `NOT VERIFIED` nếu không có đủ bằng chứng.
+
+**Không được coi việc trích xuất từ ZIP là bằng chứng xác thực nguồn gốc lịch sử của tài liệu.**
+
+---
+
+## 3. KHẮC PHỤC R4.17-02 – SELF-CHECK ITEM 11 STATUS INCONSISTENCY
+
+### 3.1. Vấn đề
+
+Round 4.17 phát hiện:
+
+- Báo cáo Round 3.17 ghi tiêu chí số 8 là giữ Self-Check item 11 ở trạng thái PARTIAL.
+- Tiêu chí số 8 được đánh dấu PARTIAL.
+- Tiêu chí số 11 “Không sửa mã nguồn, schema, runtime, Git” lại được đánh dấu PASS.
+- Self-Check Report Round 3.17 cũng có tình trạng tương tự.
+
+Điều này chưa chứng minh được trạng thái PARTIAL lịch sử của item 11 đã được bảo toàn đúng mục.
+
+### 3.2. Yêu cầu khắc phục
+
+Project Team phải:
+
+1. Mở và kiểm tra trực tiếp Self-Check Report nguồn Round 3.16.
+2. Xác định chính xác nội dung, số thứ tự và trạng thái lịch sử của Self-Check item 11.
+3. Đối chiếu với yêu cầu Round 3.17 và kết luận Round 4.16.
+4. Bảo toàn trạng thái PARTIAL tại đúng mục lịch sử được chỉ định.
+5. Không tự chuyển PARTIAL thành PASS.
+6. Không chuyển trạng thái PARTIAL sang một tiêu chí khác chỉ để làm bảng kiểm mới có vẻ nhất quán.
+7. Nếu tạo bảng Self-Check mới có 12 tiêu chí, phải bổ sung bảng mapping giữa số thứ tự mới và item lịch sử.
+
+### 3.3. Bảng mapping bắt buộc
+
+Bổ sung bảng đối chiếu có cấu trúc:
+
+| Item lịch sử | Nội dung tiêu chí nguồn | Trạng thái nguồn | Item trong bảng Round 3.18 | Trạng thái sau đối chiếu |
+|---|---|---|---|---|
+| Item 11 | Trích nguyên văn từ tài liệu nguồn | PARTIAL theo yêu cầu bảo toàn | Ghi số thứ tự tương ứng | PARTIAL |
+
+Không được tự điền nội dung item 11 nếu chưa kiểm tra tài liệu nguồn.
+
+Nếu tài liệu nguồn không đủ để xác định chính xác item 11, phải ghi:
+
+`SELF-CHECK ITEM 11: NOT VERIFIED – SOURCE MAPPING INCOMPLETE`
+
+Không được tự suy diễn hoặc khôi phục trạng thái bằng phỏng đoán.
+
+### 3.4. Phân biệt Zero Mutation
+
+Các tiêu chí liên quan đến Zero Mutation có thể được Project Team tự kiểm tra và ghi nhận là kết quả tự khai báo.
+
+Tuy nhiên, phải duy trì tuyên bố:
+
+`PROJECT TEAM SELF-REPORTED – NOT INDEPENDENTLY VERIFIED`
+
+Không được dùng kết quả tự kiểm tra để chứng minh độc lập rằng không có thay đổi trên repository, database hoặc runtime.
+
+---
+
+## 4. KHẮC PHỤC R4.17-03 – ROUND 4.16 INPUT METADATA MISMATCH
+
+### 4.1. Vấn đề
+
+Báo cáo Round 3.17 khai báo metadata của hai tài liệu Round 4.16 không khớp với artifact đã được phát hành trong vòng kiểm toán trước.
+
+Metadata chuẩn của artifact Round 4.16:
+
+**Audit Report Round 4.16**
+
+- Tên: `PHASE_0B_2_3_FINAL_DOCUMENTATION_AUDIT_REPORT_ROUND4_16.md`
+- Dung lượng: 12.025 bytes
+- SHA-256:
+
+`93386cb50df1db7fbfab73b46f847723add668cdc2d339ccb6c6f467048a0127`
+
+**Implementation Readiness Verdict Round 4.16**
+
+- Tên: `PHASE_0B_2_3_IMPLEMENTATION_READINESS_VERDICT_ROUND4_16.md`
+- Dung lượng: 3.293 bytes
+- SHA-256:
+
+`f496342299aa0bc9084e52a4484d900c8353790d5ab846ac6c4c7fd56d245cba`
+
+### 4.2. Yêu cầu khắc phục
+
+1. Kiểm tra lại bảng Input Evidence trong báo cáo Round 3.17.
+2. Thay metadata sai bằng metadata chuẩn nêu trên nếu đang tham chiếu đúng hai artifact này.
+3. Không sao chép metadata của bản trích xuất, bản chuyển đổi hoặc bản đính kèm khác.
+4. Phân biệt rõ tên tệp, phiên bản, dung lượng và SHA-256.
+5. Nếu Project Team thực sự sử dụng một bản khác, phải cung cấp bản đó và định danh phiên bản riêng.
+6. Không được tuyên bố hai tệp khác nhau là cùng một artifact chỉ vì tên tương tự.
+7. Tính lại metadata từ chính tệp thực tế trước khi công bố.
+
+### 4.3. Kiểm tra tính nhất quán
+
+Sau khi sửa, đối chiếu:
+
+- Bảng Input Evidence trong Project Team Report.
+- Round 3.18 CHANGELOG.
+- Round 3.18 SELF-CHECK REPORT.
+- Round 3.18 DELIVERABLES CHECKSUM.
+
+Các tài liệu phải thống nhất về tên tệp, phiên bản, dung lượng và checksum.
+
+---
+
+## 5. KHẮC PHỤC R4.17-04 – ROUND 3.14 ARCHIVE VERIFICATION CLAIM EXCEEDS AVAILABLE EVIDENCE
+
+### 5.1. Vấn đề
+
+Round 3.17 ghi ZIP Round 3.14:
+
+`PASS (Khớp 100%, giữ nguyên)`
+
+Nhưng phần giới hạn bằng chứng lại xác nhận ZIP gốc không được cung cấp để kiểm tra trực tiếp trong phiên Round 3.17.
+
+Round 4.17 vì vậy không thể xác nhận lại kết quả này.
+
+### 5.2. Yêu cầu khắc phục
+
+Nếu không có ZIP Round 3.14 trong gói đầu vào Round 3.18:
+
+- Không được ghi kết quả PASS như một xác minh mới.
+- Không được mô tả kết quả lịch sử Round 4.14 như kết quả kiểm tra trực tiếp Round 3.18.
+- Phải phân biệt rõ bằng chứng lịch sử và bằng chứng hiện tại.
+
+Sử dụng trạng thái:
+
+`HISTORICAL RESULT – NOT RE-VERIFIED IN ROUND 4.17`
+
+Nếu ZIP gốc được cung cấp:
+
+1. Kiểm tra đúng tệp ZIP gốc.
+2. Đo dung lượng byte.
+3. Tính SHA-256.
+4. Kiểm tra ZIP integrity và CRC.
+5. Đối chiếu với metadata lịch sử.
+6. Báo cáo rõ phạm vi kiểm tra.
+
+Metadata lịch sử được ghi nhận:
+
+- Dung lượng: 297.736 bytes.
+- SHA-256: `59CA6D1243820E7CEC1B3D6F3E79165FAE848CD641F5716D14D070651B42953A`
+
+**Không được chỉnh sửa, tái đóng gói hoặc thay thế ZIP Round 3.14.**
+
+### 5.3. External Handover Round 3.14
+
+Tiếp tục duy trì:
+
+`NOT AVAILABLE FOR DIRECT VERIFICATION IN AUDIT PACKAGE`
+
+Nếu không có tài liệu External Handover gốc, trạng thái phải là:
+
+`NOT VERIFIED`
+
+Không được khôi phục tài liệu bằng cách dựng lại nội dung rồi tuyên bố đó là bản gốc.
+
+---
+
+## 6. CÁC RÀNG BUỘC BẢO TOÀN
+
+### 6.1. ZERO SCHEMA MUTATION
+
+Không thực hiện bất kỳ thay đổi nào đối với Database, Schema, RLS, Storage, RPC, Edge Functions, migration hoặc DDL.
+
+### 6.2. ZERO SOURCE CODE MUTATION
+
+Không chỉnh sửa mã nguồn trong `src/`, frontend, backend hoặc cấu hình ứng dụng.
+
+### 6.3. DOCUMENTATION-ONLY
+
+Chỉ được:
+
+- Đọc và kiểm tra tài liệu.
+- Trích xuất tài liệu từ ZIP để bàn giao.
+- Hiệu chỉnh Markdown được phép.
+- Tính byte và SHA-256.
+- Lập báo cáo, changelog và self-check.
+- Tạo gói ZIP tài liệu Round 3.18 nếu cần.
+
+Không được:
+
+- Cài đặt package.
+- Chạy build, test hoặc runtime.
+- Triển khai ứng dụng.
+- Git commit hoặc Git push.
+- Thực hiện thao tác Supabase.
+- Ghi hoặc thay đổi dữ liệu hệ thống.
+- Thay đổi cấu hình bảo mật hoặc môi trường triển khai.
+
+### 6.4. Bảo toàn ZIP Round 3.14
+
+Không chỉnh sửa, thay thế hoặc tái đóng gói ZIP Round 3.14.
+
+### 6.5. Phân biệt tự kiểm tra và kiểm toán độc lập
+
+Phải sử dụng đúng thuật ngữ:
+
+- `PROJECT TEAM SELF-REVIEW`
+- `INDEPENDENT DOCUMENTATION AUDIT`
+
+Không được tuyên bố Project Team đã tự kiểm tra độc lập.
+
+---
+
+## 7. GIỮ NGUYÊN CHÍN MANDATORY STATUS STRINGS
+
+Phải giữ nguyên văn các trạng thái sau trong toàn bộ hồ sơ Round 3.18:
+
+1. `FOUR-EYES: HARD BLOCK – TRUSTED CONTRIBUTOR PROVENANCE NOT VERIFIED`
+
+2. `AUDIT LOG IMMUTABILITY: NOT VERIFIED`
+
+3. `UPLOAD SECURITY ARCHITECTURE: NOT VERIFIED`
+
+4. `MEDIA UPLOAD GATE: BLOCKED`
+
+5. `MEDIA DELETION CONCURRENCY SAFETY: NOT VERIFIED`
+
+6. `RICH TEXT VIDEO SECURITY: NOT VERIFIED`
+
+7. `MEDIA METADATA PERSISTENCE: BLOCKED – SCHEMA DEPENDENCY NOT VERIFIED`
+
+8. `IDEMPOTENCY ENFORCEMENT: BLOCKED – PERSISTENT STATE MECHANISM NOT VERIFIED`
+
+9. `IMPLEMENTATION READINESS: NOT READY – HARD BLOCK / NOT VERIFIED`
+
+Không được xóa, viết lại, làm nhẹ mức độ hoặc chuyển trạng thái các nội dung trên khi chưa có bằng chứng mới và thẩm quyền đánh giá phù hợp.
+
+Four-Eyes tiếp tục là HARD BLOCK.
+
+Việc hoàn thiện hồ sơ tài liệu không chứng minh hệ thống đã đáp ứng điều kiện triển khai.
+
+---
+
+## 8. DANH MỤC SẢN PHẨM ROUND 3.18
+
+### 8.1. Bốn tài liệu Round 3.18
+
+1. `PHASE_0B_2_3_ROUND3_18_PROJECT_TEAM_REPORT.md`
+2. `PHASE_0B_2_3_ROUND3_18_CHANGELOG.md`
+3. `PHASE_0B_2_3_ROUND3_18_SELF_CHECK_REPORT.md`
+4. `PHASE_0B_2_3_ROUND3_18_DELIVERABLES_CHECKSUM.md`
+
+### 8.2. Bốn tài liệu Round 3.16 bàn giao độc lập
+
+5. `PHASE_0B_2_3_ROUND3_15_REPORT_CHECKSUM.md`
+6. `PHASE_0B_2_3_ROUND3_16_PROJECT_TEAM_REPORT.md`
+7. `PHASE_0B_2_3_ROUND3_16_CHANGELOG.md`
+8. `PHASE_0B_2_3_ROUND3_16_SELF_CHECK_REPORT.md`
+
+### 8.3. Quy định bàn giao
+
+- Tám tệp phải được cung cấp dưới dạng tệp Markdown riêng biệt.
+- Bốn tài liệu Round 3.16 phải được giữ nguyên nội dung nguồn.
+- Bốn tài liệu Round 3.18 phải phản ánh đúng các thay đổi thực tế.
+- Có thể cung cấp thêm ZIP Round 3.18 nhưng ZIP không thay thế các tệp độc lập.
+- Tính lại dung lượng và SHA-256 cho từng tệp.
+- Metadata của các sản phẩm Round 3.18 phải được ghi trong tệp checksum ngoại vi.
+- Không tự tham chiếu checksum của chính tệp checksum.
+- Nếu một tệp không có nguồn gốc xác thực hoặc không thể cung cấp, ghi rõ `NOT AVAILABLE` hoặc `NOT VERIFIED`.
+
+---
+
+## 9. CẤU TRÚC BÁO CÁO ROUND 3.18
+
+Báo cáo chính phải sử dụng thống nhất hệ thống đánh số Ả Rập:
+
+1. Executive Summary
+2. Audit Basis and Input Evidence
+3. Round 4.17 Findings
+4. Remediation Actions
+5. Round 3.16 Deliverables Verification
+6. Self-Check Item 11 Status Reconciliation
+7. Round 4.16 Metadata Reconciliation
+8. Round 3.14 Archive Evidence Qualification
+9. Mandatory Security and Readiness Status
+10. Outstanding Issues and Evidence Limitations
+11. Final Project Team Declaration
+
+Mọi tham chiếu chéo phải trỏ đến đúng mục tồn tại.
+
+Không được sử dụng số La Mã làm tiêu đề chính nếu đã lựa chọn hệ thống đánh số Ả Rập.
+
+---
+
+## 10. ĐIỀU KIỆN HOÀN THÀNH ROUND 3.18
+
+Project Team phải tự kiểm tra các điều kiện sau:
+
+- [ ] R4.17-01: Bốn tài liệu Round 3.16 đã được bàn giao thành tệp Markdown riêng biệt.
+- [ ] Metadata của bốn tài liệu Round 3.16 đã được tính lại.
+- [ ] Nội dung bốn tài liệu Round 3.16 được giữ nguyên byte-for-byte.
+- [ ] R4.17-02: Đã kiểm tra Self-Check item 11 từ tài liệu nguồn.
+- [ ] Trạng thái PARTIAL được bảo toàn đúng item lịch sử.
+- [ ] Bảng mapping giữa item lịch sử và tiêu chí mới đã được lập nếu có thay đổi thứ tự.
+- [ ] Zero Mutation vẫn được phân loại là PROJECT TEAM SELF-REPORTED – NOT INDEPENDENTLY VERIFIED.
+- [ ] R4.17-03: Metadata Audit Report và Verdict Round 4.16 đã được hiệu chỉnh chính xác.
+- [ ] Metadata được tính từ tệp thực tế.
+- [ ] R4.17-04: ZIP Round 3.14 được phân loại đúng theo bằng chứng thực tế.
+- [ ] External Handover Round 3.14 vẫn NOT VERIFIED nếu không có tệp gốc.
+- [ ] Đã giữ nguyên chín mandatory status strings.
+- [ ] Four-Eyes vẫn HARD BLOCK.
+- [ ] Không có source code, schema, runtime, Git hoặc Supabase mutation.
+- [ ] CHANGELOG phản ánh đúng các thay đổi thực tế.
+- [ ] SELF-CHECK không tự đánh dấu PASS khi thiếu bằng chứng.
+- [ ] Đã ghi đầy đủ các giới hạn kiểm chứng độc lập.
+
+Nếu bất kỳ điều kiện nào chưa đáp ứng, phải ghi rõ `PARTIAL`, `FAIL` hoặc `NOT VERIFIED` tùy trường hợp.
+
+Không được tuyên bố PASS toàn bộ khi còn điều kiện chưa được đáp ứng.
+
+---
+
+## 11. TUYÊN BỐ KẾT THÚC BẮT BUỘC
+
+Báo cáo Round 3.18 phải có tuyên bố kết thúc với nội dung tương đương:
+
+“Round 3.18 chỉ thực hiện hiệu chỉnh hồ sơ tài liệu và bổ sung bằng chứng theo các phát hiện của Independent Documentation Audit Round 4.17.
+
+Việc bàn giao các tệp Markdown độc lập, sửa metadata hoặc hoàn thiện Self-Check không thay thế kiểm toán độc lập và không chứng minh hệ thống đã đáp ứng yêu cầu bảo mật, tính toàn vẹn dữ liệu, kiểm soát truy cập hoặc điều kiện triển khai thực tế.
+
+Các cam kết Zero Source Code Mutation, Zero Schema Mutation, Zero Runtime Mutation, Zero Git Mutation và Zero Supabase Mutation chỉ là kết quả tự khai báo của Project Team nếu chưa được xác minh độc lập.
+
+Four-Eyes vẫn là HARD BLOCK do Trusted Contributor Provenance chưa được xác minh. Các trạng thái bảo mật, audit log, upload, media, schema dependency và persistent state tiếp tục giữ nguyên theo bằng chứng hiện có.
+
+Do đó:
+
+`IMPLEMENTATION READINESS: NOT READY – HARD BLOCK / NOT VERIFIED`
+
+Chỉ Independent Documentation Audit tiếp theo mới có thẩm quyền đánh giá mức độ chấp nhận hồ sơ Round 3.18.”
+
+---
+
+## 12. CHỈ THỊ CUỐI CÙNG
+
+Thực hiện Round 3.18 theo đúng nguyên tắc:
+
+**EVIDENCE FIRST – DOCUMENTATION ONLY – ZERO MUTATION – FAIL CLOSED.**
+
+Không tự suy diễn. Không tạo bằng chứng giả. Không dựng lại tài liệu gốc khi không có nguồn. Không chuyển trạng thái PARTIAL thành PASS khi chưa đủ căn cứ. Không tuyên bố xác minh ZIP Round 3.14 nếu chưa có ZIP gốc.
+
+Bàn giao đầy đủ các tệp Markdown độc lập và metadata checksum.
+
+Sau khi hoàn tất, chờ **Independent Documentation Audit – Round 4.18**.
+
+**Không tự tuyên bố Round 3.18 đã được kiểm toán độc lập hoặc đã đạt Implementation Readiness.**
+</USER_REQUEST>
+<ADDITIONAL_METADATA>
+The current local time is: 2026-11-04T18:54:40+07:00.
+</ADDITIONAL_METADATA>
+<USER_SETTINGS_CHANGE>
+The user changed setting `Model Selection` from Gemini 3.8 Flash (Medium) to Gemini 3.8 Flash (High). No need to comment on this change if the user doesn't ask about it. If reporting what model you are, please use a human readable name instead of the exact string.
+</USER_SETTINGS_CHANGE>

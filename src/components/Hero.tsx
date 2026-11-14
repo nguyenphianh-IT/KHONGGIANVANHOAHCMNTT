@@ -43,7 +43,7 @@ export const Hero: React.FC<HeroProps> = ({ onExplore, onViewResources }) => {
               alt="Không gian văn hóa Hồ Chí Minh – Trường THCS Nguyễn Trung Trực"
               width={2172}
               height={724}
-              fetchPriority="high"
+              {...({ fetchpriority: 'high' } as any)}
               loading="eager"
               decoding="async"
               className="w-[175px] min-[375px]:w-[205px] min-[390px]:w-[215px] min-[430px]:w-[230px] sm:w-auto h-auto max-h-[236px] min-[375px]:max-h-[276px] min-[390px]:max-h-[290px] min-[430px]:max-h-[310px] sm:max-h-[320px] md:max-h-[370px] lg:max-h-[260px] xl:max-h-[300px] 2xl:max-h-[360px] block mx-auto object-contain select-none shadow-2xl shadow-black/50 portrait:rounded-xl sm:portrait:rounded-2xl landscape:rounded-xl md:landscape:rounded-2xl border border-heritage-gold-400/20"

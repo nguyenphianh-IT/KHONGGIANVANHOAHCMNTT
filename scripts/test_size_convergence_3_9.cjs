@@ -1,0 +1,14 @@
+const fs = require('fs');
+const path = require('path');
+
+const stagingDir = path.join(__dirname, '..', 'docs', 'phase-0b-2', 'PHASE_0B_2_3_DOCUMENTATION_DELTA_REMEDIATION_ROUND3_9');
+
+let handover = fs.readFileSync(path.join(stagingDir, 'PHASE_0B_2_3_ROUND3_9_HANDOVER.md'), 'utf8');
+handover = handover.replace('209,374', '209,460');
+fs.writeFileSync(path.join(stagingDir, 'PHASE_0B_2_3_ROUND3_9_HANDOVER.md'), handover, 'utf8');
+
+let report = fs.readFileSync(path.join(stagingDir, 'PHASE_0B_2_3_ROUND3_9_REMEDIATION_REPORT.md'), 'utf8');
+report = report.replace('209,374', '209,460');
+fs.writeFileSync(path.join(stagingDir, 'PHASE_0B_2_3_ROUND3_9_REMEDIATION_REPORT.md'), report, 'utf8');
+
+console.log('Updated 209,374 to 209,460 in staging.');

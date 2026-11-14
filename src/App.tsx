@@ -9,6 +9,7 @@ import { Resources } from './components/Resources';
 import { LearningCorner } from './components/LearningCorner';
 import { Activities } from './components/Activities';
 import { ChatbotPreview } from './components/ChatbotPreview';
+import { RagChatbotModal } from './components/rag/RagChatbotModal';
 import { Footer } from './components/Footer';
 import { BackToTop } from './components/BackToTop';
 import { BottomNav } from './components/BottomNav';
@@ -17,6 +18,7 @@ import { CmsDashboard } from './components/cms/CmsDashboard';
 
 const MainLayout: React.FC = () => {
   const [isChatbotModalOpen, setIsChatbotModalOpen] = useState(false);
+  const [isRagChatbotOpen, setIsRagChatbotOpen] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [isCmsDashboardOpen, setIsCmsDashboardOpen] = useState(false);
 
@@ -31,7 +33,7 @@ const MainLayout: React.FC = () => {
     <div className="min-h-screen flex flex-col bg-heritage-ivory-100 text-heritage-ink-900 selection:bg-heritage-red-100 selection:text-heritage-red-900">
       {/* Top Fixed Header */}
       <Header
-        onOpenChatbotPreview={() => setIsChatbotModalOpen(true)}
+        onOpenChatbotPreview={() => setIsRagChatbotOpen(true)}
         onOpenAuthModal={() => setIsAuthModalOpen(true)}
         onOpenCmsDashboard={() => setIsCmsDashboardOpen(true)}
       />
@@ -87,6 +89,17 @@ const MainLayout: React.FC = () => {
         isOpen={isChatbotModalOpen}
         onOpen={() => setIsChatbotModalOpen(true)}
         onClose={() => setIsChatbotModalOpen(false)}
+        onOpenRagMvp={() => setIsRagChatbotOpen(true)}
+      />
+
+      {/* RAG Runtime MVP Interactive Chatbot Modal (ADR-002 Implementation Phase 01) */}
+      <RagChatbotModal
+        isOpen={isRagChatbotOpen}
+        onClose={() => setIsRagChatbotOpen(false)}
+        onSwitchToPreviewRoadmap={() => {
+          setIsRagChatbotOpen(false);
+          setIsChatbotModalOpen(true);
+        }}
       />
 
       {/* Back to top button */}

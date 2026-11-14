@@ -6,7 +6,11 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test:rag": "node scripts/test-rag-runtime.mjs",
+    "test:rag:phase02": "node scripts/test-rag-phase02.mjs",
+    "test:rag:phase03": "node scripts/test-rag-phase03.mjs",
+    "rag:server": "node scripts/rag-server.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.118.0",
@@ -19,6 +23,7 @@
   "devDependencies": {
     "@types/react": "^18.3.18",
     "@types/react-dom": "^18.3.5",
+    "@vercel/node": "^31.0.0",
     "@vitejs/plugin-react": "^4.3.4",
     "autoprefixer": "^10.4.20",
     "postcss": "^8.4.49",

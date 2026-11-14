@@ -4,13 +4,14 @@ import {
   ShieldCheck, Shield, X, Plus, Search,
   CheckCircle2, AlertCircle, Send,
   ExternalLink, Sparkles, ArrowRight,
-  Upload, Copy, Check, Trash2, Trophy, GraduationCap, LogOut, Cloud
+  Upload, Copy, Check, Trash2, Trophy, GraduationCap, LogOut, Cloud, Database
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { FullScreenEditor } from './FullScreenEditor';
 import { ReviewModal } from './ReviewModal';
 import { MediaLibraryModal } from './MediaLibraryModal';
 import { ContestManagerModal } from './ContestManagerModal';
+import { RagKnowledgeManager } from '../rag/RagKnowledgeManager';
 import { getStoredContestQuestions, getContestSubmissions, EVENT_CONTEST_DATA_CHANGED } from '../../data/contestData';
 import { optimizeImageFile } from '../../lib/imageOptimizer';
 import {
@@ -30,7 +31,7 @@ interface CmsDashboardProps {
 
 export const CmsDashboard: React.FC<CmsDashboardProps> = ({ isOpen, onClose }) => {
   // Active View Navigation
-  const [activeNav, setActiveNav] = useState<'overview' | 'articles' | 'pending' | 'published' | 'media' | 'audit' | 'security' | 'contest'>('overview');
+  const [activeNav, setActiveNav] = useState<'overview' | 'articles' | 'pending' | 'published' | 'media' | 'audit' | 'security' | 'contest' | 'rag-knowledge'>('overview');
 
   // Articles, Audit & Media state synchronized with cmsStore
   const [articles, setArticles] = useState<ArticleData[]>(getStoredArticles);
@@ -734,6 +735,30 @@ export const CmsDashboard: React.FC<CmsDashboardProps> = ({ isOpen, onClose }) =
                 </div>
                 <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-900 border border-amber-300">
                   {contestQuestionsCount} câu
+                </span>
+              </button>
+
+              <div className="my-2 border-t border-heritage-gold-300/40" />
+
+              <div className="px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-heritage-ink-500 select-none">
+                Trợ Lý AI & RAG (ADR-002)
+              </div>
+
+              {/* 10. Kho Tri Thức RAG */}
+              <button
+                onClick={() => setActiveNav('rag-knowledge')}
+                className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold transition text-left ${
+                  activeNav === 'rag-knowledge'
+                    ? 'bg-heritage-red-700 text-white shadow-sm'
+                    : 'text-heritage-ink-800 hover:bg-heritage-red-50 hover:text-heritage-red-700'
+                }`}
+              >
+                <div className="flex items-center space-x-3">
+                  <Database className="w-4 h-4 flex-shrink-0 text-heritage-gold-600" />
+                  <span>10. Kho Tri Thức RAG</span>
+                </div>
+                <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-heritage-gold-100 text-heritage-red-900 border border-heritage-gold-300">
+                  Phase 02
                 </span>
               </button>
             </div>
@@ -1443,6 +1468,13 @@ export const CmsDashboard: React.FC<CmsDashboardProps> = ({ isOpen, onClose }) =
                   </div>
                 </div>
               </div>
+            )}
+
+            {/* ----------------------------------------------------------------------- */}
+            {/* VIEW 9: KHO TRI THỨC RAG (ADR-002 Phase 02)                             */}
+            {/* ----------------------------------------------------------------------- */}
+            {activeNav === 'rag-knowledge' && (
+              <RagKnowledgeManager />
             )}
           </main>
         </div>
