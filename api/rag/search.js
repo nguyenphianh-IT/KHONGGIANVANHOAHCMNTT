@@ -1618,13 +1618,33 @@ C\xE2u n\xF3i ch\xE2n th\xE0nh, m\u1ED9c m\u1EA1c c\u1EE7a Ng\u01B0\u1EDDi l\xE0
     topics: ["\u0110\u1ECBa gi\u1EDBi h\xE0nh ch\xEDnh", "Ph\u01B0\u1EDDng Th\u1EDBi An", "Ph\u01B0\u1EDDng Th\u1EA1nh Xu\xE2n", "Qu\u1EADn 12", "Ngh\u1ECB quy\u1EBFt 1685", "Quy\u1EBFt \u0111\u1ECBnh 1195", "S\u1EAFp x\u1EBFp \u0110VHC 2025"],
     sourceUrl: "https://xaydungchinhsach.chinhphu.vn/toan-van-nghi-quyet-so-1685-nq-ubtvqh15-sap-xep-cac-dvhc-cap-xa-cua-thanh-pho-ho-chi-minh-nam-2025-119250616211341304.htm",
     content: `\u0110\u1ECBa gi\u1EDBi h\xE0nh ch\xEDnh ph\u01B0\u1EDDng Th\u1EDBi An qua c\xE1c th\u1EDDi k\u1EF3 (1997 \u2013 2025 v\xE0 hi\u1EC7n h\xE0nh):
-1. Th\xE0nh l\u1EADp Qu\u1EADn 12 v\xE0 ph\u01B0\u1EDDng Th\u1EDBi An n\u0103m 1997: Theo Quy\u1EBFt \u0111\u1ECBnh s\u1ED1 1195/Q\u0110-UB-NC ng\xE0y 18/03/1997 c\u1EE7a UBND TP.HCM, ph\u01B0\u1EDDng Th\u1EDBi An \u0111\u01B0\u1EE3c th\xE0nh l\u1EADp tr\xEAn c\u01A1 s\u1EDF 451 ha di\u1EC7n t\xEDch t\u1EF1 nhi\xEAn v\xE0 4.883 nh\xE2n kh\u1EA9u c\u1EE7a x\xE3 T\xE2n Th\u1EDBi Hi\u1EC7p c\u0169 thu\u1ED9c huy\u1EC7n H\xF3c M\xF4n. Ph\u01B0\u1EDDng Th\u1EA1nh Xu\xE2n \u0111\u01B0\u1EE3c th\xE0nh l\u1EADp tr\xEAn c\u01A1 s\u1EDF to\xE0n b\u1ED9 968 ha di\u1EC7n t\xEDch v\xE0 9.489 nh\xE2n kh\u1EA9u c\u1EE7a x\xE3 Th\u1EA1nh Xu\xE2n c\u0169. Tr\u1EE5 s\u1EDF UBND Qu\u1EADn 12 th\u1EDDi k\u1EF3 n\xE0y \u0111\u01B0\u1EE3c \u0111\u1EB7t tr\xEAn \u0111\u1ECBa b\xE0n ph\u01B0\u1EDDng Th\u1EDBi An.
-2. S\u1EAFp x\u1EBFp \u0111\u01A1n v\u1ECB h\xE0nh ch\xEDnh n\u0103m 2025 theo Ngh\u1ECB quy\u1EBFt s\u1ED1 1685/NQ-UBTVQH15 ng\xE0y 16/06/2025 c\u1EE7a \u1EE6y ban Th\u01B0\u1EDDng v\u1EE5 Qu\u1ED1c h\u1ED9i: Nh\u1EADp to\xE0n b\u1ED9 di\u1EC7n t\xEDch t\u1EF1 nhi\xEAn v\xE0 quy m\xF4 d\xE2n s\u1ED1 c\u1EE7a ph\u01B0\u1EDDng Th\u1EA1nh Xu\xE2n v\xE0o ph\u01B0\u1EDDng Th\u1EDBi An. Sau khi s\u1EAFp x\u1EBFp, ph\u01B0\u1EDDng Th\u1EDBi An gi\xE1p ph\u01B0\u1EDDng An Ph\xFA \u0110\xF4ng, ph\u01B0\u1EDDng T\xE2n Th\u1EDBi Hi\u1EC7p v\xE0 t\u1EC9nh B\xECnh D\u01B0\u01A1ng. Ngh\u1ECB quy\u1EBFt c\xF3 hi\u1EC7u l\u1EF1c thi h\xE0nh t\u1EEB ng\xE0y 01 th\xE1ng 07 n\u0103m 2025.
-3. Nguy\xEAn t\u1EAFc \u0111\u1ECBa danh v\xE0 qu\u1EA3n l\xFD: \u0110\u1ECBa danh hi\u1EC7n h\xE0nh ch\xEDnh th\u1EE9c l\xE0 "Ph\u01B0\u1EDDng Th\u1EDBi An, Th\xE0nh ph\u1ED1 H\u1ED3 Ch\xED Minh". C\u1EE5m t\u1EEB "Ph\u01B0\u1EDDng Th\u1EDBi An, Qu\u1EADn 12" ch\u1EC9 \u0111\u01B0\u1EE3c d\xF9ng khi tr\xEDch d\u1EABn c\xE1c v\u0103n b\u1EA3n, s\u1EF1 ki\u1EC7n l\u1ECBch s\u1EED ban h\xE0nh tr\u01B0\u1EDBc ng\xE0y 01/07/2025. Ph\u01B0\u1EDDng Th\u1EDBi An hi\u1EC7n nay l\xE0 \u0111\u01A1n v\u1ECB h\xE0nh ch\xEDnh c\u1EA5p x\xE3 tr\u1EF1c thu\u1ED9c Th\xE0nh ph\u1ED1 H\u1ED3 Ch\xED Minh sau khi h\u1EE3p nh\u1EA5t v\u1EDBi ph\u01B0\u1EDDng Th\u1EA1nh Xu\xE2n, kh\xF4ng \u0111\u1ED3ng nh\u1EA5t v\u1EDBi to\xE0n b\u1ED9 \u0111\u1ECBa gi\u1EDBi Qu\u1EADn 12 c\u0169.`,
+
+1. TH\u1EDCI K\u1EF2 TH\xC0NH L\u1EACP QU\u1EACN 12 V\xC0 PH\u01AF\u1EDCNG TH\u1EDAI AN (N\u0102M 1997):
+Theo Quy\u1EBFt \u0111\u1ECBnh s\u1ED1 1195/Q\u0110-UB-NC ng\xE0y 18/03/1997 c\u1EE7a UBND TP.HCM v\u1EC1 vi\u1EC7c th\xE0nh l\u1EADp Qu\u1EADn 12 v\xE0 c\xE1c ph\u01B0\u1EDDng tr\u1EF1c thu\u1ED9c:
+- Ph\u01B0\u1EDDng Th\u1EDBi An c\u0169 \u0111\u01B0\u1EE3c th\xE0nh l\u1EADp tr\xEAn c\u01A1 s\u1EDF 451 ha di\u1EC7n t\xEDch t\u1EF1 nhi\xEAn v\xE0 4.883 nh\xE2n kh\u1EA9u c\u1EE7a x\xE3 T\xE2n Th\u1EDBi Hi\u1EC7p c\u0169 (thu\u1ED9c huy\u1EC7n H\xF3c M\xF4n).
+- Ph\u01B0\u1EDDng Th\u1EA1nh Xu\xE2n c\u0169 \u0111\u01B0\u1EE3c th\xE0nh l\u1EADp tr\xEAn c\u01A1 s\u1EDF to\xE0n b\u1ED9 968 ha di\u1EC7n t\xEDch t\u1EF1 nhi\xEAn v\xE0 9.489 nh\xE2n kh\u1EA9u c\u1EE7a x\xE3 Th\u1EA1nh Xu\xE2n c\u0169 (thu\u1ED9c huy\u1EC7n H\xF3c M\xF4n).
+- Tr\u1EE5 s\u1EDF UBND Qu\u1EADn 12 th\u1EDDi k\u1EF3 n\xE0y \u0111\u01B0\u1EE3c \u0111\u1EB7t tr\xEAn \u0111\u1ECBa b\xE0n ph\u01B0\u1EDDng Th\u1EDBi An.
+- B\u1ED1i c\u1EA3nh l\u1ECBch s\u1EED ti\u1EBFp gi\xE1p tr\u01B0\u1EDBc s\u1EAFp x\u1EBFp (1997 \u2013 30/06/2025): Ph\u01B0\u1EDDng Th\u1EA1nh Xu\xE2n c\u0169 c\xF3 ranh gi\u1EDBi s\xF4ng S\xE0i G\xF2n ti\u1EBFp gi\xE1p v\u1EDBi t\u1EC9nh B\xECnh D\u01B0\u01A1ng (th\u1ECB x\xE3 Thu\u1EADn An, nay l\xE0 th\xE0nh ph\u1ED1 Thu\u1EADn An). \u0110\xE2y l\xE0 ghi nh\u1EADn l\u1ECBch s\u1EED v\u1EC1 \u0111\u1ECBa gi\u1EDBi t\u1EF1 nhi\xEAn th\u1EDDi k\u1EF3 1997\u20132025; s\u1ED1 li\u1EC7u 451 ha v\xE0 968 ha l\xE0 s\u1ED1 li\u1EC7u di\u1EC7n t\xEDch l\u1ECBch s\u1EED x\xE1c \u0111\u1ECBnh t\u1EA1i th\u1EDDi \u0111i\u1EC3m ban h\xE0nh Quy\u1EBFt \u0111\u1ECBnh 1195 n\u0103m 1997.
+
+2. N\u1ED8I DUNG S\u1EAEP X\u1EBEP \u0110\u01A0N V\u1ECA H\xC0NH CH\xCDNH N\u0102M 2025 THEO NGH\u1ECA QUY\u1EBET 1685/NQ-UBTVQH15:
+- Ng\xE0y 16 th\xE1ng 06 n\u0103m 2025, \u1EE6y ban Th\u01B0\u1EDDng v\u1EE5 Qu\u1ED1c h\u1ED9i ban h\xE0nh Ngh\u1ECB quy\u1EBFt s\u1ED1 1685/NQ-UBTVQH15 v\u1EC1 vi\u1EC7c s\u1EAFp x\u1EBFp c\xE1c \u0111\u01A1n v\u1ECB h\xE0nh ch\xEDnh c\u1EA5p x\xE3 c\u1EE7a Th\xE0nh ph\u1ED1 H\u1ED3 Ch\xED Minh n\u0103m 2025.
+- C\u0103n c\u1EE9 Kho\u1EA3n 35 \u0110i\u1EC1u 1 Ngh\u1ECB quy\u1EBFt s\u1ED1 1685/NQ-UBTVQH15: Nh\u1EADp to\xE0n b\u1ED9 di\u1EC7n t\xEDch t\u1EF1 nhi\xEAn v\xE0 quy m\xF4 d\xE2n s\u1ED1 c\u1EE7a ph\u01B0\u1EDDng Th\u1EA1nh Xu\xE2n v\xE0o ph\u01B0\u1EDDng Th\u1EDBi An.
+- T\xEAn g\u1ECDi ch\xEDnh th\u1EE9c c\u1EE7a \u0111\u01A1n v\u1ECB h\xE0nh ch\xEDnh sau khi s\u1EAFp x\u1EBFp: Ph\u01B0\u1EDDng Th\u1EDBi An.
+- Th\u1EDDi \u0111i\u1EC3m b\u1EAFt \u0111\u1EA7u ho\u1EA1t \u0111\u1ED9ng ch\xEDnh th\u1EE9c c\u1EE7a \u0111\u01A1n v\u1ECB h\xE0nh ch\xEDnh m\u1EDBi: T\u1EEB ng\xE0y 01 th\xE1ng 07 n\u0103m 2025.
+- V\u1EC1 ranh gi\u1EDBi ti\u1EBFp gi\xE1p hi\u1EC7n h\xE0nh: H\u1EC7 th\u1ED1ng b\u1EA3o l\u01B0u nguy\xEAn t\u1EAFc ch\u1EC9 tr\xEDch d\u1EABn v\u0103n b\u1EA3n ph\xE1p l\xFD ch\xEDnh th\u1EE9c, kh\xF4ng t\u1EF1 x\xE1c \u0111\u1ECBnh hay suy di\u1EC5n c\xE1c ph\u01B0\u1EDDng ho\u1EB7c \u0111\u01A1n v\u1ECB h\xE0nh ch\xEDnh ti\u1EBFp gi\xE1p hi\u1EC7n nay khi ch\u01B0a c\xF3 h\u1ED3 s\u01A1 \u0111\u1ECBa gi\u1EDBi v\xE0 b\u1EA3n \u0111\u1ED3 quy chu\u1EA9n do c\u01A1 quan nh\xE0 n\u01B0\u1EDBc c\xF3 th\u1EA9m quy\u1EC1n c\xF4ng b\u1ED1.
+
+3. NGUY\xCAN T\u1EAEC \u0110\u1ECAA DANH V\xC0 QU\u1EA2N L\xDD:
+- \u0110\u1ECBa danh hi\u1EC7n h\xE0nh ch\xEDnh th\u1EE9c: "Ph\u01B0\u1EDDng Th\u1EDBi An, Th\xE0nh ph\u1ED1 H\u1ED3 Ch\xED Minh" (\u0111\u01A1n v\u1ECB h\xE0nh ch\xEDnh c\u1EA5p x\xE3 tr\u1EF1c thu\u1ED9c ch\xEDnh quy\u1EC1n \u0111\xF4 th\u1ECB TP.HCM).
+- C\u1EE5m t\u1EEB "Ph\u01B0\u1EDDng Th\u1EDBi An, Qu\u1EADn 12" ch\u1EC9 \u0111\u01B0\u1EE3c d\xF9ng khi tr\xEDch d\u1EABn c\xE1c v\u0103n b\u1EA3n quy ph\u1EA1m ph\xE1p lu\u1EADt, s\u1EF1 ki\u1EC7n l\u1ECBch s\u1EED ban h\xE0nh tr\u01B0\u1EDBc ng\xE0y 01/07/2025.
+- Ph\u01B0\u1EDDng Th\u1EDBi An hi\u1EC7n nay l\xE0 \u0111\u01A1n v\u1ECB h\xE0nh ch\xEDnh c\u1EA5p x\xE3 h\u1EE3p nh\u1EA5t t\u1EEB ph\u01B0\u1EDDng Th\u1EDBi An v\xE0 ph\u01B0\u1EDDng Th\u1EA1nh Xu\xE2n c\u0169; kh\xF4ng \u0111\u1ED3ng nh\u1EA5t v\u1EDBi to\xE0n b\u1ED9 \u0111\u1ECBa gi\u1EDBi Qu\u1EADn 12 tr\u01B0\u1EDBc \u0111\xE2y.`,
     metadata: {
       candidateCode: "B-07",
-      legalBasis: ["Quy\u1EBFt \u0111\u1ECBnh s\u1ED1 1195/Q\u0110-UB-NC", "Ngh\u1ECB quy\u1EBFt s\u1ED1 1685/NQ-UBTVQH15"],
+      legalBasis: ["Quy\u1EBFt \u0111\u1ECBnh s\u1ED1 1195/Q\u0110-UB-NC ng\xE0y 18/03/1997", "Ngh\u1ECB quy\u1EBFt s\u1ED1 1685/NQ-UBTVQH15 ng\xE0y 16/06/2025"],
       effectiveDateCurrent: "01/07/2025",
+      formerAreaThoiAn1997: "451 ha",
+      formerPopulationThoiAn1997: "4.883 nh\xE2n kh\u1EA9u",
+      formerAreaThanhXuan1997: "968 ha",
+      formerPopulationThanhXuan1997: "9.489 nh\xE2n kh\u1EA9u",
       copyrightStatus: "PUBLIC_DOMAIN_CONFIRMED",
       batch: "BATCH_B_SELECTIVE_01"
     }
@@ -1641,9 +1661,17 @@ C\xE2u n\xF3i ch\xE2n th\xE0nh, m\u1ED9c m\u1EA1c c\u1EE7a Ng\u01B0\u1EDDi l\xE0
     topics: ["Tr\u01B0\u1EDDng THCS Nguy\u1EC5n Trung Tr\u1EF1c", "Th\xE0nh l\u1EADp n\u0103m 2014", "Quy\u1EBFt \u0111\u1ECBnh 155", "Quy\u1EBFt \u0111\u1ECBnh 76", "K\u1EBF ho\u1EA1ch 01/KH-NTT", "Kh\xF4ng gian V\u0103n h\xF3a HCM", "Tr\u01B0\u1EDDng h\u1ECDc H\u1EA1nh ph\xFAc"],
     sourceUrl: "https://thcsnguyentrungtruc.hcm.edu.vn/gioi-thieu/gioi-thieu-truong-thcs-nguyen-trung-truc/ct/12684/691487",
     content: `L\u1ECBch s\u1EED h\xECnh th\xE0nh v\xE0 ph\xE1t tri\u1EC3n Tr\u01B0\u1EDDng THCS Nguy\u1EC5n Trung Tr\u1EF1c (2014 \u2013 nay):
-1. M\u1ED1c th\xE0nh l\u1EADp v\xE0 c\u0103n c\u1EE9 ph\xE1p l\xFD kh\u1EDFi \u0111\u1EA7u n\u0103m 2014: Tr\u01B0\u1EDDng Trung h\u1ECDc c\u01A1 s\u1EDF Nguy\u1EC5n Trung Tr\u1EF1c \u0111\u01B0\u1EE3c ch\xEDnh th\u1EE9c th\xE0nh l\u1EADp theo Quy\u1EBFt \u0111\u1ECBnh s\u1ED1 155/Q\u0110-UBND ng\xE0y 31 th\xE1ng 07 n\u0103m 2014 c\u1EE7a UBND Qu\u1EADn 12. Nh\xE0 tr\u01B0\u1EDDng ch\xEDnh th\u1EE9c khai gi\u1EA3ng v\xE0 \u0111i v\xE0o ho\u1EA1t \u0111\u1ED9ng gi\u1EA3ng d\u1EA1y t\u1EEB n\u0103m h\u1ECDc 2014 \u2013 2015. Tr\u01B0\u1EDDng vinh d\u1EF1 mang t\xEAn Ng\u01B0\u1EDDi anh h\xF9ng ngh\u0129a qu\xE2n Nam B\u1ED9 Nguy\u1EC5n Trung Tr\u1EF1c (1838 \u2013 1868) v\u1EDBi c\xE2u n\xF3i b\u1EA5t h\u1EE7: "Bao gi\u1EDD ng\u01B0\u1EDDi T\xE2y nh\u1ED5 h\u1EBFt c\u1ECF n\u01B0\u1EDBc Nam th\xEC m\u1EDBi h\u1EBFt ng\u01B0\u1EDDi Nam \u0111\xE1nh T\xE2y".
-2. Qu\xE1 tr\xECnh ph\xE1t tri\u1EC3n v\xE0 ki\u1EC7n to\xE0n t\u1ED5 ch\u1EE9c n\u0103m 2025: Tr\u1EA3i qua h\u01A1n 10 n\u0103m ph\xE1t tri\u1EC3n phong tr\xE0o "D\u1EA1y t\u1ED1t \u2013 H\u1ECDc t\u1ED1t", ng\xE0y 01 th\xE1ng 07 n\u0103m 2025, th\u1EF1c hi\u1EC7n Ngh\u1ECB quy\u1EBFt s\u1ED1 1685/NQ-UBTVQH15 c\u1EE7a Qu\u1ED1c h\u1ED9i v\u1EC1 vi\u1EC7c s\u1EAFp x\u1EBFp \u0111\u01A1n v\u1ECB h\xE0nh ch\xEDnh c\u1EA5p x\xE3 c\u1EE7a TP.HCM, UBND Ph\u01B0\u1EDDng Th\u1EDBi An ban h\xE0nh Quy\u1EBFt \u0111\u1ECBnh s\u1ED1 76/Q\u0110-UBND ng\xE0y 01/07/2025 v\u1EC1 vi\u1EC7c qu\u1EA3n l\xFD Tr\u01B0\u1EDDng THCS Nguy\u1EC5n Trung Tr\u1EF1c tr\u1EF1c thu\u1ED9c ch\xEDnh quy\u1EC1n \u0111\u1ECBa ph\u01B0\u01A1ng c\u1EA5p ph\u01B0\u1EDDng (ghi nh\u1EADn t\u1EA1i K\u1EBF ho\u1EA1ch gi\xE1o d\u1EE5c nh\xE0 tr\u01B0\u1EDDng s\u1ED1 01/KH-NTT ng\xE0y 29/08/2025). Quy\u1EBFt \u0111\u1ECBnh 2014 l\xE0 m\u1ED1c khai sinh, quy\u1EBFt \u0111\u1ECBnh 2025 l\xE0 ki\u1EC7n to\xE0n th\u1EA9m quy\u1EC1n qu\u1EA3n l\xFD; \u0111\xE2y l\xE0 s\u1EF1 k\u1EBF th\u1EEBa li\xEAn t\u1EE5c v\u1EC1 l\u1ECBch s\u1EED, \u0111\u1ED9i ng\u0169 v\xE0 c\u01A1 s\u1EDF v\u1EADt ch\u1EA5t.
-3. Gi\xE1o d\u1EE5c truy\u1EC1n th\u1ED1ng v\xE0 Kh\xF4ng gian V\u0103n h\xF3a H\u1ED3 Ch\xED Minh: Tr\u01B0\u1EDDng x\xE2y d\u1EF1ng m\xF4 h\xECnh Tr\u01B0\u1EDDng h\u1ECDc H\u1EA1nh ph\xFAc, ph\xE1t tri\u1EC3n to\xE0n di\u1EC7n tri th\u1EE9c v\xE0 nh\xE2n c\xE1ch. Kh\xF4ng gian V\u0103n h\xF3a H\u1ED3 Ch\xED Minh h\u1ECDc \u0111\u01B0\u1EDDng \u0111\u01B0\u1EE3c tri\u1EC3n khai \u0111\u1ED3ng b\u1ED9 gi\u1EEFa Kh\xF4ng gian v\u1EADt l\xFD (t\u1EE7 s\xE1ch B\xE1c H\u1ED3, khu \u1EA3nh t\u01B0 li\u1EC7u) v\xE0 Kh\xF4ng gian s\u1ED1 (Tr\u1EE3 l\xFD AI RAG ph\u1EE5c v\u1EE5 tra c\u1EE9u c\xF3 c\u0103n c\u1EE9 x\xE1c th\u1EF1c, gi\xE1o d\u1EE5c truy\u1EC1n th\u1ED1ng cho h\u1ECDc sinh).`,
+
+1. M\u1ED0C TH\xC0NH L\u1EACP V\xC0 C\u0102N C\u1EE8 PH\xC1P L\xDD KH\u1EDEI \u0110\u1EA6U N\u0102M 2014:
+Tr\u01B0\u1EDDng Trung h\u1ECDc c\u01A1 s\u1EDF Nguy\u1EC5n Trung Tr\u1EF1c \u0111\u01B0\u1EE3c ch\xEDnh th\u1EE9c th\xE0nh l\u1EADp theo Quy\u1EBFt \u0111\u1ECBnh s\u1ED1 155/Q\u0110-UBND ng\xE0y 31 th\xE1ng 07 n\u0103m 2014 c\u1EE7a UBND Qu\u1EADn 12. Nh\xE0 tr\u01B0\u1EDDng ch\xEDnh th\u1EE9c khai gi\u1EA3ng v\xE0 \u0111i v\xE0o ho\u1EA1t \u0111\u1ED9ng gi\u1EA3ng d\u1EA1y t\u1EEB n\u0103m h\u1ECDc 2014 \u2013 2015.
+Tr\u01B0\u1EDDng vinh d\u1EF1 mang t\xEAn Ng\u01B0\u1EDDi anh h\xF9ng ngh\u0129a qu\xE2n Nam B\u1ED9 Nguy\u1EC5n Trung Tr\u1EF1c (1838 \u2013 1868) v\u1EDBi c\xE2u n\xF3i b\u1EA5t h\u1EE7: "Bao gi\u1EDD ng\u01B0\u1EDDi T\xE2y nh\u1ED5 h\u1EBFt c\u1ECF n\u01B0\u1EDBc Nam th\xEC m\u1EDBi h\u1EBFt ng\u01B0\u1EDDi Nam \u0111\xE1nh T\xE2y".
+
+2. QU\xC1 TR\xCCNH PH\xC1T TRI\u1EC2N V\xC0 KI\u1EC6N TO\xC0N T\u1ED4 CH\u1EE8C N\u0102M 2025:
+Tr\u1EA3i qua h\u01A1n 10 n\u0103m ph\xE1t tri\u1EC3n phong tr\xE0o "D\u1EA1y t\u1ED1t \u2013 H\u1ECDc t\u1ED1t", ng\xE0y 01 th\xE1ng 07 n\u0103m 2025, th\u1EF1c hi\u1EC7n Ngh\u1ECB quy\u1EBFt s\u1ED1 1685/NQ-UBTVQH15 c\u1EE7a Qu\u1ED1c h\u1ED9i v\u1EC1 vi\u1EC7c s\u1EAFp x\u1EBFp \u0111\u01A1n v\u1ECB h\xE0nh ch\xEDnh c\u1EA5p x\xE3 c\u1EE7a TP.HCM, UBND Ph\u01B0\u1EDDng Th\u1EDBi An ban h\xE0nh Quy\u1EBFt \u0111\u1ECBnh s\u1ED1 76/Q\u0110-UBND ng\xE0y 01/07/2025 v\u1EC1 vi\u1EC7c qu\u1EA3n l\xFD Tr\u01B0\u1EDDng THCS Nguy\u1EC5n Trung Tr\u1EF1c tr\u1EF1c thu\u1ED9c ch\xEDnh quy\u1EC1n \u0111\u1ECBa ph\u01B0\u01A1ng c\u1EA5p ph\u01B0\u1EDDng (ghi nh\u1EADn t\u1EA1i K\u1EBF ho\u1EA1ch gi\xE1o d\u1EE5c nh\xE0 tr\u01B0\u1EDDng n\u0103m h\u1ECDc 2025\u20132026 s\u1ED1 01/KH-NTT ng\xE0y 29/08/2025).
+Nguy\xEAn t\u1EAFc ph\xE1p l\xFD then ch\u1ED1t: Quy\u1EBFt \u0111\u1ECBnh n\u0103m 2014 l\xE0 m\u1ED1c khai sinh th\xE0nh l\u1EADp tr\u01B0\u1EDDng; Quy\u1EBFt \u0111\u1ECBnh n\u0103m 2025 l\xE0 b\u01B0\u1EDBc ki\u1EC7n to\xE0n t\u1ED5 ch\u1EE9c v\xE0 th\u1EA9m quy\u1EC1n qu\u1EA3n l\xFD nh\xE0 n\u01B0\u1EDBc theo m\xF4 h\xECnh ch\xEDnh quy\u1EC1n \u0111\xF4 th\u1ECB m\u1EDBi. \u0110\xE2y l\xE0 s\u1EF1 k\u1EBF th\u1EEBa li\xEAn t\u1EE5c v\u1EC1 l\u1ECBch s\u1EED, \u0111\u1ED9i ng\u0169 c\xE1n b\u1ED9 gi\xE1o vi\xEAn v\xE0 c\u01A1 s\u1EDF v\u1EADt ch\u1EA5t; tuy\u1EC7t \u0111\u1ED1i kh\xF4ng ph\u1EA3i l\xE0 gi\u1EA3i th\u1EC3 tr\u01B0\u1EDDng c\u0169 \u0111\u1EC3 th\xE0nh l\u1EADp m\u1ED9t tr\u01B0\u1EDDng ho\xE0n to\xE0n m\u1EDBi.
+
+3. GI\xC1O D\u1EE4C TRUY\u1EC0N TH\u1ED0NG V\xC0 KH\xD4NG GIAN V\u0102N H\xD3A H\u1ED2 CH\xCD MINH:
+Nh\xE0 tr\u01B0\u1EDDng x\xE2y d\u1EF1ng m\xF4 h\xECnh Tr\u01B0\u1EDDng h\u1ECDc H\u1EA1nh ph\xFAc, ph\xE1t tri\u1EC3n to\xE0n di\u1EC7n tri th\u1EE9c v\xE0 nh\xE2n c\xE1ch. Kh\xF4ng gian V\u0103n h\xF3a H\u1ED3 Ch\xED Minh h\u1ECDc \u0111\u01B0\u1EDDng \u0111\u01B0\u1EE3c tri\u1EC3n khai \u0111\u1ED3ng b\u1ED9 gi\u1EEFa Kh\xF4ng gian v\u1EADt l\xFD (t\u1EE7 s\xE1ch B\xE1c H\u1ED3, khu \u1EA3nh t\u01B0 li\u1EC7u) v\xE0 Kh\xF4ng gian s\u1ED1 (Tr\u1EE3 l\xFD AI RAG ph\u1EE5c v\u1EE5 tra c\u1EE9u c\xF3 c\u0103n c\u1EE9 x\xE1c th\u1EF1c, gi\xE1o d\u1EE5c truy\u1EC1n th\u1ED1ng cho h\u1ECDc sinh). H\u1ED3 s\u01A1 t\xE0i li\u1EC7u nh\xE0 tr\u01B0\u1EDDng tu\xE2n th\u1EE7 nghi\xEAm ng\u1EB7t quy \u0111\u1ECBnh b\u1EA3o v\u1EC7 d\u1EEF li\u1EC7u c\xE1 nh\xE2n, kh\xF4ng c\xF4ng khai \u0111i\u1EC3m s\u1ED1 hay th\xF4ng tin ri\xEAng t\u01B0 c\u1EE7a h\u1ECDc sinh, gi\xE1o vi\xEAn.`,
     metadata: {
       candidateCode: "B-10",
       foundingDecision: "Quy\u1EBFt \u0111\u1ECBnh s\u1ED1 155/Q\u0110-UBND ng\xE0y 31/07/2014 c\u1EE7a UBND Qu\u1EADn 12",
@@ -1658,21 +1686,33 @@ C\xE2u n\xF3i ch\xE2n th\xE0nh, m\u1ED9c m\u1EA1c c\u1EE7a Ng\u01B0\u1EDDi l\xE0
     title: "Tr\xEDch y\u1EBFu L\u1ECBch s\u1EED S\xE0i G\xF2n \u2013 Gia \u0110\u1ECBnh th\u1EDDi Nguy\u1EC5n theo Gia \u0110\u1ECBnh th\xE0nh th\xF4ng ch\xED",
     category: "hcmc-history",
     categoryLabel: "L\u1ECBch s\u1EED Th\xE0nh ph\u1ED1 H\u1ED3 Ch\xED Minh",
-    authorOrSource: "Hi\u1EC7p bi\u1EC7n \u0110\u1EA1i h\u1ECDc s\u0129 Tr\u1ECBnh Ho\xE0i \u0110\u1EE9c & H\u1ED9i \u0111\u1ED3ng bi\xEAn so\u1EA1n H\u1ED9i KHLS TP.HCM",
+    authorOrSource: "Nguy\xEAn t\xE1c: Tr\u1ECBnh Ho\xE0i \u0110\u1EE9c (Gia \u0110\u1ECBnh th\xE0nh th\xF4ng ch\xED, kho\u1EA3ng 1820) | Tr\xEDch y\u1EBFu s\u1EF1 ki\u1EC7n l\u1ECBch s\u1EED c\xF4ng c\u1ED9ng: Kh\xF4ng gian V\u0103n h\xF3a HCM THCS Nguy\u1EC5n Trung Tr\u1EF1c",
     dateOrEra: "Th\u1EBF k\u1EF7 XVII - Gi\u1EEFa th\u1EBF k\u1EF7 XIX (1698 - 1858)",
     status: "PENDING_REVIEW",
     isAllowedForRag: false,
     topics: ["Gia \u0110\u1ECBnh th\xE0nh th\xF4ng ch\xED", "Tr\u1ECBnh Ho\xE0i \u0110\u1EE9c", "L\u1EC5 Th\xE0nh h\u1EA7u Nguy\u1EC5n H\u1EEFu C\u1EA3nh", "N\u0103m 1698", "Ph\u1EE7 Gia \u0110\u1ECBnh", "B\u1EBFn Ngh\xE9", "Khai hoang m\u1EDF c\xF5i", "Th\u01B0\u01A1ng c\u1EA3ng S\xE0i G\xF2n"],
     sourceUrl: "https://tulieuvankien.dangcongsan.vn",
     content: `Tr\xEDch y\u1EBFu L\u1ECBch s\u1EED S\xE0i G\xF2n \u2013 Gia \u0110\u1ECBnh th\u1EDDi Nguy\u1EC5n theo Gia \u0110\u1ECBnh th\xE0nh th\xF4ng ch\xED:
-1. M\u1ED1c thi\u1EBFt l\u1EADp t\u1ED5 ch\u1EE9c h\xE0nh ch\xEDnh n\u0103m 1698: Theo Tr\u1ECBnh Ho\xE0i \u0110\u1EE9c trong t\xE1c ph\u1EA9m "Gia \u0110\u1ECBnh th\xE0nh th\xF4ng ch\xED" (C\u01B0\u01A1ng v\u1EF1c ch\xED), m\xF9a xu\xE2n n\u0103m M\u1EADu D\u1EA7n (1698), ch\xFAa Nguy\u1EC5n Ph\xFAc Chu sai Th\u1ED1ng su\u1EA5t Ch\u01B0\u1EDFng c\u01A1 L\u1EC5 Th\xE0nh h\u1EA7u Nguy\u1EC5n H\u1EEFu C\u1EA3nh v\xE0o kinh l\u01B0\u1EE3c \u0111\u1EA5t ph\u01B0\u01A1ng Nam. Nguy\u1EC5n H\u1EEFu C\u1EA3nh l\u1EA5y \u0111\u1EA5t N\xF4ng N\u1EA1i \u0111\u1EB7t l\xE0m Ph\u1EE7 Gia \u0110\u1ECBnh, l\u1EADp x\u1EE9 \u0110\u1ED3ng Nai l\xE0m huy\u1EC7n Ph\u01B0\u1EDBc Long (d\u1EF1ng dinh Tr\u1EA5n Bi\xEAn), l\u1EADp x\u1EE9 S\xE0i G\xF2n l\xE0m huy\u1EC7n T\xE2n B\xECnh (d\u1EF1ng dinh Phi\xEAn Tr\u1EA5n). M\u1ED1c n\u0103m 1698 ch\xEDnh th\u1EE9c \u0111\xE1nh d\u1EA5u vi\u1EC7c v\xF9ng \u0111\u1EA5t S\xE0i G\xF2n \u2013 Gia \u0110\u1ECBnh \u0111\u01B0\u1EE3c \u0111\u01B0a v\xE0o b\u1EA3n \u0111\u1ED3 c\u01B0\u01A1ng v\u1EF1c h\xE0nh ch\xEDnh \u0110\u1EA1i Vi\u1EC7t.
-2. Th\u01B0\u01A1ng c\u1EA3ng B\u1EBFn Ngh\xE9 v\xE0 \u0111\u1EDDi s\u1ED1ng tr\xF9 ph\xFA: Trong "S\u01A1n xuy\xEAn ch\xED", Tr\u1ECBnh Ho\xE0i \u0110\u1EE9c mi\xEAu t\u1EA3 v\xF9ng s\xF4ng B\u1EBFn Ngh\xE9 t\xE0u bu\xF4n qua l\u1EA1i nh\u01B0 thoi, ghe thuy\u1EC1n t\u1EE5 h\u1ED9i "Tr\xEAn b\u1EBFn d\u01B0\u1EDBi thuy\u1EC1n", l\xFAa g\u1EA1o c\xE1 mu\u1ED1i kh\u1EAFp n\u01A1i t\u1EE5 v\u1EC1 bu\xF4n b\xE1n s\u1EA7m u\u1EA5t. Ch\u1EE3 S\xE0i G\xF2n tr\u1EDF th\xE0nh trung t\xE2m th\u01B0\u01A1ng m\u1EA1i t\u1EA5p n\u1EADp c\u1EE7a x\u1EE9 \u0110\xE0ng Trong, l\xE0 n\u01A1i giao thoa v\u0103n h\xF3a gi\u1EEFa c\xE1c c\u1ED9ng \u0111\u1ED3ng c\u01B0 d\xE2n.
-3. \xDD ngh\u0129a khoa h\u1ECDc v\xE0 gi\xE1o d\u1EE5c truy\u1EC1n th\u1ED1ng: Gia \u0110\u1ECBnh th\xE0nh th\xF4ng ch\xED l\xE0 b\u1ED9 \u0111\u1ECBa ch\xED kinh \u0111i\u1EC3n c\xF3 gi\xE1 tr\u1ECB l\u1ECBch s\u1EED v\xE0 ph\xE1p l\xFD cao v\u1EC1 c\u01B0\u01A1ng v\u1EF1c ph\u01B0\u01A1ng Nam. T\u01B0 li\u1EC7u gi\xFAp h\u1ECDc sinh Tr\u01B0\u1EDDng THCS Nguy\u1EC5n Trung Tr\u1EF1c hi\u1EC3u r\xF5 c\xF4ng lao khai hoang m\u1EDF c\xF5i ki\xEAn c\u01B0\u1EDDng c\u1EE7a c\xE1c b\u1EADc ti\u1EC1n nh\xE2n, b\u1ED3i \u0111\u1EAFp l\xF2ng bi\u1EBFt \u01A1n v\xE0 t\u1EF1 h\xE0o s\xE2u s\u1EAFc v\u1EC1 truy\u1EC1n th\u1ED1ng h\u01A1n 300 n\u0103m c\u1EE7a Th\xE0nh ph\u1ED1 mang t\xEAn B\xE1c.`,
+
+[GHI CH\xDA B\u1EA2N QUY\u1EC0N V\xC0 RANH GI\u1EDAI V\u0102N B\u1EA2N]
+- Nguy\xEAn t\xE1c: B\u1ED9 s\u1EED \u0111\u1ECBa ch\xED ch\u1EEF H\xE1n "Gia \u0110\u1ECBnh th\xE0nh th\xF4ng ch\xED" c\u1EE7a Hi\u1EC7p bi\u1EC7n \u0110\u1EA1i h\u1ECDc s\u0129 Tr\u1ECBnh Ho\xE0i \u0110\u1EE9c ho\xE0n th\xE0nh kho\u1EA3ng n\u0103m 1820 th\u1EDDi tri\u1EC1u Nguy\u1EC5n thu\u1ED9c di s\u1EA3n v\u0103n h\xF3a c\xF4ng c\u1ED9ng (Public Domain).
+- B\u1EA3n d\u1ECBch v\xE0 ch\xFA gi\u1EA3i hi\u1EC7n \u0111\u1EA1i: C\xE1c \u1EA5n b\u1EA3n s\xE1ch in hi\u1EC7n \u0111\u1EA1i c\xF3 b\u1EA3n quy\u1EC1n d\u1ECBch thu\u1EADt v\xE0 ch\xFA th\xEDch \u0111\u1ED9c quy\u1EC1n c\u1EE7a c\xE1c d\u1ECBch gi\u1EA3/nh\xE0 xu\u1EA5t b\u1EA3n hi\u1EC7n \u0111\u1EA1i; h\u1EC7 th\u1ED1ng RAG nh\xE0 tr\u01B0\u1EDDng tuy\u1EC7t \u0111\u1ED1i kh\xF4ng sao ch\xE9p tr\xE1i ph\xE9p.
+- N\u1ED9i dung tr\xEDch y\u1EBFu c\u1EE7a d\u1EF1 \xE1n: D\u01B0\u1EDBi \u0111\xE2y l\xE0 ph\u1EA7n tr\xEDch l\u01B0\u1EE3c c\xE1c s\u1EF1 ki\u1EC7n c\u01B0\u01A1ng v\u1EF1c l\u1ECBch s\u1EED kh\xE1ch quan \u0111\xE3 tr\u1EDF th\xE0nh tri th\u1EE9c c\xF4ng c\u1ED9ng, b\u1EA3o to\xE0n xu\u1EA5t x\u1EE9 c\u1EE7a 9 chunks ph\u1EE5c v\u1EE5 gi\xE1o d\u1EE5c truy\u1EC1n th\u1ED1ng h\u1ECDc \u0111\u01B0\u1EDDng.
+
+1. M\u1ED0C THI\u1EBET L\u1EACP T\u1ED4 CH\u1EE8C H\xC0NH CH\xCDNH N\u0102M 1698 C\u1EE6A NGUY\u1EC4N H\u1EEEU C\u1EA2NH:
+Theo ghi ch\xE9p c\u1EE7a Tr\u1ECBnh Ho\xE0i \u0110\u1EE9c trong t\xE1c ph\u1EA9m "Gia \u0110\u1ECBnh th\xE0nh th\xF4ng ch\xED" (Quy\u1EC3n III: C\u01B0\u01A1ng v\u1EF1c ch\xED), m\xF9a xu\xE2n n\u0103m M\u1EADu D\u1EA7n (1698), ch\xFAa Nguy\u1EC5n Ph\xFAc Chu sai Th\u1ED1ng su\u1EA5t Ch\u01B0\u1EDFng c\u01A1 L\u1EC5 Th\xE0nh h\u1EA7u Nguy\u1EC5n H\u1EEFu C\u1EA3nh v\xE0o kinh l\u01B0\u1EE3c \u0111\u1EA5t ph\u01B0\u01A1ng Nam. Nguy\u1EC5n H\u1EEFu C\u1EA3nh l\u1EA5y \u0111\u1EA5t N\xF4ng N\u1EA1i \u0111\u1EB7t l\xE0m Ph\u1EE7 Gia \u0110\u1ECBnh, l\u1EADp x\u1EE9 \u0110\u1ED3ng Nai l\xE0m huy\u1EC7n Ph\u01B0\u1EDBc Long (d\u1EF1ng dinh Tr\u1EA5n Bi\xEAn), l\u1EADp x\u1EE9 S\xE0i G\xF2n l\xE0m huy\u1EC7n T\xE2n B\xECnh (d\u1EF1ng dinh Phi\xEAn Tr\u1EA5n). M\u1ED1c n\u0103m 1698 ch\xEDnh th\u1EE9c \u0111\xE1nh d\u1EA5u vi\u1EC7c v\xF9ng \u0111\u1EA5t S\xE0i G\xF2n \u2013 Gia \u0110\u1ECBnh \u0111\u01B0\u1EE3c \u0111\u01B0a v\xE0o b\u1EA3n \u0111\u1ED3 c\u01B0\u01A1ng v\u1EF1c h\xE0nh ch\xEDnh \u0110\u1EA1i Vi\u1EC7t.
+
+2. TH\u01AF\u01A0NG C\u1EA2NG B\u1EBEN NGH\xC9 V\xC0 \u0110\u1EDCI S\u1ED0NG TR\xD9 PH\xDA:
+Trong "S\u01A1n xuy\xEAn ch\xED", Tr\u1ECBnh Ho\xE0i \u0110\u1EE9c mi\xEAu t\u1EA3 v\xF9ng s\xF4ng B\u1EBFn Ngh\xE9 t\xE0u bu\xF4n qua l\u1EA1i nh\u01B0 thoi, ghe thuy\u1EC1n t\u1EE5 h\u1ED9i "Tr\xEAn b\u1EBFn d\u01B0\u1EDBi thuy\u1EC1n", l\xFAa g\u1EA1o c\xE1 mu\u1ED1i kh\u1EAFp c\xE1c t\u1EC9nh Nam B\u1ED9 t\u1EE5 v\u1EC1 bu\xF4n b\xE1n s\u1EA7m u\u1EA5t. Ch\u1EE3 S\xE0i G\xF2n tr\u1EDF th\xE0nh trung t\xE2m th\u01B0\u01A1ng m\u1EA1i t\u1EA5p n\u1EADp c\u1EE7a x\u1EE9 \u0110\xE0ng Trong, l\xE0 n\u01A1i giao thoa v\u0103n h\xF3a h\xE0i h\xF2a gi\u1EEFa c\xE1c c\u1ED9ng \u0111\u1ED3ng c\u01B0 d\xE2n Vi\u1EC7t, Hoa, Khmer, Ch\u0103m.
+
+3. \xDD NGH\u0128A KHOA H\u1ECCC V\xC0 B\xC0I H\u1ECCC GI\xC1O D\u1EE4C TRUY\u1EC0N TH\u1ED0NG:
+T\xE1c ph\u1EA9m "Gia \u0110\u1ECBnh th\xE0nh th\xF4ng ch\xED" c\u1EE7a Tr\u1ECBnh Ho\xE0i \u0110\u1EE9c l\xE0 b\u1ED9 b\xE1ch khoa to\xE0n th\u01B0 c\u1ED5 \u0111\u1ED3 s\u1ED9, c\xF3 gi\xE1 tr\u1ECB l\u1ECBch s\u1EED v\xE0 ph\xE1p l\xFD cao v\u1EC1 c\u01B0\u01A1ng v\u1EF1c ph\u01B0\u01A1ng Nam. T\u01B0 li\u1EC7u gi\xFAp h\u1ECDc sinh Tr\u01B0\u1EDDng THCS Nguy\u1EC5n Trung Tr\u1EF1c hi\u1EC3u r\xF5 c\xF4ng lao khai hoang m\u1EDF c\xF5i ki\xEAn c\u01B0\u1EDDng, b\u1EC1n b\u1EC9 c\u1EE7a ti\u1EC1n nh\xE2n, b\u1ED3i \u0111\u1EAFp l\xF2ng bi\u1EBFt \u01A1n cha \xF4ng v\xE0 ni\u1EC1m t\u1EF1 h\xE0o s\xE2u s\u1EAFc v\u1EC1 truy\u1EC1n th\u1ED1ng h\u01A1n 300 n\u0103m c\u1EE7a Th\xE0nh ph\u1ED1 mang t\xEAn B\xE1c.`,
     metadata: {
       candidateCode: "B-02",
       chronicleAuthor: "Tr\u1ECBnh Ho\xE0i \u0110\u1EE9c (1765 - 1825)",
+      workCompletedYear: "Kho\u1EA3ng 1820",
       keySections: ["Quy\u1EC3n III: C\u01B0\u01A1ng v\u1EF1c ch\xED", "Quy\u1EC3n IV: S\u01A1n xuy\xEAn ch\xED"],
-      copyrightStatus: "PUBLIC_DOMAIN_CONFIRMED",
+      copyrightStatus: "PUBLIC_DOMAIN_EXCERPT_ONLY",
       batch: "BATCH_B_SELECTIVE_01"
     }
   },
@@ -2366,50 +2406,104 @@ var PersistentRagStore = class {
    */
   async saveIngestedDocument(doc, chunks) {
     this.localChunks.set(doc.documentId, chunks);
-    if (this.isSupabaseLive) {
-      try {
-        await supabase.from("rag_documents").upsert({
-          document_id: doc.documentId,
-          title: doc.title,
-          description: doc.description,
-          document_type: doc.documentType,
-          category: doc.category,
-          author: doc.author,
-          publisher: doc.publisher,
-          source_url: doc.sourceUrl,
-          original_file_name: doc.originalFileName,
-          mime_type: doc.mimeType,
-          checksum: doc.checksum,
-          file_size: doc.fileSize,
-          approval_status: doc.approvalStatus,
-          is_allowed_for_rag: doc.isAllowedForRag,
-          version: doc.version,
-          uploaded_by: doc.uploadedBy,
-          uploaded_by_name: doc.uploadedByName,
-          topics: doc.topics,
-          content: doc.content,
-          chunks_count: chunks.length,
-          updated_at: (/* @__PURE__ */ new Date()).toISOString()
-        });
-        if (chunks.length > 0) {
-          const dbChunks = chunks.map((c) => ({
-            chunk_id: c.id,
-            document_id: c.documentId,
-            document_title: c.documentTitle,
-            content: c.content,
-            section_or_page: c.sectionOrPage,
-            topic: c.topic,
-            source_status: c.sourceStatus,
-            provenance_locator: c.provenanceLocator,
-            token_estimate: c.tokenEstimate || 0,
-            metadata: c.metadata || {}
-          }));
-          await supabase.from("rag_document_chunks").upsert(dbChunks);
+    if (!this.isSupabaseLive) {
+      return {
+        localSaved: true,
+        remoteSaved: false,
+        remoteError: "Supabase STAGING ch\u01B0a s\u1EB5n s\xE0ng ho\u1EB7c b\u1EA3ng d\u1EEF li\u1EC7u rag_documents ch\u01B0a t\u1ED3n t\u1EA1i"
+      };
+    }
+    try {
+      const { error: docError } = await supabase.from("rag_documents").upsert({
+        document_id: doc.documentId,
+        title: doc.title,
+        description: doc.description,
+        document_type: doc.documentType,
+        category: doc.category,
+        author: doc.author,
+        publisher: doc.publisher,
+        source_url: doc.sourceUrl,
+        original_file_name: doc.originalFileName,
+        mime_type: doc.mimeType,
+        checksum: doc.checksum,
+        file_size: doc.fileSize,
+        approval_status: doc.approvalStatus,
+        is_allowed_for_rag: doc.isAllowedForRag,
+        version: doc.version,
+        uploaded_by: doc.uploadedBy,
+        uploaded_by_name: doc.uploadedByName,
+        topics: doc.topics,
+        content: doc.content,
+        chunks_count: chunks.length,
+        metadata: doc.metadata || {},
+        updated_at: (/* @__PURE__ */ new Date()).toISOString()
+      });
+      if (docError) {
+        console.warn("[PersistentRagStore] Error upserting document to Supabase:", docError.message);
+        return { localSaved: true, remoteSaved: false, remoteError: docError.message };
+      }
+      if (chunks.length > 0) {
+        const dbChunks = chunks.map((c) => ({
+          chunk_id: c.id,
+          document_id: c.documentId,
+          document_title: c.documentTitle,
+          content: c.content,
+          section_or_page: c.sectionOrPage,
+          topic: c.topic,
+          source_status: c.sourceStatus,
+          provenance_locator: c.provenanceLocator,
+          token_estimate: c.tokenEstimate || 0,
+          metadata: c.metadata || {}
+        }));
+        const { error: chunkError } = await supabase.from("rag_document_chunks").upsert(dbChunks);
+        if (chunkError) {
+          console.warn("[PersistentRagStore] Error upserting chunks to Supabase:", chunkError.message);
+          return { localSaved: true, remoteSaved: false, remoteError: chunkError.message };
         }
-      } catch (err) {
-        console.warn("[PersistentRagStore] Error writing to Supabase, saved locally:", err);
+      }
+      return { localSaved: true, remoteSaved: true };
+    } catch (err) {
+      console.warn("[PersistentRagStore] Error writing to Supabase, saved locally:", err);
+      return { localSaved: true, remoteSaved: false, remoteError: err?.message };
+    }
+  }
+  /**
+   * Sync all registered documents and chunks to remote Supabase database
+   */
+  async syncAllToRemote() {
+    const health = await this.checkStagingHealth();
+    if (!health.isSupabaseLive) {
+      return {
+        success: false,
+        syncedDocs: 0,
+        syncedChunks: 0,
+        errors: [`Supabase STAGING ch\u01B0a s\u1EB5n s\xE0ng: ${health.error || "Schema cache missing"}`]
+      };
+    }
+    const allDocs = documentRegistry.getAllDocuments();
+    let syncedDocs = 0;
+    let syncedChunks = 0;
+    const errors = [];
+    for (const doc of allDocs) {
+      let chunks = this.localChunks.get(doc.documentId);
+      if (!chunks || chunks.length === 0) {
+        chunks = documentIngestion.reprocessDocument(doc);
+        this.localChunks.set(doc.documentId, chunks);
+      }
+      const res = await this.saveIngestedDocument(doc, chunks);
+      if (res.remoteSaved) {
+        syncedDocs++;
+        syncedChunks += chunks.length;
+      } else if (res.remoteError) {
+        errors.push(`${doc.documentId}: ${res.remoteError}`);
       }
     }
+    return {
+      success: errors.length === 0,
+      syncedDocs,
+      syncedChunks,
+      errors
+    };
   }
   /**
    * Update document approval status (Four-Eyes governance)

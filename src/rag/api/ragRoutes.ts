@@ -423,7 +423,19 @@ export async function handlePostDocumentRoute(
 
     // Save to persistent store
     if (result.document && result.chunks) {
-      await persistentRagStore.saveIngestedDocument(result.document, result.chunks);
+      const saveRes = await persistentRagStore.saveIngestedDocument(result.document, result.chunks);
+      if (body.requireRemote && !saveRes.remoteSaved) {
+        return {
+          success: false,
+          statusCode: 503,
+          error: `Lỗi lưu trữ STAGING từ xa: ${saveRes.remoteError || 'Supabase STAGING chưa sẵn sàng'}. Không ghi nhận thành công trên môi trường chia sẻ.`,
+          data: {
+            job: result.job,
+            storageStatus: 'remote_failed',
+            remoteError: saveRes.remoteError
+          }
+        };
+      }
     }
 
     return {
@@ -748,4 +760,29 @@ export async function handleAnalyticsRoute(
       error: `Lỗi truy xuất dữ liệu vận hành: ${err?.message || 'Lỗi không xác định'}`
     };
   }
+}
+
+/**
+ * POST /api/rag/sync (Admin: Sync local documents to Supabase STAGING)
+ */
+export async function handleSyncRoute(
+  authHeader?: string,
+  roleHeader?: string
+): Promise<ApiResponse> {
+  const auth = await validateAdminAuth(authHeader, roleHeader, 'admin');
+  if (!auth.authorized) {
+    return {
+      success: false,
+      statusCode: auth.statusCode || 403,
+      error: auth.error
+    };
+  }
+
+  const result = await persistentRagStore.syncAllToRemote();
+  return {
+    success: result.success,
+    statusCode: result.success ? 200 : 503,
+    data: result,
+    error: result.errors.length > 0 ? result.errors.join('; ') : undefined
+  };
 }

@@ -168,57 +168,123 @@ export class PersistentRagStore {
   public async saveIngestedDocument(
     doc: RealKnowledgeDocument,
     chunks: DocumentChunk[]
-  ): Promise<void> {
+  ): Promise<{ localSaved: boolean; remoteSaved: boolean; remoteError?: string }> {
     this.localChunks.set(doc.documentId, chunks);
 
-    if (this.isSupabaseLive) {
-      try {
-        // 1. Insert or update document
-        await supabase.from('rag_documents').upsert({
-          document_id: doc.documentId,
-          title: doc.title,
-          description: doc.description,
-          document_type: doc.documentType,
-          category: doc.category,
-          author: doc.author,
-          publisher: doc.publisher,
-          source_url: doc.sourceUrl,
-          original_file_name: doc.originalFileName,
-          mime_type: doc.mimeType,
-          checksum: doc.checksum,
-          file_size: doc.fileSize,
-          approval_status: doc.approvalStatus,
-          is_allowed_for_rag: doc.isAllowedForRag,
-          version: doc.version,
-          uploaded_by: doc.uploadedBy,
-          uploaded_by_name: doc.uploadedByName,
-          topics: doc.topics,
-          content: doc.content,
-          chunks_count: chunks.length,
-          updated_at: new Date().toISOString()
-        });
+    if (!this.isSupabaseLive) {
+      return {
+        localSaved: true,
+        remoteSaved: false,
+        remoteError: 'Supabase STAGING chưa sẵn sàng hoặc bảng dữ liệu rag_documents chưa tồn tại'
+      };
+    }
 
-        // 2. Insert chunks
-        if (chunks.length > 0) {
-          const dbChunks = chunks.map(c => ({
-            chunk_id: c.id,
-            document_id: c.documentId,
-            document_title: c.documentTitle,
-            content: c.content,
-            section_or_page: c.sectionOrPage,
-            topic: c.topic,
-            source_status: c.sourceStatus,
-            provenance_locator: c.provenanceLocator,
-            token_estimate: c.tokenEstimate || 0,
-            metadata: c.metadata || {}
-          }));
+    try {
+      // 1. Insert or update document
+      const { error: docError } = await supabase.from('rag_documents').upsert({
+        document_id: doc.documentId,
+        title: doc.title,
+        description: doc.description,
+        document_type: doc.documentType,
+        category: doc.category,
+        author: doc.author,
+        publisher: doc.publisher,
+        source_url: doc.sourceUrl,
+        original_file_name: doc.originalFileName,
+        mime_type: doc.mimeType,
+        checksum: doc.checksum,
+        file_size: doc.fileSize,
+        approval_status: doc.approvalStatus,
+        is_allowed_for_rag: doc.isAllowedForRag,
+        version: doc.version,
+        uploaded_by: doc.uploadedBy,
+        uploaded_by_name: doc.uploadedByName,
+        topics: doc.topics,
+        content: doc.content,
+        chunks_count: chunks.length,
+        metadata: doc.metadata || {},
+        updated_at: new Date().toISOString()
+      });
 
-          await supabase.from('rag_document_chunks').upsert(dbChunks);
+      if (docError) {
+        console.warn('[PersistentRagStore] Error upserting document to Supabase:', docError.message);
+        return { localSaved: true, remoteSaved: false, remoteError: docError.message };
+      }
+
+      // 2. Insert chunks
+      if (chunks.length > 0) {
+        const dbChunks = chunks.map(c => ({
+          chunk_id: c.id,
+          document_id: c.documentId,
+          document_title: c.documentTitle,
+          content: c.content,
+          section_or_page: c.sectionOrPage,
+          topic: c.topic,
+          source_status: c.sourceStatus,
+          provenance_locator: c.provenanceLocator,
+          token_estimate: c.tokenEstimate || 0,
+          metadata: c.metadata || {}
+        }));
+
+        const { error: chunkError } = await supabase.from('rag_document_chunks').upsert(dbChunks);
+        if (chunkError) {
+          console.warn('[PersistentRagStore] Error upserting chunks to Supabase:', chunkError.message);
+          return { localSaved: true, remoteSaved: false, remoteError: chunkError.message };
         }
-      } catch (err) {
-        console.warn('[PersistentRagStore] Error writing to Supabase, saved locally:', err);
+      }
+
+      return { localSaved: true, remoteSaved: true };
+    } catch (err: any) {
+      console.warn('[PersistentRagStore] Error writing to Supabase, saved locally:', err);
+      return { localSaved: true, remoteSaved: false, remoteError: err?.message };
+    }
+  }
+
+  /**
+   * Sync all registered documents and chunks to remote Supabase database
+   */
+  public async syncAllToRemote(): Promise<{
+    success: boolean;
+    syncedDocs: number;
+    syncedChunks: number;
+    errors: string[];
+  }> {
+    const health = await this.checkStagingHealth();
+    if (!health.isSupabaseLive) {
+      return {
+        success: false,
+        syncedDocs: 0,
+        syncedChunks: 0,
+        errors: [`Supabase STAGING chưa sẵn sàng: ${health.error || 'Schema cache missing'}`]
+      };
+    }
+
+    const allDocs = documentRegistry.getAllDocuments();
+    let syncedDocs = 0;
+    let syncedChunks = 0;
+    const errors: string[] = [];
+
+    for (const doc of allDocs) {
+      let chunks = this.localChunks.get(doc.documentId);
+      if (!chunks || chunks.length === 0) {
+        chunks = documentIngestion.reprocessDocument(doc);
+        this.localChunks.set(doc.documentId, chunks);
+      }
+      const res = await this.saveIngestedDocument(doc, chunks);
+      if (res.remoteSaved) {
+        syncedDocs++;
+        syncedChunks += chunks.length;
+      } else if (res.remoteError) {
+        errors.push(`${doc.documentId}: ${res.remoteError}`);
       }
     }
+
+    return {
+      success: errors.length === 0,
+      syncedDocs,
+      syncedChunks,
+      errors
+    };
   }
 
   /**

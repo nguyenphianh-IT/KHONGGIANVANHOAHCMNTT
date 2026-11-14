@@ -15,7 +15,8 @@ import {
   handleApproveDocumentRoute,
   handleReprocessDocumentRoute,
   handleFeedbackRoute,
-  handleAnalyticsRoute
+  handleAnalyticsRoute,
+  handleSyncRoute
 } from './ragRoutes';
 
 export function ragDevApiPlugin(): Plugin {
@@ -167,6 +168,14 @@ export function ragDevApiPlugin(): Plugin {
           // 6. Analytics Dashboard (GET /api/rag/analytics)
           if (pathname === '/api/rag/analytics' && req.method === 'GET') {
             const result = await handleAnalyticsRoute(authHeader, roleHeader);
+            res.statusCode = result.statusCode;
+            res.end(JSON.stringify(result));
+            return;
+          }
+
+          // 7. Database Sync (POST /api/rag/sync)
+          if (pathname === '/api/rag/sync' && req.method === 'POST') {
+            const result = await handleSyncRoute(authHeader, roleHeader);
             res.statusCode = result.statusCode;
             res.end(JSON.stringify(result));
             return;
