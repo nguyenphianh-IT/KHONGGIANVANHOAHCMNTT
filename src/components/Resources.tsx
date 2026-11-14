@@ -179,7 +179,7 @@ export const Resources: React.FC = () => {
         </div>
 
         {/* Search & Filter Controls */}
-        <div className="max-w-4xl mx-auto mb-6 sm:mb-8 space-y-4">
+        <div className="max-w-4xl lg:max-w-5xl mx-auto mb-6 sm:mb-8 space-y-4">
           {/* Search Box */}
           <div className="relative">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-heritage-ink-500 pointer-events-none" aria-hidden="true" />
@@ -203,8 +203,8 @@ export const Resources: React.FC = () => {
             )}
           </div>
 
-          {/* Category Filter Tabs (Thanh trượt ngang mượt mà trên di động) */}
-          <div className="flex items-center overflow-x-auto scrollbar-none py-1.5 gap-2 sm:flex-wrap sm:justify-center -mx-4 sm:mx-0 px-4 sm:px-0 select-none">
+          {/* Category Filter Tabs (Sắp xếp toàn bộ trên 1 dòng duy nhất, không xuống dòng) */}
+          <div className="flex items-center overflow-x-auto scrollbar-none py-1.5 gap-1.5 sm:gap-2 justify-start md:justify-center -mx-4 sm:mx-0 px-4 sm:px-0 select-none flex-nowrap">
             {categories.map((cat) => {
               const Icon = cat.icon;
               const isActive = selectedCategory === cat.id;
@@ -212,7 +212,7 @@ export const Resources: React.FC = () => {
                 <button
                   key={cat.id}
                   onClick={() => setSelectedCategory(cat.id)}
-                  className={`flex items-center space-x-1.5 px-3.5 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all whitespace-nowrap flex-shrink-0 shadow-sm ${
+                  className={`flex items-center space-x-1.5 px-3 sm:px-3.5 py-1.5 sm:py-2 rounded-xl text-xs sm:text-sm font-medium transition-all whitespace-nowrap flex-shrink-0 shadow-sm ${
                     isActive
                       ? 'bg-heritage-red-700 text-white font-semibold shadow-sm ring-1 ring-heritage-gold-400'
                       : 'bg-white text-heritage-ink-700 border border-heritage-ivory-300 hover:bg-heritage-red-50 hover:text-heritage-red-700'

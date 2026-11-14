@@ -112,16 +112,16 @@ export const HorizontalTimelineRail: React.FC<HorizontalTimelineRailProps> = ({
   };
 
   return (
-    <div className="w-full max-w-6xl mx-auto space-y-6">
+    <div className="w-full max-w-6xl mx-auto space-y-4 sm:space-y-5">
       {/* ─────────────────────────────────────────────────────────────
           1. THANH THƯỚC ĐO THỜI GIAN NẰM NGANG (INTERACTIVE RAIL)
           ───────────────────────────────────────────────────────────── */}
-      <div className="bg-heritage-ivory-100 rounded-2xl border-2 border-heritage-gold-300/80 p-4 sm:p-6 shadow-md relative overflow-hidden">
+      <div className="bg-heritage-ivory-100 rounded-2xl border-2 border-heritage-gold-300/80 p-3 sm:px-5 sm:py-3.5 shadow-md relative overflow-hidden">
         {/* Subtle Decorative Background Motif */}
         <div className="absolute -right-6 -bottom-6 w-32 h-32 bg-heritage-gold-400/5 rounded-full blur-2xl pointer-events-none" />
 
         {/* Rail Header with Kiosk / Presentation Mode info */}
-        <div className="flex flex-wrap items-center justify-between gap-3 mb-6 pb-3 border-b border-heritage-gold-200/80">
+        <div className="flex flex-wrap items-center justify-between gap-2 mb-2.5 pb-2 sm:mb-3 sm:pb-2.5 border-b border-heritage-gold-200/80">
           <div className="flex items-center space-x-2">
             <span className="flex h-2.5 w-2.5 relative">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-heritage-red-400 opacity-75" />
@@ -170,12 +170,12 @@ export const HorizontalTimelineRail: React.FC<HorizontalTimelineRailProps> = ({
         {/* The Horizontal Rail Container (Scrollable on mobile, auto-centered) */}
         <div
           ref={railContainerRef}
-          className="relative overflow-x-auto no-scrollbar py-4 px-2 sm:px-6 select-none"
+          className="relative overflow-x-auto no-scrollbar py-1 px-1 sm:px-4 select-none"
           tabIndex={0}
           aria-label="Thước đo thời gian các mốc son lịch sử"
         >
           {/* Main Horizontal Track Line */}
-          <div className="relative min-w-[760px] sm:min-w-[860px] md:min-w-[940px] flex items-center justify-between py-6">
+          <div className="relative min-w-[760px] sm:min-w-[860px] md:min-w-[940px] flex items-center justify-between py-2.5 sm:py-3">
             {/* The continuous golden-red track running behind the nodes */}
             <div
               className="absolute left-6 right-6 top-1/2 -translate-y-1/2 h-1 bg-gradient-to-r from-heritage-red-700 via-heritage-gold-400 to-heritage-red-700 rounded-full shadow-sm z-0"
@@ -190,7 +190,7 @@ export const HorizontalTimelineRail: React.FC<HorizontalTimelineRailProps> = ({
                 <span
                   key={i}
                   className={`w-0.5 bg-heritage-gold-600 ${
-                    i % 5 === 0 ? 'h-3' : 'h-1.5'
+                    i % 5 === 0 ? 'h-2.5' : 'h-1'
                   }`}
                 />
               ))}
@@ -210,8 +210,8 @@ export const HorizontalTimelineRail: React.FC<HorizontalTimelineRailProps> = ({
                 >
                   {/* Active Downward Arrow Pointer Indicator */}
                   {isActive && (
-                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 text-heritage-red-700 animate-bounce">
-                      <div className="w-2.5 h-2.5 bg-heritage-red-700 rotate-45 border-t border-l border-heritage-gold-400 shadow-sm" />
+                    <div className="absolute -top-2.5 left-1/2 -translate-x-1/2 text-heritage-red-700 animate-bounce">
+                      <div className="w-2 h-2 bg-heritage-red-700 rotate-45 border-t border-l border-heritage-gold-400 shadow-sm" />
                     </div>
                   )}
 
@@ -224,10 +224,10 @@ export const HorizontalTimelineRail: React.FC<HorizontalTimelineRailProps> = ({
                     }}
                     className={`group relative flex items-center justify-center rounded-full transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-heritage-red-700 ${
                       isActive
-                        ? 'w-12 h-12 sm:w-14 sm:h-14 bg-gradient-to-br from-heritage-red-700 to-heritage-red-900 text-heritage-gold-300 border-2 border-heritage-gold-400 shadow-lg scale-110 sm:scale-115 ring-4 ring-heritage-gold-400/40'
+                        ? 'w-10 h-10 sm:w-11 sm:h-11 bg-gradient-to-br from-heritage-red-700 to-heritage-red-900 text-heritage-gold-300 border-2 border-heritage-gold-400 shadow-lg scale-110 sm:scale-115 ring-4 ring-heritage-gold-400/40'
                         : isPast
-                        ? 'w-9 h-9 sm:w-10 sm:h-10 bg-heritage-red-50 text-heritage-red-800 border-2 border-heritage-red-300 hover:border-heritage-gold-500 hover:scale-105'
-                        : 'w-9 h-9 sm:w-10 sm:h-10 bg-white text-heritage-ink-700 border-2 border-heritage-gold-400/70 hover:border-heritage-red-700 hover:scale-105 shadow-xs'
+                        ? 'w-7 h-7 sm:w-8 sm:h-8 bg-heritage-red-50 text-heritage-red-800 border-2 border-heritage-red-300 hover:border-heritage-gold-500 hover:scale-105'
+                        : 'w-7 h-7 sm:w-8 sm:h-8 bg-white text-heritage-ink-700 border-2 border-heritage-gold-400/70 hover:border-heritage-red-700 hover:scale-105 shadow-xs'
                     }`}
                     title={`${event.exactDate || event.year}: ${event.title}`}
                     aria-current={isActive ? 'step' : undefined}
@@ -235,15 +235,15 @@ export const HorizontalTimelineRail: React.FC<HorizontalTimelineRailProps> = ({
                     {isMemorial ? (
                       <Star
                         className={`${
-                          isActive ? 'w-5 h-5 text-heritage-gold-300 fill-heritage-gold-400 drop-shadow' : 'w-4 h-4 text-heritage-gold-500 fill-heritage-gold-400'
+                          isActive ? 'w-4 h-4 text-heritage-gold-300 fill-heritage-gold-400 drop-shadow' : 'w-3.5 h-3.5 text-heritage-gold-500 fill-heritage-gold-400'
                         }`}
                       />
                     ) : (
                       <span
                         className={`font-serif font-black ${
                           isActive
-                            ? 'text-xs sm:text-sm tracking-tight'
-                            : 'text-[11px] sm:text-xs font-semibold'
+                            ? 'text-[11px] sm:text-xs tracking-tight'
+                            : 'text-[9px] sm:text-[10px] font-semibold'
                         }`}
                       >
                         {nodeLabel}
@@ -253,13 +253,13 @@ export const HorizontalTimelineRail: React.FC<HorizontalTimelineRailProps> = ({
 
                   {/* Milestone Micro-Label below the button */}
                   <div
-                    className={`mt-2 text-center transition-all duration-200 pointer-events-none max-w-[85px] ${
+                    className={`mt-1 sm:mt-1.5 text-center transition-all duration-200 pointer-events-none max-w-[80px] ${
                       isActive
                         ? 'opacity-100 font-bold text-heritage-red-800 scale-105'
                         : 'opacity-70 text-heritage-ink-600'
                     }`}
                   >
-                    <span className="block text-[10px] sm:text-[11px] leading-tight truncate">
+                    <span className="block text-[9px] sm:text-[10px] leading-tight truncate">
                       {getMilestoneShortLabel(event)}
                     </span>
                   </div>
@@ -270,12 +270,12 @@ export const HorizontalTimelineRail: React.FC<HorizontalTimelineRailProps> = ({
         </div>
 
         {/* Rail navigation hint for touch/keyboard */}
-        <div className="flex items-center justify-between text-[11px] text-heritage-ink-500 pt-2 border-t border-heritage-gold-200/60">
+        <div className="flex items-center justify-between text-[10px] sm:text-[11px] text-heritage-ink-500 pt-1.5 sm:pt-2 border-t border-heritage-gold-200/60">
           <span className="hidden sm:inline">
-            💡 Dùng phím <kbd className="px-1.5 py-0.5 bg-white border border-heritage-ivory-300 rounded font-mono text-[10px]">←</kbd> <kbd className="px-1.5 py-0.5 bg-white border border-heritage-ivory-300 rounded font-mono text-[10px]">→</kbd> trên bàn phím hoặc chạm vào điểm mốc trên thước để xem.
+            💡 Dùng phím <kbd className="px-1.5 py-0.5 bg-white border border-heritage-ivory-300 rounded font-mono text-[9px]">←</kbd> <kbd className="px-1.5 py-0.5 bg-white border border-heritage-ivory-300 rounded font-mono text-[9px]">→</kbd> trên bàn phím hoặc chạm vào điểm mốc trên thước để xem.
           </span>
           <span className="sm:hidden">
-            💡 Vuốt ngang thước đo hoặc bấm nút để chuyển mốc.
+            💡 Vuốt ngang thước đo hoặc chạm mốc để chuyển.
           </span>
           <span className="text-heritage-gold-700 font-medium italic">
             Chạm ảnh hoặc nút Chi tiết để mở rộng
