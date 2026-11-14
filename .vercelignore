@@ -10,4 +10,5 @@ scratch/
 !package.json
 !tsconfig*.json
 !vercel.json
+api/**/*.ts
 .gemini/

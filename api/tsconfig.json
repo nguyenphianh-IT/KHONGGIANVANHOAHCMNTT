@@ -5,7 +5,8 @@
     "moduleResolution": "bundler",
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "strict": false
+    "strict": false,
+    "noEmit": true
   },
-  "include": ["**/*.ts", "../src/**/*"]
+  "include": ["**/*.ts"]
 }
