@@ -17,8 +17,8 @@ Theo đúng chỉ thị của Master Prompt, hệ thống đã thực hiện nh�
 1. **DOC-HCM-026 (Ứng viên B-07):** *Địa giới hành chính phường Thới An qua các thời kỳ (1997–2025 và hiện hành)*
    - Nguồn: Quyết định 1195/QĐ-UB-NC (18/03/1997 của UBND TP.HCM) & Nghị quyết 1685/NQ-UBTVQH15 (16/06/2025 của UBTVQH).
    - Bản quyền: `PUBLIC_DOMAIN_CONFIRMED` (Văn bản QPPL theo Điều 19 Luật SHTT).
-   - Số chunks phát sinh: 13 chunks.
-   - Checksum: `D5AD64FDEE21C07B2C37BFAAD192521DF992BFB5F32A3F2B4835C727473F0107`.
+   - Số chunks phát sinh: 15 chunks.
+   - Checksum: `51476B0AE4233DA1C129E91CF6FB1C9E392A7D097FB4B94BE8D42C156653C5E4`.
 
 2. **DOC-HCM-027 (Ứng viên B-10):** *Lịch sử hình thành và phát triển Trường THCS Nguyễn Trung Trực (2014–nay)*
    - Nguồn: Quyết định 155/QĐ-UBND (31/07/2014 của UBND Quận 12) & Quyết định 76/QĐ-UBND (01/07/2025 của UBND Phường Thới An) & Kế hoạch 01/KH-NTT.
@@ -29,11 +29,11 @@ Theo đúng chỉ thị của Master Prompt, hệ thống đã thực hiện nh�
 3. **DOC-HCM-028 (Ứng viên B-02):** *Trích yếu Lịch sử Sài Gòn – Gia Định thời Nguyễn theo Gia Định thành thông chí*
    - Nguồn: Thư tịch cổ công cộng của Trịnh Hoài Đức (Gia Định thành thông chí) & Thư mục khoa học Hội KHLS TP.HCM.
    - Bản quyền: `PUBLIC_DOMAIN_CONFIRMED` (Thư tịch cổ thế kỷ XIX).
-   - Số chunks phát sinh: 9 chunks.
-   - Checksum: `EB906EE701F743046B3D833F7AE737600B84FE41F68E7DA9290F9A515D3BCBFC`.
+   - Số chunks phát sinh: 11 chunks.
+   - Checksum: `29061599DA7EF89859AF8554C501EB0A0C44BD459A30F59DBAF4601B4DCDAD5D`.
 
 - **Tổng số tài liệu mới nạp:** 3 tài liệu chính thức (`DOC-HCM-026`, `DOC-HCM-027`, `DOC-HCM-028`).
-- **Tổng số chunks phát sinh:** 33 chunks.
+- **Tổng số chunks phát sinh:** 37 chunks.
 - **Trạng thái an toàn quản trị:** 100% tài liệu được gán `approvalStatus: 'PENDING_REVIEW'` và `isAllowedForRag: false`.
 
 ---

@@ -72,6 +72,7 @@ Theo Điều 1 Quyết định số 1195/QĐ-UB-NC:
 3. **Địa giới phường Thạnh Xuân thời kỳ 1997 – 30/06/2025:**
 Theo Điều 1 Quyết định số 1195/QĐ-UB-NC:
 - Phường Thạnh Xuân được thành lập trên cơ sở **toàn bộ 968 ha diện tích tự nhiên** và **9.489 nhân khẩu** của xã Thạnh Xuân cũ (thuộc huyện Hóc Môn).
+- Bối cảnh lịch sử tiếp giáp trước sắp xếp (1997 – 30/06/2025): Phường Thạnh Xuân cũ có ranh giới sông Sài Gòn tiếp giáp với tỉnh Bình Dương (thị xã Thuận An, nay là thành phố Thuận An). Đây là ghi nhận lịch sử về địa giới tự nhiên thời kỳ 1997–2025; số liệu 451 ha và 968 ha là số liệu diện tích lịch sử xác định tại thời điểm ban hành Quyết định 1195 năm 1997.
 
 ---
 
@@ -87,6 +88,7 @@ Nhập toàn bộ diện tích tự nhiên và quy mô dân số của phường
 Nghị quyết có hiệu lực thi hành từ ngày **01 tháng 07 năm 2025**.
 Kể từ ngày 01/07/2025, đơn vị hành chính mới chính thức đi vào hoạt động với danh xưng:
 👉 **Phường Thới An, Thành phố Hồ Chí Minh.**
+- Về ranh giới tiếp giáp hiện hành: Hệ thống bảo lưu nguyên tắc chỉ trích dẫn văn bản pháp lý chính thức, không tự xác định hay suy diễn các phường hoặc đơn vị hành chính tiếp giáp hiện nay khi chưa có hồ sơ địa giới và bản đồ quy chuẩn do cơ quan nhà nước có thẩm quyền công bố.
 
 ---
 
@@ -192,8 +194,8 @@ Nhà trường triển khai hài hòa giữa hai trụ cột:
     sourceType: 'OFFICIAL_PRIMARY_SOURCE',
     originalFileName: 'doc-hcm-028-trich-yeu-lich-su-sai-gon-gia-dinh-thoi-nguyen.md',
     mimeType: 'text/markdown',
-    copyrightStatus: 'PUBLIC_DOMAIN_CONFIRMED',
-    rightsEvidence: 'Tác phẩm "Gia Định thành thông chí" của Trịnh Hoài Đức (hoàn thành khoảng năm 1820 thời triều Nguyễn) là thư tịch cổ thuộc sở hữu công cộng (Public Domain). Phần trích yếu chỉ sử dụng văn bản lịch sử công cộng và thông tin thư mục đối soát, tuyệt đối không sao chép trái phép các chương sách chuyên khảo có bản quyền của bộ sách xuất bản năm 2021.',
+    copyrightStatus: 'PUBLIC_DOMAIN_EXCERPT_ONLY',
+    rightsEvidence: 'Tác phẩm "Gia Định thành thông chí" của Trịnh Hoài Đức (hoàn thành khoảng năm 1820 thời triều Nguyễn) là thư tịch cổ thuộc sở hữu công cộng (Public Domain). Phần trích yếu chỉ sử dụng văn bản lịch sử công cộng và thông tin thư mục đối soát, tuyệt đối không sao chép trái phép các chương sách chuyên khảo, bản dịch và chú giải có bản quyền độc quyền của các ấn bản hiện đại.',
     approvalStatus: 'PENDING_REVIEW',
     isAllowedForRag: false,
     historicalPeriod: 'Thế kỷ XVII - Giữa thế kỷ XIX (1698 - 1858)',
@@ -202,12 +204,19 @@ Nhà trường triển khai hài hòa giữa hai trụ cột:
     administrativeUnitCurrent: 'Thành phố Hồ Chí Minh',
     topics: ['Gia Định thành thông chí', 'Trịnh Hoài Đức', 'Lễ Thành hầu Nguyễn Hữu Cảnh', 'Năm 1698', 'Phủ Gia Định', 'Bến Nghé', 'Khai hoang mở cõi', 'Thương cảng Sài Gòn'],
     metadata: {
+      candidateCode: 'B-02',
       chronicleAuthor: 'Trịnh Hoài Đức (1765 - 1825)',
       workCompletedYear: 'Khoảng 1820',
       keySections: ['Quyển III: Cương vực chí', 'Quyển IV: Sơn xuyên chí'],
+      copyrightStatus: 'PUBLIC_DOMAIN_EXCERPT_ONLY',
       batch: 'BATCH_B_SELECTIVE_01'
     },
     content: `# TRÍCH YẾU LỊCH SỬ SÀI GÒN – GIA ĐỊNH THỜI NGUYỄN THEO GIA ĐỊNH THÀNH THÔNG CHÍ
+
+[GHI CHÚ BẢN QUYỀN VÀ RANH GIỚI VĂN BẢN]
+- Nguyên tác: Bộ sử địa chí chữ Hán "Gia Định thành thông chí" của Hiệp biện Đại học sĩ Trịnh Hoài Đức hoàn thành khoảng năm 1820 thời triều Nguyễn thuộc di sản văn hóa công cộng (Public Domain).
+- Bản dịch và chú giải hiện đại: Các ấn bản sách in hiện đại có bản quyền dịch thuật và chú thích độc quyền của các dịch giả/nhà xuất bản hiện đại; hệ thống RAG nhà trường tuyệt đối không sao chép trái phép.
+- Nội dung trích yếu của dự án: Dưới đây là phần trích lược các sự kiện cương vực lịch sử khách quan đã trở thành tri thức công cộng, bảo toàn xuất xứ của 9 chunks phục vụ giáo dục truyền thống học đường.
 
 ## I. MỐC THIẾT LẬP TỔ CHỨC HÀNH CHÍNH NĂM 1698 CỦA NGUYỄN HỮU CẢNH
 Theo ghi chép của Trịnh Hoài Đức trong *Gia Định thành thông chí (Quyển III: Cương vực chí)*:

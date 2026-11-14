@@ -19,36 +19,46 @@ interface HorizontalTimelineRailProps {
   onOpenDetailModal: (event: TimelineEvent) => void;
 }
 
-const getMilestoneShortLabel = (event: TimelineEvent): string => {
-  if (event.isMemorial || !event.year) return 'Sống mãi';
+interface MilestoneLabel {
+  line1: string;
+  line2?: string;
+}
+
+const getMilestoneDisplayLabel = (event: TimelineEvent): MilestoneLabel => {
+  if (event.isMemorial || !event.year) return { line1: 'Sống mãi' };
   switch (event.year) {
     case '1890':
-      return 'Làng Sen';
+      return { line1: 'Làng Sen' };
     case '1911':
-      return 'Bến Nhà Rồng';
+      return { line1: 'Bến Nhà Rồng' };
     case '1919':
-      return 'Yêu sách An Nam';
+      return { line1: 'Yêu sách', line2: 'An Nam' };
     case '1920':
-      return 'Đại hội Tours';
+      return { line1: 'Đại hội Tours' };
     case '1925':
-      return 'Cách mạng Thanh niên';
+      return { line1: 'Cách mạng', line2: 'Thanh niên' };
     case '1930':
-      return 'Thành lập Đảng';
+      return { line1: 'Thành lập Đảng' };
     case '1941':
-      return 'Về Pác Bó';
+      return { line1: 'Về Pác Bó' };
     case '1945':
-      return 'Tuyên ngôn';
+      return { line1: 'Tuyên ngôn' };
     case '1954':
-      return 'Điện Biên Phủ';
+      return { line1: 'Điện Biên Phủ' };
     case '1968':
-      return 'Mậu Thân 1968';
+      return { line1: 'Mậu Thân', line2: '1968' };
     case '1969':
-      return 'Di chúc';
+      return { line1: 'Di chúc' };
     case '1975':
-      return 'Toàn thắng';
+      return { line1: 'Toàn thắng' };
     default:
-      return event.title.split(' ').slice(0, 2).join(' ');
+      return { line1: event.title.split(' ').slice(0, 2).join(' ') };
   }
+};
+
+const getMilestoneShortLabel = (event: TimelineEvent): string => {
+  const label = getMilestoneDisplayLabel(event);
+  return label.line2 ? `${label.line1} ${label.line2}` : label.line1;
 };
 
 export const HorizontalTimelineRail: React.FC<HorizontalTimelineRailProps> = ({
@@ -184,13 +194,13 @@ export const HorizontalTimelineRail: React.FC<HorizontalTimelineRailProps> = ({
           <div className="relative w-full min-w-[700px] md:min-w-0 flex items-start justify-between pt-1 pb-1">
             {/* The continuous golden-red track running behind the buttons - exactly centered */}
             <div
-              className="absolute left-3 right-3 sm:left-5 sm:right-5 top-[22px] sm:top-[24px] -translate-y-1/2 h-1 bg-gradient-to-r from-heritage-red-800 via-heritage-gold-500 to-heritage-red-800 rounded-full shadow-xs z-0"
+              className="absolute left-3 right-3 sm:left-5 sm:right-5 top-[20px] sm:top-[22px] -translate-y-1/2 h-1 bg-gradient-to-r from-heritage-red-800 via-heritage-gold-500 to-heritage-red-800 rounded-full shadow-xs z-0"
             />
 
             {/* Subtle Ruler Calibrations (Small tick marks along the rail) */}
             <div
               aria-hidden="true"
-              className="absolute left-4 right-4 sm:left-6 sm:right-6 top-[22px] sm:top-[24px] -translate-y-1/2 flex justify-between pointer-events-none z-0 opacity-40"
+              className="absolute left-4 right-4 sm:left-6 sm:right-6 top-[20px] sm:top-[22px] -translate-y-1/2 flex justify-between pointer-events-none z-0 opacity-40"
             >
               {Array.from({ length: 49 }).map((_, i) => (
                 <span
@@ -205,8 +215,10 @@ export const HorizontalTimelineRail: React.FC<HorizontalTimelineRailProps> = ({
             {/* Individual Milestone Nodes along the Rail */}
             {events.map((event, idx) => {
               const isActive = idx === activeIndex;
+              const isPast = idx < activeIndex;
               const isMemorial = event.isMemorial || !event.year;
               const nodeLabel = isMemorial ? 'Nay' : event.year;
+              const displayLabel = getMilestoneDisplayLabel(event);
 
               return (
                 <div
@@ -215,15 +227,15 @@ export const HorizontalTimelineRail: React.FC<HorizontalTimelineRailProps> = ({
                   style={{ width: `${100 / events.length}%` }}
                 >
                   {/* Button anchor container ensuring perfect vertical centering with track line */}
-                  <div className="relative flex items-center justify-center h-9 sm:h-10">
+                  <div className="relative flex items-center justify-center h-10 sm:h-11">
                     {/* Active Downward Arrow Pointer Indicator */}
                     {isActive && (
-                      <div className="absolute -top-2 left-1/2 -translate-x-1/2 text-heritage-red-800 animate-bounce pointer-events-none z-30">
-                        <div className="w-1.5 h-1.5 bg-heritage-red-800 rotate-45 border-t border-l border-heritage-gold-300 shadow-xs" />
+                      <div className="absolute -top-2.5 sm:-top-3 left-1/2 -translate-x-1/2 text-heritage-red-800 animate-bounce pointer-events-none z-30">
+                        <div className="w-2 h-2 bg-heritage-red-800 rotate-45 border-t border-l border-heritage-gold-300 shadow-xs" />
                       </div>
                     )}
 
-                    {/* Circular Milestone Button - Distinct gold borders, uniform elegant style */}
+                    {/* Circular Milestone Button - Distinct 2px borders, perfectly round */}
                     <button
                       ref={isActive ? activeNodeRef : null}
                       onClick={() => {
@@ -232,17 +244,19 @@ export const HorizontalTimelineRail: React.FC<HorizontalTimelineRailProps> = ({
                       }}
                       className={`group relative flex items-center justify-center rounded-full aspect-square flex-shrink-0 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-heritage-red-700 ${
                         isActive
-                          ? 'w-8.5 h-8.5 sm:w-9.5 sm:h-9.5 bg-gradient-to-br from-heritage-red-800 to-heritage-red-950 text-heritage-gold-200 border-2 border-heritage-gold-300 shadow-md scale-110 ring-4 ring-heritage-gold-400/35 z-20'
-                          : 'w-7.5 h-7.5 sm:w-8.5 sm:h-8.5 bg-white text-heritage-ink-800 border-2 border-heritage-gold-500 hover:border-heritage-red-700 hover:text-heritage-red-700 hover:scale-105 shadow-xs z-10'
+                          ? 'w-9 h-9 sm:w-10 sm:h-10 bg-gradient-to-br from-heritage-red-800 to-heritage-red-950 text-heritage-gold-200 border-2 border-heritage-gold-300 shadow-md scale-110 ring-4 ring-heritage-gold-400/40 z-20'
+                          : isPast
+                          ? 'w-7 h-7 sm:w-8 sm:h-8 bg-heritage-red-50 text-heritage-red-800 border-2 border-heritage-red-400 hover:border-heritage-red-700 hover:scale-105 shadow-xs z-10'
+                          : 'w-7 h-7 sm:w-8 sm:h-8 bg-white text-heritage-ink-800 border-2 border-heritage-gold-500 hover:border-heritage-red-700 hover:text-heritage-red-700 hover:scale-105 shadow-xs z-10'
                       }`}
-                      title={`${event.exactDate || event.year}: ${event.title}`}
+                      title={`${event.exactDate || event.year} (${getMilestoneShortLabel(event)}): ${event.title}`}
                       aria-current={isActive ? 'step' : undefined}
                     >
                       {isMemorial ? (
                         <Star
                           className={`${
                             isActive
-                              ? 'w-3.5 h-3.5 text-heritage-gold-200 fill-heritage-gold-300 drop-shadow'
+                              ? 'w-4 h-4 text-heritage-gold-200 fill-heritage-gold-300 drop-shadow'
                               : 'w-3.5 h-3.5 text-heritage-gold-500 fill-heritage-gold-400'
                           }`}
                         />
@@ -250,7 +264,7 @@ export const HorizontalTimelineRail: React.FC<HorizontalTimelineRailProps> = ({
                         <span
                           className={`font-serif font-black ${
                             isActive
-                              ? 'text-[10px] sm:text-[11px] tracking-tight'
+                              ? 'text-[11px] sm:text-xs tracking-tight'
                               : 'text-[9px] sm:text-[10px]'
                           }`}
                         >
@@ -265,12 +279,23 @@ export const HorizontalTimelineRail: React.FC<HorizontalTimelineRailProps> = ({
                     className={`mt-1 text-center transition-all duration-200 pointer-events-none px-0.5 max-w-[64px] sm:max-w-[76px] md:max-w-[84px] ${
                       isActive
                         ? 'opacity-100 font-bold text-heritage-red-800 scale-105'
-                        : 'opacity-85 text-heritage-ink-800 font-medium'
+                        : isPast
+                        ? 'opacity-85 text-heritage-red-900 font-semibold'
+                        : 'opacity-80 text-heritage-ink-800 font-medium'
                     }`}
                   >
-                    <span className="block text-[7.5px] sm:text-[8.5px] md:text-[9.5px] leading-[1.15] text-center break-words hyphens-auto">
-                      {getMilestoneShortLabel(event)}
+                    <span className="block text-[8px] sm:text-[9px] md:text-[9.5px] leading-[1.15] text-center">
+                      {displayLabel.line1}
                     </span>
+                    {displayLabel.line2 ? (
+                      <span className="block text-[8px] sm:text-[9px] md:text-[9.5px] leading-[1.15] text-center">
+                        {displayLabel.line2}
+                      </span>
+                    ) : (
+                      <span className="hidden sm:block text-[8px] sm:text-[9px] md:text-[9.5px] leading-[1.15] opacity-0 select-none" aria-hidden="true">
+                        &nbsp;
+                      </span>
+                    )}
                   </div>
                 </div>
               );

@@ -16,9 +16,9 @@ Dưới đây là 3 hồ sơ tri thức đã được chuẩn hóa và tính mã
 
 | Mã tài liệu | Tên tài liệu | Nguồn pháp lý / Xuất bản | Tình trạng bản quyền | Số chunks | Mã SHA-256 | Trạng thái hiện tại |
 |:---|:---|:---|:---|:---:|:---|:---:|
-| **DOC-HCM-026** | Địa giới hành chính phường Thới An qua các thời kỳ (1997–2025 và hiện hành) | QĐ 1195/QĐ-UB-NC & NQ 1685/NQ-UBTVQH15 | `PUBLIC_DOMAIN_CONFIRMED` | 13 | `D5AD64FDEE21C07B2C37BFAAD192521DF992BFB5F32A3F2B4835C727473F0107` | ⏳ **PENDING_REVIEW** |
+| **DOC-HCM-026** | Địa giới hành chính phường Thới An qua các thời kỳ (1997–2025 và hiện hành) | QĐ 1195/QĐ-UB-NC & NQ 1685/NQ-UBTVQH15 | `PUBLIC_DOMAIN_CONFIRMED` | 15 | `51476B0AE4233DA1C129E91CF6FB1C9E392A7D097FB4B94BE8D42C156653C5E4` | ⏳ **PENDING_REVIEW** |
 | **DOC-HCM-027** | Lịch sử hình thành và phát triển Trường THCS Nguyễn Trung Trực (2014–nay) | QĐ 155/QĐ-UBND 2014 & QĐ 76/QĐ-UBND 2025 & KH 01/2025 | `OPEN_ACCESS_REUSE_PERMITTED` | 11 | `EAA1AC69161B610ACF99C308E13D7EFA1178B17730721C6D5004BAF87C2F16A9` | ⏳ **PENDING_REVIEW** |
-| **DOC-HCM-028** | Trích yếu Lịch sử Sài Gòn – Gia Định thời Nguyễn theo Gia Định thành thông chí | Gia Định thành thông chí (Trịnh Hoài Đức) | `PUBLIC_DOMAIN_CONFIRMED` | 9 | `EB906EE701F743046B3D833F7AE737600B84FE41F68E7DA9290F9A515D3BCBFC` | ⏳ **PENDING_REVIEW** |
+| **DOC-HCM-028** | Trích yếu Lịch sử Sài Gòn – Gia Định thời Nguyễn theo Gia Định thành thông chí | Gia Định thành thông chí (Trịnh Hoài Đức) | `PUBLIC_DOMAIN_CONFIRMED` | 11 | `29061599DA7EF89859AF8554C501EB0A0C44BD459A30F59DBAF4601B4DCDAD5D` | ⏳ **PENDING_REVIEW** |
 
 ---
 
