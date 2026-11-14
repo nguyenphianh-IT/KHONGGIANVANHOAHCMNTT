@@ -37,7 +37,9 @@ const VIETNAMESE_ACCENT_MAP: Record<string, string> = {
 const VIETNAMESE_STOPWORDS = new Set([
   'va', 'hoac', 'la', 'nhung', 'ma', 'cua', 'cho', 'den', 'tu', 'trong',
   'tren', 'duoi', 'voi', 've', 'ra', 'vao', 'o', 'tai', 'rat', 'qua',
-  'nhu', 'the', 'nay', 'do', 'kia', 'ay', 'nhung', 'cac', 'mot', 'nhung'
+  'nhu', 'the', 'nay', 'do', 'kia', 'ay', 'cac', 'mot', 'co', 'khong',
+  'duoc', 'se', 'da', 'dang', 'ngay', 'nao', 'sao', 'gi', 'ai', 'dau',
+  'khi', 'luc', 'lai', 'roi', 'boi', 'vi', 'hay', 'nen', 'de'
 ]);
 
 /**

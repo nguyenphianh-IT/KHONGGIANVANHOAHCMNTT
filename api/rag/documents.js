@@ -162,10 +162,29 @@ var VIETNAMESE_STOPWORDS = /* @__PURE__ */ new Set([
   "do",
   "kia",
   "ay",
-  "nhung",
   "cac",
   "mot",
-  "nhung"
+  "co",
+  "khong",
+  "duoc",
+  "se",
+  "da",
+  "dang",
+  "ngay",
+  "nao",
+  "sao",
+  "gi",
+  "ai",
+  "dau",
+  "khi",
+  "luc",
+  "lai",
+  "roi",
+  "boi",
+  "vi",
+  "hay",
+  "nen",
+  "de"
 ]);
 function removeVietnameseAccents(str) {
   if (!str) return "";
@@ -186,6 +205,13 @@ function tokenize(str, removeStopwords = false) {
     });
   }
   return tokens;
+}
+function extractNGrams(tokens) {
+  const result = [...tokens];
+  for (let i = 0; i < tokens.length - 1; i++) {
+    result.push(`${tokens[i]} ${tokens[i + 1]}`);
+  }
+  return result;
 }
 
 // src/rag/retrieval/bm25Retriever.ts
@@ -544,7 +570,17 @@ var LocalGroundedEngine = class {
     const queryNorm = normalizeText(query);
     const nonAccentedQuery = removeVietnameseAccents(queryNorm);
     const queryTokens = tokenize(query, true);
-    if (!scoredChunks || scoredChunks.length === 0 || scoredChunks[0].score < 0.3) {
+    const topScore = scoredChunks && scoredChunks.length > 0 ? scoredChunks[0].score : 0;
+    const queryWords = tokenize(nonAccentedQuery, false);
+    const isFiveTeachings = nonAccentedQuery.includes("5 dieu") || nonAccentedQuery.includes("nam dieu") || nonAccentedQuery.includes("bac ho day") || nonAccentedQuery.includes("thieu nien");
+    const isDeclaration = nonAccentedQuery.includes("tuyen ngon") || queryWords.includes("doc") && queryWords.includes("lap") || nonAccentedQuery.includes("2 9");
+    const isTestament = nonAccentedQuery.includes("di chuc") || queryWords.includes("thanh") && queryWords.includes("nien");
+    const isSchoolLetter = nonAccentedQuery.includes("khai truong") || nonAccentedQuery.includes("sanh vai");
+    const isDanVan = nonAccentedQuery.includes("dan van");
+    const isResistance = nonAccentedQuery.includes("toan quoc") || queryWords.includes("khang") && queryWords.includes("chien");
+    const isPrisonDiary = nonAccentedQuery.includes("nhat ky trong tu") || queryWords.includes("tho");
+    const isTopicIntent = isFiveTeachings || isDeclaration || isTestament || isSchoolLetter || isDanVan || isResistance || isPrisonDiary;
+    if (!scoredChunks || scoredChunks.length === 0 || !isTopicIntent && topScore < 0.6) {
       return {
         answer: `Hi\u1EC7n t\u1EA1i trong kho t\u01B0 li\u1EC7u \u0111\xE3 \u0111\u01B0\u1EE3c ki\u1EC3m duy\u1EC7t c\u1EE7a **Kh\xF4ng gian V\u0103n h\xF3a H\u1ED3 Ch\xED Minh \u2013 Tr\u01B0\u1EDDng THCS Nguy\u1EC5n Trung Tr\u1EF1c**, h\u1EC7 th\u1ED1ng ch\u01B0a t\xECm th\u1EA5y th\xF4ng tin ph\xF9 h\u1EE3p \u0111\u1EC3 tr\u1EA3 l\u1EDDi c\xE2u h\u1ECFi: *"${query}"*.
 
@@ -555,8 +591,36 @@ var LocalGroundedEngine = class {
         modelUsed: "Local Grounded Rule Engine (DEV Offline)"
       };
     }
-    const topScore = scoredChunks[0].score;
-    const relevantChunks = scoredChunks.filter((sc) => sc.score >= 0.3 && sc.score >= topScore * 0.4);
+    const relevantChunks = scoredChunks.filter((sc) => sc.score >= 0.4 && sc.score >= topScore * 0.4);
+    let substantiveMatches = 0;
+    for (const sc of relevantChunks) {
+      for (const t of queryTokens) {
+        if (sc.chunk.content.toLowerCase().includes(t.toLowerCase()) || sc.chunk.documentTitle.toLowerCase().includes(t.toLowerCase())) {
+          substantiveMatches++;
+        }
+      }
+    }
+    const meaningfulTokens = tokenize(query, true);
+    const meaningfulBigrams = extractNGrams(meaningfulTokens).filter((ng) => ng.includes(" "));
+    const hasPhraseOrBigramMatch = meaningfulBigrams.length > 0 && meaningfulBigrams.some((bg) => {
+      const bgNorm = removeVietnameseAccents(bg);
+      return relevantChunks.some((sc) => {
+        const cNorm = removeVietnameseAccents(normalizeText(sc.chunk.content));
+        const tNorm = removeVietnameseAccents(normalizeText(sc.chunk.documentTitle));
+        return cNorm.includes(bgNorm) || tNorm.includes(bgNorm);
+      });
+    });
+    if (!isTopicIntent && !hasPhraseOrBigramMatch && topScore < 2) {
+      return {
+        answer: `Hi\u1EC7n t\u1EA1i trong kho t\u01B0 li\u1EC7u \u0111\xE3 \u0111\u01B0\u1EE3c ki\u1EC3m duy\u1EC7t c\u1EE7a **Kh\xF4ng gian V\u0103n h\xF3a H\u1ED3 Ch\xED Minh \u2013 Tr\u01B0\u1EDDng THCS Nguy\u1EC5n Trung Tr\u1EF1c**, h\u1EC7 th\u1ED1ng ch\u01B0a t\xECm th\u1EA5y th\xF4ng tin ph\xF9 h\u1EE3p \u0111\u1EC3 tr\u1EA3 l\u1EDDi c\xE2u h\u1ECFi: *"${query}"*.
+
+*G\u1EE3i \xFD:* B\u1EA1n c\xF3 th\u1EC3 th\u1EED tra c\u1EE9u c\xE1c ch\u1EE7 \u0111\u1EC1 nh\u01B0: *5 \u0110i\u1EC1u B\xE1c H\u1ED3 d\u1EA1y, Tuy\xEAn ng\xF4n \u0110\u1ED9c l\u1EADp 2/9/1945, Th\u01B0 khai tr\u01B0\u1EDDng th\xE1ng 9/1945, Di ch\xFAc c\u1EE7a B\xE1c, L\u1EDDi k\xEAu g\u1ECDi To\xE0n qu\u1ED1c kh\xE1ng chi\u1EBFn, ho\u1EB7c B\xE0i vi\u1EBFt D\xE2n v\u1EADn.*`,
+        citations: [],
+        evidenceFound: false,
+        conflictDetected: false,
+        modelUsed: "Local Grounded Rule Engine (DEV Offline)"
+      };
+    }
     const citations = [];
     const evidenceParagraphs = [];
     let citationIndex = 1;
@@ -597,13 +661,6 @@ var LocalGroundedEngine = class {
       citationIndex++;
     }
     const primaryChunk = relevantChunks[0].chunk;
-    const isFiveTeachings = nonAccentedQuery.includes("5 dieu") || nonAccentedQuery.includes("nam dieu") || nonAccentedQuery.includes("bac ho day") || nonAccentedQuery.includes("thieu nien");
-    const isDeclaration = nonAccentedQuery.includes("tuyen ngon") || nonAccentedQuery.includes("doc lap") || nonAccentedQuery.includes("2 9");
-    const isTestament = nonAccentedQuery.includes("di chuc") || nonAccentedQuery.includes("doan ket") || nonAccentedQuery.includes("thanh nien");
-    const isSchoolLetter = nonAccentedQuery.includes("khai truong") || nonAccentedQuery.includes("hoc sinh") || nonAccentedQuery.includes("sanh vai");
-    const isDanVan = nonAccentedQuery.includes("dan van") || nonAccentedQuery.includes("luc luong");
-    const isResistance = nonAccentedQuery.includes("toan quoc") || nonAccentedQuery.includes("khang chien") || nonAccentedQuery.includes("1946");
-    const isPrisonDiary = nonAccentedQuery.includes("nhat ky trong tu") || nonAccentedQuery.includes("tho");
     let answerBody = "";
     if (isFiveTeachings && primaryChunk.documentId === "DOC-HCM-004") {
       answerBody = `D\u1EF1a tr\xEAn t\xE0i li\u1EC7u ch\xEDnh th\u1EE9c t\u1EEB Trung \u01B0\u01A1ng \u0110o\xE0n TNCS H\u1ED3 Ch\xED Minh v\xE0 B\u1EA3o t\xE0ng H\u1ED3 Ch\xED Minh [1]:
@@ -865,11 +922,13 @@ var AnswerEngine = class {
         console.warn("[RAG AnswerEngine] Primary provider error, falling back to local grounded engine:", err);
       }
     }
+    let finalEvidenceFound = true;
     if (!usedProvider) {
       const localRes = this.localEngine.synthesize(cleanQuery, retrievedChunks);
       answerText = localRes.answer;
       modelName = localRes.modelUsed;
       citations = localRes.citations;
+      finalEvidenceFound = localRes.evidenceFound;
     }
     const generationTimeMs = Date.now() - genStart;
     const totalTimeMs = Date.now() - startTime;
@@ -877,7 +936,7 @@ var AnswerEngine = class {
       query: cleanQuery,
       answer: answerText,
       citations,
-      evidenceFound: true,
+      evidenceFound: finalEvidenceFound,
       conflictDetected: false,
       modelUsed: modelName,
       metrics: {

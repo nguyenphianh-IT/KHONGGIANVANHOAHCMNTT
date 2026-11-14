@@ -5,7 +5,7 @@
  */
 
 import { ScoredChunk, RagCitation } from '../types/ragTypes';
-import { normalizeText, tokenize, removeVietnameseAccents } from '../retrieval/textNormalizer';
+import { normalizeText, tokenize, removeVietnameseAccents, extractNGrams } from '../retrieval/textNormalizer';
 
 export interface LocalSynthesisResult {
   answer: string;
@@ -24,9 +24,21 @@ export class LocalGroundedEngine {
     const queryNorm = normalizeText(query);
     const nonAccentedQuery = removeVietnameseAccents(queryNorm);
     const queryTokens = tokenize(query, true);
+    const topScore = scoredChunks && scoredChunks.length > 0 ? scoredChunks[0].score : 0;
 
-    // Guard 1: No chunks retrieved or top score below threshold
-    if (!scoredChunks || scoredChunks.length === 0 || scoredChunks[0].score < 0.3) {
+    // Check specific topic intents with word-level boundary precision
+    const queryWords = tokenize(nonAccentedQuery, false);
+    const isFiveTeachings = nonAccentedQuery.includes('5 dieu') || nonAccentedQuery.includes('nam dieu') || nonAccentedQuery.includes('bac ho day') || nonAccentedQuery.includes('thieu nien');
+    const isDeclaration = nonAccentedQuery.includes('tuyen ngon') || (queryWords.includes('doc') && queryWords.includes('lap')) || nonAccentedQuery.includes('2 9');
+    const isTestament = nonAccentedQuery.includes('di chuc') || (queryWords.includes('thanh') && queryWords.includes('nien'));
+    const isSchoolLetter = nonAccentedQuery.includes('khai truong') || nonAccentedQuery.includes('sanh vai');
+    const isDanVan = nonAccentedQuery.includes('dan van');
+    const isResistance = nonAccentedQuery.includes('toan quoc') || (queryWords.includes('khang') && queryWords.includes('chien'));
+    const isPrisonDiary = nonAccentedQuery.includes('nhat ky trong tu') || queryWords.includes('tho');
+    const isTopicIntent = isFiveTeachings || isDeclaration || isTestament || isSchoolLetter || isDanVan || isResistance || isPrisonDiary;
+
+    // Guard 1: No chunks retrieved or score below threshold
+    if (!scoredChunks || scoredChunks.length === 0 || (!isTopicIntent && topScore < 0.6)) {
       return {
         answer: `Hiện tại trong kho tư liệu đã được kiểm duyệt của **Không gian Văn hóa Hồ Chí Minh – Trường THCS Nguyễn Trung Trực**, hệ thống chưa tìm thấy thông tin phù hợp để trả lời câu hỏi: *"${query}"*.\n\n*Gợi ý:* Bạn có thể thử tra cứu các chủ đề như: *5 Điều Bác Hồ dạy, Tuyên ngôn Độc lập 2/9/1945, Thư khai trường tháng 9/1945, Di chúc của Bác, Lời kêu gọi Toàn quốc kháng chiến, hoặc Bài viết Dân vận.*`,
         citations: [],
@@ -36,9 +48,40 @@ export class LocalGroundedEngine {
       };
     }
 
-    // Select chunks that are truly relevant (score >= 0.3 or within 50% of top score)
-    const topScore = scoredChunks[0].score;
-    const relevantChunks = scoredChunks.filter(sc => sc.score >= 0.3 && sc.score >= topScore * 0.4);
+    // Select chunks that are truly relevant (score >= 0.4 or within 50% of top score)
+    const relevantChunks = scoredChunks.filter(sc => sc.score >= 0.4 && sc.score >= topScore * 0.4);
+
+    // Verify substantive term overlap for general queries
+    let substantiveMatches = 0;
+    for (const sc of relevantChunks) {
+      for (const t of queryTokens) {
+        if (sc.chunk.content.toLowerCase().includes(t.toLowerCase()) || sc.chunk.documentTitle.toLowerCase().includes(t.toLowerCase())) {
+          substantiveMatches++;
+        }
+      }
+    }
+
+    // For general queries, check bigram and phrase overlap among meaningful (non-stopword) tokens
+    const meaningfulTokens = tokenize(query, true);
+    const meaningfulBigrams = extractNGrams(meaningfulTokens).filter(ng => ng.includes(' '));
+    const hasPhraseOrBigramMatch = meaningfulBigrams.length > 0 && meaningfulBigrams.some(bg => {
+      const bgNorm = removeVietnameseAccents(bg);
+      return relevantChunks.some(sc => {
+        const cNorm = removeVietnameseAccents(normalizeText(sc.chunk.content));
+        const tNorm = removeVietnameseAccents(normalizeText(sc.chunk.documentTitle));
+        return cNorm.includes(bgNorm) || tNorm.includes(bgNorm);
+      });
+    });
+
+    if (!isTopicIntent && !hasPhraseOrBigramMatch && topScore < 2.0) {
+      return {
+        answer: `Hiện tại trong kho tư liệu đã được kiểm duyệt của **Không gian Văn hóa Hồ Chí Minh – Trường THCS Nguyễn Trung Trực**, hệ thống chưa tìm thấy thông tin phù hợp để trả lời câu hỏi: *"${query}"*.\n\n*Gợi ý:* Bạn có thể thử tra cứu các chủ đề như: *5 Điều Bác Hồ dạy, Tuyên ngôn Độc lập 2/9/1945, Thư khai trường tháng 9/1945, Di chúc của Bác, Lời kêu gọi Toàn quốc kháng chiến, hoặc Bài viết Dân vận.*`,
+        citations: [],
+        evidenceFound: false,
+        conflictDetected: false,
+        modelUsed: 'Local Grounded Rule Engine (DEV Offline)'
+      };
+    }
 
     const citations: RagCitation[] = [];
     const evidenceParagraphs: {
@@ -95,13 +138,6 @@ export class LocalGroundedEngine {
 
     // Compose formatted answer using accent-insensitive query normalization
     const primaryChunk = relevantChunks[0].chunk;
-    const isFiveTeachings = nonAccentedQuery.includes('5 dieu') || nonAccentedQuery.includes('nam dieu') || nonAccentedQuery.includes('bac ho day') || nonAccentedQuery.includes('thieu nien');
-    const isDeclaration = nonAccentedQuery.includes('tuyen ngon') || nonAccentedQuery.includes('doc lap') || nonAccentedQuery.includes('2 9');
-    const isTestament = nonAccentedQuery.includes('di chuc') || nonAccentedQuery.includes('doan ket') || nonAccentedQuery.includes('thanh nien');
-    const isSchoolLetter = nonAccentedQuery.includes('khai truong') || nonAccentedQuery.includes('hoc sinh') || nonAccentedQuery.includes('sanh vai');
-    const isDanVan = nonAccentedQuery.includes('dan van') || nonAccentedQuery.includes('luc luong');
-    const isResistance = nonAccentedQuery.includes('toan quoc') || nonAccentedQuery.includes('khang chien') || nonAccentedQuery.includes('1946');
-    const isPrisonDiary = nonAccentedQuery.includes('nhat ky trong tu') || nonAccentedQuery.includes('tho');
 
     let answerBody = '';
 

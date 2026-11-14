@@ -131,11 +131,13 @@ export class AnswerEngine {
     }
 
     // Fallback to deterministic local grounded engine
+    let finalEvidenceFound = true;
     if (!usedProvider) {
       const localRes = this.localEngine.synthesize(cleanQuery, retrievedChunks);
       answerText = localRes.answer;
       modelName = localRes.modelUsed;
       citations = localRes.citations;
+      finalEvidenceFound = localRes.evidenceFound;
     }
 
     const generationTimeMs = Date.now() - genStart;
@@ -145,7 +147,7 @@ export class AnswerEngine {
       query: cleanQuery,
       answer: answerText,
       citations,
-      evidenceFound: true,
+      evidenceFound: finalEvidenceFound,
       conflictDetected: false,
       modelUsed: modelName,
       metrics: {
