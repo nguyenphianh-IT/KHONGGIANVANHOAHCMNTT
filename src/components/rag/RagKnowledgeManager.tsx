@@ -3,7 +3,8 @@ import {
   Upload, ShieldCheck, CheckCircle2, XCircle,
   Search, RefreshCw, AlertCircle,
   Database, Plus, Lock, Clock,
-  BarChart2, Activity, HelpCircle, ThumbsUp, ThumbsDown, MessageSquare, Bot, ExternalLink
+  BarChart2, Activity, HelpCircle, ThumbsUp, ThumbsDown, MessageSquare, Bot, ExternalLink,
+  FileText, Layers, Copy, Check
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { RagService } from '../../services/ragService';
@@ -14,6 +15,7 @@ import {
   HCM_STANDARD_CATEGORIES,
   RagAnalyticsSummary
 } from '../../rag/types/ragTypes';
+import { getSampleQuestionsForDoc } from '../../rag/knowledge/sampleQuestions';
 
 export const RagKnowledgeManager: React.FC = () => {
   const { profile, roles } = useAuth();
@@ -33,6 +35,8 @@ export const RagKnowledgeManager: React.FC = () => {
   const [inspectDoc, setInspectDoc] = useState<RealKnowledgeDocument | null>(null);
   const [inspectChunks, setInspectChunks] = useState<DocumentChunk[]>([]);
   const [isLoadingChunks, setIsLoadingChunks] = useState(false);
+  const [inspectTab, setInspectTab] = useState<'content' | 'chunks' | 'questions'>('content');
+  const [copiedChecksum, setCopiedChecksum] = useState(false);
 
   // Upload Modal State
   const [isUploadOpen, setIsUploadOpen] = useState(false);
@@ -97,10 +101,13 @@ export const RagKnowledgeManager: React.FC = () => {
   // Handle Inspect Document
   const handleInspect = async (doc: RealKnowledgeDocument) => {
     setInspectDoc(doc);
+    setInspectTab('content');
+    setCopiedChecksum(false);
     setIsLoadingChunks(true);
     try {
       const detail = await RagService.getDocumentById(doc.documentId);
-      if (detail) {
+      if (detail && detail.document) {
+        setInspectDoc(detail.document);
         setInspectChunks(detail.chunks);
       }
     } catch (e) {
@@ -789,112 +796,249 @@ export const RagKnowledgeManager: React.FC = () => {
       )}
 
       {/* Inspect Detail Modal */}
-      {inspectDoc && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/60 backdrop-blur-sm animate-fadeIn">
-          <div className="bg-white rounded-2xl max-w-2xl w-full p-6 shadow-2xl border border-heritage-gold-400 max-h-[90vh] flex flex-col">
-            <div className="flex items-start justify-between pb-3 border-b border-heritage-ivory-300">
-              <div>
-                <div className="text-[11px] font-mono text-heritage-gold-700 font-bold">{inspectDoc.documentId}</div>
-                <h3 className="font-serif font-bold text-base sm:text-lg text-heritage-ink-900 mt-0.5">
-                  {inspectDoc.title}
-                </h3>
-              </div>
-              <button
-                type="button"
-                onClick={() => setInspectDoc(null)}
-                className="text-heritage-ink-400 hover:text-heritage-ink-800 p-1"
-              >
-                ✕
-              </button>
-            </div>
+      {inspectDoc && (() => {
+        const sampleQuestions = getSampleQuestionsForDoc(inspectDoc.documentId);
 
-            <div className="my-3 space-y-2 overflow-y-auto flex-1 text-xs">
-              <div className="p-3 rounded-lg bg-heritage-ivory-100 grid grid-cols-2 gap-2 text-[11px]">
-                <div><strong>Tác giả / Cơ quan:</strong> {inspectDoc.author}</div>
-                <div><strong>Nhà xuất bản / Đơn vị:</strong> {inspectDoc.publisher || 'N/A'}</div>
-                <div><strong>Danh mục:</strong> {inspectDoc.category}</div>
-                <div><strong>Mã băm SHA-256:</strong> <span className="font-mono">{inspectDoc.checksum.substring(0, 16)}...</span></div>
-                <div><strong>Trạng thái:</strong> {inspectDoc.approvalStatus}</div>
-                <div><strong>Cho phép RAG:</strong> {inspectDoc.isAllowedForRag ? 'Có (Đã kích hoạt)' : 'Không (Đang chặn)'}</div>
-                {inspectDoc.sourceUrl && (
-                  <div className="col-span-2 flex items-center space-x-1.5 pt-1">
-                    <strong>Nguồn kiểm chứng:</strong>
-                    <a
-                      href={inspectDoc.sourceUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-heritage-red-700 hover:underline flex items-center space-x-1 truncate"
+        return (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/60 backdrop-blur-sm animate-fadeIn">
+            <div className="bg-white rounded-2xl max-w-3xl w-full p-6 shadow-2xl border border-heritage-gold-400 max-h-[92vh] flex flex-col">
+              <div className="flex items-start justify-between pb-3 border-b border-heritage-ivory-300">
+                <div>
+                  <div className="flex items-center space-x-2">
+                    <span className="text-[11px] font-mono px-2 py-0.5 rounded bg-heritage-gold-100 text-heritage-red-900 font-bold border border-heritage-gold-300">
+                      {inspectDoc.documentId}
+                    </span>
+                    <span className="text-[10px] font-medium text-heritage-ink-500">v{inspectDoc.version}</span>
+                  </div>
+                  <h3 className="font-serif font-bold text-base sm:text-lg text-heritage-ink-900 mt-1">
+                    {inspectDoc.title}
+                  </h3>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setInspectDoc(null)}
+                  className="text-heritage-ink-400 hover:text-heritage-ink-800 p-1"
+                >
+                  ✕
+                </button>
+              </div>
+
+              {/* Document Overview Metadata */}
+              <div className="my-3 space-y-2.5 overflow-y-auto flex-1 text-xs pr-1">
+                <div className="p-3 rounded-lg bg-heritage-ivory-100 grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px]">
+                  <div><strong>Tác giả / Cơ quan:</strong> {inspectDoc.author}</div>
+                  <div><strong>Nhà xuất bản / Đơn vị:</strong> {inspectDoc.publisher || 'N/A'}</div>
+                  <div><strong>Danh mục:</strong> {inspectDoc.category}</div>
+                  <div><strong>Trạng thái:</strong> <span className="font-semibold text-heritage-red-900">{inspectDoc.approvalStatus}</span></div>
+                  <div><strong>Cho phép RAG:</strong> {inspectDoc.isAllowedForRag ? '✅ Có (Đã kích hoạt)' : '⏳ Chưa (Chờ duyệt)'}</div>
+                  
+                  <div className="flex items-center space-x-1.5">
+                    <strong>SHA-256:</strong>
+                    <span className="font-mono text-[10px] text-heritage-ink-700 truncate max-w-[120px]" title={inspectDoc.checksum}>
+                      {inspectDoc.checksum.substring(0, 14)}...
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        navigator.clipboard.writeText(inspectDoc.checksum);
+                        setCopiedChecksum(true);
+                        setTimeout(() => setCopiedChecksum(false), 2000);
+                      }}
+                      className="p-1 rounded hover:bg-heritage-ivory-300 text-heritage-ink-600 transition-colors"
+                      title="Sao chép toàn bộ mã SHA-256"
                     >
-                      <span className="truncate max-w-[340px]">{inspectDoc.sourceUrl}</span>
-                      <ExternalLink className="w-3 h-3 flex-shrink-0" />
-                    </a>
+                      {copiedChecksum ? <Check className="w-3 h-3 text-emerald-600" /> : <Copy className="w-3 h-3" />}
+                    </button>
+                  </div>
+
+                  {inspectDoc.sourceUrl && (
+                    <div className="sm:col-span-2 flex items-center space-x-1.5 pt-0.5 border-t border-heritage-ivory-300">
+                      <strong>Nguồn gốc kiểm chứng:</strong>
+                      <a
+                        href={inspectDoc.sourceUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-heritage-red-700 hover:underline flex items-center space-x-1 truncate font-medium"
+                      >
+                        <span className="truncate max-w-[420px]">{inspectDoc.sourceUrl}</span>
+                        <ExternalLink className="w-3 h-3 flex-shrink-0" />
+                      </a>
+                    </div>
+                  )}
+                </div>
+
+                {/* Specific Copyright & Governance Alerts */}
+                {((inspectDoc.metadata as any)?.copyrightStatus === 'METADATA_ONLY' || inspectDoc.documentId === 'DOC-HCM-016' || inspectDoc.documentId === 'DOC-HCM-017') && (
+                  <div className="p-2.5 rounded-lg bg-amber-50 border border-amber-300 text-amber-900 text-[11px] leading-relaxed">
+                    <strong>Kiểm soát METADATA_ONLY:</strong> Tài liệu sách chuyên khảo có bản quyền của Nhà xuất bản Chính trị quốc gia Sự thật. Theo quy định pháp luật sở hữu trí tuệ, hệ thống chỉ lưu trữ thông tin thư mục và liên kết nguồn gốc; tuyệt đối không đưa nội dung toàn văn giả lập vào Retrieval Index cho tới khi hoàn tất thủ tục cấp quyền lưu trữ.
+                  </div>
+                )}
+
+                {inspectDoc.documentId === 'DOC-HCM-028' && (
+                  <div className="p-2.5 rounded-lg bg-blue-50 border border-blue-200 text-blue-900 text-[11px] leading-relaxed">
+                    <strong>Phạm vi bản quyền DOC-HCM-028:</strong> Trích yếu thư tịch cổ thế kỷ XIX (Nguyên tác chữ Hán của Trịnh Hoài Đức hoàn thành khoảng 1820 thuộc sở hữu công cộng). Chỉ trích dẫn sự kiện cương vực lịch sử khách quan (năm 1698 thành lập phủ Gia Định, thương cảng Bến Nghé); tuyệt đối không sao chép trái phép bản dịch hoặc chú giải độc quyền của các ấn bản hiện đại.
+                  </div>
+                )}
+
+                {inspectDoc.documentId === 'DOC-HCM-026' && (
+                  <div className="p-2.5 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-900 text-[11px] leading-relaxed">
+                    <strong>Căn cứ pháp lý DOC-HCM-026:</strong> Văn bản quy phạm pháp luật nhà nước (QĐ 1195/QĐ-UB-NC ngày 18/03/1997 & NQ 1685/NQ-UBTVQH15 ngày 16/06/2025) không thuộc đối tượng bảo hộ quyền tác giả theo Điều 19 Luật SHTT. Địa danh hiện hành chính thức: <em>Phường Thới An, Thành phố Hồ Chí Minh</em>.
+                  </div>
+                )}
+
+                {inspectDoc.documentId === 'DOC-HCM-027' && (
+                  <div className="p-2.5 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-900 text-[11px] leading-relaxed">
+                    <strong>Bảo vệ quyền riêng tư DOC-HCM-027:</strong> Hồ sơ học đường chính thức của Trường THCS Nguyễn Trung Trực (QĐ 155/QĐ-UBND 2014 & QĐ 76/QĐ-UBND 2025 & KH 01/KH-NTT). Toàn bộ thông tin định danh cá nhân (PII), điểm số của học sinh và hồ sơ riêng tư đã được rà soát và loại bỏ 100%.
+                  </div>
+                )}
+
+                {/* Inspect Tab Navigation */}
+                <div className="flex border-b border-heritage-ivory-300 text-xs font-medium pt-1">
+                  <button
+                    type="button"
+                    onClick={() => setInspectTab('content')}
+                    className={`px-3 py-1.5 border-b-2 flex items-center space-x-1.5 transition-colors ${
+                      inspectTab === 'content'
+                        ? 'border-heritage-red-700 text-heritage-red-900 font-bold bg-heritage-ivory-100/50 rounded-t-lg'
+                        : 'border-transparent text-heritage-ink-500 hover:text-heritage-ink-800'
+                    }`}
+                  >
+                    <FileText className="w-3.5 h-3.5" />
+                    <span>Nội dung văn bản</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setInspectTab('chunks')}
+                    className={`px-3 py-1.5 border-b-2 flex items-center space-x-1.5 transition-colors ${
+                      inspectTab === 'chunks'
+                        ? 'border-heritage-red-700 text-heritage-red-900 font-bold bg-heritage-ivory-100/50 rounded-t-lg'
+                        : 'border-transparent text-heritage-ink-500 hover:text-heritage-ink-800'
+                    }`}
+                  >
+                    <Layers className="w-3.5 h-3.5" />
+                    <span>Đoạn Chunks ({inspectChunks.length})</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setInspectTab('questions')}
+                    className={`px-3 py-1.5 border-b-2 flex items-center space-x-1.5 transition-colors ${
+                      inspectTab === 'questions'
+                        ? 'border-heritage-red-700 text-heritage-red-900 font-bold bg-heritage-ivory-100/50 rounded-t-lg'
+                        : 'border-transparent text-heritage-ink-500 hover:text-heritage-ink-800'
+                    }`}
+                  >
+                    <HelpCircle className="w-3.5 h-3.5" />
+                    <span>5 Câu hỏi mẫu ({sampleQuestions.length})</span>
+                  </button>
+                </div>
+
+                {/* Tab 1: Full Content */}
+                {inspectTab === 'content' && (
+                  <div className="space-y-2 pt-1 animate-fadeIn">
+                    <div className="p-4 rounded-xl border border-heritage-ivory-300 bg-heritage-ivory-50 text-[11px] leading-relaxed whitespace-pre-wrap font-sans text-heritage-ink-900 max-h-[380px] overflow-y-auto">
+                      {inspectDoc.content || 'Chưa có nội dung văn bản nào được tải lên.'}
+                    </div>
+                  </div>
+                )}
+
+                {/* Tab 2: Chunks List */}
+                {inspectTab === 'chunks' && (
+                  <div className="space-y-2 pt-1 animate-fadeIn">
+                    {isLoadingChunks ? (
+                      <div className="p-4 text-center text-heritage-ink-500">Đang tải các đoạn chunk...</div>
+                    ) : inspectChunks.length === 0 ? (
+                      <div className="p-4 text-center text-heritage-ink-500">Chưa có đoạn chunk nào được lưu trữ.</div>
+                    ) : (
+                      <div className="space-y-2 max-h-[380px] overflow-y-auto pr-1">
+                        {inspectChunks.map(c => (
+                          <div key={c.id} className="p-2.5 rounded-lg border border-heritage-ivory-300 bg-heritage-ivory-50 text-[11px]">
+                            <div className="flex items-center justify-between text-heritage-red-800 font-bold mb-1">
+                              <span className="font-mono">{c.id}</span>
+                              <span className="font-mono text-heritage-ink-500 text-[10px] bg-heritage-ivory-200 px-1.5 py-0.5 rounded">
+                                {c.provenanceLocator || 'Đoạn chính'}
+                              </span>
+                            </div>
+                            <div className="text-heritage-ink-800 leading-relaxed font-sans">{c.content}</div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* Tab 3: Sample Questions */}
+                {inspectTab === 'questions' && (
+                  <div className="space-y-2 pt-1 animate-fadeIn">
+                    <div className="text-[11px] text-heritage-ink-600 mb-2">
+                      5 câu hỏi sư phạm học đường được thiết kế bám sát tư liệu để Hội đồng chuyên môn kiểm thử:
+                    </div>
+                    <div className="space-y-2 max-h-[360px] overflow-y-auto pr-1">
+                      {sampleQuestions.map((q, idx) => (
+                        <div key={q.questionId} className="p-3 rounded-xl border border-heritage-ivory-300 bg-white hover:border-heritage-gold-400 transition-colors text-[11px] flex items-start justify-between gap-3 shadow-2xs">
+                          <div className="flex items-start space-x-2.5">
+                            <span className="w-5 h-5 rounded-full bg-heritage-red-100 text-heritage-red-800 flex items-center justify-center font-bold text-[10px] shrink-0 mt-0.5">
+                              {idx + 1}
+                            </span>
+                            <div>
+                              <div className="font-medium text-heritage-ink-900 leading-snug">{q.question}</div>
+                              {q.expectedEvidence && (
+                                <div className="text-[10px] text-heritage-ink-500 italic mt-1">
+                                  Căn cứ dự kiến: {q.expectedEvidence}
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setInspectDoc(null);
+                              window.dispatchEvent(new CustomEvent('open-rag-chatbot', {
+                                detail: { initialQuery: q.question, documentTitle: inspectDoc.title }
+                              }));
+                            }}
+                            className="px-2 py-1 rounded bg-heritage-ivory-200 hover:bg-heritage-gold-200 text-heritage-red-950 text-[10px] font-bold shrink-0 transition-colors flex items-center space-x-1"
+                            title="Mở Chatbot và thử nghiệm câu hỏi này"
+                          >
+                            <Bot className="w-3 h-3 text-heritage-red-700" />
+                            <span>Thử hỏi</span>
+                          </button>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 )}
               </div>
 
-              {((inspectDoc.metadata as any)?.copyrightStatus === 'METADATA_ONLY' || inspectDoc.documentId === 'DOC-HCM-016' || inspectDoc.documentId === 'DOC-HCM-017') && (
-                <div className="p-2.5 rounded-lg bg-amber-50 border border-amber-300 text-amber-900 text-[11px] leading-relaxed">
-                  <strong>Kiểm soát METADATA_ONLY:</strong> Tài liệu sách chuyên khảo có bản quyền của Nhà xuất bản Chính trị quốc gia Sự thật. Theo quy định pháp luật sở hữu trí tuệ, hệ thống chỉ lưu trữ thông tin thư mục và liên kết nguồn gốc; tuyệt đối không đưa nội dung toàn văn giả lập vào Retrieval Index cho tới khi hoàn tất thủ tục cấp quyền lưu trữ.
-                </div>
-              )}
-
-              {inspectDoc.description && (
-                <div className="p-2.5 rounded-lg bg-heritage-ivory-50 border border-heritage-ivory-300 text-[11px]">
-                  <strong>Tóm lược nội dung:</strong> {inspectDoc.description}
-                </div>
-              )}
-
-              <div className="font-bold text-heritage-red-800 pt-2">
-                Các đoạn dữ liệu (Chunks) đã phân rã ({inspectChunks.length}):
-              </div>
-
-              {isLoadingChunks ? (
-                <div className="p-4 text-center text-heritage-ink-500">Đang tải các đoạn chunk...</div>
-              ) : inspectChunks.length === 0 ? (
-                <div className="p-4 text-center text-heritage-ink-500">Chưa có đoạn chunk nào được lưu trữ.</div>
-              ) : (
-                <div className="space-y-2">
-                  {inspectChunks.map(c => (
-                    <div key={c.id} className="p-2.5 rounded-lg border border-heritage-ivory-300 bg-heritage-ivory-50 text-[11px]">
-                      <div className="flex items-center justify-between text-heritage-red-800 font-bold">
-                        <span>{c.id}</span>
-                        <span className="font-mono text-heritage-ink-500 text-[10px]">{c.provenanceLocator}</span>
-                      </div>
-                      <div className="text-heritage-ink-700 italic mt-1 line-clamp-3">"{c.content}"</div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            <div className="pt-3 border-t border-heritage-ivory-300 flex items-center justify-between">
-              {inspectDoc.approvalStatus === 'APPROVED' && (
+              {/* Modal Footer */}
+              <div className="pt-3 border-t border-heritage-ivory-300 flex items-center justify-between">
+                {inspectDoc.approvalStatus === 'APPROVED' && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const query = `Hãy giới thiệu tóm tắt và ý nghĩa lịch sử của tư liệu "${inspectDoc.title}"`;
+                      setInspectDoc(null);
+                      window.dispatchEvent(new CustomEvent('open-rag-chatbot', {
+                        detail: { initialQuery: query, documentTitle: inspectDoc.title }
+                      }));
+                    }}
+                    className="px-3 py-1.5 rounded-lg bg-heritage-gold-500 hover:bg-heritage-gold-600 text-heritage-red-950 font-bold text-xs flex items-center space-x-1.5 shadow-sm transition-colors"
+                  >
+                    <Bot className="w-3.5 h-3.5" />
+                    <span>Hỏi AI về tư liệu này</span>
+                  </button>
+                )}
                 <button
                   type="button"
-                  onClick={() => {
-                    const query = `Hãy giới thiệu tóm tắt và ý nghĩa lịch sử của tư liệu "${inspectDoc.title}"`;
-                    setInspectDoc(null);
-                    window.dispatchEvent(new CustomEvent('open-rag-chatbot', {
-                      detail: { initialQuery: query, documentTitle: inspectDoc.title }
-                    }));
-                  }}
-                  className="px-3 py-1.5 rounded-lg bg-heritage-gold-500 hover:bg-heritage-gold-600 text-heritage-red-950 font-bold text-xs flex items-center space-x-1.5 shadow-sm transition-colors"
+                  onClick={() => setInspectDoc(null)}
+                  className="px-4 py-2 rounded-lg bg-heritage-red-700 text-white font-medium text-xs ml-auto"
                 >
-                  <Bot className="w-3.5 h-3.5" />
-                  <span>Hỏi AI về tư liệu này</span>
+                  Đóng
                 </button>
-              )}
-              <button
-                type="button"
-                onClick={() => setInspectDoc(null)}
-                className="px-4 py-2 rounded-lg bg-heritage-red-700 text-white font-medium text-xs ml-auto"
-              >
-                Đóng
-              </button>
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        );
+      })()}
 
       {/* Four-Eyes Approval Modal */}
       {approvalDoc && (
