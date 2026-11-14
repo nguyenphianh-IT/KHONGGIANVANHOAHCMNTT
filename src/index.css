@@ -44,6 +44,20 @@
   background: #8B151B;
 }
 
+/* Utilities to hide scrollbars where intended */
+.no-scrollbar::-webkit-scrollbar,
+.scrollbar-none::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+
+.no-scrollbar,
+.scrollbar-none {
+  -ms-overflow-style: none !important;
+  scrollbar-width: none !important;
+}
+
 /* Watermark & subtle motifs */
 .bg-lotus-pattern {
   background-image: radial-gradient(rgba(139, 21, 27, 0.04) 1px, transparent 0);

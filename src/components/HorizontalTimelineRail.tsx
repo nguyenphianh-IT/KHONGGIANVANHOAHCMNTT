@@ -173,30 +173,30 @@ export const HorizontalTimelineRail: React.FC<HorizontalTimelineRailProps> = ({
           </div>
         </div>
 
-        {/* The Horizontal Rail Container (Scrollable on mobile, auto-centered) */}
+        {/* The Horizontal Rail Container (Auto-fitted on desktop, smoothly scrollable on mobile) */}
         <div
           ref={railContainerRef}
-          className="relative overflow-x-auto no-scrollbar py-1 px-1 sm:px-4 select-none"
+          className="relative overflow-x-auto no-scrollbar py-1 px-1 sm:px-2 select-none"
           tabIndex={0}
           aria-label="Thước đo thời gian các mốc son lịch sử"
         >
-          {/* Main Horizontal Track Line */}
-          <div className="relative min-w-[960px] sm:min-w-[1080px] md:min-w-[1180px] flex items-center justify-between py-2.5 sm:py-3">
+          {/* Main Horizontal Track Line - Fits 100% on desktop/tablet, compact min-w on mobile */}
+          <div className="relative w-full min-w-[700px] md:min-w-0 flex items-center justify-between py-2 sm:py-2.5">
             {/* The continuous golden-red track running behind the nodes */}
             <div
-              className="absolute left-6 right-6 top-1/2 -translate-y-1/2 h-1 bg-gradient-to-r from-heritage-red-700 via-heritage-gold-400 to-heritage-red-700 rounded-full shadow-sm z-0"
+              className="absolute left-3 right-3 sm:left-5 sm:right-5 top-1/2 -translate-y-1/2 h-1 bg-gradient-to-r from-heritage-red-700 via-heritage-gold-400 to-heritage-red-700 rounded-full shadow-sm z-0"
             />
 
             {/* Subtle Ruler Calibrations (Small tick marks along the rail) */}
             <div
               aria-hidden="true"
-              className="absolute left-8 right-8 top-1/2 -translate-y-1/2 flex justify-between pointer-events-none z-0 opacity-40"
+              className="absolute left-4 right-4 sm:left-6 sm:right-6 top-1/2 -translate-y-1/2 flex justify-between pointer-events-none z-0 opacity-35"
             >
-              {Array.from({ length: 55 }).map((_, i) => (
+              {Array.from({ length: 49 }).map((_, i) => (
                 <span
                   key={i}
                   className={`w-0.5 bg-heritage-gold-600 ${
-                    i % 5 === 0 ? 'h-2.5' : 'h-1'
+                    i % 4 === 0 ? 'h-2.5' : 'h-1'
                   }`}
                 />
               ))}
@@ -212,12 +212,13 @@ export const HorizontalTimelineRail: React.FC<HorizontalTimelineRailProps> = ({
               return (
                 <div
                   key={event.year || `rail-node-${idx}`}
-                  className="relative flex flex-col items-center z-10"
+                  className="relative flex flex-col items-center z-10 flex-shrink-0"
+                  style={{ width: `${100 / events.length}%` }}
                 >
                   {/* Active Downward Arrow Pointer Indicator */}
                   {isActive && (
-                    <div className="absolute -top-2.5 left-1/2 -translate-x-1/2 text-heritage-red-700 animate-bounce">
-                      <div className="w-2 h-2 bg-heritage-red-700 rotate-45 border-t border-l border-heritage-gold-400 shadow-sm" />
+                    <div className="absolute -top-2 left-1/2 -translate-x-1/2 text-heritage-red-700 animate-bounce">
+                      <div className="w-1.5 h-1.5 bg-heritage-red-700 rotate-45 border-t border-l border-heritage-gold-400 shadow-xs" />
                     </div>
                   )}
 
@@ -230,10 +231,10 @@ export const HorizontalTimelineRail: React.FC<HorizontalTimelineRailProps> = ({
                     }}
                     className={`group relative flex items-center justify-center rounded-full transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-heritage-red-700 ${
                       isActive
-                        ? 'w-10 h-10 sm:w-11 sm:h-11 bg-gradient-to-br from-heritage-red-700 to-heritage-red-900 text-heritage-gold-300 border-2 border-heritage-gold-400 shadow-lg scale-110 sm:scale-115 ring-4 ring-heritage-gold-400/40'
+                        ? 'w-8 h-8 sm:w-9 sm:h-9 bg-gradient-to-br from-heritage-red-700 to-heritage-red-900 text-heritage-gold-300 border-2 border-heritage-gold-400 shadow-md scale-110 ring-2 ring-heritage-gold-400/50'
                         : isPast
-                        ? 'w-7 h-7 sm:w-8 sm:h-8 bg-heritage-red-50 text-heritage-red-800 border-2 border-heritage-red-300 hover:border-heritage-gold-500 hover:scale-105'
-                        : 'w-7 h-7 sm:w-8 sm:h-8 bg-white text-heritage-ink-700 border-2 border-heritage-gold-400/70 hover:border-heritage-red-700 hover:scale-105 shadow-xs'
+                        ? 'w-6 h-6 sm:w-7 sm:h-7 bg-heritage-red-50 text-heritage-red-800 border-1.5 border-heritage-red-300 hover:border-heritage-gold-500 hover:scale-105'
+                        : 'w-6 h-6 sm:w-7 sm:h-7 bg-white text-heritage-ink-700 border-1.5 border-heritage-gold-400/70 hover:border-heritage-red-700 hover:scale-105 shadow-xs'
                     }`}
                     title={`${event.exactDate || event.year}: ${event.title}`}
                     aria-current={isActive ? 'step' : undefined}
@@ -241,15 +242,15 @@ export const HorizontalTimelineRail: React.FC<HorizontalTimelineRailProps> = ({
                     {isMemorial ? (
                       <Star
                         className={`${
-                          isActive ? 'w-4 h-4 text-heritage-gold-300 fill-heritage-gold-400 drop-shadow' : 'w-3.5 h-3.5 text-heritage-gold-500 fill-heritage-gold-400'
+                          isActive ? 'w-3.5 h-3.5 text-heritage-gold-300 fill-heritage-gold-400 drop-shadow' : 'w-3 h-3 text-heritage-gold-500 fill-heritage-gold-400'
                         }`}
                       />
                     ) : (
                       <span
                         className={`font-serif font-black ${
                           isActive
-                            ? 'text-[11px] sm:text-xs tracking-tight'
-                            : 'text-[9px] sm:text-[10px] font-semibold'
+                            ? 'text-[9.5px] sm:text-[10.5px] tracking-tight'
+                            : 'text-[8px] sm:text-[9px] font-semibold'
                         }`}
                       >
                         {nodeLabel}
@@ -257,15 +258,15 @@ export const HorizontalTimelineRail: React.FC<HorizontalTimelineRailProps> = ({
                     )}
                   </button>
 
-                  {/* Milestone Micro-Label below the button */}
+                  {/* Milestone Micro-Label below the button - 2 lines, no truncation */}
                   <div
-                    className={`mt-1 sm:mt-1.5 text-center transition-all duration-200 pointer-events-none max-w-[80px] ${
+                    className={`mt-1 text-center transition-all duration-200 pointer-events-none px-0.5 max-w-[62px] sm:max-w-[74px] md:max-w-[84px] ${
                       isActive
                         ? 'opacity-100 font-bold text-heritage-red-800 scale-105'
-                        : 'opacity-70 text-heritage-ink-600'
+                        : 'opacity-75 text-heritage-ink-700'
                     }`}
                   >
-                    <span className="block text-[9px] sm:text-[10px] leading-tight truncate">
+                    <span className="block text-[7.5px] sm:text-[8.5px] md:text-[9px] leading-[1.12] text-center break-words hyphens-auto">
                       {getMilestoneShortLabel(event)}
                     </span>
                   </div>
