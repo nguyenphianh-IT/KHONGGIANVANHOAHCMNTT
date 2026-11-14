@@ -402,6 +402,183 @@ YÊU CẦU ĐỐI VỚI CÁC TRƯỜNG THCS:
 
   {
     id: 'DOC-HCM-016',
+    title: 'Hồ Chí Minh – Biên niên tiểu sử, Tập 1 (1890–1929)',
+    category: 'bio-career',
+    categoryLabel: 'Chủ tịch Hồ Chí Minh – Tiểu sử và sự nghiệp',
+    authorOrSource: 'Viện Lịch sử Đảng - Học viện Chính trị Quốc gia Hồ Chí Minh (NXB Sự thật)',
+    dateOrEra: '1890 - 1929',
+    status: 'PENDING_REVIEW',
+    isAllowedForRag: false,
+    topics: ['Biên niên tiểu sử', 'Nguyễn Sinh Cung', 'Nguyễn Tất Thành', 'Nguyễn Ái Quốc', 'Bến Nhà Rồng', 'Đại hội Tours', 'Hội VN Cách mạng Thanh niên'],
+    sourceUrl: 'https://hochiminh.vn/book/cuoc-doi-su-nghiep/bien-nien-tieu-su-ho-chi-minh/ho-chi-minh-bien-nien-tieu-su-tap-1-19-5-1890-1929-21',
+    content: `Hồ sơ thư mục và trích yếu mốc niên biểu lịch sử giai đoạn 1890 - 1929:
+- 19/05/1890: Cậu bé Nguyễn Sinh Cung cất tiếng khóc chào đời tại quê ngoại làng Hoàng Trù (xã Kim Liên, huyện Nam Đàn, tỉnh Nghệ An). Thân phụ là cụ Phó bảng Nguyễn Sinh Sắc, thân mẫu là bà Hoàng Thị Loan.
+- 05/06/1911: Người thanh niên Nguyễn Tất Thành với tên Văn Ba bước lên con tàu Đô đốc Latouche-Tréville tại Bến cảng Nhà Rồng (Sài Gòn), bắt đầu cuộc trường chinh tìm đường cứu nước.
+- 18/06/1919: Thay mặt Hội những người Việt Nam yêu nước tại Pháp, Nguyễn Ái Quốc gửi bản "Yêu sách của nhân dân An Nam" 8 điểm tới Hội nghị Versailles.
+- Tháng 12/1920: Tại Đại hội XVIII Đảng Xã hội Pháp ở Tours, Nguyễn Ái Quốc bỏ phiếu tán thành gia nhập Quốc tế III và sáng lập Đảng Cộng sản Pháp.
+- Tháng 6/1925: Sáng lập Hội Việt Nam Cách mạng Thanh niên tại Quảng Châu (Trung Quốc), ra báo Thanh Niên (21/6/1925) và xuất bản Đường Kách mệnh (1927).
+(Ghi chú: Bản quyền chuyên khảo thuộc NXB Chính trị quốc gia Sự thật. Lưu trữ chế độ METADATA_ONLY, chờ phê duyệt độc lập).`,
+    metadata: {
+      copyrightStatus: 'METADATA_ONLY',
+      volume: 'Tập 1 (1890 - 1929)',
+      isbn: '978-604-57-2384-5',
+      batch: 'BATCH_A'
+    }
+  },
+
+  {
+    id: 'DOC-HCM-017',
+    title: 'Hồ Chí Minh – Biên niên tiểu sử, Tập 2 (1930–9/1945)',
+    category: 'bio-career',
+    categoryLabel: 'Chủ tịch Hồ Chí Minh – Tiểu sử và sự nghiệp',
+    authorOrSource: 'Viện Lịch sử Đảng - Học viện Chính trị Quốc gia Hồ Chí Minh (NXB Sự thật)',
+    dateOrEra: '1930 - 9/1945',
+    status: 'PENDING_REVIEW',
+    isAllowedForRag: false,
+    topics: ['Biên niên tiểu sử', 'Thành lập Đảng', 'Hội nghị Trung ương 8', 'Pác Bó 1941', 'Mặt trận Việt Minh', 'Cách mạng Tháng Tám', 'Tuyên ngôn Độc lập'],
+    sourceUrl: 'https://hochiminh.vn/book/cuoc-doi-su-nghiep/bien-nien-tieu-su-ho-chi-minh/ho-chi-minh-bien-nien-tieu-su-tap-2-1930-9-1945-22',
+    content: `Hồ sơ thư mục và trích yếu mốc niên biểu lịch sử giai đoạn 1930 - tháng 9/1945:
+- 06/01 - 07/02/1930: Nguyễn Ái Quốc chủ trì Hội nghị hợp nhất các tổ chức cộng sản tại Cửu Long (Hương Cảng, Trung Quốc), thành lập Đảng Cộng sản Việt Nam và thông qua Chánh cương vắn tắt, Sách lược vắn tắt.
+- 28/01/1941: Sau 30 năm bôn ba, Người vượt qua mốc 108 biên giới Việt - Trung về đến Pác Bó (Trường Hà, Hà Quảng, Cao Bằng), trực tiếp lãnh đạo cách mạng Việt Nam.
+- 10 - 19/05/1941: Chủ trì Hội nghị Trung ương 8 tại lán Khuổi Nặm, quyết định đặt nhiệm vụ giải phóng dân tộc lên hàng đầu và thành lập Mặt trận Việt Minh (19/5/1941).
+- 22/12/1944: Chỉ thị thành lập Đội Việt Nam Tuyên truyền Giải phóng quân tại nguyên quán Cao Bằng.
+- Tháng 8/1945: Lãnh đạo Tổng khởi nghĩa giành chính quyền thắng lợi trong toàn quốc.
+- 02/09/1945: Đọc bản Tuyên ngôn Độc lập tại Quảng trường Ba Đình, khai sinh nước Việt Nam Dân chủ Cộng hòa.
+(Ghi chú: Bản quyền chuyên khảo thuộc NXB Chính trị quốc gia Sự thật. Lưu trữ chế độ METADATA_ONLY, chờ phê duyệt độc lập).`,
+    metadata: {
+      copyrightStatus: 'METADATA_ONLY',
+      volume: 'Tập 2 (1930 - 9/1945)',
+      isbn: '978-604-57-2385-2',
+      batch: 'BATCH_A'
+    }
+  },
+
+  {
+    id: 'DOC-HCM-018',
+    title: 'Đường Kách mệnh (1927)',
+    category: 'ideology-ethics',
+    categoryLabel: 'Tư tưởng, đạo đức, phong cách Hồ Chí Minh',
+    authorOrSource: 'Lãnh tụ Nguyễn Ái Quốc (Bảo vật Quốc gia số 1)',
+    dateOrEra: '1927',
+    status: 'PENDING_REVIEW',
+    isAllowedForRag: false,
+    topics: ['Đường Kách mệnh', 'Tư cách người cách mệnh', 'Quảng Châu', 'Lý luận và thực tiễn', 'Đoàn kết', 'Bảo vật Quốc gia'],
+    sourceUrl: 'https://hochiminh.vn/tac-pham-cua-ho-chi-minh',
+    content: `Tác phẩm Đường Kách mệnh xuất bản năm 1927 tại Quảng Châu, là cẩm nang chính trị nền tảng chuẩn bị cho việc thành lập Đảng.
+1. Tư cách một người cách mệnh:
+- Tự mình phải: Cần kiệm. Hòa mà không tư. Cả quyết sửa lỗi mình. Cẩn thận mà không nhút nhát. Hay hỏi. Nhẫn nại. Vị công vong tư. Không hiếu danh, không kiêu ngạo. Nói thì phải làm. Giữ chủ nghĩa cho vững. Hy sinh. Ít lòng tham muốn về vật chất. Giữ bí mật.
+- Đối người phải: Với từng người thì khoan thứ. Với đoàn thể thì nghiêm. Có lòng bày vẽ cho người. Trực mà không táo bạo. Đặng xem xét người.
+- Làm việc phải: Xem xét hoàn cảnh kỹ càng. Quyết đoán. Dũng cảm. Phục tùng đoàn thể.
+2. Vai trò của lý luận tiền phong: "Cách mệnh trước hết phải có đảng cách mệnh, để trong thì vận động và tổ chức dân chúng, ngoài thì liên lạc với dân tộc bị áp bức và vô sản giai cấp mọi nơi. Đảng có vững cách mệnh mới thành công, cũng như người cầm lái có vững thuyền mới chạy".`,
+    metadata: {
+      copyrightStatus: 'PUBLIC_DOMAIN_CONFIRMED',
+      nationalTreasureNo: 1,
+      batch: 'BATCH_A'
+    }
+  },
+
+  {
+    id: 'DOC-HCM-019',
+    title: 'Các văn kiện thành lập Đảng năm 1930',
+    category: 'ideology-ethics',
+    categoryLabel: 'Tư tưởng, đạo đức, phong cách Hồ Chí Minh',
+    authorOrSource: 'Đồng chí Nguyễn Ái Quốc chủ trì Hội nghị thành lập Đảng',
+    dateOrEra: '03/02/1930',
+    status: 'PENDING_REVIEW',
+    isAllowedForRag: false,
+    topics: ['Chánh cương vắn tắt', 'Sách lược vắn tắt', 'Chương trình tóm tắt', 'Điều lệ vắn tắt', 'Hương Cảng 1930', 'Cương lĩnh chính trị đầu tiên'],
+    sourceUrl: 'https://tulieuvankien.dangcongsan.vn',
+    content: `Các văn kiện được Hội nghị hợp nhất thông qua (từ 06/01 đến 07/02/1930 tại Cửu Long, Hương Cảng):
+1. Chánh cương vắn tắt của Đảng: Chủ trương làm tư sản dân quyền cách mạng và thổ địa cách mạng để đi tới xã hội cộng sản. Đánh đổ đế quốc chủ nghĩa Pháp và bọn phong kiến, làm cho nước Nam hoàn toàn độc lập.
+2. Sách lược vắn tắt của Đảng: Đảng là đội tiên phong của vô sản giai cấp; phải thu phục cho được đại bộ phận giai cấp mình, lôi kéo nông dân và liên lạc với tiểu tư sản, trí thức, trung nông.
+3. Chương trình tóm tắt & Điều lệ vắn tắt của Đảng: Xác định mục tiêu giải phóng dân tộc, quyền tự do dân chủ và nguyên tắc tổ chức của Đảng tiên phong.
+4. Lời kêu gọi nhân dịp thành lập Đảng: Hiệu triệu công nhân, nông dân, binh lính, thanh niên, học sinh đoàn kết dưới ngọn cờ của Đảng.`,
+    metadata: {
+      copyrightStatus: 'PUBLIC_DOMAIN_CONFIRMED',
+      subDocumentsCount: 5,
+      batch: 'BATCH_A'
+    }
+  },
+
+  {
+    id: 'DOC-HCM-020',
+    title: 'Cần, Kiệm, Liêm, Chính (1949)',
+    category: 'ideology-ethics',
+    categoryLabel: 'Tư tưởng, đạo đức, phong cách Hồ Chí Minh',
+    authorOrSource: 'Chủ tịch Hồ Chí Minh (Bút danh Lê Quyết Thắng - Báo Cứu Quốc)',
+    dateOrEra: 'Tháng 5 - 6/1949',
+    status: 'PENDING_REVIEW',
+    isAllowedForRag: false,
+    topics: ['Cần', 'Kiệm', 'Liêm', 'Chính', 'Chí công vô tư', 'Lê Quyết Thắng', 'Đạo đức công dân', 'Bốn mùa của trời'],
+    sourceUrl: 'https://hochiminh.vn/upload/3000001/20251024/65e0340736cc411805ab4818604f62f1HO_CHI_MINH_TOAN_TAP_-_TAP_6.pdf',
+    content: `Tác phẩm gồm 4 bài báo xuất bản trên Báo Cứu Quốc từ ngày 30/5 đến 02/06/1949 dưới bút danh Lê Quyết Thắng:
+"Trời có bốn mùa: Xuân, Hạ, Thu, Đông.
+Đất có bốn phương: Đông, Tây, Nam, Bắc.
+Người có bốn đức: Cần, Kiệm, Liêm, Chính.
+Thiếu một mùa, thì không thành trời.
+Thiếu một phương, thì không thành đất.
+Thiếu một đức, thì không thành người".
+- Cần: Siêng năng, chăm chỉ, cố gắng dẻo dai. Lao động có kế hoạch, có sáng kiến, có năng suất cao.
+- Kiệm: Tiết kiệm thì giờ, tiền của, công sức của dân và của nước. Tiết kiệm không phải là bủn xỉn, keo kiệt.
+- Liêm: Trong sạch, không tham lam địa vị, tiền tài. Không lấy của công làm của tư.
+- Chính: Thẳng thắn, đứng đắn. Việc thiện dù nhỏ mấy cũng làm, việc ác dù nhỏ mấy cũng tránh.
+Bốn đức tính gắn bó mật thiết tạo nên nền tảng đạo đức cách mạng của người cán bộ và công dân.`,
+    metadata: {
+      copyrightStatus: 'PUBLIC_DOMAIN_CONFIRMED',
+      pseudonym: 'Lê Quyết Thắng',
+      batch: 'BATCH_A'
+    }
+  },
+
+  {
+    id: 'DOC-HCM-021',
+    title: 'Lời kêu gọi thi đua ái quốc (11/6/1948)',
+    category: 'school-education',
+    categoryLabel: 'Giáo dục truyền thống & Thi đua ái quốc học đường',
+    authorOrSource: 'Chủ tịch Hồ Chí Minh (Báo Cứu Quốc số 968)',
+    dateOrEra: '11/06/1948',
+    status: 'PENDING_REVIEW',
+    isAllowedForRag: false,
+    topics: ['Thi đua ái quốc', 'Diệt giặc đói', 'Diệt giặc dốt', 'Diệt giặc ngoại xâm', 'Người người thi đua', 'Thi đua là yêu nước'],
+    sourceUrl: 'https://hochiminh.vn',
+    content: `Ngày 11 tháng 6 năm 1948, Chủ tịch Hồ Chí Minh ra Lời kêu gọi thi đua ái quốc để động viên toàn thể dân tộc vượt qua muôn vàn gian khổ:
+1. Mục đích thi đua: "Diệt giặc đói, diệt giặc dốt, diệt giặc ngoại xâm".
+2. Cách làm: Dựa vào lực lượng của dân, tinh thần của dân để gây hạnh phúc cho dân.
+3. Đối tượng: Bất kỳ ai - già, trẻ, gái, trai, giàu, nghèo, quân, dân - ai nấy đều thi đua làm tròn bổn phận của mình.
+4. Khẩu hiệu bất hủ: "Thi đua là yêu nước, yêu nước thì phải thi đua. Và những người thi đua là những người yêu nước nhất".
+Đối với học đường: Thầy thi đua dạy tốt, trò thi đua học tốt, rèn luyện chăm chỉ để mai sau kiến thiết nước nhà.`,
+    metadata: {
+      copyrightStatus: 'PUBLIC_DOMAIN_CONFIRMED',
+      newspaperNo: '968',
+      batch: 'BATCH_A'
+    }
+  },
+
+  {
+    id: 'DOC-HCM-022',
+    title: 'Đạo đức cách mạng (1958)',
+    category: 'ideology-ethics',
+    categoryLabel: 'Tư tưởng, đạo đức, phong cách Hồ Chí Minh',
+    authorOrSource: 'Chủ tịch Hồ Chí Minh (Bút danh Trần Lực - Tạp chí Học tập số 12/1958)',
+    dateOrEra: 'Tháng 12/1958',
+    status: 'PENDING_REVIEW',
+    isAllowedForRag: false,
+    topics: ['Đạo đức cách mạng', 'Chống chủ nghĩa cá nhân', 'Trần Lực', 'Tạp chí Học tập', 'Ngọc càng mài càng sáng', 'Đặt lợi ích nhân dân lên trên hết'],
+    sourceUrl: 'https://hochiminh.vn/tac-pham-cua-ho-chi-minh/nang-cao-dao-duc-cach-mang-quet-sach-chu-nghia-ca-nhan-7748',
+    content: `Tác phẩm đăng trên Tạp chí Học tập số 12/1958 dưới bút danh Trần Lực:
+1. Vị trí nền tảng của đạo đức: "Người cách mạng phải có đạo đức, không có đạo đức thì dù tài giỏi mấy cũng không lãnh đạo được nhân dân. Cũng như sông thì có nguồn mới có nước, không có nguồn thì sông cạn. Cây phải có gốc, không có gốc thì cây héo".
+2. Bản chất đạo đức cách mạng: Quyết tâm suốt đời đấu tranh cho Đảng, cho cách mạng; đặt lợi ích của Đảng và của nhân dân lao động lên trên, lên trước lợi ích riêng của cá nhân mình.
+3. Chống chủ nghĩa cá nhân: Chủ nghĩa cá nhân là thứ vi trùng rất độc, đẻ ra hàng trăm thứ bệnh hư hỏng (khoe khoang, tham ô, lười biếng, độc đoán). Xây dựng CNXH không thể tách rời cuộc đấu tranh trừ bỏ chủ nghĩa cá nhân.
+4. Phương pháp rèn luyện: "Đạo đức cách mạng không phải trên trời sa xuống. Nó do đấu tranh, rèn luyện bền bỉ hàng ngày mà phát triển và củng cố. Cũng như ngọc càng mài càng sáng, vàng càng luyện càng trong".`,
+    metadata: {
+      copyrightStatus: 'PUBLIC_DOMAIN_CONFIRMED',
+      journalNo: '12/1958',
+      batch: 'BATCH_A'
+    }
+  },
+
+  {
+    id: 'DOC-HCM-023',
     title: 'Bản Yêu sách của nhân dân An Nam gửi Hội nghị Versailles (18/6/1919)',
     category: 'bio-career',
     categoryLabel: 'Chủ tịch Hồ Chí Minh – Tiểu sử và sự nghiệp',
@@ -432,7 +609,7 @@ Bản Yêu sách gồm 8 điểm đòi quyền tự do, bình đẳng và dân c
   },
 
   {
-    id: 'DOC-HCM-017',
+    id: 'DOC-HCM-024',
     title: 'Thành lập Hội Việt Nam Cách mạng Thanh niên (6/1925) & Báo Thanh Niên',
     category: 'bio-career',
     categoryLabel: 'Chủ tịch Hồ Chí Minh – Tiểu sử và sự nghiệp',
@@ -459,7 +636,7 @@ Hội Việt Nam Cách mạng Thanh niên là cầu nối truyền bá chủ ngh
   },
 
   {
-    id: 'DOC-HCM-018',
+    id: 'DOC-HCM-025',
     title: 'Mốc son Lịch sử Năm 1968: Kháng chiến Chống Mỹ & Tấm lòng Bác Hồ vì Sức khỏe Nhân dân',
     category: 'ideology-ethics',
     categoryLabel: 'Tư tưởng, đạo đức, phong cách Hồ Chí Minh',

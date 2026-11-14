@@ -1322,6 +1322,176 @@ Y\xCAU C\u1EA6U \u0110\u1ED0I V\u1EDAI C\xC1C TR\u01AF\u1EDCNG THCS:
   },
   {
     id: "DOC-HCM-016",
+    title: "H\u1ED3 Ch\xED Minh \u2013 Bi\xEAn ni\xEAn ti\u1EC3u s\u1EED, T\u1EADp 1 (1890\u20131929)",
+    category: "bio-career",
+    categoryLabel: "Ch\u1EE7 t\u1ECBch H\u1ED3 Ch\xED Minh \u2013 Ti\u1EC3u s\u1EED v\xE0 s\u1EF1 nghi\u1EC7p",
+    authorOrSource: "Vi\u1EC7n L\u1ECBch s\u1EED \u0110\u1EA3ng - H\u1ECDc vi\u1EC7n Ch\xEDnh tr\u1ECB Qu\u1ED1c gia H\u1ED3 Ch\xED Minh (NXB S\u1EF1 th\u1EADt)",
+    dateOrEra: "1890 - 1929",
+    status: "PENDING_REVIEW",
+    isAllowedForRag: false,
+    topics: ["Bi\xEAn ni\xEAn ti\u1EC3u s\u1EED", "Nguy\u1EC5n Sinh Cung", "Nguy\u1EC5n T\u1EA5t Th\xE0nh", "Nguy\u1EC5n \xC1i Qu\u1ED1c", "B\u1EBFn Nh\xE0 R\u1ED3ng", "\u0110\u1EA1i h\u1ED9i Tours", "H\u1ED9i VN C\xE1ch m\u1EA1ng Thanh ni\xEAn"],
+    sourceUrl: "https://hochiminh.vn/book/cuoc-doi-su-nghiep/bien-nien-tieu-su-ho-chi-minh/ho-chi-minh-bien-nien-tieu-su-tap-1-19-5-1890-1929-21",
+    content: `H\u1ED3 s\u01A1 th\u01B0 m\u1EE5c v\xE0 tr\xEDch y\u1EBFu m\u1ED1c ni\xEAn bi\u1EC3u l\u1ECBch s\u1EED giai \u0111o\u1EA1n 1890 - 1929:
+- 19/05/1890: C\u1EADu b\xE9 Nguy\u1EC5n Sinh Cung c\u1EA5t ti\u1EBFng kh\xF3c ch\xE0o \u0111\u1EDDi t\u1EA1i qu\xEA ngo\u1EA1i l\xE0ng Ho\xE0ng Tr\xF9 (x\xE3 Kim Li\xEAn, huy\u1EC7n Nam \u0110\xE0n, t\u1EC9nh Ngh\u1EC7 An). Th\xE2n ph\u1EE5 l\xE0 c\u1EE5 Ph\xF3 b\u1EA3ng Nguy\u1EC5n Sinh S\u1EAFc, th\xE2n m\u1EABu l\xE0 b\xE0 Ho\xE0ng Th\u1ECB Loan.
+- 05/06/1911: Ng\u01B0\u1EDDi thanh ni\xEAn Nguy\u1EC5n T\u1EA5t Th\xE0nh v\u1EDBi t\xEAn V\u0103n Ba b\u01B0\u1EDBc l\xEAn con t\xE0u \u0110\xF4 \u0111\u1ED1c Latouche-Tr\xE9ville t\u1EA1i B\u1EBFn c\u1EA3ng Nh\xE0 R\u1ED3ng (S\xE0i G\xF2n), b\u1EAFt \u0111\u1EA7u cu\u1ED9c tr\u01B0\u1EDDng chinh t\xECm \u0111\u01B0\u1EDDng c\u1EE9u n\u01B0\u1EDBc.
+- 18/06/1919: Thay m\u1EB7t H\u1ED9i nh\u1EEFng ng\u01B0\u1EDDi Vi\u1EC7t Nam y\xEAu n\u01B0\u1EDBc t\u1EA1i Ph\xE1p, Nguy\u1EC5n \xC1i Qu\u1ED1c g\u1EEDi b\u1EA3n "Y\xEAu s\xE1ch c\u1EE7a nh\xE2n d\xE2n An Nam" 8 \u0111i\u1EC3m t\u1EDBi H\u1ED9i ngh\u1ECB Versailles.
+- Th\xE1ng 12/1920: T\u1EA1i \u0110\u1EA1i h\u1ED9i XVIII \u0110\u1EA3ng X\xE3 h\u1ED9i Ph\xE1p \u1EDF Tours, Nguy\u1EC5n \xC1i Qu\u1ED1c b\u1ECF phi\u1EBFu t\xE1n th\xE0nh gia nh\u1EADp Qu\u1ED1c t\u1EBF III v\xE0 s\xE1ng l\u1EADp \u0110\u1EA3ng C\u1ED9ng s\u1EA3n Ph\xE1p.
+- Th\xE1ng 6/1925: S\xE1ng l\u1EADp H\u1ED9i Vi\u1EC7t Nam C\xE1ch m\u1EA1ng Thanh ni\xEAn t\u1EA1i Qu\u1EA3ng Ch\xE2u (Trung Qu\u1ED1c), ra b\xE1o Thanh Ni\xEAn (21/6/1925) v\xE0 xu\u1EA5t b\u1EA3n \u0110\u01B0\u1EDDng K\xE1ch m\u1EC7nh (1927).
+(Ghi ch\xFA: B\u1EA3n quy\u1EC1n chuy\xEAn kh\u1EA3o thu\u1ED9c NXB Ch\xEDnh tr\u1ECB qu\u1ED1c gia S\u1EF1 th\u1EADt. L\u01B0u tr\u1EEF ch\u1EBF \u0111\u1ED9 METADATA_ONLY, ch\u1EDD ph\xEA duy\u1EC7t \u0111\u1ED9c l\u1EADp).`,
+    metadata: {
+      copyrightStatus: "METADATA_ONLY",
+      volume: "T\u1EADp 1 (1890 - 1929)",
+      isbn: "978-604-57-2384-5",
+      batch: "BATCH_A"
+    }
+  },
+  {
+    id: "DOC-HCM-017",
+    title: "H\u1ED3 Ch\xED Minh \u2013 Bi\xEAn ni\xEAn ti\u1EC3u s\u1EED, T\u1EADp 2 (1930\u20139/1945)",
+    category: "bio-career",
+    categoryLabel: "Ch\u1EE7 t\u1ECBch H\u1ED3 Ch\xED Minh \u2013 Ti\u1EC3u s\u1EED v\xE0 s\u1EF1 nghi\u1EC7p",
+    authorOrSource: "Vi\u1EC7n L\u1ECBch s\u1EED \u0110\u1EA3ng - H\u1ECDc vi\u1EC7n Ch\xEDnh tr\u1ECB Qu\u1ED1c gia H\u1ED3 Ch\xED Minh (NXB S\u1EF1 th\u1EADt)",
+    dateOrEra: "1930 - 9/1945",
+    status: "PENDING_REVIEW",
+    isAllowedForRag: false,
+    topics: ["Bi\xEAn ni\xEAn ti\u1EC3u s\u1EED", "Th\xE0nh l\u1EADp \u0110\u1EA3ng", "H\u1ED9i ngh\u1ECB Trung \u01B0\u01A1ng 8", "P\xE1c B\xF3 1941", "M\u1EB7t tr\u1EADn Vi\u1EC7t Minh", "C\xE1ch m\u1EA1ng Th\xE1ng T\xE1m", "Tuy\xEAn ng\xF4n \u0110\u1ED9c l\u1EADp"],
+    sourceUrl: "https://hochiminh.vn/book/cuoc-doi-su-nghiep/bien-nien-tieu-su-ho-chi-minh/ho-chi-minh-bien-nien-tieu-su-tap-2-1930-9-1945-22",
+    content: `H\u1ED3 s\u01A1 th\u01B0 m\u1EE5c v\xE0 tr\xEDch y\u1EBFu m\u1ED1c ni\xEAn bi\u1EC3u l\u1ECBch s\u1EED giai \u0111o\u1EA1n 1930 - th\xE1ng 9/1945:
+- 06/01 - 07/02/1930: Nguy\u1EC5n \xC1i Qu\u1ED1c ch\u1EE7 tr\xEC H\u1ED9i ngh\u1ECB h\u1EE3p nh\u1EA5t c\xE1c t\u1ED5 ch\u1EE9c c\u1ED9ng s\u1EA3n t\u1EA1i C\u1EEDu Long (H\u01B0\u01A1ng C\u1EA3ng, Trung Qu\u1ED1c), th\xE0nh l\u1EADp \u0110\u1EA3ng C\u1ED9ng s\u1EA3n Vi\u1EC7t Nam v\xE0 th\xF4ng qua Ch\xE1nh c\u01B0\u01A1ng v\u1EAFn t\u1EAFt, S\xE1ch l\u01B0\u1EE3c v\u1EAFn t\u1EAFt.
+- 28/01/1941: Sau 30 n\u0103m b\xF4n ba, Ng\u01B0\u1EDDi v\u01B0\u1EE3t qua m\u1ED1c 108 bi\xEAn gi\u1EDBi Vi\u1EC7t - Trung v\u1EC1 \u0111\u1EBFn P\xE1c B\xF3 (Tr\u01B0\u1EDDng H\xE0, H\xE0 Qu\u1EA3ng, Cao B\u1EB1ng), tr\u1EF1c ti\u1EBFp l\xE3nh \u0111\u1EA1o c\xE1ch m\u1EA1ng Vi\u1EC7t Nam.
+- 10 - 19/05/1941: Ch\u1EE7 tr\xEC H\u1ED9i ngh\u1ECB Trung \u01B0\u01A1ng 8 t\u1EA1i l\xE1n Khu\u1ED5i N\u1EB7m, quy\u1EBFt \u0111\u1ECBnh \u0111\u1EB7t nhi\u1EC7m v\u1EE5 gi\u1EA3i ph\xF3ng d\xE2n t\u1ED9c l\xEAn h\xE0ng \u0111\u1EA7u v\xE0 th\xE0nh l\u1EADp M\u1EB7t tr\u1EADn Vi\u1EC7t Minh (19/5/1941).
+- 22/12/1944: Ch\u1EC9 th\u1ECB th\xE0nh l\u1EADp \u0110\u1ED9i Vi\u1EC7t Nam Tuy\xEAn truy\u1EC1n Gi\u1EA3i ph\xF3ng qu\xE2n t\u1EA1i nguy\xEAn qu\xE1n Cao B\u1EB1ng.
+- Th\xE1ng 8/1945: L\xE3nh \u0111\u1EA1o T\u1ED5ng kh\u1EDFi ngh\u0129a gi\xE0nh ch\xEDnh quy\u1EC1n th\u1EAFng l\u1EE3i trong to\xE0n qu\u1ED1c.
+- 02/09/1945: \u0110\u1ECDc b\u1EA3n Tuy\xEAn ng\xF4n \u0110\u1ED9c l\u1EADp t\u1EA1i Qu\u1EA3ng tr\u01B0\u1EDDng Ba \u0110\xECnh, khai sinh n\u01B0\u1EDBc Vi\u1EC7t Nam D\xE2n ch\u1EE7 C\u1ED9ng h\xF2a.
+(Ghi ch\xFA: B\u1EA3n quy\u1EC1n chuy\xEAn kh\u1EA3o thu\u1ED9c NXB Ch\xEDnh tr\u1ECB qu\u1ED1c gia S\u1EF1 th\u1EADt. L\u01B0u tr\u1EEF ch\u1EBF \u0111\u1ED9 METADATA_ONLY, ch\u1EDD ph\xEA duy\u1EC7t \u0111\u1ED9c l\u1EADp).`,
+    metadata: {
+      copyrightStatus: "METADATA_ONLY",
+      volume: "T\u1EADp 2 (1930 - 9/1945)",
+      isbn: "978-604-57-2385-2",
+      batch: "BATCH_A"
+    }
+  },
+  {
+    id: "DOC-HCM-018",
+    title: "\u0110\u01B0\u1EDDng K\xE1ch m\u1EC7nh (1927)",
+    category: "ideology-ethics",
+    categoryLabel: "T\u01B0 t\u01B0\u1EDFng, \u0111\u1EA1o \u0111\u1EE9c, phong c\xE1ch H\u1ED3 Ch\xED Minh",
+    authorOrSource: "L\xE3nh t\u1EE5 Nguy\u1EC5n \xC1i Qu\u1ED1c (B\u1EA3o v\u1EADt Qu\u1ED1c gia s\u1ED1 1)",
+    dateOrEra: "1927",
+    status: "PENDING_REVIEW",
+    isAllowedForRag: false,
+    topics: ["\u0110\u01B0\u1EDDng K\xE1ch m\u1EC7nh", "T\u01B0 c\xE1ch ng\u01B0\u1EDDi c\xE1ch m\u1EC7nh", "Qu\u1EA3ng Ch\xE2u", "L\xFD lu\u1EADn v\xE0 th\u1EF1c ti\u1EC5n", "\u0110o\xE0n k\u1EBFt", "B\u1EA3o v\u1EADt Qu\u1ED1c gia"],
+    sourceUrl: "https://hochiminh.vn/tac-pham-cua-ho-chi-minh",
+    content: `T\xE1c ph\u1EA9m \u0110\u01B0\u1EDDng K\xE1ch m\u1EC7nh xu\u1EA5t b\u1EA3n n\u0103m 1927 t\u1EA1i Qu\u1EA3ng Ch\xE2u, l\xE0 c\u1EA9m nang ch\xEDnh tr\u1ECB n\u1EC1n t\u1EA3ng chu\u1EA9n b\u1ECB cho vi\u1EC7c th\xE0nh l\u1EADp \u0110\u1EA3ng.
+1. T\u01B0 c\xE1ch m\u1ED9t ng\u01B0\u1EDDi c\xE1ch m\u1EC7nh:
+- T\u1EF1 m\xECnh ph\u1EA3i: C\u1EA7n ki\u1EC7m. H\xF2a m\xE0 kh\xF4ng t\u01B0. C\u1EA3 quy\u1EBFt s\u1EEDa l\u1ED7i m\xECnh. C\u1EA9n th\u1EADn m\xE0 kh\xF4ng nh\xFAt nh\xE1t. Hay h\u1ECFi. Nh\u1EABn n\u1EA1i. V\u1ECB c\xF4ng vong t\u01B0. Kh\xF4ng hi\u1EBFu danh, kh\xF4ng ki\xEAu ng\u1EA1o. N\xF3i th\xEC ph\u1EA3i l\xE0m. Gi\u1EEF ch\u1EE7 ngh\u0129a cho v\u1EEFng. Hy sinh. \xCDt l\xF2ng tham mu\u1ED1n v\u1EC1 v\u1EADt ch\u1EA5t. Gi\u1EEF b\xED m\u1EADt.
+- \u0110\u1ED1i ng\u01B0\u1EDDi ph\u1EA3i: V\u1EDBi t\u1EEBng ng\u01B0\u1EDDi th\xEC khoan th\u1EE9. V\u1EDBi \u0111o\xE0n th\u1EC3 th\xEC nghi\xEAm. C\xF3 l\xF2ng b\xE0y v\u1EBD cho ng\u01B0\u1EDDi. Tr\u1EF1c m\xE0 kh\xF4ng t\xE1o b\u1EA1o. \u0110\u1EB7ng xem x\xE9t ng\u01B0\u1EDDi.
+- L\xE0m vi\u1EC7c ph\u1EA3i: Xem x\xE9t ho\xE0n c\u1EA3nh k\u1EF9 c\xE0ng. Quy\u1EBFt \u0111o\xE1n. D\u0169ng c\u1EA3m. Ph\u1EE5c t\xF9ng \u0111o\xE0n th\u1EC3.
+2. Vai tr\xF2 c\u1EE7a l\xFD lu\u1EADn ti\u1EC1n phong: "C\xE1ch m\u1EC7nh tr\u01B0\u1EDBc h\u1EBFt ph\u1EA3i c\xF3 \u0111\u1EA3ng c\xE1ch m\u1EC7nh, \u0111\u1EC3 trong th\xEC v\u1EADn \u0111\u1ED9ng v\xE0 t\u1ED5 ch\u1EE9c d\xE2n ch\xFAng, ngo\xE0i th\xEC li\xEAn l\u1EA1c v\u1EDBi d\xE2n t\u1ED9c b\u1ECB \xE1p b\u1EE9c v\xE0 v\xF4 s\u1EA3n giai c\u1EA5p m\u1ECDi n\u01A1i. \u0110\u1EA3ng c\xF3 v\u1EEFng c\xE1ch m\u1EC7nh m\u1EDBi th\xE0nh c\xF4ng, c\u0169ng nh\u01B0 ng\u01B0\u1EDDi c\u1EA7m l\xE1i c\xF3 v\u1EEFng thuy\u1EC1n m\u1EDBi ch\u1EA1y".`,
+    metadata: {
+      copyrightStatus: "PUBLIC_DOMAIN_CONFIRMED",
+      nationalTreasureNo: 1,
+      batch: "BATCH_A"
+    }
+  },
+  {
+    id: "DOC-HCM-019",
+    title: "C\xE1c v\u0103n ki\u1EC7n th\xE0nh l\u1EADp \u0110\u1EA3ng n\u0103m 1930",
+    category: "ideology-ethics",
+    categoryLabel: "T\u01B0 t\u01B0\u1EDFng, \u0111\u1EA1o \u0111\u1EE9c, phong c\xE1ch H\u1ED3 Ch\xED Minh",
+    authorOrSource: "\u0110\u1ED3ng ch\xED Nguy\u1EC5n \xC1i Qu\u1ED1c ch\u1EE7 tr\xEC H\u1ED9i ngh\u1ECB th\xE0nh l\u1EADp \u0110\u1EA3ng",
+    dateOrEra: "03/02/1930",
+    status: "PENDING_REVIEW",
+    isAllowedForRag: false,
+    topics: ["Ch\xE1nh c\u01B0\u01A1ng v\u1EAFn t\u1EAFt", "S\xE1ch l\u01B0\u1EE3c v\u1EAFn t\u1EAFt", "Ch\u01B0\u01A1ng tr\xECnh t\xF3m t\u1EAFt", "\u0110i\u1EC1u l\u1EC7 v\u1EAFn t\u1EAFt", "H\u01B0\u01A1ng C\u1EA3ng 1930", "C\u01B0\u01A1ng l\u0129nh ch\xEDnh tr\u1ECB \u0111\u1EA7u ti\xEAn"],
+    sourceUrl: "https://tulieuvankien.dangcongsan.vn",
+    content: `C\xE1c v\u0103n ki\u1EC7n \u0111\u01B0\u1EE3c H\u1ED9i ngh\u1ECB h\u1EE3p nh\u1EA5t th\xF4ng qua (t\u1EEB 06/01 \u0111\u1EBFn 07/02/1930 t\u1EA1i C\u1EEDu Long, H\u01B0\u01A1ng C\u1EA3ng):
+1. Ch\xE1nh c\u01B0\u01A1ng v\u1EAFn t\u1EAFt c\u1EE7a \u0110\u1EA3ng: Ch\u1EE7 tr\u01B0\u01A1ng l\xE0m t\u01B0 s\u1EA3n d\xE2n quy\u1EC1n c\xE1ch m\u1EA1ng v\xE0 th\u1ED5 \u0111\u1ECBa c\xE1ch m\u1EA1ng \u0111\u1EC3 \u0111i t\u1EDBi x\xE3 h\u1ED9i c\u1ED9ng s\u1EA3n. \u0110\xE1nh \u0111\u1ED5 \u0111\u1EBF qu\u1ED1c ch\u1EE7 ngh\u0129a Ph\xE1p v\xE0 b\u1ECDn phong ki\u1EBFn, l\xE0m cho n\u01B0\u1EDBc Nam ho\xE0n to\xE0n \u0111\u1ED9c l\u1EADp.
+2. S\xE1ch l\u01B0\u1EE3c v\u1EAFn t\u1EAFt c\u1EE7a \u0110\u1EA3ng: \u0110\u1EA3ng l\xE0 \u0111\u1ED9i ti\xEAn phong c\u1EE7a v\xF4 s\u1EA3n giai c\u1EA5p; ph\u1EA3i thu ph\u1EE5c cho \u0111\u01B0\u1EE3c \u0111\u1EA1i b\u1ED9 ph\u1EADn giai c\u1EA5p m\xECnh, l\xF4i k\xE9o n\xF4ng d\xE2n v\xE0 li\xEAn l\u1EA1c v\u1EDBi ti\u1EC3u t\u01B0 s\u1EA3n, tr\xED th\u1EE9c, trung n\xF4ng.
+3. Ch\u01B0\u01A1ng tr\xECnh t\xF3m t\u1EAFt & \u0110i\u1EC1u l\u1EC7 v\u1EAFn t\u1EAFt c\u1EE7a \u0110\u1EA3ng: X\xE1c \u0111\u1ECBnh m\u1EE5c ti\xEAu gi\u1EA3i ph\xF3ng d\xE2n t\u1ED9c, quy\u1EC1n t\u1EF1 do d\xE2n ch\u1EE7 v\xE0 nguy\xEAn t\u1EAFc t\u1ED5 ch\u1EE9c c\u1EE7a \u0110\u1EA3ng ti\xEAn phong.
+4. L\u1EDDi k\xEAu g\u1ECDi nh\xE2n d\u1ECBp th\xE0nh l\u1EADp \u0110\u1EA3ng: Hi\u1EC7u tri\u1EC7u c\xF4ng nh\xE2n, n\xF4ng d\xE2n, binh l\xEDnh, thanh ni\xEAn, h\u1ECDc sinh \u0111o\xE0n k\u1EBFt d\u01B0\u1EDBi ng\u1ECDn c\u1EDD c\u1EE7a \u0110\u1EA3ng.`,
+    metadata: {
+      copyrightStatus: "PUBLIC_DOMAIN_CONFIRMED",
+      subDocumentsCount: 5,
+      batch: "BATCH_A"
+    }
+  },
+  {
+    id: "DOC-HCM-020",
+    title: "C\u1EA7n, Ki\u1EC7m, Li\xEAm, Ch\xEDnh (1949)",
+    category: "ideology-ethics",
+    categoryLabel: "T\u01B0 t\u01B0\u1EDFng, \u0111\u1EA1o \u0111\u1EE9c, phong c\xE1ch H\u1ED3 Ch\xED Minh",
+    authorOrSource: "Ch\u1EE7 t\u1ECBch H\u1ED3 Ch\xED Minh (B\xFAt danh L\xEA Quy\u1EBFt Th\u1EAFng - B\xE1o C\u1EE9u Qu\u1ED1c)",
+    dateOrEra: "Th\xE1ng 5 - 6/1949",
+    status: "PENDING_REVIEW",
+    isAllowedForRag: false,
+    topics: ["C\u1EA7n", "Ki\u1EC7m", "Li\xEAm", "Ch\xEDnh", "Ch\xED c\xF4ng v\xF4 t\u01B0", "L\xEA Quy\u1EBFt Th\u1EAFng", "\u0110\u1EA1o \u0111\u1EE9c c\xF4ng d\xE2n", "B\u1ED1n m\xF9a c\u1EE7a tr\u1EDDi"],
+    sourceUrl: "https://hochiminh.vn/upload/3000001/20251024/65e0340736cc411805ab4818604f62f1HO_CHI_MINH_TOAN_TAP_-_TAP_6.pdf",
+    content: `T\xE1c ph\u1EA9m g\u1ED3m 4 b\xE0i b\xE1o xu\u1EA5t b\u1EA3n tr\xEAn B\xE1o C\u1EE9u Qu\u1ED1c t\u1EEB ng\xE0y 30/5 \u0111\u1EBFn 02/06/1949 d\u01B0\u1EDBi b\xFAt danh L\xEA Quy\u1EBFt Th\u1EAFng:
+"Tr\u1EDDi c\xF3 b\u1ED1n m\xF9a: Xu\xE2n, H\u1EA1, Thu, \u0110\xF4ng.
+\u0110\u1EA5t c\xF3 b\u1ED1n ph\u01B0\u01A1ng: \u0110\xF4ng, T\xE2y, Nam, B\u1EAFc.
+Ng\u01B0\u1EDDi c\xF3 b\u1ED1n \u0111\u1EE9c: C\u1EA7n, Ki\u1EC7m, Li\xEAm, Ch\xEDnh.
+Thi\u1EBFu m\u1ED9t m\xF9a, th\xEC kh\xF4ng th\xE0nh tr\u1EDDi.
+Thi\u1EBFu m\u1ED9t ph\u01B0\u01A1ng, th\xEC kh\xF4ng th\xE0nh \u0111\u1EA5t.
+Thi\u1EBFu m\u1ED9t \u0111\u1EE9c, th\xEC kh\xF4ng th\xE0nh ng\u01B0\u1EDDi".
+- C\u1EA7n: Si\xEAng n\u0103ng, ch\u0103m ch\u1EC9, c\u1ED1 g\u1EAFng d\u1EBBo dai. Lao \u0111\u1ED9ng c\xF3 k\u1EBF ho\u1EA1ch, c\xF3 s\xE1ng ki\u1EBFn, c\xF3 n\u0103ng su\u1EA5t cao.
+- Ki\u1EC7m: Ti\u1EBFt ki\u1EC7m th\xEC gi\u1EDD, ti\u1EC1n c\u1EE7a, c\xF4ng s\u1EE9c c\u1EE7a d\xE2n v\xE0 c\u1EE7a n\u01B0\u1EDBc. Ti\u1EBFt ki\u1EC7m kh\xF4ng ph\u1EA3i l\xE0 b\u1EE7n x\u1EC9n, keo ki\u1EC7t.
+- Li\xEAm: Trong s\u1EA1ch, kh\xF4ng tham lam \u0111\u1ECBa v\u1ECB, ti\u1EC1n t\xE0i. Kh\xF4ng l\u1EA5y c\u1EE7a c\xF4ng l\xE0m c\u1EE7a t\u01B0.
+- Ch\xEDnh: Th\u1EB3ng th\u1EAFn, \u0111\u1EE9ng \u0111\u1EAFn. Vi\u1EC7c thi\u1EC7n d\xF9 nh\u1ECF m\u1EA5y c\u0169ng l\xE0m, vi\u1EC7c \xE1c d\xF9 nh\u1ECF m\u1EA5y c\u0169ng tr\xE1nh.
+B\u1ED1n \u0111\u1EE9c t\xEDnh g\u1EAFn b\xF3 m\u1EADt thi\u1EBFt t\u1EA1o n\xEAn n\u1EC1n t\u1EA3ng \u0111\u1EA1o \u0111\u1EE9c c\xE1ch m\u1EA1ng c\u1EE7a ng\u01B0\u1EDDi c\xE1n b\u1ED9 v\xE0 c\xF4ng d\xE2n.`,
+    metadata: {
+      copyrightStatus: "PUBLIC_DOMAIN_CONFIRMED",
+      pseudonym: "L\xEA Quy\u1EBFt Th\u1EAFng",
+      batch: "BATCH_A"
+    }
+  },
+  {
+    id: "DOC-HCM-021",
+    title: "L\u1EDDi k\xEAu g\u1ECDi thi \u0111ua \xE1i qu\u1ED1c (11/6/1948)",
+    category: "school-education",
+    categoryLabel: "Gi\xE1o d\u1EE5c truy\u1EC1n th\u1ED1ng & Thi \u0111ua \xE1i qu\u1ED1c h\u1ECDc \u0111\u01B0\u1EDDng",
+    authorOrSource: "Ch\u1EE7 t\u1ECBch H\u1ED3 Ch\xED Minh (B\xE1o C\u1EE9u Qu\u1ED1c s\u1ED1 968)",
+    dateOrEra: "11/06/1948",
+    status: "PENDING_REVIEW",
+    isAllowedForRag: false,
+    topics: ["Thi \u0111ua \xE1i qu\u1ED1c", "Di\u1EC7t gi\u1EB7c \u0111\xF3i", "Di\u1EC7t gi\u1EB7c d\u1ED1t", "Di\u1EC7t gi\u1EB7c ngo\u1EA1i x\xE2m", "Ng\u01B0\u1EDDi ng\u01B0\u1EDDi thi \u0111ua", "Thi \u0111ua l\xE0 y\xEAu n\u01B0\u1EDBc"],
+    sourceUrl: "https://hochiminh.vn",
+    content: `Ng\xE0y 11 th\xE1ng 6 n\u0103m 1948, Ch\u1EE7 t\u1ECBch H\u1ED3 Ch\xED Minh ra L\u1EDDi k\xEAu g\u1ECDi thi \u0111ua \xE1i qu\u1ED1c \u0111\u1EC3 \u0111\u1ED9ng vi\xEAn to\xE0n th\u1EC3 d\xE2n t\u1ED9c v\u01B0\u1EE3t qua mu\xF4n v\xE0n gian kh\u1ED5:
+1. M\u1EE5c \u0111\xEDch thi \u0111ua: "Di\u1EC7t gi\u1EB7c \u0111\xF3i, di\u1EC7t gi\u1EB7c d\u1ED1t, di\u1EC7t gi\u1EB7c ngo\u1EA1i x\xE2m".
+2. C\xE1ch l\xE0m: D\u1EF1a v\xE0o l\u1EF1c l\u01B0\u1EE3ng c\u1EE7a d\xE2n, tinh th\u1EA7n c\u1EE7a d\xE2n \u0111\u1EC3 g\xE2y h\u1EA1nh ph\xFAc cho d\xE2n.
+3. \u0110\u1ED1i t\u01B0\u1EE3ng: B\u1EA5t k\u1EF3 ai - gi\xE0, tr\u1EBB, g\xE1i, trai, gi\xE0u, ngh\xE8o, qu\xE2n, d\xE2n - ai n\u1EA5y \u0111\u1EC1u thi \u0111ua l\xE0m tr\xF2n b\u1ED5n ph\u1EADn c\u1EE7a m\xECnh.
+4. Kh\u1EA9u hi\u1EC7u b\u1EA5t h\u1EE7: "Thi \u0111ua l\xE0 y\xEAu n\u01B0\u1EDBc, y\xEAu n\u01B0\u1EDBc th\xEC ph\u1EA3i thi \u0111ua. V\xE0 nh\u1EEFng ng\u01B0\u1EDDi thi \u0111ua l\xE0 nh\u1EEFng ng\u01B0\u1EDDi y\xEAu n\u01B0\u1EDBc nh\u1EA5t".
+\u0110\u1ED1i v\u1EDBi h\u1ECDc \u0111\u01B0\u1EDDng: Th\u1EA7y thi \u0111ua d\u1EA1y t\u1ED1t, tr\xF2 thi \u0111ua h\u1ECDc t\u1ED1t, r\xE8n luy\u1EC7n ch\u0103m ch\u1EC9 \u0111\u1EC3 mai sau ki\u1EBFn thi\u1EBFt n\u01B0\u1EDBc nh\xE0.`,
+    metadata: {
+      copyrightStatus: "PUBLIC_DOMAIN_CONFIRMED",
+      newspaperNo: "968",
+      batch: "BATCH_A"
+    }
+  },
+  {
+    id: "DOC-HCM-022",
+    title: "\u0110\u1EA1o \u0111\u1EE9c c\xE1ch m\u1EA1ng (1958)",
+    category: "ideology-ethics",
+    categoryLabel: "T\u01B0 t\u01B0\u1EDFng, \u0111\u1EA1o \u0111\u1EE9c, phong c\xE1ch H\u1ED3 Ch\xED Minh",
+    authorOrSource: "Ch\u1EE7 t\u1ECBch H\u1ED3 Ch\xED Minh (B\xFAt danh Tr\u1EA7n L\u1EF1c - T\u1EA1p ch\xED H\u1ECDc t\u1EADp s\u1ED1 12/1958)",
+    dateOrEra: "Th\xE1ng 12/1958",
+    status: "PENDING_REVIEW",
+    isAllowedForRag: false,
+    topics: ["\u0110\u1EA1o \u0111\u1EE9c c\xE1ch m\u1EA1ng", "Ch\u1ED1ng ch\u1EE7 ngh\u0129a c\xE1 nh\xE2n", "Tr\u1EA7n L\u1EF1c", "T\u1EA1p ch\xED H\u1ECDc t\u1EADp", "Ng\u1ECDc c\xE0ng m\xE0i c\xE0ng s\xE1ng", "\u0110\u1EB7t l\u1EE3i \xEDch nh\xE2n d\xE2n l\xEAn tr\xEAn h\u1EBFt"],
+    sourceUrl: "https://hochiminh.vn/tac-pham-cua-ho-chi-minh/nang-cao-dao-duc-cach-mang-quet-sach-chu-nghia-ca-nhan-7748",
+    content: `T\xE1c ph\u1EA9m \u0111\u0103ng tr\xEAn T\u1EA1p ch\xED H\u1ECDc t\u1EADp s\u1ED1 12/1958 d\u01B0\u1EDBi b\xFAt danh Tr\u1EA7n L\u1EF1c:
+1. V\u1ECB tr\xED n\u1EC1n t\u1EA3ng c\u1EE7a \u0111\u1EA1o \u0111\u1EE9c: "Ng\u01B0\u1EDDi c\xE1ch m\u1EA1ng ph\u1EA3i c\xF3 \u0111\u1EA1o \u0111\u1EE9c, kh\xF4ng c\xF3 \u0111\u1EA1o \u0111\u1EE9c th\xEC d\xF9 t\xE0i gi\u1ECFi m\u1EA5y c\u0169ng kh\xF4ng l\xE3nh \u0111\u1EA1o \u0111\u01B0\u1EE3c nh\xE2n d\xE2n. C\u0169ng nh\u01B0 s\xF4ng th\xEC c\xF3 ngu\u1ED3n m\u1EDBi c\xF3 n\u01B0\u1EDBc, kh\xF4ng c\xF3 ngu\u1ED3n th\xEC s\xF4ng c\u1EA1n. C\xE2y ph\u1EA3i c\xF3 g\u1ED1c, kh\xF4ng c\xF3 g\u1ED1c th\xEC c\xE2y h\xE9o".
+2. B\u1EA3n ch\u1EA5t \u0111\u1EA1o \u0111\u1EE9c c\xE1ch m\u1EA1ng: Quy\u1EBFt t\xE2m su\u1ED1t \u0111\u1EDDi \u0111\u1EA5u tranh cho \u0110\u1EA3ng, cho c\xE1ch m\u1EA1ng; \u0111\u1EB7t l\u1EE3i \xEDch c\u1EE7a \u0110\u1EA3ng v\xE0 c\u1EE7a nh\xE2n d\xE2n lao \u0111\u1ED9ng l\xEAn tr\xEAn, l\xEAn tr\u01B0\u1EDBc l\u1EE3i \xEDch ri\xEAng c\u1EE7a c\xE1 nh\xE2n m\xECnh.
+3. Ch\u1ED1ng ch\u1EE7 ngh\u0129a c\xE1 nh\xE2n: Ch\u1EE7 ngh\u0129a c\xE1 nh\xE2n l\xE0 th\u1EE9 vi tr\xF9ng r\u1EA5t \u0111\u1ED9c, \u0111\u1EBB ra h\xE0ng tr\u0103m th\u1EE9 b\u1EC7nh h\u01B0 h\u1ECFng (khoe khoang, tham \xF4, l\u01B0\u1EDDi bi\u1EBFng, \u0111\u1ED9c \u0111o\xE1n). X\xE2y d\u1EF1ng CNXH kh\xF4ng th\u1EC3 t\xE1ch r\u1EDDi cu\u1ED9c \u0111\u1EA5u tranh tr\u1EEB b\u1ECF ch\u1EE7 ngh\u0129a c\xE1 nh\xE2n.
+4. Ph\u01B0\u01A1ng ph\xE1p r\xE8n luy\u1EC7n: "\u0110\u1EA1o \u0111\u1EE9c c\xE1ch m\u1EA1ng kh\xF4ng ph\u1EA3i tr\xEAn tr\u1EDDi sa xu\u1ED1ng. N\xF3 do \u0111\u1EA5u tranh, r\xE8n luy\u1EC7n b\u1EC1n b\u1EC9 h\xE0ng ng\xE0y m\xE0 ph\xE1t tri\u1EC3n v\xE0 c\u1EE7ng c\u1ED1. C\u0169ng nh\u01B0 ng\u1ECDc c\xE0ng m\xE0i c\xE0ng s\xE1ng, v\xE0ng c\xE0ng luy\u1EC7n c\xE0ng trong".`,
+    metadata: {
+      copyrightStatus: "PUBLIC_DOMAIN_CONFIRMED",
+      journalNo: "12/1958",
+      batch: "BATCH_A"
+    }
+  },
+  {
+    id: "DOC-HCM-023",
     title: "B\u1EA3n Y\xEAu s\xE1ch c\u1EE7a nh\xE2n d\xE2n An Nam g\u1EEDi H\u1ED9i ngh\u1ECB Versailles (18/6/1919)",
     category: "bio-career",
     categoryLabel: "Ch\u1EE7 t\u1ECBch H\u1ED3 Ch\xED Minh \u2013 Ti\u1EC3u s\u1EED v\xE0 s\u1EF1 nghi\u1EC7p",
@@ -1351,7 +1521,7 @@ B\u1EA3n Y\xEAu s\xE1ch g\u1ED3m 8 \u0111i\u1EC3m \u0111\xF2i quy\u1EC1n t\u1EF1
     }
   },
   {
-    id: "DOC-HCM-017",
+    id: "DOC-HCM-024",
     title: "Th\xE0nh l\u1EADp H\u1ED9i Vi\u1EC7t Nam C\xE1ch m\u1EA1ng Thanh ni\xEAn (6/1925) & B\xE1o Thanh Ni\xEAn",
     category: "bio-career",
     categoryLabel: "Ch\u1EE7 t\u1ECBch H\u1ED3 Ch\xED Minh \u2013 Ti\u1EC3u s\u1EED v\xE0 s\u1EF1 nghi\u1EC7p",
@@ -1377,7 +1547,7 @@ H\u1ED9i Vi\u1EC7t Nam C\xE1ch m\u1EA1ng Thanh ni\xEAn l\xE0 c\u1EA7u n\u1ED1i t
     }
   },
   {
-    id: "DOC-HCM-018",
+    id: "DOC-HCM-025",
     title: "M\u1ED1c son L\u1ECBch s\u1EED N\u0103m 1968: Kh\xE1ng chi\u1EBFn Ch\u1ED1ng M\u1EF9 & T\u1EA5m l\xF2ng B\xE1c H\u1ED3 v\xEC S\u1EE9c kh\u1ECFe Nh\xE2n d\xE2n",
     category: "ideology-ethics",
     categoryLabel: "T\u01B0 t\u01B0\u1EDFng, \u0111\u1EA1o \u0111\u1EE9c, phong c\xE1ch H\u1ED3 Ch\xED Minh",
