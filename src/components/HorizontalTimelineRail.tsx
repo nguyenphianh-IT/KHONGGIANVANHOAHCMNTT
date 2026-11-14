@@ -254,65 +254,90 @@ export const HorizontalTimelineRail: React.FC<HorizontalTimelineRailProps> = ({
         {/* The Horizontal Rail Container (Auto-fitted on desktop, smoothly scrollable on mobile) */}
         <div
           ref={railContainerRef}
-          className="relative overflow-x-auto no-scrollbar py-2 px-1 sm:px-2 select-none"
+          className="relative overflow-x-auto no-scrollbar py-2 sm:py-3 px-1 sm:px-2 select-none"
           tabIndex={0}
           aria-label="Thước đo thời gian các mốc son lịch sử"
         >
           {/* Main Horizontal Track Line - Fits 100% on desktop/tablet, compact min-w on mobile */}
-          <div className="relative w-full min-w-[700px] md:min-w-0 flex items-start justify-between pt-1 pb-1">
-            {/* The continuous antique bronze track groove running behind the buttons */}
-            <div
-              className="absolute left-3 right-3 sm:left-5 sm:right-5 top-[24px] sm:top-[28px] -translate-y-1/2 h-2 sm:h-2.5 bg-gradient-to-r from-heritage-ivory-300 via-heritage-gold-200 to-heritage-ivory-300 rounded-full border border-heritage-gold-400/60 shadow-inner z-0"
-            />
+          <div className="relative w-full min-w-[720px] md:min-w-0 flex items-center justify-between">
+            {/* ── THÂN THƯỚC ĐO LỊCH SỬ (RULER BODY BAR) ──
+                Trục tâm thanh thước đồng bộ tuyệt đối với trục tâm của các nút mốc thời gian */}
+            <div className="absolute inset-0 flex items-center pointer-events-none z-0">
+              {/* Thân thước phẳng vân hoàng đàn/vàng đồng tinh tế có vạch chia milimet trên & dưới */}
+              <div className="relative w-full h-10 sm:h-11 bg-gradient-to-r from-[#F6EEDD] via-[#EFE2C5] to-[#F6EEDD] border-y border-heritage-gold-400/90 shadow-sm rounded-lg overflow-hidden border-x-2 border-x-heritage-gold-500/80">
+                {/* Vạch chia độ chuẩn xác trên cạnh trên của thước (Top Precision Ticks) */}
+                <div
+                  aria-hidden="true"
+                  className="absolute top-0 left-2 right-2 flex justify-between pointer-events-none opacity-70"
+                >
+                  {Array.from({ length: 65 }).map((_, i) => (
+                    <span
+                      key={`top-tick-${i}`}
+                      className={`w-0.5 ${
+                        i % 5 === 0 ? 'h-2 sm:h-2.5 bg-heritage-red-800' : 'h-1 bg-heritage-gold-600/70'
+                      }`}
+                    />
+                  ))}
+                </div>
 
-            {/* Dynamic Illuminated Progress Ribbon from start to active milestone */}
-            <div
-              className="absolute left-3 sm:left-5 top-[24px] sm:top-[28px] -translate-y-1/2 h-2 sm:h-2.5 bg-gradient-to-r from-heritage-red-800 via-heritage-gold-500 to-heritage-red-700 rounded-full shadow-sm transition-all duration-500 z-0 pointer-events-none"
-              style={{
-                width: `${Math.max(0, (activeIndex / (events.length - 1)) * 100)}%`,
-                maxWidth: 'calc(100% - 24px)'
-              }}
-            />
-
-            {/* Precision Ruler Calibrations (Major & Minor tick marks) */}
-            <div
-              aria-hidden="true"
-              className="absolute left-4 right-4 sm:left-6 sm:right-6 top-[24px] sm:top-[28px] -translate-y-1/2 flex justify-between pointer-events-none z-0 opacity-50"
-            >
-              {Array.from({ length: 49 }).map((_, i) => (
-                <span
-                  key={i}
-                  className={`w-0.5 bg-heritage-gold-700 ${
-                    i % 4 === 0 ? 'h-3 sm:h-3.5 bg-heritage-gold-800' : 'h-1.5'
-                  }`}
+                {/* Rãnh trượt mạ đồng cổ chạy chính giữa tâm thước (nối từ tâm mốc đầu đến mốc cuối) */}
+                <div
+                  className="absolute top-1/2 -translate-y-1/2 h-2 sm:h-2.5 bg-heritage-gold-900/15 rounded-full shadow-inner border border-heritage-gold-400/50"
+                  style={{
+                    left: `${100 / (events.length * 2)}%`,
+                    right: `${100 / (events.length * 2)}%`
+                  }}
                 />
-              ))}
+
+                {/* Dải sáng tiến trình (Progress Ribbon) chạy theo tâm thước đến mốc đang chọn */}
+                <div
+                  className="absolute top-1/2 -translate-y-1/2 h-2 sm:h-2.5 bg-gradient-to-r from-heritage-red-800 via-heritage-gold-500 to-heritage-red-700 rounded-full shadow-xs transition-all duration-500"
+                  style={{
+                    left: `${100 / (events.length * 2)}%`,
+                    width: `${(activeIndex / (events.length - 1)) * (100 - 100 / events.length)}%`
+                  }}
+                />
+
+                {/* Vạch chia độ chuẩn xác trên cạnh dưới của thước (Bottom Precision Ticks) */}
+                <div
+                  aria-hidden="true"
+                  className="absolute bottom-0 left-2 right-2 flex justify-between pointer-events-none opacity-60"
+                >
+                  {Array.from({ length: 65 }).map((_, i) => (
+                    <span
+                      key={`bot-tick-${i}`}
+                      className={`w-0.5 ${
+                        i % 5 === 0 ? 'h-1.5 sm:h-2 bg-heritage-gold-800' : 'h-1 bg-heritage-gold-500/50'
+                      }`}
+                    />
+                  ))}
+                </div>
+              </div>
             </div>
 
-            {/* Individual Milestone Nodes along the Rail */}
+            {/* Từng cột mốc son phân bố đều dọc theo thước - Các mốc nằm chính giữa thân thước */}
             {events.map((event, idx) => {
               const isActive = idx === activeIndex;
               const isPast = idx < activeIndex;
               const isMemorial = event.isMemorial || !event.year;
               const nodeLabel = isMemorial ? 'Nay' : event.year;
-              const displayLabel = getMilestoneDisplayLabel(event);
 
               return (
                 <div
                   key={event.year || `rail-node-${idx}`}
-                  className="relative flex flex-col items-center z-10 flex-shrink-0"
+                  className="relative flex items-center justify-center z-10 flex-shrink-0"
                   style={{ width: `${100 / events.length}%` }}
                 >
-                  {/* Button anchor container ensuring perfect vertical centering with track line */}
-                  <div className="relative flex items-center justify-center h-12 sm:h-14">
-                    {/* Active Golden Diamond Pointer Indicator */}
+                  {/* Khung neo nút mốc có chiều cao khớp 100% với thân thước (h-14 sm:h-16) - Căn giữa hoàn hảo */}
+                  <div className="relative flex items-center justify-center h-14 sm:h-16 w-full">
+                    {/* Con trỏ kim cương vàng định vị mốc đang kích hoạt */}
                     {isActive && (
-                      <div className="absolute -top-3 sm:-top-3.5 left-1/2 -translate-x-1/2 animate-bounce pointer-events-none z-30">
+                      <div className="absolute top-0.5 left-1/2 -translate-x-1/2 animate-bounce pointer-events-none z-30">
                         <div className="w-2.5 h-2.5 bg-heritage-gold-400 rotate-45 border-t border-l border-white shadow-md" />
                       </div>
                     )}
 
-                    {/* Circular Milestone Button */}
+                    {/* Nút mốc hình tròn - Nằm chính giữa tâm thước đo */}
                     <button
                       ref={isActive ? activeNodeRef : null}
                       onClick={() => {
@@ -323,8 +348,8 @@ export const HorizontalTimelineRail: React.FC<HorizontalTimelineRailProps> = ({
                         isActive
                           ? 'w-10 h-10 sm:w-11 sm:h-11 bg-gradient-to-br from-heritage-red-700 via-heritage-red-800 to-heritage-red-950 text-heritage-gold-100 border-2 border-heritage-gold-300 shadow-xl scale-110 sm:scale-115 ring-4 ring-heritage-gold-400/50 z-30'
                           : isPast
-                          ? 'w-8 h-8 sm:w-9 sm:h-9 bg-gradient-to-br from-white via-heritage-red-50 to-heritage-red-100 text-heritage-red-900 border-2 border-heritage-red-500 hover:border-heritage-red-800 hover:scale-110 shadow-xs z-10'
-                          : 'w-8 h-8 sm:w-9 sm:h-9 bg-white text-heritage-ink-800 border-2 border-heritage-gold-500 hover:border-heritage-red-700 hover:text-heritage-red-700 hover:scale-110 shadow-xs z-10'
+                          ? 'w-8 h-8 sm:w-9 sm:h-9 bg-gradient-to-br from-white via-heritage-red-50 to-heritage-red-100 text-heritage-red-900 border-2 border-heritage-red-500 hover:border-heritage-red-800 hover:scale-110 shadow-xs z-20'
+                          : 'w-8 h-8 sm:w-9 sm:h-9 bg-white text-heritage-ink-800 border-2 border-heritage-gold-500 hover:border-heritage-red-700 hover:text-heritage-red-700 hover:scale-110 shadow-xs z-20'
                       }`}
                       title={`${event.exactDate || event.year} (${getMilestoneShortLabel(event)}): ${event.title}`}
                       aria-current={isActive ? 'step' : undefined}
@@ -349,30 +374,6 @@ export const HorizontalTimelineRail: React.FC<HorizontalTimelineRailProps> = ({
                         </span>
                       )}
                     </button>
-                  </div>
-
-                  {/* Milestone Micro-Label below the button - 2 lines, no truncation */}
-                  <div
-                    className={`mt-1.5 sm:mt-2 text-center transition-all duration-200 pointer-events-none px-0.5 max-w-[66px] sm:max-w-[78px] md:max-w-[88px] ${
-                      isActive
-                        ? 'opacity-100 font-bold text-heritage-red-800 scale-105'
-                        : isPast
-                        ? 'opacity-90 text-heritage-red-950 font-semibold'
-                        : 'opacity-85 text-heritage-ink-800 font-medium'
-                    }`}
-                  >
-                    <span className="block text-[8px] sm:text-[9.5px] md:text-[10px] leading-[1.18] text-center">
-                      {displayLabel.line1}
-                    </span>
-                    {displayLabel.line2 ? (
-                      <span className="block text-[8px] sm:text-[9.5px] md:text-[10px] leading-[1.18] text-center">
-                        {displayLabel.line2}
-                      </span>
-                    ) : (
-                      <span className="hidden sm:block text-[8px] sm:text-[9.5px] md:text-[10px] leading-[1.18] opacity-0 select-none" aria-hidden="true">
-                        &nbsp;
-                      </span>
-                    )}
                   </div>
                 </div>
               );
