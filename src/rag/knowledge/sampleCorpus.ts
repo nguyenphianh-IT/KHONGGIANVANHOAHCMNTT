@@ -486,16 +486,31 @@ YÊU CẦU ĐỐI VỚI CÁC TRƯỜNG THCS:
     dateOrEra: '03/02/1930',
     status: 'PENDING_REVIEW',
     isAllowedForRag: false,
-    topics: ['Chánh cương vắn tắt', 'Sách lược vắn tắt', 'Chương trình tóm tắt', 'Điều lệ vắn tắt', 'Hương Cảng 1930', 'Cương lĩnh chính trị đầu tiên'],
+    topics: ['Chánh cương vắn tắt', 'Sách lược vắn tắt', 'Chương trình tóm tắt', 'Điều lệ vắn tắt', 'Lời kêu gọi thành lập Đảng', 'Cửu Long 1930', 'Cương lĩnh chính trị đầu tiên'],
     sourceUrl: 'https://tulieuvankien.dangcongsan.vn',
-    content: `Các văn kiện được Hội nghị hợp nhất thông qua (từ 06/01 đến 07/02/1930 tại Cửu Long, Hương Cảng):
-1. Chánh cương vắn tắt của Đảng: Chủ trương làm tư sản dân quyền cách mạng và thổ địa cách mạng để đi tới xã hội cộng sản. Đánh đổ đế quốc chủ nghĩa Pháp và bọn phong kiến, làm cho nước Nam hoàn toàn độc lập.
-2. Sách lược vắn tắt của Đảng: Đảng là đội tiên phong của vô sản giai cấp; phải thu phục cho được đại bộ phận giai cấp mình, lôi kéo nông dân và liên lạc với tiểu tư sản, trí thức, trung nông.
-3. Chương trình tóm tắt & Điều lệ vắn tắt của Đảng: Xác định mục tiêu giải phóng dân tộc, quyền tự do dân chủ và nguyên tắc tổ chức của Đảng tiên phong.
-4. Lời kêu gọi nhân dịp thành lập Đảng: Hiệu triệu công nhân, nông dân, binh lính, thanh niên, học sinh đoàn kết dưới ngọn cờ của Đảng.`,
+    content: `Các văn kiện thành lập Đảng được Hội nghị hợp nhất thông qua (từ 06/01 đến 07/02/1930 tại Cửu Long, Hương Cảng, do đồng chí Nguyễn Ái Quốc chủ trì):
+1. VĂN KIỆN 1 - CHÁNH CƯƠNG VẮN TẮT CỦA ĐẢNG:
+Xác định đường lối chiến lược: Làm tư sản dân quyền cách mạng và thổ địa cách mạng để đi tới xã hội cộng sản. Đánh đổ đế quốc chủ nghĩa Pháp và bọn phong kiến tay sai, làm cho nước Nam hoàn toàn độc lập, dựng lên chính phủ công nông binh, tổ chức quân đội công nông, tịch thu tài sản của đế quốc trao cho dân cày nghèo.
+2. VĂN KIỆN 2 - SÁCH LƯỢC VẮN TẮT CỦA ĐẢNG:
+Đảng là đội tiên phong của vô sản giai cấp; phải thu phục cho được đại bộ phận giai cấp mình, lôi kéo nông dân và liên lạc mật thiết với tiểu tư sản, trí thức, trung nông. Đối với phú nông, trung tiểu địa chủ và tư sản An Nam mà chưa rõ mặt phản cách mạng thì phải lợi dụng, ít nhất làm cho họ đứng trung lập.
+3. VĂN KIỆN 3 - CHƯƠNG TRÌNH TÓM TẮT CỦA ĐẢNG:
+Đoàn kết công nhân, nông dân; thực hiện ngày làm 8 giờ; xóa bỏ sưu thuế vô lý; bảo đảm quyền tự do hội họp, ngôn luận cho nhân dân lao động.
+4. VĂN KIỆN 4 - ĐIỀU LỆ VẮN TẮT CỦA ĐẢNG:
+Quy định tôn chỉ mục đích, nguyên tắc tổ chức tập trung dân chủ, điều kiện kết nạp đảng viên và hệ thống tổ chức từ chi bộ đến Trung ương.
+5. VĂN KIỆN 5 - LỜI KÊU GỌI NHÂN DỊP THÀNH LẬP ĐẢNG (18/02/1930):
+Lời kêu gọi lịch sử của Nguyễn Ái Quốc gửi tới toàn thể công nhân, nông dân, binh lính, thanh niên, học sinh: Đế quốc Pháp xâm lược áp bức đồng bào; nay các tổ chức cộng sản đã thống nhất thành Đảng Cộng sản Việt Nam; kêu gọi toàn thể đồng bào gia nhập và ủng hộ Đảng đánh đuổi giặc ngoại xâm.`,
     metadata: {
       copyrightStatus: 'PUBLIC_DOMAIN_CONFIRMED',
       subDocumentsCount: 5,
+      subDocumentsList: [
+        'Chánh cương vắn tắt của Đảng',
+        'Sách lược vắn tắt của Đảng',
+        'Chương trình tóm tắt của Đảng',
+        'Điều lệ vắn tắt của Đảng',
+        'Lời kêu gọi nhân dịp thành lập Đảng (18/02/1930)'
+      ],
+      conferenceVenue: 'Cửu Long (Cửu Long - Hương Cảng, Trung Quốc)',
+      conferenceDates: '06/01/1930 - 07/02/1930',
       batch: 'BATCH_A'
     }
   },
@@ -509,23 +524,34 @@ YÊU CẦU ĐỐI VỚI CÁC TRƯỜNG THCS:
     dateOrEra: 'Tháng 5 - 6/1949',
     status: 'PENDING_REVIEW',
     isAllowedForRag: false,
-    topics: ['Cần', 'Kiệm', 'Liêm', 'Chính', 'Chí công vô tư', 'Lê Quyết Thắng', 'Đạo đức công dân', 'Bốn mùa của trời'],
+    topics: ['Cần', 'Kiệm', 'Liêm', 'Chính', 'Chí công vô tư', 'Lê Quyết Thắng', 'Đạo đức công dân', 'Bốn mùa của trời', 'Báo Cứu Quốc 1949'],
     sourceUrl: 'https://hochiminh.vn/upload/3000001/20251024/65e0340736cc411805ab4818604f62f1HO_CHI_MINH_TOAN_TAP_-_TAP_6.pdf',
-    content: `Tác phẩm gồm 4 bài báo xuất bản trên Báo Cứu Quốc từ ngày 30/5 đến 02/06/1949 dưới bút danh Lê Quyết Thắng:
+    content: `Bộ bốn bài viết chuyên khảo về đạo đức mới của Chủ tịch Hồ Chí Minh, ký bút danh Lê Quyết Thắng đăng liên tiếp trên Báo Cứu Quốc:
+- BÀI 1: THẾ NÀO LÀ CẦN? (Đăng báo ngày 30/5/1949):
+"Cần tức là siêng năng, chăm chỉ, cố gắng dẻo dai. Muốn cần thì việc gì cũng phải có kế hoạch chu đáo. Biết việc nào nên làm trước, việc nào làm sau. Làm việc gì cũng phải có sáng kiến, tìm cách làm nhanh mà tốt, làm việc bền gan, không nản lòng".
+- BÀI 2: THẾ NÀO LÀ KIỆM? (Đăng báo ngày 31/5/1949):
+"Kiệm là tiết kiệm, không xa xỉ, không hoang phí, không bừa bãi. Tiết kiệm tiền bạc, tiết kiệm thì giờ, tiết kiệm sức lao động của mình và của nhân dân. Tiết kiệm không phải là bủn xỉn, keo kiệt; việc đáng chi một vạn đồng cũng phải chi, việc không đáng chi một đồng cũng không chi".
+- BÀI 3: THẾ NÀO LÀ LIÊM? (Đăng báo ngày 01/6/1949):
+"Liêm là trong sạch, không tham lam. Ngày xưa quan lại không đục khoét dân là liêm. Ngày nay, mọi người ai giữ chữ Liêm đều không tham địa vị, không tham tiền tài, không tham tâng bốc. Cán bộ tham ô, lãng phí là tội ác đối với đồng bào, Tổ quốc".
+- BÀI 4: THẾ NÀO LÀ CHÍNH? (Đăng báo ngày 02/6/1949):
+"Chính nghĩa là không tà, thẳng thắn, đứng đắn. Đối với mình: Không tự cao tự đại, luôn cầu tiến bộ. Đối với người: Không nịnh hót kẻ trên, không xem khinh người dưới; chân thành, khiêm tốn. Đối với việc: Việc thiện dù nhỏ mấy cũng làm, việc ác dù nhỏ mấy cũng tránh. Việc công lên trên, việc tư lên sau".
+- TỔNG KẾT BIỆN CHỨNG BỐN ĐỨC TÍNH:
 "Trời có bốn mùa: Xuân, Hạ, Thu, Đông.
 Đất có bốn phương: Đông, Tây, Nam, Bắc.
 Người có bốn đức: Cần, Kiệm, Liêm, Chính.
 Thiếu một mùa, thì không thành trời.
 Thiếu một phương, thì không thành đất.
-Thiếu một đức, thì không thành người".
-- Cần: Siêng năng, chăm chỉ, cố gắng dẻo dai. Lao động có kế hoạch, có sáng kiến, có năng suất cao.
-- Kiệm: Tiết kiệm thì giờ, tiền của, công sức của dân và của nước. Tiết kiệm không phải là bủn xỉn, keo kiệt.
-- Liêm: Trong sạch, không tham lam địa vị, tiền tài. Không lấy của công làm của tư.
-- Chính: Thẳng thắn, đứng đắn. Việc thiện dù nhỏ mấy cũng làm, việc ác dù nhỏ mấy cũng tránh.
-Bốn đức tính gắn bó mật thiết tạo nên nền tảng đạo đức cách mạng của người cán bộ và công dân.`,
+Thiếu một đức, thì không thành người".`,
     metadata: {
       copyrightStatus: 'PUBLIC_DOMAIN_CONFIRMED',
       pseudonym: 'Lê Quyết Thắng',
+      articleDates: {
+        can: '30/05/1949',
+        kiem: '31/05/1949',
+        liem: '01/06/1949',
+        chinh: '02/06/1949'
+      },
+      newspaper: 'Báo Cứu Quốc (Cơ quan Tổng bộ Việt Minh)',
       batch: 'BATCH_A'
     }
   },
@@ -535,21 +561,27 @@ Bốn đức tính gắn bó mật thiết tạo nên nền tảng đạo đức
     title: 'Lời kêu gọi thi đua ái quốc (11/6/1948)',
     category: 'school-education',
     categoryLabel: 'Giáo dục truyền thống & Thi đua ái quốc học đường',
-    authorOrSource: 'Chủ tịch Hồ Chí Minh (Báo Cứu Quốc số 968)',
-    dateOrEra: '11/06/1948',
+    authorOrSource: 'Chủ tịch Hồ Chí Minh (Viết ngày 11/6/1948; Đăng Báo Cứu Quốc số 968 ngày 24/6/1948)',
+    dateOrEra: '11/06/1948 (Đăng báo: 24/06/1948)',
     status: 'PENDING_REVIEW',
     isAllowedForRag: false,
-    topics: ['Thi đua ái quốc', 'Diệt giặc đói', 'Diệt giặc dốt', 'Diệt giặc ngoại xâm', 'Người người thi đua', 'Thi đua là yêu nước'],
+    topics: ['Thi đua ái quốc', '11/6/1948', 'Báo Cứu Quốc số 968', 'Diệt giặc đói', 'Diệt giặc dốt', 'Diệt giặc ngoại xâm', 'Người người thi đua', 'Thi đua là yêu nước'],
     sourceUrl: 'https://hochiminh.vn',
-    content: `Ngày 11 tháng 6 năm 1948, Chủ tịch Hồ Chí Minh ra Lời kêu gọi thi đua ái quốc để động viên toàn thể dân tộc vượt qua muôn vàn gian khổ:
-1. Mục đích thi đua: "Diệt giặc đói, diệt giặc dốt, diệt giặc ngoại xâm".
+    content: `Lời kêu gọi thi đua ái quốc của Chủ tịch Hồ Chí Minh:
+- Ngày soạn thảo và ban hành: 11 tháng 6 năm 1948 tại Chiến khu Việt Bắc (nguồn gốc Ngày truyền thống Thi đua yêu nước Việt Nam).
+- Ngày công bố báo chí: Đăng tải lần đầu trên Báo Cứu Quốc, số 968, ngày 24 tháng 6 năm 1948.
+Nội dung cốt lõi của Lời kêu gọi:
+1. Mục đích thi đua ái quốc: "Diệt giặc đói, diệt giặc dốt, diệt giặc ngoại xâm", đem lại cuộc sống ấm no, độc lập, tự do cho toàn dân tộc.
 2. Cách làm: Dựa vào lực lượng của dân, tinh thần của dân để gây hạnh phúc cho dân.
-3. Đối tượng: Bất kỳ ai - già, trẻ, gái, trai, giàu, nghèo, quân, dân - ai nấy đều thi đua làm tròn bổn phận của mình.
-4. Khẩu hiệu bất hủ: "Thi đua là yêu nước, yêu nước thì phải thi đua. Và những người thi đua là những người yêu nước nhất".
-Đối với học đường: Thầy thi đua dạy tốt, trò thi đua học tốt, rèn luyện chăm chỉ để mai sau kiến thiết nước nhà.`,
+3. Đối tượng tham gia: Bất kỳ ai - già, trẻ, gái, trai, giàu, nghèo, quân, dân - ai nấy đều thi đua làm tròn bổn phận của mình.
+4. Chân lý bất hủ: "Thi đua là yêu nước, yêu nước thì phải thi đua. Và những người thi đua là những người yêu nước nhất".
+5. Ứng dụng trong nhà trường: Thầy thi đua dạy tốt, trò thi đua học tốt, rèn luyện chăm chỉ đức - trí - thể - mỹ để mai sau phụng sự quê hương đất nước.`,
     metadata: {
       copyrightStatus: 'PUBLIC_DOMAIN_CONFIRMED',
-      newspaperNo: '968',
+      writtenDate: '11/06/1948',
+      publishedDate: '24/06/1948',
+      newspaper: 'Báo Cứu Quốc',
+      issueNumber: '968',
       batch: 'BATCH_A'
     }
   },

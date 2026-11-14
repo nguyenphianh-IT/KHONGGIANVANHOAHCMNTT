@@ -1403,16 +1403,31 @@ Y\xCAU C\u1EA6U \u0110\u1ED0I V\u1EDAI C\xC1C TR\u01AF\u1EDCNG THCS:
     dateOrEra: "03/02/1930",
     status: "PENDING_REVIEW",
     isAllowedForRag: false,
-    topics: ["Ch\xE1nh c\u01B0\u01A1ng v\u1EAFn t\u1EAFt", "S\xE1ch l\u01B0\u1EE3c v\u1EAFn t\u1EAFt", "Ch\u01B0\u01A1ng tr\xECnh t\xF3m t\u1EAFt", "\u0110i\u1EC1u l\u1EC7 v\u1EAFn t\u1EAFt", "H\u01B0\u01A1ng C\u1EA3ng 1930", "C\u01B0\u01A1ng l\u0129nh ch\xEDnh tr\u1ECB \u0111\u1EA7u ti\xEAn"],
+    topics: ["Ch\xE1nh c\u01B0\u01A1ng v\u1EAFn t\u1EAFt", "S\xE1ch l\u01B0\u1EE3c v\u1EAFn t\u1EAFt", "Ch\u01B0\u01A1ng tr\xECnh t\xF3m t\u1EAFt", "\u0110i\u1EC1u l\u1EC7 v\u1EAFn t\u1EAFt", "L\u1EDDi k\xEAu g\u1ECDi th\xE0nh l\u1EADp \u0110\u1EA3ng", "C\u1EEDu Long 1930", "C\u01B0\u01A1ng l\u0129nh ch\xEDnh tr\u1ECB \u0111\u1EA7u ti\xEAn"],
     sourceUrl: "https://tulieuvankien.dangcongsan.vn",
-    content: `C\xE1c v\u0103n ki\u1EC7n \u0111\u01B0\u1EE3c H\u1ED9i ngh\u1ECB h\u1EE3p nh\u1EA5t th\xF4ng qua (t\u1EEB 06/01 \u0111\u1EBFn 07/02/1930 t\u1EA1i C\u1EEDu Long, H\u01B0\u01A1ng C\u1EA3ng):
-1. Ch\xE1nh c\u01B0\u01A1ng v\u1EAFn t\u1EAFt c\u1EE7a \u0110\u1EA3ng: Ch\u1EE7 tr\u01B0\u01A1ng l\xE0m t\u01B0 s\u1EA3n d\xE2n quy\u1EC1n c\xE1ch m\u1EA1ng v\xE0 th\u1ED5 \u0111\u1ECBa c\xE1ch m\u1EA1ng \u0111\u1EC3 \u0111i t\u1EDBi x\xE3 h\u1ED9i c\u1ED9ng s\u1EA3n. \u0110\xE1nh \u0111\u1ED5 \u0111\u1EBF qu\u1ED1c ch\u1EE7 ngh\u0129a Ph\xE1p v\xE0 b\u1ECDn phong ki\u1EBFn, l\xE0m cho n\u01B0\u1EDBc Nam ho\xE0n to\xE0n \u0111\u1ED9c l\u1EADp.
-2. S\xE1ch l\u01B0\u1EE3c v\u1EAFn t\u1EAFt c\u1EE7a \u0110\u1EA3ng: \u0110\u1EA3ng l\xE0 \u0111\u1ED9i ti\xEAn phong c\u1EE7a v\xF4 s\u1EA3n giai c\u1EA5p; ph\u1EA3i thu ph\u1EE5c cho \u0111\u01B0\u1EE3c \u0111\u1EA1i b\u1ED9 ph\u1EADn giai c\u1EA5p m\xECnh, l\xF4i k\xE9o n\xF4ng d\xE2n v\xE0 li\xEAn l\u1EA1c v\u1EDBi ti\u1EC3u t\u01B0 s\u1EA3n, tr\xED th\u1EE9c, trung n\xF4ng.
-3. Ch\u01B0\u01A1ng tr\xECnh t\xF3m t\u1EAFt & \u0110i\u1EC1u l\u1EC7 v\u1EAFn t\u1EAFt c\u1EE7a \u0110\u1EA3ng: X\xE1c \u0111\u1ECBnh m\u1EE5c ti\xEAu gi\u1EA3i ph\xF3ng d\xE2n t\u1ED9c, quy\u1EC1n t\u1EF1 do d\xE2n ch\u1EE7 v\xE0 nguy\xEAn t\u1EAFc t\u1ED5 ch\u1EE9c c\u1EE7a \u0110\u1EA3ng ti\xEAn phong.
-4. L\u1EDDi k\xEAu g\u1ECDi nh\xE2n d\u1ECBp th\xE0nh l\u1EADp \u0110\u1EA3ng: Hi\u1EC7u tri\u1EC7u c\xF4ng nh\xE2n, n\xF4ng d\xE2n, binh l\xEDnh, thanh ni\xEAn, h\u1ECDc sinh \u0111o\xE0n k\u1EBFt d\u01B0\u1EDBi ng\u1ECDn c\u1EDD c\u1EE7a \u0110\u1EA3ng.`,
+    content: `C\xE1c v\u0103n ki\u1EC7n th\xE0nh l\u1EADp \u0110\u1EA3ng \u0111\u01B0\u1EE3c H\u1ED9i ngh\u1ECB h\u1EE3p nh\u1EA5t th\xF4ng qua (t\u1EEB 06/01 \u0111\u1EBFn 07/02/1930 t\u1EA1i C\u1EEDu Long, H\u01B0\u01A1ng C\u1EA3ng, do \u0111\u1ED3ng ch\xED Nguy\u1EC5n \xC1i Qu\u1ED1c ch\u1EE7 tr\xEC):
+1. V\u0102N KI\u1EC6N 1 - CH\xC1NH C\u01AF\u01A0NG V\u1EAEN T\u1EAET C\u1EE6A \u0110\u1EA2NG:
+X\xE1c \u0111\u1ECBnh \u0111\u01B0\u1EDDng l\u1ED1i chi\u1EBFn l\u01B0\u1EE3c: L\xE0m t\u01B0 s\u1EA3n d\xE2n quy\u1EC1n c\xE1ch m\u1EA1ng v\xE0 th\u1ED5 \u0111\u1ECBa c\xE1ch m\u1EA1ng \u0111\u1EC3 \u0111i t\u1EDBi x\xE3 h\u1ED9i c\u1ED9ng s\u1EA3n. \u0110\xE1nh \u0111\u1ED5 \u0111\u1EBF qu\u1ED1c ch\u1EE7 ngh\u0129a Ph\xE1p v\xE0 b\u1ECDn phong ki\u1EBFn tay sai, l\xE0m cho n\u01B0\u1EDBc Nam ho\xE0n to\xE0n \u0111\u1ED9c l\u1EADp, d\u1EF1ng l\xEAn ch\xEDnh ph\u1EE7 c\xF4ng n\xF4ng binh, t\u1ED5 ch\u1EE9c qu\xE2n \u0111\u1ED9i c\xF4ng n\xF4ng, t\u1ECBch thu t\xE0i s\u1EA3n c\u1EE7a \u0111\u1EBF qu\u1ED1c trao cho d\xE2n c\xE0y ngh\xE8o.
+2. V\u0102N KI\u1EC6N 2 - S\xC1CH L\u01AF\u1EE2C V\u1EAEN T\u1EAET C\u1EE6A \u0110\u1EA2NG:
+\u0110\u1EA3ng l\xE0 \u0111\u1ED9i ti\xEAn phong c\u1EE7a v\xF4 s\u1EA3n giai c\u1EA5p; ph\u1EA3i thu ph\u1EE5c cho \u0111\u01B0\u1EE3c \u0111\u1EA1i b\u1ED9 ph\u1EADn giai c\u1EA5p m\xECnh, l\xF4i k\xE9o n\xF4ng d\xE2n v\xE0 li\xEAn l\u1EA1c m\u1EADt thi\u1EBFt v\u1EDBi ti\u1EC3u t\u01B0 s\u1EA3n, tr\xED th\u1EE9c, trung n\xF4ng. \u0110\u1ED1i v\u1EDBi ph\xFA n\xF4ng, trung ti\u1EC3u \u0111\u1ECBa ch\u1EE7 v\xE0 t\u01B0 s\u1EA3n An Nam m\xE0 ch\u01B0a r\xF5 m\u1EB7t ph\u1EA3n c\xE1ch m\u1EA1ng th\xEC ph\u1EA3i l\u1EE3i d\u1EE5ng, \xEDt nh\u1EA5t l\xE0m cho h\u1ECD \u0111\u1EE9ng trung l\u1EADp.
+3. V\u0102N KI\u1EC6N 3 - CH\u01AF\u01A0NG TR\xCCNH T\xD3M T\u1EAET C\u1EE6A \u0110\u1EA2NG:
+\u0110o\xE0n k\u1EBFt c\xF4ng nh\xE2n, n\xF4ng d\xE2n; th\u1EF1c hi\u1EC7n ng\xE0y l\xE0m 8 gi\u1EDD; x\xF3a b\u1ECF s\u01B0u thu\u1EBF v\xF4 l\xFD; b\u1EA3o \u0111\u1EA3m quy\u1EC1n t\u1EF1 do h\u1ED9i h\u1ECDp, ng\xF4n lu\u1EADn cho nh\xE2n d\xE2n lao \u0111\u1ED9ng.
+4. V\u0102N KI\u1EC6N 4 - \u0110I\u1EC0U L\u1EC6 V\u1EAEN T\u1EAET C\u1EE6A \u0110\u1EA2NG:
+Quy \u0111\u1ECBnh t\xF4n ch\u1EC9 m\u1EE5c \u0111\xEDch, nguy\xEAn t\u1EAFc t\u1ED5 ch\u1EE9c t\u1EADp trung d\xE2n ch\u1EE7, \u0111i\u1EC1u ki\u1EC7n k\u1EBFt n\u1EA1p \u0111\u1EA3ng vi\xEAn v\xE0 h\u1EC7 th\u1ED1ng t\u1ED5 ch\u1EE9c t\u1EEB chi b\u1ED9 \u0111\u1EBFn Trung \u01B0\u01A1ng.
+5. V\u0102N KI\u1EC6N 5 - L\u1EDCI K\xCAU G\u1ECCI NH\xC2N D\u1ECAP TH\xC0NH L\u1EACP \u0110\u1EA2NG (18/02/1930):
+L\u1EDDi k\xEAu g\u1ECDi l\u1ECBch s\u1EED c\u1EE7a Nguy\u1EC5n \xC1i Qu\u1ED1c g\u1EEDi t\u1EDBi to\xE0n th\u1EC3 c\xF4ng nh\xE2n, n\xF4ng d\xE2n, binh l\xEDnh, thanh ni\xEAn, h\u1ECDc sinh: \u0110\u1EBF qu\u1ED1c Ph\xE1p x\xE2m l\u01B0\u1EE3c \xE1p b\u1EE9c \u0111\u1ED3ng b\xE0o; nay c\xE1c t\u1ED5 ch\u1EE9c c\u1ED9ng s\u1EA3n \u0111\xE3 th\u1ED1ng nh\u1EA5t th\xE0nh \u0110\u1EA3ng C\u1ED9ng s\u1EA3n Vi\u1EC7t Nam; k\xEAu g\u1ECDi to\xE0n th\u1EC3 \u0111\u1ED3ng b\xE0o gia nh\u1EADp v\xE0 \u1EE7ng h\u1ED9 \u0110\u1EA3ng \u0111\xE1nh \u0111u\u1ED5i gi\u1EB7c ngo\u1EA1i x\xE2m.`,
     metadata: {
       copyrightStatus: "PUBLIC_DOMAIN_CONFIRMED",
       subDocumentsCount: 5,
+      subDocumentsList: [
+        "Ch\xE1nh c\u01B0\u01A1ng v\u1EAFn t\u1EAFt c\u1EE7a \u0110\u1EA3ng",
+        "S\xE1ch l\u01B0\u1EE3c v\u1EAFn t\u1EAFt c\u1EE7a \u0110\u1EA3ng",
+        "Ch\u01B0\u01A1ng tr\xECnh t\xF3m t\u1EAFt c\u1EE7a \u0110\u1EA3ng",
+        "\u0110i\u1EC1u l\u1EC7 v\u1EAFn t\u1EAFt c\u1EE7a \u0110\u1EA3ng",
+        "L\u1EDDi k\xEAu g\u1ECDi nh\xE2n d\u1ECBp th\xE0nh l\u1EADp \u0110\u1EA3ng (18/02/1930)"
+      ],
+      conferenceVenue: "C\u1EEDu Long (C\u1EEDu Long - H\u01B0\u01A1ng C\u1EA3ng, Trung Qu\u1ED1c)",
+      conferenceDates: "06/01/1930 - 07/02/1930",
       batch: "BATCH_A"
     }
   },
@@ -1425,23 +1440,34 @@ Y\xCAU C\u1EA6U \u0110\u1ED0I V\u1EDAI C\xC1C TR\u01AF\u1EDCNG THCS:
     dateOrEra: "Th\xE1ng 5 - 6/1949",
     status: "PENDING_REVIEW",
     isAllowedForRag: false,
-    topics: ["C\u1EA7n", "Ki\u1EC7m", "Li\xEAm", "Ch\xEDnh", "Ch\xED c\xF4ng v\xF4 t\u01B0", "L\xEA Quy\u1EBFt Th\u1EAFng", "\u0110\u1EA1o \u0111\u1EE9c c\xF4ng d\xE2n", "B\u1ED1n m\xF9a c\u1EE7a tr\u1EDDi"],
+    topics: ["C\u1EA7n", "Ki\u1EC7m", "Li\xEAm", "Ch\xEDnh", "Ch\xED c\xF4ng v\xF4 t\u01B0", "L\xEA Quy\u1EBFt Th\u1EAFng", "\u0110\u1EA1o \u0111\u1EE9c c\xF4ng d\xE2n", "B\u1ED1n m\xF9a c\u1EE7a tr\u1EDDi", "B\xE1o C\u1EE9u Qu\u1ED1c 1949"],
     sourceUrl: "https://hochiminh.vn/upload/3000001/20251024/65e0340736cc411805ab4818604f62f1HO_CHI_MINH_TOAN_TAP_-_TAP_6.pdf",
-    content: `T\xE1c ph\u1EA9m g\u1ED3m 4 b\xE0i b\xE1o xu\u1EA5t b\u1EA3n tr\xEAn B\xE1o C\u1EE9u Qu\u1ED1c t\u1EEB ng\xE0y 30/5 \u0111\u1EBFn 02/06/1949 d\u01B0\u1EDBi b\xFAt danh L\xEA Quy\u1EBFt Th\u1EAFng:
+    content: `B\u1ED9 b\u1ED1n b\xE0i vi\u1EBFt chuy\xEAn kh\u1EA3o v\u1EC1 \u0111\u1EA1o \u0111\u1EE9c m\u1EDBi c\u1EE7a Ch\u1EE7 t\u1ECBch H\u1ED3 Ch\xED Minh, k\xFD b\xFAt danh L\xEA Quy\u1EBFt Th\u1EAFng \u0111\u0103ng li\xEAn ti\u1EBFp tr\xEAn B\xE1o C\u1EE9u Qu\u1ED1c:
+- B\xC0I 1: TH\u1EBE N\xC0O L\xC0 C\u1EA6N? (\u0110\u0103ng b\xE1o ng\xE0y 30/5/1949):
+"C\u1EA7n t\u1EE9c l\xE0 si\xEAng n\u0103ng, ch\u0103m ch\u1EC9, c\u1ED1 g\u1EAFng d\u1EBBo dai. Mu\u1ED1n c\u1EA7n th\xEC vi\u1EC7c g\xEC c\u0169ng ph\u1EA3i c\xF3 k\u1EBF ho\u1EA1ch chu \u0111\xE1o. Bi\u1EBFt vi\u1EC7c n\xE0o n\xEAn l\xE0m tr\u01B0\u1EDBc, vi\u1EC7c n\xE0o l\xE0m sau. L\xE0m vi\u1EC7c g\xEC c\u0169ng ph\u1EA3i c\xF3 s\xE1ng ki\u1EBFn, t\xECm c\xE1ch l\xE0m nhanh m\xE0 t\u1ED1t, l\xE0m vi\u1EC7c b\u1EC1n gan, kh\xF4ng n\u1EA3n l\xF2ng".
+- B\xC0I 2: TH\u1EBE N\xC0O L\xC0 KI\u1EC6M? (\u0110\u0103ng b\xE1o ng\xE0y 31/5/1949):
+"Ki\u1EC7m l\xE0 ti\u1EBFt ki\u1EC7m, kh\xF4ng xa x\u1EC9, kh\xF4ng hoang ph\xED, kh\xF4ng b\u1EEBa b\xE3i. Ti\u1EBFt ki\u1EC7m ti\u1EC1n b\u1EA1c, ti\u1EBFt ki\u1EC7m th\xEC gi\u1EDD, ti\u1EBFt ki\u1EC7m s\u1EE9c lao \u0111\u1ED9ng c\u1EE7a m\xECnh v\xE0 c\u1EE7a nh\xE2n d\xE2n. Ti\u1EBFt ki\u1EC7m kh\xF4ng ph\u1EA3i l\xE0 b\u1EE7n x\u1EC9n, keo ki\u1EC7t; vi\u1EC7c \u0111\xE1ng chi m\u1ED9t v\u1EA1n \u0111\u1ED3ng c\u0169ng ph\u1EA3i chi, vi\u1EC7c kh\xF4ng \u0111\xE1ng chi m\u1ED9t \u0111\u1ED3ng c\u0169ng kh\xF4ng chi".
+- B\xC0I 3: TH\u1EBE N\xC0O L\xC0 LI\xCAM? (\u0110\u0103ng b\xE1o ng\xE0y 01/6/1949):
+"Li\xEAm l\xE0 trong s\u1EA1ch, kh\xF4ng tham lam. Ng\xE0y x\u01B0a quan l\u1EA1i kh\xF4ng \u0111\u1EE5c kho\xE9t d\xE2n l\xE0 li\xEAm. Ng\xE0y nay, m\u1ECDi ng\u01B0\u1EDDi ai gi\u1EEF ch\u1EEF Li\xEAm \u0111\u1EC1u kh\xF4ng tham \u0111\u1ECBa v\u1ECB, kh\xF4ng tham ti\u1EC1n t\xE0i, kh\xF4ng tham t\xE2ng b\u1ED1c. C\xE1n b\u1ED9 tham \xF4, l\xE3ng ph\xED l\xE0 t\u1ED9i \xE1c \u0111\u1ED1i v\u1EDBi \u0111\u1ED3ng b\xE0o, T\u1ED5 qu\u1ED1c".
+- B\xC0I 4: TH\u1EBE N\xC0O L\xC0 CH\xCDNH? (\u0110\u0103ng b\xE1o ng\xE0y 02/6/1949):
+"Ch\xEDnh ngh\u0129a l\xE0 kh\xF4ng t\xE0, th\u1EB3ng th\u1EAFn, \u0111\u1EE9ng \u0111\u1EAFn. \u0110\u1ED1i v\u1EDBi m\xECnh: Kh\xF4ng t\u1EF1 cao t\u1EF1 \u0111\u1EA1i, lu\xF4n c\u1EA7u ti\u1EBFn b\u1ED9. \u0110\u1ED1i v\u1EDBi ng\u01B0\u1EDDi: Kh\xF4ng n\u1ECBnh h\xF3t k\u1EBB tr\xEAn, kh\xF4ng xem khinh ng\u01B0\u1EDDi d\u01B0\u1EDBi; ch\xE2n th\xE0nh, khi\xEAm t\u1ED1n. \u0110\u1ED1i v\u1EDBi vi\u1EC7c: Vi\u1EC7c thi\u1EC7n d\xF9 nh\u1ECF m\u1EA5y c\u0169ng l\xE0m, vi\u1EC7c \xE1c d\xF9 nh\u1ECF m\u1EA5y c\u0169ng tr\xE1nh. Vi\u1EC7c c\xF4ng l\xEAn tr\xEAn, vi\u1EC7c t\u01B0 l\xEAn sau".
+- T\u1ED4NG K\u1EBET BI\u1EC6N CH\u1EE8NG B\u1ED0N \u0110\u1EE8C T\xCDNH:
 "Tr\u1EDDi c\xF3 b\u1ED1n m\xF9a: Xu\xE2n, H\u1EA1, Thu, \u0110\xF4ng.
 \u0110\u1EA5t c\xF3 b\u1ED1n ph\u01B0\u01A1ng: \u0110\xF4ng, T\xE2y, Nam, B\u1EAFc.
 Ng\u01B0\u1EDDi c\xF3 b\u1ED1n \u0111\u1EE9c: C\u1EA7n, Ki\u1EC7m, Li\xEAm, Ch\xEDnh.
 Thi\u1EBFu m\u1ED9t m\xF9a, th\xEC kh\xF4ng th\xE0nh tr\u1EDDi.
 Thi\u1EBFu m\u1ED9t ph\u01B0\u01A1ng, th\xEC kh\xF4ng th\xE0nh \u0111\u1EA5t.
-Thi\u1EBFu m\u1ED9t \u0111\u1EE9c, th\xEC kh\xF4ng th\xE0nh ng\u01B0\u1EDDi".
-- C\u1EA7n: Si\xEAng n\u0103ng, ch\u0103m ch\u1EC9, c\u1ED1 g\u1EAFng d\u1EBBo dai. Lao \u0111\u1ED9ng c\xF3 k\u1EBF ho\u1EA1ch, c\xF3 s\xE1ng ki\u1EBFn, c\xF3 n\u0103ng su\u1EA5t cao.
-- Ki\u1EC7m: Ti\u1EBFt ki\u1EC7m th\xEC gi\u1EDD, ti\u1EC1n c\u1EE7a, c\xF4ng s\u1EE9c c\u1EE7a d\xE2n v\xE0 c\u1EE7a n\u01B0\u1EDBc. Ti\u1EBFt ki\u1EC7m kh\xF4ng ph\u1EA3i l\xE0 b\u1EE7n x\u1EC9n, keo ki\u1EC7t.
-- Li\xEAm: Trong s\u1EA1ch, kh\xF4ng tham lam \u0111\u1ECBa v\u1ECB, ti\u1EC1n t\xE0i. Kh\xF4ng l\u1EA5y c\u1EE7a c\xF4ng l\xE0m c\u1EE7a t\u01B0.
-- Ch\xEDnh: Th\u1EB3ng th\u1EAFn, \u0111\u1EE9ng \u0111\u1EAFn. Vi\u1EC7c thi\u1EC7n d\xF9 nh\u1ECF m\u1EA5y c\u0169ng l\xE0m, vi\u1EC7c \xE1c d\xF9 nh\u1ECF m\u1EA5y c\u0169ng tr\xE1nh.
-B\u1ED1n \u0111\u1EE9c t\xEDnh g\u1EAFn b\xF3 m\u1EADt thi\u1EBFt t\u1EA1o n\xEAn n\u1EC1n t\u1EA3ng \u0111\u1EA1o \u0111\u1EE9c c\xE1ch m\u1EA1ng c\u1EE7a ng\u01B0\u1EDDi c\xE1n b\u1ED9 v\xE0 c\xF4ng d\xE2n.`,
+Thi\u1EBFu m\u1ED9t \u0111\u1EE9c, th\xEC kh\xF4ng th\xE0nh ng\u01B0\u1EDDi".`,
     metadata: {
       copyrightStatus: "PUBLIC_DOMAIN_CONFIRMED",
       pseudonym: "L\xEA Quy\u1EBFt Th\u1EAFng",
+      articleDates: {
+        can: "30/05/1949",
+        kiem: "31/05/1949",
+        liem: "01/06/1949",
+        chinh: "02/06/1949"
+      },
+      newspaper: "B\xE1o C\u1EE9u Qu\u1ED1c (C\u01A1 quan T\u1ED5ng b\u1ED9 Vi\u1EC7t Minh)",
       batch: "BATCH_A"
     }
   },
@@ -1450,21 +1476,27 @@ B\u1ED1n \u0111\u1EE9c t\xEDnh g\u1EAFn b\xF3 m\u1EADt thi\u1EBFt t\u1EA1o n\xEA
     title: "L\u1EDDi k\xEAu g\u1ECDi thi \u0111ua \xE1i qu\u1ED1c (11/6/1948)",
     category: "school-education",
     categoryLabel: "Gi\xE1o d\u1EE5c truy\u1EC1n th\u1ED1ng & Thi \u0111ua \xE1i qu\u1ED1c h\u1ECDc \u0111\u01B0\u1EDDng",
-    authorOrSource: "Ch\u1EE7 t\u1ECBch H\u1ED3 Ch\xED Minh (B\xE1o C\u1EE9u Qu\u1ED1c s\u1ED1 968)",
-    dateOrEra: "11/06/1948",
+    authorOrSource: "Ch\u1EE7 t\u1ECBch H\u1ED3 Ch\xED Minh (Vi\u1EBFt ng\xE0y 11/6/1948; \u0110\u0103ng B\xE1o C\u1EE9u Qu\u1ED1c s\u1ED1 968 ng\xE0y 24/6/1948)",
+    dateOrEra: "11/06/1948 (\u0110\u0103ng b\xE1o: 24/06/1948)",
     status: "PENDING_REVIEW",
     isAllowedForRag: false,
-    topics: ["Thi \u0111ua \xE1i qu\u1ED1c", "Di\u1EC7t gi\u1EB7c \u0111\xF3i", "Di\u1EC7t gi\u1EB7c d\u1ED1t", "Di\u1EC7t gi\u1EB7c ngo\u1EA1i x\xE2m", "Ng\u01B0\u1EDDi ng\u01B0\u1EDDi thi \u0111ua", "Thi \u0111ua l\xE0 y\xEAu n\u01B0\u1EDBc"],
+    topics: ["Thi \u0111ua \xE1i qu\u1ED1c", "11/6/1948", "B\xE1o C\u1EE9u Qu\u1ED1c s\u1ED1 968", "Di\u1EC7t gi\u1EB7c \u0111\xF3i", "Di\u1EC7t gi\u1EB7c d\u1ED1t", "Di\u1EC7t gi\u1EB7c ngo\u1EA1i x\xE2m", "Ng\u01B0\u1EDDi ng\u01B0\u1EDDi thi \u0111ua", "Thi \u0111ua l\xE0 y\xEAu n\u01B0\u1EDBc"],
     sourceUrl: "https://hochiminh.vn",
-    content: `Ng\xE0y 11 th\xE1ng 6 n\u0103m 1948, Ch\u1EE7 t\u1ECBch H\u1ED3 Ch\xED Minh ra L\u1EDDi k\xEAu g\u1ECDi thi \u0111ua \xE1i qu\u1ED1c \u0111\u1EC3 \u0111\u1ED9ng vi\xEAn to\xE0n th\u1EC3 d\xE2n t\u1ED9c v\u01B0\u1EE3t qua mu\xF4n v\xE0n gian kh\u1ED5:
-1. M\u1EE5c \u0111\xEDch thi \u0111ua: "Di\u1EC7t gi\u1EB7c \u0111\xF3i, di\u1EC7t gi\u1EB7c d\u1ED1t, di\u1EC7t gi\u1EB7c ngo\u1EA1i x\xE2m".
+    content: `L\u1EDDi k\xEAu g\u1ECDi thi \u0111ua \xE1i qu\u1ED1c c\u1EE7a Ch\u1EE7 t\u1ECBch H\u1ED3 Ch\xED Minh:
+- Ng\xE0y so\u1EA1n th\u1EA3o v\xE0 ban h\xE0nh: 11 th\xE1ng 6 n\u0103m 1948 t\u1EA1i Chi\u1EBFn khu Vi\u1EC7t B\u1EAFc (ngu\u1ED3n g\u1ED1c Ng\xE0y truy\u1EC1n th\u1ED1ng Thi \u0111ua y\xEAu n\u01B0\u1EDBc Vi\u1EC7t Nam).
+- Ng\xE0y c\xF4ng b\u1ED1 b\xE1o ch\xED: \u0110\u0103ng t\u1EA3i l\u1EA7n \u0111\u1EA7u tr\xEAn B\xE1o C\u1EE9u Qu\u1ED1c, s\u1ED1 968, ng\xE0y 24 th\xE1ng 6 n\u0103m 1948.
+N\u1ED9i dung c\u1ED1t l\xF5i c\u1EE7a L\u1EDDi k\xEAu g\u1ECDi:
+1. M\u1EE5c \u0111\xEDch thi \u0111ua \xE1i qu\u1ED1c: "Di\u1EC7t gi\u1EB7c \u0111\xF3i, di\u1EC7t gi\u1EB7c d\u1ED1t, di\u1EC7t gi\u1EB7c ngo\u1EA1i x\xE2m", \u0111em l\u1EA1i cu\u1ED9c s\u1ED1ng \u1EA5m no, \u0111\u1ED9c l\u1EADp, t\u1EF1 do cho to\xE0n d\xE2n t\u1ED9c.
 2. C\xE1ch l\xE0m: D\u1EF1a v\xE0o l\u1EF1c l\u01B0\u1EE3ng c\u1EE7a d\xE2n, tinh th\u1EA7n c\u1EE7a d\xE2n \u0111\u1EC3 g\xE2y h\u1EA1nh ph\xFAc cho d\xE2n.
-3. \u0110\u1ED1i t\u01B0\u1EE3ng: B\u1EA5t k\u1EF3 ai - gi\xE0, tr\u1EBB, g\xE1i, trai, gi\xE0u, ngh\xE8o, qu\xE2n, d\xE2n - ai n\u1EA5y \u0111\u1EC1u thi \u0111ua l\xE0m tr\xF2n b\u1ED5n ph\u1EADn c\u1EE7a m\xECnh.
-4. Kh\u1EA9u hi\u1EC7u b\u1EA5t h\u1EE7: "Thi \u0111ua l\xE0 y\xEAu n\u01B0\u1EDBc, y\xEAu n\u01B0\u1EDBc th\xEC ph\u1EA3i thi \u0111ua. V\xE0 nh\u1EEFng ng\u01B0\u1EDDi thi \u0111ua l\xE0 nh\u1EEFng ng\u01B0\u1EDDi y\xEAu n\u01B0\u1EDBc nh\u1EA5t".
-\u0110\u1ED1i v\u1EDBi h\u1ECDc \u0111\u01B0\u1EDDng: Th\u1EA7y thi \u0111ua d\u1EA1y t\u1ED1t, tr\xF2 thi \u0111ua h\u1ECDc t\u1ED1t, r\xE8n luy\u1EC7n ch\u0103m ch\u1EC9 \u0111\u1EC3 mai sau ki\u1EBFn thi\u1EBFt n\u01B0\u1EDBc nh\xE0.`,
+3. \u0110\u1ED1i t\u01B0\u1EE3ng tham gia: B\u1EA5t k\u1EF3 ai - gi\xE0, tr\u1EBB, g\xE1i, trai, gi\xE0u, ngh\xE8o, qu\xE2n, d\xE2n - ai n\u1EA5y \u0111\u1EC1u thi \u0111ua l\xE0m tr\xF2n b\u1ED5n ph\u1EADn c\u1EE7a m\xECnh.
+4. Ch\xE2n l\xFD b\u1EA5t h\u1EE7: "Thi \u0111ua l\xE0 y\xEAu n\u01B0\u1EDBc, y\xEAu n\u01B0\u1EDBc th\xEC ph\u1EA3i thi \u0111ua. V\xE0 nh\u1EEFng ng\u01B0\u1EDDi thi \u0111ua l\xE0 nh\u1EEFng ng\u01B0\u1EDDi y\xEAu n\u01B0\u1EDBc nh\u1EA5t".
+5. \u1EE8ng d\u1EE5ng trong nh\xE0 tr\u01B0\u1EDDng: Th\u1EA7y thi \u0111ua d\u1EA1y t\u1ED1t, tr\xF2 thi \u0111ua h\u1ECDc t\u1ED1t, r\xE8n luy\u1EC7n ch\u0103m ch\u1EC9 \u0111\u1EE9c - tr\xED - th\u1EC3 - m\u1EF9 \u0111\u1EC3 mai sau ph\u1EE5ng s\u1EF1 qu\xEA h\u01B0\u01A1ng \u0111\u1EA5t n\u01B0\u1EDBc.`,
     metadata: {
       copyrightStatus: "PUBLIC_DOMAIN_CONFIRMED",
-      newspaperNo: "968",
+      writtenDate: "11/06/1948",
+      publishedDate: "24/06/1948",
+      newspaper: "B\xE1o C\u1EE9u Qu\u1ED1c",
+      issueNumber: "968",
       batch: "BATCH_A"
     }
   },

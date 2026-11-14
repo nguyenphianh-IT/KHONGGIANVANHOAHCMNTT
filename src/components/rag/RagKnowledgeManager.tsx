@@ -3,7 +3,7 @@ import {
   Upload, ShieldCheck, CheckCircle2, XCircle,
   Search, RefreshCw, AlertCircle,
   Database, Plus, Lock, Clock,
-  BarChart2, Activity, HelpCircle, ThumbsUp, ThumbsDown, MessageSquare, Bot
+  BarChart2, Activity, HelpCircle, ThumbsUp, ThumbsDown, MessageSquare, Bot, ExternalLink
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { RagService } from '../../services/ragService';
@@ -810,11 +810,39 @@ export const RagKnowledgeManager: React.FC = () => {
 
             <div className="my-3 space-y-2 overflow-y-auto flex-1 text-xs">
               <div className="p-3 rounded-lg bg-heritage-ivory-100 grid grid-cols-2 gap-2 text-[11px]">
-                <div><strong>Tác giả:</strong> {inspectDoc.author}</div>
+                <div><strong>Tác giả / Cơ quan:</strong> {inspectDoc.author}</div>
+                <div><strong>Nhà xuất bản / Đơn vị:</strong> {inspectDoc.publisher || 'N/A'}</div>
                 <div><strong>Danh mục:</strong> {inspectDoc.category}</div>
                 <div><strong>Mã băm SHA-256:</strong> <span className="font-mono">{inspectDoc.checksum.substring(0, 16)}...</span></div>
                 <div><strong>Trạng thái:</strong> {inspectDoc.approvalStatus}</div>
+                <div><strong>Cho phép RAG:</strong> {inspectDoc.isAllowedForRag ? 'Có (Đã kích hoạt)' : 'Không (Đang chặn)'}</div>
+                {inspectDoc.sourceUrl && (
+                  <div className="col-span-2 flex items-center space-x-1.5 pt-1">
+                    <strong>Nguồn kiểm chứng:</strong>
+                    <a
+                      href={inspectDoc.sourceUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-heritage-red-700 hover:underline flex items-center space-x-1 truncate"
+                    >
+                      <span className="truncate max-w-[340px]">{inspectDoc.sourceUrl}</span>
+                      <ExternalLink className="w-3 h-3 flex-shrink-0" />
+                    </a>
+                  </div>
+                )}
               </div>
+
+              {((inspectDoc.metadata as any)?.copyrightStatus === 'METADATA_ONLY' || inspectDoc.documentId === 'DOC-HCM-016' || inspectDoc.documentId === 'DOC-HCM-017') && (
+                <div className="p-2.5 rounded-lg bg-amber-50 border border-amber-300 text-amber-900 text-[11px] leading-relaxed">
+                  <strong>Kiểm soát METADATA_ONLY:</strong> Tài liệu sách chuyên khảo có bản quyền của Nhà xuất bản Chính trị quốc gia Sự thật. Theo quy định pháp luật sở hữu trí tuệ, hệ thống chỉ lưu trữ thông tin thư mục và liên kết nguồn gốc; tuyệt đối không đưa nội dung toàn văn giả lập vào Retrieval Index cho tới khi hoàn tất thủ tục cấp quyền lưu trữ.
+                </div>
+              )}
+
+              {inspectDoc.description && (
+                <div className="p-2.5 rounded-lg bg-heritage-ivory-50 border border-heritage-ivory-300 text-[11px]">
+                  <strong>Tóm lược nội dung:</strong> {inspectDoc.description}
+                </div>
+              )}
 
               <div className="font-bold text-heritage-red-800 pt-2">
                 Các đoạn dữ liệu (Chunks) đã phân rã ({inspectChunks.length}):
