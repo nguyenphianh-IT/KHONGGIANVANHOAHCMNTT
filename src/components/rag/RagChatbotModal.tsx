@@ -47,15 +47,29 @@ export const RagChatbotModal: React.FC<RagChatbotModalProps> = ({
   const inputRef = useRef<HTMLInputElement>(null);
   const initialQueryTriggered = useRef(false);
 
+  const isRagEnabled = (import.meta as any).env?.VITE_RAG_ENABLED !== 'false';
+
   // Initialize welcome message & fetch health stats on open
   useEffect(() => {
     if (isOpen) {
+      if (!isRagEnabled) {
+        setMessages([
+          {
+            id: 'msg-disabled',
+            sender: 'assistant',
+            text: `Hệ thống Trợ lý AI đang được tạm dừng để bảo trì hoặc cập nhật dữ liệu theo kế hoạch quản trị của nhà trường. Quý thầy cô và các em học sinh vui lòng tra cứu trực tiếp tại mục **Kho tư liệu số hóa** trên website.`,
+            timestamp: new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })
+          }
+        ]);
+        return;
+      }
+
       if (messages.length === 0) {
         setMessages([
           {
             id: 'msg-welcome',
             sender: 'assistant',
-            text: `Xin chào các em học sinh và quý thầy cô Trường THCS Nguyễn Trung Trực!\n\nTôi là **Bạn Đồng Hành Văn Hóa Hồ Chí Minh** (phiên bản RAG Staging Thử nghiệm). Tôi được kết nối trực tiếp với kho tư liệu lịch sử đã qua thẩm định của nhà trường, sẵn sàng giải đáp các câu hỏi về cuộc đời, sự nghiệp, các tác phẩm và lời dạy của Bác Hồ.\n\n*Em có thể bấm vào các câu hỏi gợi ý bên dưới hoặc tự nhập câu hỏi vào ô bên dưới nhé!*`,
+            text: `Xin chào các em học sinh và quý thầy cô Trường THCS Nguyễn Trung Trực!\n\nTôi là **BẠN ĐỒNG HÀNH VĂN HÓA HỒ CHÍ MINH** – Trợ lý AI hỗ trợ tìm hiểu tư tưởng, đạo đức, phong cách Hồ Chí Minh, lịch sử Thành phố Hồ Chí Minh và các tư liệu thuộc Không gian Văn hóa Hồ Chí Minh của nhà trường. Tôi được kết nối trực tiếp với kho tư liệu lịch sử chính thức đã qua thẩm định 4 mắt của nhà trường, sẵn sàng giải đáp các câu hỏi với nguồn trích dẫn xác thực.\n\n*Em có thể bấm vào các câu hỏi gợi ý bên dưới hoặc tự nhập câu hỏi vào ô bên dưới nhé!*`,
             timestamp: new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })
           }
         ]);
@@ -168,7 +182,7 @@ export const RagChatbotModal: React.FC<RagChatbotModalProps> = ({
                   Bạn Đồng Hành Văn Hóa Hồ Chí Minh
                 </h3>
                 <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-heritage-gold-400/20 text-heritage-gold-300 border border-heritage-gold-400/40">
-                  RAG Pilot
+                  Vận hành chính thức
                 </span>
               </div>
               <div className="text-[11px] text-heritage-ivory-200 flex items-center space-x-2">

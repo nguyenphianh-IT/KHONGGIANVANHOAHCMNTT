@@ -97,10 +97,10 @@ const MainLayout: React.FC = () => {
         onClose={() => setIsCmsDashboardOpen(false)}
       />
 
-      {/* Future Chatbot Roadmap Float & Modal */}
+      {/* Trợ lý AI RAG Floating Button & Thông tin vận hành chính thức */}
       <ChatbotPreview
         isOpen={isChatbotModalOpen}
-        onOpen={() => setIsChatbotModalOpen(true)}
+        onOpen={() => setIsRagChatbotOpen(true)}
         onClose={() => setIsChatbotModalOpen(false)}
         onOpenRagMvp={() => setIsRagChatbotOpen(true)}
       />

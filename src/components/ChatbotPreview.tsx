@@ -20,15 +20,15 @@ export const ChatbotPreview: React.FC<ChatbotPreviewProps> = ({ isOpen, onClose,
   const upcomingFeatures = [
     {
       title: 'Hỏi đáp tri thức lịch sử chuẩn xác',
-      desc: 'Giải đáp các thắc mắc về cuộc đời, sự nghiệp của Bác Hồ dựa trên nguồn sử liệu đã kiểm chứng.'
+      desc: 'Giải đáp các thắc mắc về cuộc đời, sự nghiệp của Bác Hồ dựa trên nguồn sử liệu đã qua thẩm định 4 mắt.'
     },
     {
       title: 'Gợi ý bài học đạo đức học đường',
-      desc: 'Tư vấn tình huống thực tế giúp học sinh THCS vận dụng 5 Điều Bác dạy vào cuộc sống hàng ngày.'
+      desc: 'Tư vấn tình huống thực tế giúp học sinh THCS vận dụng 5 Điều Bác Hồ dạy vào cuộc sống hàng ngày.'
     },
     {
-      title: 'Hỗ trợ tra cứu tài liệu học tập',
-      desc: 'Giúp học sinh và giáo viên nhanh chóng tìm thấy các tác phẩm văn học, bài thơ, thước phim phù hợp bài giảng.'
+      title: 'Hỗ trợ tra cứu tài liệu & dẫn nguồn minh bạch',
+      desc: 'Giúp học sinh và giáo viên nhanh chóng tìm thấy các tác phẩm văn học, bài thơ, thước phim với trích dẫn nguồn xác thực.'
     }
   ];
 
@@ -87,7 +87,7 @@ export const ChatbotPreview: React.FC<ChatbotPreviewProps> = ({ isOpen, onClose,
                 <div>
                   <div className="inline-flex items-center space-x-1.5 px-2 py-0.5 bg-heritage-gold-100 text-heritage-red-900 border border-heritage-gold-300 text-[11px] font-bold rounded">
                     <Sparkles className="w-3 h-3 text-heritage-gold-600" />
-                    <span>Dự án Giai đoạn 2 • Đang phát triển</span>
+                    <span>GIAI ĐOẠN 3 – VẬN HÀNH CHÍNH THỨC</span>
                   </div>
                   <h3 id="chatbot-dialog-title" className="font-serif text-lg sm:text-xl font-bold text-heritage-ink-900 mt-1">
                     Bạn Đồng Hành Văn Hóa Hồ Chí Minh
@@ -110,15 +110,13 @@ export const ChatbotPreview: React.FC<ChatbotPreviewProps> = ({ isOpen, onClose,
                 <ShieldAlert className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
                 <div>
                   <strong className="block font-bold mb-1">
-                    Thông báo minh bạch về tính năng Trợ lý AI:
+                    Thông báo vận hành chính thức Trợ lý AI:
                   </strong>
                   <p>
-                    Website hiện đang ở <strong>Giai đoạn 1 (Giao diện số hóa & Kho tư liệu học đường)</strong>.
-                    Hệ thống Chatbot AI RAG (Retrieval-Augmented Generation) đang trong lộ trình thẩm định và chuẩn hóa cơ sở tri thức
-                    bởi Hội đồng chuyên môn Trường THCS Nguyễn Trung Trực.
+                    Trợ lý AI Văn hóa Hồ Chí Minh đã được tích hợp vào Không gian Văn hóa Hồ Chí Minh của Trường THCS Nguyễn Trung Trực, phục vụ giáo viên, học sinh và cộng đồng tìm hiểu về cuộc đời, sự nghiệp và tư tưởng của Chủ tịch Hồ Chí Minh.
                   </p>
                   <p className="mt-1 font-medium text-amber-800">
-                    * Nhằm tôn trọng sự chuẩn xác của lịch sử cách mạng, hệ thống tuyệt đối không tạo câu trả lời AI giả lập khi chưa kết nối mô hình chính thức.
+                    * Hệ thống vận hành dựa trên công nghệ RAG với kho tư liệu lịch sử đã qua thẩm định 4 mắt. Mọi câu trả lời đều có trích dẫn nguồn cụ thể. Không trả lời khi không có căn cứ tư liệu.
                   </p>
                 </div>
               </div>
@@ -127,7 +125,7 @@ export const ChatbotPreview: React.FC<ChatbotPreviewProps> = ({ isOpen, onClose,
               <div>
                 <h4 className="text-xs uppercase tracking-wider font-bold text-heritage-red-700 mb-2 flex items-center space-x-1.5">
                   <Cpu className="w-4 h-4" />
-                  <span>Định hướng phát triển trong Giai đoạn 2:</span>
+                  <span>Các tính năng cốt lõi đã đưa vào vận hành:</span>
                 </h4>
                 <div className="space-y-2">
                   {upcomingFeatures.map((feat, idx) => (
@@ -162,7 +160,7 @@ export const ChatbotPreview: React.FC<ChatbotPreviewProps> = ({ isOpen, onClose,
 
               {/* Modular component architecture note */}
               <div className="pt-2 text-[11px] text-heritage-ink-500 text-center">
-                Cấu trúc module độc lập sẵn sàng tích hợp Endpoint API & RAG Vector Database khi bước vào Giai đoạn 2.
+                Hệ thống Trợ lý AI RAG đã chính thức tích hợp cơ sở tri thức đã thẩm định và sẵn sàng phục vụ học tập, nghiên cứu.
               </div>
             </div>
 
@@ -182,7 +180,7 @@ export const ChatbotPreview: React.FC<ChatbotPreviewProps> = ({ isOpen, onClose,
                     className="px-4 py-2 bg-gradient-to-r from-heritage-gold-400 to-heritage-gold-500 hover:from-heritage-gold-500 hover:to-heritage-gold-600 text-heritage-ink-950 font-bold text-xs sm:text-sm rounded-lg shadow-sm flex items-center space-x-1.5 transition-all"
                   >
                     <Sparkles className="w-4 h-4 text-heritage-ink-900" />
-                    <span>Trải nghiệm Thử nghiệm (RAG MVP)</span>
+                    <span>MỞ TRỢ LÝ AI NGAY</span>
                   </button>
                 )}
                 <button

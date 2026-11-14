@@ -1,8 +1,22 @@
 import { createClient } from '@supabase/supabase-js';
 
-const supabaseUrl = (import.meta as any).env?.VITE_SUPABASE_URL;
-const supabaseAnonKey = (import.meta as any).env?.VITE_SUPABASE_ANON_KEY;
-const appEnv = (import.meta as any).env?.VITE_APP_ENV || 'development';
+const getEnv = (key: string): string | undefined => {
+  try {
+    if (typeof (import.meta as any) !== 'undefined' && (import.meta as any).env && (import.meta as any).env[key]) {
+      return (import.meta as any).env[key];
+    }
+  } catch {}
+  try {
+    if (typeof process !== 'undefined' && process.env && process.env[key]) {
+      return process.env[key];
+    }
+  } catch {}
+  return undefined;
+};
+
+const supabaseUrl = getEnv('VITE_SUPABASE_URL') || getEnv('SUPABASE_URL');
+const supabaseAnonKey = getEnv('VITE_SUPABASE_ANON_KEY') || getEnv('SUPABASE_ANON_KEY') || getEnv('SUPABASE_SERVICE_ROLE_KEY');
+const appEnv = getEnv('VITE_APP_ENV') || getEnv('VERCEL_ENV') || getEnv('NODE_ENV') || 'development';
 
 export const isSupabaseConfigured = Boolean(
   supabaseUrl &&

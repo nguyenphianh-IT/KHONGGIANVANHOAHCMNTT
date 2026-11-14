@@ -11,6 +11,7 @@
     "test:rag:phase02": "node scripts/test-rag-phase02.mjs",
     "test:rag:phase03": "node scripts/test-rag-phase03.mjs",
     "test:rag:phase04": "node scripts/test-rag-phase04.mjs",
+    "test:rag:production": "node scripts/test-rag-production-preflight.mjs",
     "rag:server": "node scripts/rag-server.mjs"
   },
   "dependencies": {
