@@ -1,0 +1,23 @@
+const fs = require('fs');
+const path = require('path');
+const dir = path.join(__dirname, '..', 'docs', 'phase-0b-2', 'PHASE_0B_2_3_DOCUMENTATION_DELTA_REMEDIATION_ROUND3_8');
+const files = fs.readdirSync(dir).filter(f => f.endsWith('.md')).sort();
+
+const targets = [
+  'independently verified by',
+  'completely remediated',
+  'tự kiểm chứng độc lập',
+  'tự chứng minh độc lập'
+];
+
+files.forEach(f => {
+  const content = fs.readFileSync(path.join(dir, f), 'utf8');
+  const lines = content.split('\n');
+  lines.forEach((line, idx) => {
+    targets.forEach(t => {
+      if (line.toLowerCase().includes(t.toLowerCase())) {
+        console.log(`${f} [L${idx + 1}] (${t}): ${line.trim()}`);
+      }
+    });
+  });
+});

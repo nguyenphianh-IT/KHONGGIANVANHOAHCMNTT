@@ -1,9 +1,10 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
+import { ragDevApiPlugin } from './src/rag/api/ragVitePlugin'
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [react()],
+  plugins: [react(), ragDevApiPlugin()],
   server: {
     port: 5173,
     host: true,

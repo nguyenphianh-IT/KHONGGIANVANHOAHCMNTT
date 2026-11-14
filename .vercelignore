@@ -1,7 +1,13 @@
 docs/
 supabase/
 scripts/
+screenshots_*/
+scratch/
 *.docx
 *.zip
 *.md
+*.json
+!package.json
+!tsconfig*.json
+!vercel.json
 .gemini/

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { AuthProvider } from './context/AuthContext';
 import { Header } from './components/Header';
 import { Hero } from './components/Hero';
@@ -9,6 +9,7 @@ import { Resources } from './components/Resources';
 import { LearningCorner } from './components/LearningCorner';
 import { Activities } from './components/Activities';
 import { ChatbotPreview } from './components/ChatbotPreview';
+import { RagChatbotModal } from './components/rag/RagChatbotModal';
 import { Footer } from './components/Footer';
 import { BackToTop } from './components/BackToTop';
 import { BottomNav } from './components/BottomNav';
@@ -17,8 +18,22 @@ import { CmsDashboard } from './components/cms/CmsDashboard';
 
 const MainLayout: React.FC = () => {
   const [isChatbotModalOpen, setIsChatbotModalOpen] = useState(false);
+  const [isRagChatbotOpen, setIsRagChatbotOpen] = useState(false);
+  const [ragInitialQuery, setRagInitialQuery] = useState<string | undefined>();
+  const [ragContextDocTitle, setRagContextDocTitle] = useState<string | undefined>();
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [isCmsDashboardOpen, setIsCmsDashboardOpen] = useState(false);
+
+  useEffect(() => {
+    const handler = (e: any) => {
+      const detail = e.detail || {};
+      setRagInitialQuery(detail.initialQuery);
+      setRagContextDocTitle(detail.documentTitle);
+      setIsRagChatbotOpen(true);
+    };
+    window.addEventListener('open-rag-chatbot', handler);
+    return () => window.removeEventListener('open-rag-chatbot', handler);
+  }, []);
 
   const scrollToSection = (id: string) => {
     const element = document.getElementById(id);
@@ -31,7 +46,7 @@ const MainLayout: React.FC = () => {
     <div className="min-h-screen flex flex-col bg-heritage-ivory-100 text-heritage-ink-900 selection:bg-heritage-red-100 selection:text-heritage-red-900">
       {/* Top Fixed Header */}
       <Header
-        onOpenChatbotPreview={() => setIsChatbotModalOpen(true)}
+        onOpenChatbotPreview={() => setIsRagChatbotOpen(true)}
         onOpenAuthModal={() => setIsAuthModalOpen(true)}
         onOpenCmsDashboard={() => setIsCmsDashboardOpen(true)}
       />
@@ -82,11 +97,28 @@ const MainLayout: React.FC = () => {
         onClose={() => setIsCmsDashboardOpen(false)}
       />
 
-      {/* Future Chatbot Roadmap Float & Modal */}
+      {/* Trợ lý AI RAG Floating Button & Thông tin vận hành chính thức */}
       <ChatbotPreview
         isOpen={isChatbotModalOpen}
-        onOpen={() => setIsChatbotModalOpen(true)}
+        onOpen={() => setIsRagChatbotOpen(true)}
         onClose={() => setIsChatbotModalOpen(false)}
+        onOpenRagMvp={() => setIsRagChatbotOpen(true)}
+      />
+
+      {/* RAG Runtime MVP Interactive Chatbot Modal (ADR-002 Implementation Phase 01 & Phase 04) */}
+      <RagChatbotModal
+        isOpen={isRagChatbotOpen}
+        initialQuery={ragInitialQuery}
+        contextDocumentTitle={ragContextDocTitle}
+        onClose={() => {
+          setIsRagChatbotOpen(false);
+          setRagInitialQuery(undefined);
+          setRagContextDocTitle(undefined);
+        }}
+        onSwitchToPreviewRoadmap={() => {
+          setIsRagChatbotOpen(false);
+          setIsChatbotModalOpen(true);
+        }}
       />
 
       {/* Back to top button */}
