@@ -164,63 +164,82 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   useEffect(() => {
-    // 1. Khôi phục session Sandbox đã lưu nếu có
-    try {
-      const stored = localStorage.getItem('hcm_sandbox_active_user');
-      if (stored) {
-        const parsed = JSON.parse(stored);
-        if (parsed?.user) {
-          setUser(parsed.user);
-          setProfile(parsed.profile || null);
-          setRoles(parsed.roles || []);
-          setSession(parsed.session || null);
-          setIsLoading(false);
-          return;
+    let isMounted = true;
+
+    const initializeAuth = async () => {
+      // 1. Ưu tiên tuyệt đối: Kiểm tra phiên đăng nhập Supabase Auth thực tế nếu đã cấu hình
+      if (isSupabaseConfigured) {
+        try {
+          const { data: { session } } = await supabase.auth.getSession();
+          if (session && isMounted) {
+            setSession(session);
+            setUser(session.user);
+            await fetchProfileAndRoles(session.user.id);
+            // Phiên thực tế đang kích hoạt: Dọn dẹp token giả lập sandbox nếu còn tồn dư
+            try {
+              localStorage.removeItem('hcm_sandbox_active_user');
+            } catch {}
+            setIsLoading(false);
+            return;
+          }
+        } catch (err) {
+          console.warn('[Supabase getSession Error]', err);
         }
       }
-    } catch (e) {
-      console.warn('[Khôi phục Sandbox Session thất bại]', e);
-    }
 
-    // 2. Nếu Supabase không được cấu hình, kết thúc loading
-    if (!isSupabaseConfigured) {
-      setIsLoading(false);
-      return;
-    }
-
-    // 3. Lấy session hiện tại từ Supabase
-    supabase.auth
-      .getSession()
-      .then(({ data: { session } }) => {
-        setSession(session);
-        setUser(session?.user ?? null);
-        if (session?.user) {
-          fetchProfileAndRoles(session.user.id);
+      // 2. Chế độ kiểm thử cục bộ / Sandbox persona (Chỉ kích hoạt khi không có phiên Supabase thật)
+      try {
+        const stored = localStorage.getItem('hcm_sandbox_active_user');
+        if (stored && isMounted) {
+          const parsed = JSON.parse(stored);
+          if (parsed?.user) {
+            setUser(parsed.user);
+            setProfile(parsed.profile || null);
+            setRoles(parsed.roles || []);
+            setSession(parsed.session || null);
+            setIsLoading(false);
+            return;
+          }
         }
+      } catch (e) {
+        console.warn('[Khôi phục Sandbox Session thất bại]', e);
+      }
+
+      if (isMounted) {
         setIsLoading(false);
-      })
-      .catch((err) => {
-        console.warn('[Supabase getSession Error]', err);
+      }
+    };
+
+    initializeAuth();
+
+    // 3. Lắng nghe thay đổi auth từ Supabase Auth
+    let subscription: any = null;
+    if (isSupabaseConfigured) {
+      const {
+        data: { subscription: sub },
+      } = supabase.auth.onAuthStateChange(async (_event, newSession) => {
+        if (!isMounted) return;
+        setSession(newSession);
+        setUser(newSession?.user ?? null);
+        if (newSession?.user) {
+          try {
+            localStorage.removeItem('hcm_sandbox_active_user');
+          } catch {}
+          await fetchProfileAndRoles(newSession.user.id);
+        } else {
+          setProfile(null);
+          setRoles([]);
+        }
         setIsLoading(false);
       });
-
-    // 4. Lắng nghe thay đổi auth từ Supabase
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      if (session?.user) {
-        fetchProfileAndRoles(session.user.id);
-      } else {
-        setProfile(null);
-        setRoles([]);
-      }
-      setIsLoading(false);
-    });
+      subscription = sub;
+    }
 
     return () => {
-      subscription.unsubscribe();
+      isMounted = false;
+      if (subscription) {
+        subscription.unsubscribe();
+      }
     };
   }, []);
 
@@ -294,6 +313,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
 
       if (data.user) {
+        try {
+          localStorage.removeItem('hcm_sandbox_active_user');
+        } catch {}
         await fetchProfileAndRoles(data.user.id);
       }
 
@@ -307,6 +329,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const logout = async () => {
     try {
       localStorage.removeItem('hcm_sandbox_active_user');
+      localStorage.removeItem('rag_admin_token');
     } catch (e) {}
 
     if (isSupabaseConfigured) {

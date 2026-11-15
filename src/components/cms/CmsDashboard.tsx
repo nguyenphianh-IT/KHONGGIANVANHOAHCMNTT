@@ -4,7 +4,8 @@ import {
   ShieldCheck, Shield, X, Plus, Search,
   CheckCircle2, AlertCircle, Send,
   ExternalLink, Sparkles, ArrowRight,
-  Upload, Copy, Check, Trash2, Trophy, GraduationCap, LogOut, Cloud, Database
+  Upload, Copy, Check, Trash2, Trophy, GraduationCap, LogOut, Cloud, Database,
+  KeyRound
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { FullScreenEditor } from './FullScreenEditor';
@@ -12,6 +13,7 @@ import { ReviewModal } from './ReviewModal';
 import { MediaLibraryModal } from './MediaLibraryModal';
 import { ContestManagerModal } from './ContestManagerModal';
 import { RagKnowledgeManager } from '../rag/RagKnowledgeManager';
+import { PasswordManager } from './PasswordManager';
 import { getStoredContestQuestions, getContestSubmissions, EVENT_CONTEST_DATA_CHANGED } from '../../data/contestData';
 import { optimizeImageFile } from '../../lib/imageOptimizer';
 import {
@@ -31,7 +33,7 @@ interface CmsDashboardProps {
 
 export const CmsDashboard: React.FC<CmsDashboardProps> = ({ isOpen, onClose }) => {
   // Active View Navigation
-  const [activeNav, setActiveNav] = useState<'overview' | 'articles' | 'pending' | 'published' | 'media' | 'audit' | 'security' | 'contest' | 'rag-knowledge'>('overview');
+  const [activeNav, setActiveNav] = useState<'overview' | 'articles' | 'pending' | 'published' | 'media' | 'audit' | 'security' | 'contest' | 'rag-knowledge' | 'password-manager'>('overview');
 
   // Articles, Audit & Media state synchronized with cmsStore
   const [articles, setArticles] = useState<ArticleData[]>(getStoredArticles);
@@ -533,6 +535,20 @@ export const CmsDashboard: React.FC<CmsDashboardProps> = ({ isOpen, onClose }) =
               </button>
             </div>
 
+            {/* Nút Đổi Mật Khẩu nhanh */}
+            <button
+              onClick={() => setActiveNav('password-manager')}
+              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center space-x-1.5 shadow-sm border ${
+                activeNav === 'password-manager'
+                  ? 'bg-heritage-gold-400 text-heritage-red-950 border-heritage-gold-300 font-extrabold'
+                  : 'bg-black/30 hover:bg-black/45 text-heritage-gold-200 border-heritage-gold-400/40'
+              }`}
+              title="Quản trị và đổi mật khẩu tài khoản"
+            >
+              <KeyRound className="w-3.5 h-3.5 text-heritage-gold-300" />
+              <span>Đổi Mật Khẩu</span>
+            </button>
+
             {/* Back to Public Portal Button */}
             <button
               onClick={onClose}
@@ -714,13 +730,31 @@ export const CmsDashboard: React.FC<CmsDashboardProps> = ({ isOpen, onClose }) =
                 <span>8. An Ninh & Chốt Chặn</span>
               </button>
 
+              {/* 9. Quản trị Mật khẩu & Tài khoản */}
+              <button
+                onClick={() => setActiveNav('password-manager')}
+                className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold transition text-left ${
+                  activeNav === 'password-manager'
+                    ? 'bg-heritage-red-700 text-white shadow-sm'
+                    : 'text-heritage-ink-800 hover:bg-heritage-red-50 hover:text-heritage-red-700'
+                }`}
+              >
+                <div className="flex items-center space-x-3">
+                  <KeyRound className="w-4 h-4 flex-shrink-0 text-heritage-gold-600" />
+                  <span>9. Quản Trị Mật Khẩu</span>
+                </div>
+                <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-900 border border-amber-300">
+                  Bảo mật
+                </span>
+              </button>
+
               <div className="my-2 border-t border-heritage-gold-300/40" />
 
               <div className="px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-heritage-ink-500 select-none">
                 Hội Thi & Phong Trào
               </div>
 
-              {/* 9. Quản trị Hội thi, Câu hỏi & Học sinh */}
+              {/* 10. Quản trị Hội thi, Câu hỏi & Học sinh */}
               <button
                 onClick={() => setActiveNav('contest')}
                 className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold transition text-left ${
@@ -731,7 +765,7 @@ export const CmsDashboard: React.FC<CmsDashboardProps> = ({ isOpen, onClose }) =
               >
                 <div className="flex items-center space-x-3">
                   <Trophy className="w-4 h-4 flex-shrink-0 text-heritage-gold-600" />
-                  <span>9. Quản Trị Hội Thi & Đề Thi</span>
+                  <span>10. Quản Trị Hội Thi & Đề Thi</span>
                 </div>
                 <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-900 border border-amber-300">
                   {contestQuestionsCount} câu
@@ -744,7 +778,7 @@ export const CmsDashboard: React.FC<CmsDashboardProps> = ({ isOpen, onClose }) =
                 Trợ Lý AI & RAG (ADR-002)
               </div>
 
-              {/* 10. Kho Tri Thức RAG */}
+              {/* 11. Kho Tri Thức RAG */}
               <button
                 onClick={() => setActiveNav('rag-knowledge')}
                 className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold transition text-left ${
@@ -755,7 +789,7 @@ export const CmsDashboard: React.FC<CmsDashboardProps> = ({ isOpen, onClose }) =
               >
                 <div className="flex items-center space-x-3">
                   <Database className="w-4 h-4 flex-shrink-0 text-heritage-gold-600" />
-                  <span>10. Kho Tri Thức RAG</span>
+                  <span>11. Kho Tri Thức RAG</span>
                 </div>
                 <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-heritage-gold-100 text-heritage-red-900 border border-heritage-gold-300">
                   Phase 02
@@ -1471,7 +1505,14 @@ export const CmsDashboard: React.FC<CmsDashboardProps> = ({ isOpen, onClose }) =
             )}
 
             {/* ----------------------------------------------------------------------- */}
-            {/* VIEW 9: KHO TRI THỨC RAG (ADR-002 Phase 02)                             */}
+            {/* VIEW 9: QUẢN TRỊ MẬT KHẨU & TÀI KHOẢN (Password & Credentials Manager)  */}
+            {/* ----------------------------------------------------------------------- */}
+            {activeNav === 'password-manager' && (
+              <PasswordManager />
+            )}
+
+            {/* ----------------------------------------------------------------------- */}
+            {/* VIEW 10: KHO TRI THỨC RAG (ADR-002 Phase 02)                            */}
             {/* ----------------------------------------------------------------------- */}
             {activeNav === 'rag-knowledge' && (
               <RagKnowledgeManager />

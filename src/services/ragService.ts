@@ -17,36 +17,59 @@ import { ragRuntime } from '../rag';
 import { documentRegistry } from '../rag/knowledge/documentRegistry';
 import { documentIngestion, IngestionInput } from '../rag/ingestion/documentIngestion';
 import { persistentRagStore } from '../rag/storage/persistentStore';
+import { supabase, isSupabaseConfigured } from '../lib/supabase';
 
 export class RagService {
   private static apiBase = '/api/rag';
 
   /**
-   * Helper to get request headers with verified auth token and role
+   * Helper to get request headers with verified auth token and role.
+   * Strictly prioritizes real Supabase Auth access token.
    */
-  private static getHeaders(userRole?: string): Record<string, string> {
+  private static async getHeaders(userRole?: string): Promise<Record<string, string>> {
     const headers: Record<string, string> = {
       'Content-Type': 'application/json'
     };
     if (userRole) {
       headers['X-User-Role'] = userRole;
     }
-    if (typeof localStorage !== 'undefined') {
+
+    // 1. Primary: Retrieve real cryptographically signed JWT from Supabase Auth Session
+    if (isSupabaseConfigured) {
+      try {
+        const { data: { session }, error } = await supabase.auth.getSession();
+        if (!error && session?.access_token) {
+          headers['Authorization'] = `Bearer ${session.access_token}`;
+          return headers;
+        }
+      } catch (err) {
+        console.warn('[RagService] Error obtaining real Supabase Auth session:', err);
+      }
+    }
+
+    // 2. Controlled Sandbox/Dev Fallback (Strictly prohibited on Production)
+    const isProduction =
+      (typeof import.meta !== 'undefined' && (import.meta as any).env?.PROD) ||
+      (typeof process !== 'undefined' && (process.env?.NODE_ENV === 'production' || process.env?.VERCEL_ENV === 'production'));
+
+    if (!isProduction && typeof localStorage !== 'undefined') {
       const explicitToken = localStorage.getItem('rag_admin_token');
       if (explicitToken) {
         headers['Authorization'] = `Bearer ${explicitToken}`;
-      } else {
-        try {
-          const sandboxUser = localStorage.getItem('hcm_sandbox_active_user');
-          if (sandboxUser) {
-            const parsed = JSON.parse(sandboxUser);
-            if (parsed?.session?.access_token) {
-              headers['Authorization'] = `Bearer ${parsed.session.access_token}`;
-            }
-          }
-        } catch (e) {}
+        return headers;
       }
+      try {
+        const sandboxUser = localStorage.getItem('hcm_sandbox_active_user');
+        if (sandboxUser) {
+          const parsed = JSON.parse(sandboxUser);
+          if (parsed?.session?.access_token) {
+            headers['Authorization'] = `Bearer ${parsed.session.access_token}`;
+            return headers;
+          }
+        }
+      } catch {}
     }
+
     return headers;
   }
 
@@ -55,9 +78,10 @@ export class RagService {
    */
   public static async askQuestion(query: string): Promise<RagAnswerResponse> {
     try {
+      const headers = await this.getHeaders();
       const response = await fetch(`${this.apiBase}/query`, {
         method: 'POST',
-        headers: this.getHeaders(),
+        headers,
         body: JSON.stringify({ query, topK: 4 })
       });
 
@@ -131,13 +155,14 @@ export class RagService {
   /**
    * Get all registered documents with optional status filter
    */
-  public static async getDocuments(statusFilter?: string): Promise<{
+  public static async getDocuments(statusFilter?: string, userRole?: string): Promise<{
     documents: RealKnowledgeDocument[];
     categories: DocumentCategoryDefinition[];
   }> {
     try {
       const url = statusFilter ? `${this.apiBase}/documents?status=${statusFilter}` : `${this.apiBase}/documents`;
-      const response = await fetch(url);
+      const headers = await this.getHeaders(userRole);
+      const response = await fetch(url, { headers });
       if (response.ok) {
         const json = await response.json();
         if (json.success && json.data) {
@@ -162,12 +187,13 @@ export class RagService {
   /**
    * Get single document and its chunks
    */
-  public static async getDocumentById(docId: string): Promise<{
+  public static async getDocumentById(docId: string, userRole?: string): Promise<{
     document: RealKnowledgeDocument;
     chunks: DocumentChunk[];
   } | null> {
     try {
-      const response = await fetch(`${this.apiBase}/documents/${encodeURIComponent(docId)}`);
+      const headers = await this.getHeaders(userRole);
+      const response = await fetch(`${this.apiBase}/documents/${encodeURIComponent(docId)}`, { headers });
       if (response.ok) {
         const json = await response.json();
         if (json.success && json.data) {
@@ -199,9 +225,10 @@ export class RagService {
     error?: string;
   }> {
     try {
+      const headers = await this.getHeaders(userRole);
       const response = await fetch(`${this.apiBase}/documents`, {
         method: 'POST',
-        headers: this.getHeaders(userRole),
+        headers,
         body: JSON.stringify(input)
       });
 
@@ -246,9 +273,10 @@ export class RagService {
     error?: string;
   }> {
     try {
+      const headers = await this.getHeaders(userRole);
       const response = await fetch(`${this.apiBase}/documents/${encodeURIComponent(docId)}/approve`, {
         method: 'POST',
-        headers: this.getHeaders(userRole),
+        headers,
         body: JSON.stringify({ action, reason })
       });
 
@@ -295,9 +323,11 @@ export class RagService {
     error?: string;
   }> {
     try {
+      const headers = await this.getHeaders(userRole);
       const response = await fetch(`${this.apiBase}/documents/${encodeURIComponent(docId)}/reprocess`, {
         method: 'POST',
-        headers: this.getHeaders(userRole)
+        headers,
+        body: JSON.stringify({ action: 'reprocess' })
       });
       const json = await response.json();
       if (json.success && json.data) {
@@ -328,9 +358,10 @@ export class RagService {
    */
   public static async sendFeedback(feedback: Omit<RagUserFeedback, 'id' | 'createdAt'>): Promise<{ success: boolean; message?: string; persisted?: boolean }> {
     try {
+      const headers = await this.getHeaders(feedback.userRole);
       const response = await fetch(`${this.apiBase}/feedback`, {
         method: 'POST',
-        headers: this.getHeaders(feedback.userRole),
+        headers,
         body: JSON.stringify(feedback)
       });
       const json = await response.json();
@@ -358,21 +389,40 @@ export class RagService {
 
   /**
    * Phase 04: Fetch Operations Analytics Summary
+   * Strictly avoids falling back to local RAM data when server authorization fails (401/403).
    */
-  public static async getAnalytics(userRole?: string): Promise<RagAnalyticsSummary | null> {
+  public static async getAnalytics(userRole?: string): Promise<{
+    success: boolean;
+    data?: RagAnalyticsSummary;
+    statusCode: number;
+    error?: string;
+  }> {
     try {
+      const headers = await this.getHeaders(userRole);
       const response = await fetch(`${this.apiBase}/analytics`, {
         method: 'GET',
-        headers: this.getHeaders(userRole)
+        headers
       });
       const json = await response.json();
-      if (json.success && json.data) {
-        return json.data;
+      if (response.ok && json.success && json.data) {
+        return {
+          success: true,
+          data: json.data,
+          statusCode: 200
+        };
       }
-    } catch (err) {
-      console.warn('[RagService] Analytics API error, falling back locally:', err);
+      return {
+        success: false,
+        statusCode: response.status,
+        error: json.error || `Lỗi truy xuất dữ liệu vận hành (${response.status})`
+      };
+    } catch (err: any) {
+      console.warn('[RagService] Analytics API network error:', err);
+      return {
+        success: false,
+        statusCode: 500,
+        error: 'Lỗi kết nối máy chủ phân tích dữ liệu.'
+      };
     }
-
-    return persistentRagStore.getAnalytics();
   }
 }

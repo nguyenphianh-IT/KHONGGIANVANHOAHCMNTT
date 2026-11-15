@@ -23,6 +23,7 @@ export const RagKnowledgeManager: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'documents' | 'analytics'>('documents');
   const [analyticsData, setAnalyticsData] = useState<RagAnalyticsSummary | null>(null);
   const [isLoadingAnalytics, setIsLoadingAnalytics] = useState(false);
+  const [analyticsError, setAnalyticsError] = useState<{ statusCode: number; message: string } | null>(null);
 
   const [documents, setDocuments] = useState<RealKnowledgeDocument[]>([]);
   const [categories, setCategories] = useState<DocumentCategoryDefinition[]>(HCM_STANDARD_CATEGORIES);
@@ -78,11 +79,25 @@ export const RagKnowledgeManager: React.FC = () => {
 
   const loadAnalytics = async () => {
     setIsLoadingAnalytics(true);
+    setAnalyticsError(null);
     try {
-      const summary = await RagService.getAnalytics(userRoleCode);
-      setAnalyticsData(summary);
-    } catch (err) {
+      const res = await RagService.getAnalytics(userRoleCode);
+      if (res.success && res.data) {
+        setAnalyticsData(res.data);
+      } else {
+        setAnalyticsData(null);
+        setAnalyticsError({
+          statusCode: res.statusCode,
+          message: res.error || 'Không thể tải chỉ số vận hành'
+        });
+      }
+    } catch (err: any) {
       console.error('Failed to load analytics:', err);
+      setAnalyticsData(null);
+      setAnalyticsError({
+        statusCode: 500,
+        message: err?.message || 'Lỗi mạng khi tải chỉ số vận hành'
+      });
     } finally {
       setIsLoadingAnalytics(false);
     }
@@ -519,7 +534,44 @@ export const RagKnowledgeManager: React.FC = () => {
             </div>
           </div>
 
-          {/* Metric KPI Cards */}
+          {/* Banner Thông Báo Lỗi Xác Thực / Phân Quyền */}
+          {analyticsError && (
+            <div className={`p-4 rounded-xl border flex items-start space-x-3 ${
+              analyticsError.statusCode === 401
+                ? 'bg-amber-50 border-amber-300 text-amber-900'
+                : analyticsError.statusCode === 403
+                ? 'bg-rose-50 border-rose-300 text-rose-900'
+                : 'bg-red-50 border-red-300 text-red-900'
+            }`}>
+              <AlertCircle className={`w-5 h-5 flex-shrink-0 mt-0.5 ${
+                analyticsError.statusCode === 401 ? 'text-amber-600' : 'text-rose-600'
+              }`} />
+              <div className="space-y-1">
+                <div className="font-bold text-xs uppercase tracking-wider">
+                  {analyticsError.statusCode === 401 && 'Yêu Cầu Xác Thực Danh Tính Quản Trị (HTTP 401)'}
+                  {analyticsError.statusCode === 403 && 'Quyền Hạn Không Đủ (HTTP 403 Forbidden)'}
+                  {analyticsError.statusCode !== 401 && analyticsError.statusCode !== 403 && `Lỗi Máy Chủ (HTTP ${analyticsError.statusCode})`}
+                </div>
+                <div className="text-xs leading-relaxed">
+                  {analyticsError.message}
+                </div>
+                {analyticsError.statusCode === 401 && (
+                  <div className="text-[11px] text-amber-800 pt-1">
+                    👉 Nếu bạn đang sử dụng vai trò mô phỏng Sandbox, hãy đăng xuất và đăng nhập bằng <strong>tài khoản Supabase Auth thật</strong> của nhà trường để được máy chủ cấp quyền truy cập.
+                  </div>
+                )}
+                {analyticsError.statusCode === 403 && (
+                  <div className="text-[11px] text-rose-800 pt-1">
+                    👉 Tài khoản của bạn đã được xác thực danh tính nhưng chưa được gán vai trò <code>admin</code> hoặc <code>super_admin</code> trong bảng <code>public.user_roles</code> trên cơ sở dữ liệu. Vui lòng liên hệ DB Administrator.
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Metric KPI Cards (Chỉ hiển thị khi đã tải thành công) */}
+          {analyticsData && (
+          <>
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
             <div className="bg-white p-4 rounded-xl border border-heritage-ivory-300 shadow-xs">
               <div className="text-[11px] font-bold uppercase tracking-wider text-heritage-ink-500">Tỷ lệ có dẫn chứng</div>
@@ -644,6 +696,8 @@ export const RagKnowledgeManager: React.FC = () => {
               </div>
             </div>
           </div>
+          </>
+          )}
         </div>
       )}
 
