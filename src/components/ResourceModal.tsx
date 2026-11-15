@@ -2,10 +2,16 @@ import React, { useEffect, useState } from 'react';
 import { ResourceItem } from '../types';
 import {
   X, Calendar, User, Tag, BookOpen, Printer,
-  Sparkles, CheckCircle2, ShieldCheck, Quote
+  Sparkles, CheckCircle2, ShieldCheck, Quote, Eye
 } from 'lucide-react';
 import { ContentRenderer } from './cms/ContentRenderer';
 import { AudioPlayer } from './AudioPlayer';
+import {
+  recordArticleView,
+  getViewCount,
+  EVENT_VIEWS_CHANGED,
+  MIN_ENGAGEMENT_DWELL_MS
+} from '../lib/viewsStore';
 
 interface ResourceModalProps {
   item: ResourceItem | null;
@@ -14,6 +20,32 @@ interface ResourceModalProps {
 
 export const ResourceModal: React.FC<ResourceModalProps> = ({ item, onClose }) => {
   const [fontSize, setFontSize] = useState<'normal' | 'large'>('normal');
+  const [currentViews, setCurrentViews] = useState<number>(() => item ? getViewCount(item.id) : 0);
+
+  useEffect(() => {
+    if (!item?.id) return;
+    setCurrentViews(getViewCount(item.id));
+
+    const handleViewsChanged = () => {
+      setCurrentViews(getViewCount(item.id));
+    };
+    window.addEventListener(EVENT_VIEWS_CHANGED, handleViewsChanged);
+
+    // KIỂM SOÁT ĐỌC THỰC TẾ & CHỐNG VIEW ẢO:
+    // Độc giả phải lưu lại đọc bài ít nhất 3 giây mới được ghi nhận 1 lượt đọc hợp lệ.
+    // Nếu độc giả bấm nhầm hoặc tắt ngay dưới 3 giây, clearTimeout sẽ hủy ghi nhận.
+    const dwellTimer = setTimeout(async () => {
+      const res = await recordArticleView(item.id);
+      if (res.success) {
+        setCurrentViews(res.newCount);
+      }
+    }, MIN_ENGAGEMENT_DWELL_MS);
+
+    return () => {
+      clearTimeout(dwellTimer);
+      window.removeEventListener(EVENT_VIEWS_CHANGED, handleViewsChanged);
+    };
+  }, [item?.id]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -142,9 +174,13 @@ export const ResourceModal: React.FC<ResourceModalProps> = ({ item, onClose }) =
                 <span className="px-3.5 py-1.5 bg-heritage-gold-400 text-heritage-red-950 font-black text-xs sm:text-sm rounded-full shadow-md backdrop-blur-sm border border-heritage-gold-300">
                   {item.badgeText}
                 </span>
-                <span className="px-3 py-1.5 bg-black/60 text-white text-xs sm:text-sm rounded-full backdrop-blur-sm font-sans font-medium flex items-center space-x-1">
+                <span className="px-3.5 py-1.5 bg-black/60 text-white text-xs sm:text-sm rounded-full backdrop-blur-sm font-sans font-medium flex items-center space-x-1 border border-white/10" title="Thời gian đọc ước tính">
                   <Sparkles className="w-3.5 h-3.5 text-heritage-gold-300" />
                   <span>~{readingTime} phút đọc</span>
+                </span>
+                <span className="px-3.5 py-1.5 bg-black/60 text-white text-xs sm:text-sm rounded-full backdrop-blur-sm font-sans font-medium flex items-center space-x-1.5 border border-white/10" title="Số lượt đọc thực tế đã được kiểm duyệt chống view ảo">
+                  <Eye className="w-3.5 h-3.5 text-heritage-gold-300" />
+                  <span>{currentViews.toLocaleString('vi-VN')} lượt đọc</span>
                 </span>
               </div>
             </div>
@@ -161,8 +197,13 @@ export const ResourceModal: React.FC<ResourceModalProps> = ({ item, onClose }) =
                 <span className="px-3 py-1 bg-heritage-gold-100 text-heritage-red-900 font-bold text-xs rounded-full border border-heritage-gold-400">
                   {item.badgeText}
                 </span>
-                <span className="text-xs text-heritage-ink-500 font-sans">
-                  • ~{readingTime} phút đọc
+                <span className="text-xs text-heritage-ink-500 font-sans flex items-center space-x-1.5">
+                  <span>~{readingTime} phút đọc</span>
+                  <span>•</span>
+                  <span className="inline-flex items-center text-heritage-gold-700 font-bold" title="Số lượt đọc thực tế">
+                    <Eye className="w-3.5 h-3.5 mr-1" />
+                    {currentViews.toLocaleString('vi-VN')} lượt đọc
+                  </span>
                 </span>
               </div>
             )}

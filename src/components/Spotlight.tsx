@@ -13,6 +13,11 @@ import {
   normalizeCategoryToHomepage,
   getCategoryLabel
 } from '../lib/cmsStore';
+import {
+  getAllViewCounts,
+  EVENT_VIEWS_CHANGED,
+  fetchCloudViewCounts
+} from '../lib/viewsStore';
 import { ResourceModal } from './ResourceModal';
 
 const mapArticleToResource = (art: ArticleData): ResourceItem => {
@@ -39,6 +44,7 @@ export const Spotlight: React.FC = () => {
   const [mobileTab, setMobileTab] = useState<'featured' | 'latest' | 'most_read'>('featured');
   const [activeModalItem, setActiveModalItem] = useState<ResourceItem | null>(null);
   const [allResources, setAllResources] = useState<ResourceItem[]>([]);
+  const [viewsMap, setViewsMap] = useState<Record<string, number>>(() => getAllViewCounts());
 
   // Tải dữ liệu kết hợp thời gian thực từ CMS Store và kho tư liệu
   useEffect(() => {
@@ -57,13 +63,30 @@ export const Spotlight: React.FC = () => {
       setAllResources(Array.from(uniqueMap.values()));
     };
 
+    const handleViewsUpdate = () => {
+      setViewsMap(getAllViewCounts());
+    };
+
     loadResources();
+    handleViewsUpdate();
+
+    // Đồng bộ số lượt đọc từ Supabase Cloud
+    fetchCloudViewCounts().then((cloudCounts) => {
+      if (cloudCounts && Object.keys(cloudCounts).length > 0) {
+        setViewsMap(cloudCounts);
+      }
+    });
+
     window.addEventListener(EVENT_ARTICLES_CHANGED, loadResources);
+    window.addEventListener(EVENT_VIEWS_CHANGED, handleViewsUpdate);
     window.addEventListener('storage', loadResources);
+    window.addEventListener('storage', handleViewsUpdate);
 
     return () => {
       window.removeEventListener(EVENT_ARTICLES_CHANGED, loadResources);
+      window.removeEventListener(EVENT_VIEWS_CHANGED, handleViewsUpdate);
       window.removeEventListener('storage', loadResources);
+      window.removeEventListener('storage', handleViewsUpdate);
     };
   }, []);
 
@@ -90,11 +113,16 @@ export const Spotlight: React.FC = () => {
     return allResources.slice(0, 4);
   }, [allResources]);
 
-  // 3. TƯ LIỆU ĐỌC NHIỀU NHẤT (Top 3 tác phẩm tiêu biểu vinh danh Vàng - Bạc - Đồng)
+  // 3. TƯ LIỆU ĐỌC NHIỀU NHẤT (Top 3 tác phẩm theo số lượt đọc THỰC TẾ, không view ảo)
   const mostReadResources = useMemo(() => {
-    // Sắp xếp các tác phẩm kinh điển & được quan tâm nhất
-    const orderPriority = ['res-2', 'res-1', 'art-003', 'res-3', 'art-002'];
+    // Sắp xếp các tác phẩm theo số lượt đọc thực tế từ cao xuống thấp
     const sorted = [...allResources].sort((a, b) => {
+      const viewsA = viewsMap[a.id] || 0;
+      const viewsB = viewsMap[b.id] || 0;
+      if (viewsB !== viewsA) return viewsB - viewsA;
+
+      // Tiêu chí phụ khi lượt đọc bằng nhau (ví dụ mới khởi tạo): Giữ thứ tự ưu tiên di sản
+      const orderPriority = ['res-2', 'res-1', 'art-003', 'res-3', 'art-002'];
       const idxA = orderPriority.indexOf(a.id);
       const idxB = orderPriority.indexOf(b.id);
       if (idxA !== -1 && idxB !== -1) return idxA - idxB;
@@ -103,13 +131,12 @@ export const Spotlight: React.FC = () => {
       return 0;
     });
 
-    const viewCounts = [3520, 2890, 2410];
     return sorted.slice(0, 3).map((item, index) => ({
       ...item,
-      viewCount: viewCounts[index] || 1500 - index * 120,
+      viewCount: viewsMap[item.id] || 0,
       rank: index + 1,
     }));
-  }, [allResources]);
+  }, [allResources, viewsMap]);
 
   const scrollToResources = () => {
     const el = document.getElementById('resources');
@@ -418,9 +445,9 @@ export const Spotlight: React.FC = () => {
                           {item.title}
                         </h4>
                         <div className="flex items-center space-x-2 text-[10px] text-heritage-ink-500 mt-0.5">
-                          <span className="flex items-center space-x-1 text-heritage-gold-600 font-semibold">
+                          <span className="flex items-center space-x-1 text-heritage-gold-600 font-semibold" title="Lượt đọc thực tế">
                             <Eye className="w-3 h-3" />
-                            <span>{item.viewCount.toLocaleString('vi-VN')} lượt</span>
+                            <span>{item.viewCount.toLocaleString('vi-VN')} lượt đọc</span>
                           </span>
                           <span>•</span>
                           <span className="truncate">{item.categoryLabel}</span>

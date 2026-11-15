@@ -31,6 +31,7 @@ export interface ResourceItem {
   badgeText: string;
   isMockData: boolean;
   tags: string[];
+  viewCount?: number;
 }
 
 export interface LearningTopic {

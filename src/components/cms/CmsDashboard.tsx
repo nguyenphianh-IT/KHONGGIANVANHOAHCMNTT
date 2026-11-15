@@ -5,7 +5,7 @@ import {
   CheckCircle2, AlertCircle, Send,
   ExternalLink, Sparkles, ArrowRight,
   Upload, Copy, Check, Trash2, Trophy, GraduationCap, LogOut, Cloud, Database,
-  KeyRound
+  KeyRound, Eye
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { FullScreenEditor } from './FullScreenEditor';
@@ -25,6 +25,11 @@ import {
   CMS_CATEGORIES, getCategoryLabel, normalizeCategoryToHomepage,
   fetchArticlesFromSupabase
 } from '../../lib/cmsStore';
+import {
+  getAllViewCounts,
+  EVENT_VIEWS_CHANGED,
+  fetchCloudViewCounts
+} from '../../lib/viewsStore';
 
 interface CmsDashboardProps {
   isOpen: boolean;
@@ -41,6 +46,7 @@ export const CmsDashboard: React.FC<CmsDashboardProps> = ({ isOpen, onClose }) =
   const [mediaAssets, setMediaAssets] = useState<MediaAsset[]>(getStoredMedia);
   const [contestQuestionsCount, setContestQuestionsCount] = useState<number>(() => getStoredContestQuestions().length);
   const [contestSubmissionsCount, setContestSubmissionsCount] = useState<number>(() => getContestSubmissions().length);
+  const [viewsMap, setViewsMap] = useState<Record<string, number>>(() => getAllViewCounts());
 
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
@@ -131,23 +137,34 @@ export const CmsDashboard: React.FC<CmsDashboardProps> = ({ isOpen, onClose }) =
       setContestQuestionsCount(getStoredContestQuestions().length);
       setContestSubmissionsCount(getContestSubmissions().length);
     };
+    const syncViews = () => setViewsMap(getAllViewCounts());
+
+    fetchCloudViewCounts().then((cloudCounts) => {
+      if (cloudCounts && Object.keys(cloudCounts).length > 0) {
+        setViewsMap(cloudCounts);
+      }
+    });
 
     window.addEventListener(EVENT_ARTICLES_CHANGED, syncArticles);
     window.addEventListener(EVENT_MEDIA_CHANGED, syncMedia);
     window.addEventListener(EVENT_CONTEST_DATA_CHANGED, syncContest);
+    window.addEventListener(EVENT_VIEWS_CHANGED, syncViews);
     window.addEventListener('storage', syncArticles);
     window.addEventListener('storage', syncMedia);
     window.addEventListener('storage', syncAudit);
     window.addEventListener('storage', syncContest);
+    window.addEventListener('storage', syncViews);
 
     return () => {
       window.removeEventListener(EVENT_ARTICLES_CHANGED, syncArticles);
       window.removeEventListener(EVENT_MEDIA_CHANGED, syncMedia);
       window.removeEventListener(EVENT_CONTEST_DATA_CHANGED, syncContest);
+      window.removeEventListener(EVENT_VIEWS_CHANGED, syncViews);
       window.removeEventListener('storage', syncArticles);
       window.removeEventListener('storage', syncMedia);
       window.removeEventListener('storage', syncAudit);
       window.removeEventListener('storage', syncContest);
+      window.removeEventListener('storage', syncViews);
     };
   }, []);
 
@@ -166,6 +183,7 @@ export const CmsDashboard: React.FC<CmsDashboardProps> = ({ isOpen, onClose }) =
   const draftCount = articles.filter((a) => a.status === 'draft').length;
   const pendingCount = articles.filter((a) => a.status === 'pending').length;
   const publishedCount = articles.filter((a) => a.status === 'published').length;
+  const totalRealViews = Object.values(viewsMap).reduce((sum, val) => sum + (typeof val === 'number' ? val : 0), 0);
 
 
   // 1. Action: Save Draft
@@ -764,9 +782,9 @@ export const CmsDashboard: React.FC<CmsDashboardProps> = ({ isOpen, onClose }) =
                   </p>
                 </div>
 
-                {/* 4 KPI Summary Cards */}
-                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                  <div className="bg-white p-5 rounded-2xl border border-heritage-gold-300/60 shadow-sm flex items-center justify-between">
+                {/* 5 KPI Summary Cards */}
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3.5 sm:gap-4">
+                  <div className="bg-white p-4 sm:p-5 rounded-2xl border border-heritage-gold-300/60 shadow-sm flex items-center justify-between">
                     <div>
                       <p className="text-[11px] font-bold uppercase tracking-wider text-heritage-ink-500">
                         Tổng Bài Viết
@@ -775,12 +793,12 @@ export const CmsDashboard: React.FC<CmsDashboardProps> = ({ isOpen, onClose }) =
                         {totalCount}
                       </p>
                     </div>
-                    <div className="p-3 bg-heritage-red-50 text-heritage-red-700 rounded-xl">
-                      <FileText className="w-6 h-6" />
+                    <div className="p-2.5 sm:p-3 bg-heritage-red-50 text-heritage-red-700 rounded-xl">
+                      <FileText className="w-5 h-5 sm:w-6 sm:h-6" />
                     </div>
                   </div>
 
-                  <div className="bg-white p-5 rounded-2xl border border-heritage-gold-300/60 shadow-sm flex items-center justify-between">
+                  <div className="bg-white p-4 sm:p-5 rounded-2xl border border-heritage-gold-300/60 shadow-sm flex items-center justify-between">
                     <div>
                       <p className="text-[11px] font-bold uppercase tracking-wider text-heritage-ink-500">
                         Bản Nháp (Draft)
@@ -789,12 +807,12 @@ export const CmsDashboard: React.FC<CmsDashboardProps> = ({ isOpen, onClose }) =
                         {draftCount}
                       </p>
                     </div>
-                    <div className="p-3 bg-amber-50 text-amber-600 rounded-xl">
-                      <PenTool className="w-6 h-6" />
+                    <div className="p-2.5 sm:p-3 bg-amber-50 text-amber-600 rounded-xl">
+                      <PenTool className="w-5 h-5 sm:w-6 sm:h-6" />
                     </div>
                   </div>
 
-                  <div className="bg-white p-5 rounded-2xl border border-purple-200 shadow-sm flex items-center justify-between">
+                  <div className="bg-white p-4 sm:p-5 rounded-2xl border border-purple-200 shadow-sm flex items-center justify-between">
                     <div>
                       <p className="text-[11px] font-bold uppercase tracking-wider text-purple-700">
                         Chờ Duyệt 4 Mắt
@@ -803,12 +821,12 @@ export const CmsDashboard: React.FC<CmsDashboardProps> = ({ isOpen, onClose }) =
                         {pendingCount}
                       </p>
                     </div>
-                    <div className="p-3 bg-purple-50 text-purple-700 rounded-xl">
-                      <Clock className="w-6 h-6" />
+                    <div className="p-2.5 sm:p-3 bg-purple-50 text-purple-700 rounded-xl">
+                      <Clock className="w-5 h-5 sm:w-6 sm:h-6" />
                     </div>
                   </div>
 
-                  <div className="bg-white p-5 rounded-2xl border border-emerald-200 shadow-sm flex items-center justify-between">
+                  <div className="bg-white p-4 sm:p-5 rounded-2xl border border-emerald-200 shadow-sm flex items-center justify-between">
                     <div>
                       <p className="text-[11px] font-bold uppercase tracking-wider text-emerald-700">
                         Đã Xuất Bản Live
@@ -817,8 +835,23 @@ export const CmsDashboard: React.FC<CmsDashboardProps> = ({ isOpen, onClose }) =
                         {publishedCount}
                       </p>
                     </div>
-                    <div className="p-3 bg-emerald-50 text-emerald-700 rounded-xl">
-                      <Globe className="w-6 h-6" />
+                    <div className="p-2.5 sm:p-3 bg-emerald-50 text-emerald-700 rounded-xl">
+                      <Globe className="w-5 h-5 sm:w-6 sm:h-6" />
+                    </div>
+                  </div>
+
+                  <div className="bg-white p-4 sm:p-5 rounded-2xl border border-amber-300 shadow-sm flex items-center justify-between col-span-2 sm:col-span-1">
+                    <div>
+                      <p className="text-[11px] font-bold uppercase tracking-wider text-heritage-gold-800 flex items-center gap-1">
+                        <span>Lượt Đọc Thực Tế</span>
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" title="Chống view ảo kích hoạt" />
+                      </p>
+                      <p className="text-2xl sm:text-3xl font-serif font-black text-heritage-gold-700 mt-1">
+                        {totalRealViews.toLocaleString('vi-VN')}
+                      </p>
+                    </div>
+                    <div className="p-2.5 sm:p-3 bg-amber-50 text-heritage-gold-700 rounded-xl" title="Bộ đếm đã được khử trùng lặp và kiểm soát thời gian đọc">
+                      <Eye className="w-5 h-5 sm:w-6 sm:h-6" />
                     </div>
                   </div>
                 </div>
@@ -1031,6 +1064,7 @@ export const CmsDashboard: React.FC<CmsDashboardProps> = ({ isOpen, onClose }) =
                           <th className="py-3 px-3 font-bold">Chuyên Mục</th>
                           <th className="py-3 px-3 font-bold">Tác Giả</th>
                           <th className="py-3 px-3 font-bold">Trạng Thái</th>
+                          <th className="py-3 px-3 font-bold text-center">Lượt Đọc</th>
                           <th className="py-3 px-3 font-bold">Cập Nhật</th>
                           <th className="py-3 px-4 font-bold text-right">Thao Tác</th>
                         </tr>
@@ -1038,7 +1072,7 @@ export const CmsDashboard: React.FC<CmsDashboardProps> = ({ isOpen, onClose }) =
                       <tbody className="divide-y divide-heritage-ivory-200 font-sans">
                         {filteredArticles.length === 0 ? (
                           <tr>
-                            <td colSpan={6} className="py-8 text-center text-heritage-ink-500 italic">
+                            <td colSpan={7} className="py-8 text-center text-heritage-ink-500 italic">
                               Không tìm thấy bài viết nào phù hợp với bộ lọc.
                             </td>
                           </tr>
@@ -1097,6 +1131,13 @@ export const CmsDashboard: React.FC<CmsDashboardProps> = ({ isOpen, onClose }) =
                                     : art.status === 'rejected'
                                     ? 'Yêu cầu sửa'
                                     : 'Bản nháp'}
+                                </span>
+                              </td>
+
+                              <td className="py-3 px-3 text-center whitespace-nowrap">
+                                <span className="inline-flex items-center space-x-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-50 text-heritage-gold-800 border border-heritage-gold-300/70" title="Số lượt đọc thực tế đã được kiểm duyệt chống view ảo">
+                                  <Eye className="w-3.5 h-3.5 text-heritage-gold-600" />
+                                  <span>{(viewsMap[art.id || `art-${art.slug}`] || 0).toLocaleString('vi-VN')}</span>
                                 </span>
                               </td>
 

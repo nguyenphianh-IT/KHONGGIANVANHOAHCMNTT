@@ -4,7 +4,7 @@ import { ResourceCategory, ResourceItem } from '../types';
 import { ResourceModal } from './ResourceModal';
 import { 
   Search, Filter, BookOpen, FileText, Image as ImageIcon, Video, Book, 
-  X, AlertCircle, Volume2, Headphones, ChevronLeft, ChevronRight 
+  X, AlertCircle, Volume2, Headphones, ChevronLeft, ChevronRight, Eye 
 } from 'lucide-react';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import {
@@ -14,6 +14,11 @@ import {
   normalizeCategoryToHomepage,
   getCategoryLabel
 } from '../lib/cmsStore';
+import {
+  getAllViewCounts,
+  EVENT_VIEWS_CHANGED,
+  fetchCloudViewCounts
+} from '../lib/viewsStore';
 
 const mapArticleToResource = (art: ArticleData): ResourceItem => {
   const normCat = normalizeCategoryToHomepage(art.category);
@@ -42,6 +47,7 @@ export const Resources: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [activeModalItem, setActiveModalItem] = useState<ResourceItem | null>(null);
   const [liveResources, setLiveResources] = useState<ResourceItem[]>([]);
+  const [viewsMap, setViewsMap] = useState<Record<string, number>>(() => getAllViewCounts());
 
   useEffect(() => {
     // 1. Tải các bài viết đã duyệt 4 mắt & xuất bản từ CMS Store (Đồng bộ thời gian thực)
@@ -51,11 +57,25 @@ export const Resources: React.FC = () => {
       setLiveResources(mapped);
     };
 
+    const handleViewsUpdate = () => {
+      setViewsMap(getAllViewCounts());
+    };
+
     loadPublishedResources();
+    handleViewsUpdate();
+
+    // Đồng bộ số lượt đọc từ Supabase Cloud
+    fetchCloudViewCounts().then((cloudCounts) => {
+      if (cloudCounts && Object.keys(cloudCounts).length > 0) {
+        setViewsMap(cloudCounts);
+      }
+    });
 
     // Lắng nghe sự kiện cập nhật tức thời khi Ban Giám Hiệu phê duyệt bài viết trong CMS
     window.addEventListener(EVENT_ARTICLES_CHANGED, loadPublishedResources);
+    window.addEventListener(EVENT_VIEWS_CHANGED, handleViewsUpdate);
     window.addEventListener('storage', loadPublishedResources);
+    window.addEventListener('storage', handleViewsUpdate);
 
     // 2. Dự phòng kết nối thêm từ Supabase nếu có
     const fetchSupabase = async () => {
@@ -99,7 +119,9 @@ export const Resources: React.FC = () => {
 
     return () => {
       window.removeEventListener(EVENT_ARTICLES_CHANGED, loadPublishedResources);
+      window.removeEventListener(EVENT_VIEWS_CHANGED, handleViewsUpdate);
       window.removeEventListener('storage', loadPublishedResources);
+      window.removeEventListener('storage', handleViewsUpdate);
     };
   }, []);
 
@@ -315,9 +337,15 @@ export const Resources: React.FC = () => {
                   </div>
 
                   <div className="px-4 pb-4 pt-3 border-t border-heritage-ivory-200 flex items-center justify-between gap-2 text-xs sm:text-sm">
-                    <span className="text-heritage-ink-500 truncate min-w-0 flex-1 font-medium" title={item.authorOrSource}>
-                      {item.authorOrSource}
-                    </span>
+                    <div className="flex items-center space-x-2 truncate min-w-0 flex-1">
+                      <span className="text-heritage-ink-500 truncate font-medium" title={item.authorOrSource}>
+                        {item.authorOrSource}
+                      </span>
+                      <span className="inline-flex items-center space-x-0.5 text-heritage-gold-700 bg-amber-50 px-1.5 py-0.5 rounded text-[11px] font-semibold border border-heritage-gold-300/40 flex-shrink-0" title="Số lượt đọc thực tế">
+                        <Eye className="w-3 h-3 text-heritage-gold-600" />
+                        <span>{(viewsMap[item.id] || 0).toLocaleString('vi-VN')}</span>
+                      </span>
+                    </div>
                     <span className="text-heritage-red-700 font-bold group-hover:underline flex-shrink-0 whitespace-nowrap flex items-center space-x-1">
                       <span>{item.category === 'audio' ? '🎧 Nghe ghi âm' : 'Xem chi tiết'}</span>
                       <span>→</span>
