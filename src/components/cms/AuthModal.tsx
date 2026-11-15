@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import {
-  X, Lock, Mail, Shield, User, Sparkles, AlertCircle, CheckCircle2,
+  X, Lock, Mail, Shield, User, AlertCircle, CheckCircle2,
   KeyRound, ArrowLeft, Eye, EyeOff, Send, RefreshCw
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
@@ -11,39 +11,6 @@ interface AuthModalProps {
   onClose: () => void;
   onLoginSuccess?: () => void;
 }
-
-const QUICK_PERSONAS = [
-  {
-    roleName: 'Biên Tập Viên A (Giáo viên Lịch sử)',
-    email: 'test-editor-alpha@sandbox.test',
-    badge: 'Biên tập & nộp duyệt bài',
-    badgeColor: 'bg-blue-100 text-blue-800 border-blue-200',
-  },
-  {
-    roleName: 'Biên Tập Viên B (Giáo viên Văn thể mỹ)',
-    email: 'test-editor-beta@sandbox.test',
-    badge: 'Tác giả bài xuất bản',
-    badgeColor: 'bg-emerald-100 text-emerald-800 border-emerald-200',
-  },
-  {
-    roleName: 'Cán Bộ Quản Trị Trưởng (Ban Giám Hiệu)',
-    email: 'test-admin-chief@sandbox.test',
-    badge: 'Duyệt bài 4 mắt & Xuất bản',
-    badgeColor: 'bg-purple-100 text-purple-800 border-purple-200',
-  },
-  {
-    roleName: 'Quản Trị Viên Tối Cao (Super Admin)',
-    email: 'test-superadmin@sandbox.test',
-    badge: 'Toàn quyền cấu hình & Kiểm toán',
-    badgeColor: 'bg-heritage-red-100 text-heritage-red-800 border-heritage-red-200',
-  },
-  {
-    roleName: 'Người Học Thử Nghiệm 01 (Học sinh)',
-    email: 'test-student-01@sandbox.test',
-    badge: 'Xem tư liệu & Thi trắc nghiệm',
-    badgeColor: 'bg-amber-100 text-amber-800 border-amber-200',
-  },
-];
 
 export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onLoginSuccess }) => {
   const { login } = useAuth();
@@ -166,26 +133,6 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onLoginSu
     }
   };
 
-  const handleSelectQuickPersona = async (personaEmail: string) => {
-    setEmail(personaEmail);
-    setPassword('SandboxTest@2026');
-    setErrorMsg(null);
-    setIsLoading(true);
-
-    const { error } = await login(personaEmail, 'SandboxTest@2026');
-    setIsLoading(false);
-
-    if (error) {
-      setErrorMsg(error.message || 'Đăng nhập thất bại.');
-    } else {
-      setSuccessMsg('Đăng nhập thành công với vai trò kiểm thử!');
-      setTimeout(() => {
-        onClose();
-        if (onLoginSuccess) onLoginSuccess();
-      }, 500);
-    }
-  };
-
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-heritage-ink-950/70 backdrop-blur-sm animate-fadeIn">
       <div className="relative w-full max-w-xl bg-heritage-ivory-100 border border-heritage-gold-300 rounded-2xl shadow-2xl overflow-hidden">
@@ -237,51 +184,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onLoginSu
           {/* CHẾ ĐỘ 1: ĐĂNG NHẬP (LOGIN MODE) */}
           {authMode === 'login' && (
             <>
-              {/* Khu vực Chọn nhanh Vai trò Test Sandbox */}
-              <div className="bg-heritage-ivory-200/70 border border-heritage-gold-300/60 rounded-xl p-4">
-                <div className="flex items-center justify-between mb-3">
-                  <span className="text-xs font-bold uppercase tracking-wider text-heritage-red-800 flex items-center space-x-1.5">
-                    <Sparkles className="w-3.5 h-3.5 text-heritage-gold-600" />
-                    <span>Đăng nhập nhanh vai trò Sandbox (RFC 2606)</span>
-                  </span>
-                  <span className="text-[10px] px-2 py-0.5 bg-heritage-gold-100 text-heritage-gold-800 border border-heritage-gold-300 rounded-full font-semibold">
-                    Mật khẩu chung: SandboxTest@2026
-                  </span>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                  {QUICK_PERSONAS.map((p, idx) => (
-                    <button
-                      key={idx}
-                      type="button"
-                      disabled={isLoading}
-                      onClick={() => handleSelectQuickPersona(p.email)}
-                      className="p-2.5 bg-white hover:bg-heritage-gold-50 border border-heritage-ivory-300 hover:border-heritage-gold-400 rounded-lg text-left transition-all group flex flex-col justify-between"
-                    >
-                      <div className="font-semibold text-xs text-heritage-ink-900 group-hover:text-heritage-red-700 flex items-center justify-between">
-                        <span>{p.roleName}</span>
-                      </div>
-                      <div className="mt-1 flex items-center justify-between text-[11px]">
-                        <span className="text-heritage-ink-500 font-mono text-[10px] truncate max-w-[130px]">
-                          {p.email}
-                        </span>
-                        <span className={`text-[10px] px-1.5 py-0.5 rounded border font-medium ${p.badgeColor}`}>
-                          {p.badge}
-                        </span>
-                      </div>
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <div className="relative flex items-center justify-center">
-                <div className="border-t border-heritage-ivory-300 w-full" />
-                <span className="bg-heritage-ivory-100 px-3 text-xs font-medium text-heritage-ink-500 uppercase">
-                  Hoặc nhập tài khoản quản trị
-                </span>
-              </div>
-
-              {/* Form đăng nhập thông thường */}
+              {/* Form đăng nhập chính thức */}
               <form onSubmit={handleSubmitLogin} className="space-y-4">
                 <div>
                   <label className="block text-xs font-semibold text-heritage-ink-800 mb-1">

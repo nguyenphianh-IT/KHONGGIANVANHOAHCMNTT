@@ -54,35 +54,30 @@ export const CmsDashboard: React.FC<CmsDashboardProps> = ({ isOpen, onClose }) =
   const [mediaUploadError, setMediaUploadError] = useState<string | null>(null);
   const [mediaUploadSuccess, setMediaUploadSuccess] = useState<string | null>(null);
 
-  const { user, profile, roles, logout } = useAuth();
+  const { user, profile, roles, logout, hasRole } = useAuth();
 
   // Active Personas Switcher (To test 4-Eyes in real time!)
   const [currentPersona, setCurrentPersona] = useState({
-    id: 'usr-editor-a',
-    name: 'Biên Tập Viên A (Thầy Lịch sử)',
-    role: 'editor',
-    roleLabel: 'Biên Tập Viên',
-    avatar: '👨‍🏫',
+    id: user?.id || 'usr-admin',
+    name: profile?.full_name || user?.email || 'Quản Trị Viên',
+    role: 'admin',
+    roleLabel: 'Quản Trị Viên',
+    avatar: '🏛️',
   });
 
   // Đồng bộ hóa persona theo tài khoản đã đăng nhập trong AuthContext
   useEffect(() => {
     if (user && profile) {
-      const isSuperAdmin = roles.some((r) => r.code === 'super_admin');
-      const isAdmin = roles.some((r) => r.code === 'admin');
+      const isAdmin = roles.some((r) => r.code === 'admin' || r.code === 'super_admin');
       const isEditor = roles.some((r) => r.code === 'editor');
 
       let roleCode = 'editor';
       let roleLabel = 'Biên Tập Viên';
       let avatar = '👨‍🏫';
 
-      if (isSuperAdmin) {
-        roleCode = 'super_admin';
-        roleLabel = 'Super Admin';
-        avatar = '🛡️';
-      } else if (isAdmin) {
+      if (isAdmin) {
         roleCode = 'admin';
-        roleLabel = 'Ban Giám Hiệu';
+        roleLabel = 'Ban Giám Hiệu (Quản Trị)';
         avatar = '🏛️';
       } else if (isEditor) {
         roleCode = 'editor';
@@ -92,7 +87,7 @@ export const CmsDashboard: React.FC<CmsDashboardProps> = ({ isOpen, onClose }) =
 
       setCurrentPersona({
         id: user.id || 'usr-active',
-        name: profile.full_name || 'Cán Bộ Quản Trị',
+        name: profile.full_name || user.email || 'Cán Bộ Quản Trị',
         role: roleCode,
         roleLabel: roleLabel,
         avatar: profile.avatar_url || avatar,
@@ -172,14 +167,6 @@ export const CmsDashboard: React.FC<CmsDashboardProps> = ({ isOpen, onClose }) =
   const pendingCount = articles.filter((a) => a.status === 'pending').length;
   const publishedCount = articles.filter((a) => a.status === 'published').length;
 
-  // Role switching helper
-  const handleSwitchRole = (persona: typeof currentPersona) => {
-    setCurrentPersona(persona);
-    setToastMsg({
-      type: 'info',
-      text: `Đã chuyển đổi sang vai trò: ${persona.name} (${persona.roleLabel})`,
-    });
-  };
 
   // 1. Action: Save Draft
   const handleSaveDraft = async (article: ArticleData) => {
@@ -448,91 +435,18 @@ export const CmsDashboard: React.FC<CmsDashboardProps> = ({ isOpen, onClose }) =
 
           {/* Quick Persona Switcher for Testing 4-Eyes & Exit */}
           <div className="flex items-center space-x-2 sm:space-x-4">
-            {/* Persona Switcher Pills */}
-            <div className="hidden lg:flex items-center bg-black/25 rounded-xl p-1 border border-heritage-gold-400/30 text-xs">
-              <span className="px-2 text-[11px] text-heritage-gold-300 font-semibold select-none">
-                Đang đóng vai:
-              </span>
-
-              <button
-                onClick={() =>
-                  handleSwitchRole({
-                    id: 'usr-superadmin',
-                    name: 'Quản Trị Viên Tối Cao (Super Admin)',
-                    role: 'super_admin',
-                    roleLabel: 'Super Admin',
-                    avatar: '🛡️',
-                  })
-                }
-                className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition ${
-                  currentPersona.id === 'usr-superadmin' || currentPersona.role === 'super_admin'
-                    ? 'bg-heritage-red-700 text-white font-bold shadow'
-                    : 'text-white/80 hover:text-white hover:bg-white/10'
-                }`}
-                title="Đổi sang Quản Trị Viên Tối Cao (Super Admin)"
-              >
-                🛡️ Super Admin
-              </button>
-
-              <button
-                onClick={() =>
-                  handleSwitchRole({
-                    id: 'usr-admin-chief',
-                    name: 'Cán Bộ Quản Trị Trưởng (Ban Giám Hiệu)',
-                    role: 'admin',
-                    roleLabel: 'Ban Giám Hiệu',
-                    avatar: '🏛️',
-                  })
-                }
-                className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition ${
-                  currentPersona.id === 'usr-admin-chief' || (currentPersona.role === 'admin' && currentPersona.id !== 'usr-superadmin')
-                    ? 'bg-purple-600 text-white font-bold shadow'
-                    : 'text-white/80 hover:text-white hover:bg-white/10'
-                }`}
-                title="Đổi sang Ban Giám Hiệu (Duyệt 4 Mắt)"
-              >
-                🏛️ Ban Giám Hiệu
-              </button>
-
-              <button
-                onClick={() =>
-                  handleSwitchRole({
-                    id: 'usr-editor-a',
-                    name: 'Biên Tập Viên A (Thầy Lịch sử)',
-                    role: 'editor',
-                    roleLabel: 'Biên Tập Viên',
-                    avatar: '👨‍🏫',
-                  })
-                }
-                className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition ${
-                  currentPersona.id === 'usr-editor-a'
-                    ? 'bg-heritage-gold-400 text-heritage-red-950 font-bold shadow'
-                    : 'text-white/80 hover:text-white hover:bg-white/10'
-                }`}
-                title="Đổi sang Biên Tập Viên A"
-              >
-                👨‍🏫 Thầy Lịch sử
-              </button>
-
-              <button
-                onClick={() =>
-                  handleSwitchRole({
-                    id: 'usr-editor-b',
-                    name: 'Biên Tập Viên B (Cô Ngữ văn)',
-                    role: 'editor',
-                    roleLabel: 'Biên Tập Viên',
-                    avatar: '👩‍🏫',
-                  })
-                }
-                className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition ${
-                  currentPersona.id === 'usr-editor-b'
-                    ? 'bg-heritage-gold-400 text-heritage-red-950 font-bold shadow'
-                    : 'text-white/80 hover:text-white hover:bg-white/10'
-                }`}
-                title="Đổi sang Biên Tập Viên B"
-              >
-                👩‍🏫 Cô Văn
-              </button>
+            {/* Real Authenticated User Identity - Khóa hoàn toàn Sandbox */}
+            <div className="hidden md:flex items-center bg-black/30 rounded-xl px-3 py-1.5 border border-heritage-gold-400/30 text-xs">
+              <div className="flex items-center space-x-2">
+                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" title="Phiên làm việc bảo mật đang hoạt động" />
+                <span className="text-white/80 font-medium select-none">Tài khoản:</span>
+                <span className="text-heritage-gold-300 font-bold max-w-[180px] truncate" title={user?.email || profile?.full_name || 'Quản Trị Viên'}>
+                  {profile?.full_name || user?.email || 'Quản Trị Viên'}
+                </span>
+                <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-heritage-gold-400/20 text-heritage-gold-200 border border-heritage-gold-400/30 uppercase">
+                  {hasRole('admin') ? 'Quản Trị Viên' : 'Biên Tập Viên'}
+                </span>
+              </div>
             </div>
 
             {/* Nút Đổi Mật Khẩu nhanh */}

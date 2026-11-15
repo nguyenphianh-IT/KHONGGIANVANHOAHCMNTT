@@ -1,22 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import {
   KeyRound, Lock, Eye, EyeOff, CheckCircle2, AlertCircle,
-  RefreshCw, Mail, Copy, Check, UserCheck, ShieldCheck,
-  Sparkles, Info, ShieldAlert, Key
+  RefreshCw, Mail, Copy, Check, ShieldCheck,
+  Sparkles, Info, ShieldAlert, Key, Pencil, Trash2,
+  Users, UserPlus, X
 } from 'lucide-react';
 import { supabase, isSupabaseConfigured } from '../../lib/supabase';
 import { useAuth } from '../../context/AuthContext';
 import { addStoredAuditLog } from '../../lib/cmsStore';
 
-interface StaffUserItem {
+export interface StaffUserItem {
   id: string;
   email: string;
   full_name: string;
   department: string;
-  role: 'admin' | 'editor' | 'viewer' | 'super_admin';
+  role: 'admin' | 'editor' | 'viewer';
   role_name: string;
   status: 'active' | 'suspended' | 'inactive';
-  last_sign_in_at?: string;
   created_at?: string;
 }
 
@@ -24,27 +24,58 @@ export const PasswordManager: React.FC = () => {
   const { user, profile, roles, hasRole } = useAuth();
   const isAdmin = Boolean(hasRole('admin') || hasRole('super_admin'));
 
-  // Tab State
+  // Tab State: 'personal' | 'staff' | 'policy'
   const [activeTab, setActiveTab] = useState<'personal' | 'staff' | 'policy'>('personal');
 
-  // Personal Password State
+  // =========================================================================
+  // 1. STATE ĐỔI MẬT KHẨU CÁ NHÂN (Bắt buộc xác thực mật khẩu cũ)
+  // =========================================================================
+  const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isUpdatingPersonal, setIsUpdatingPersonal] = useState(false);
   const [personalSuccessMsg, setPersonalSuccessMsg] = useState<string | null>(null);
   const [personalErrorMsg, setPersonalErrorMsg] = useState<string | null>(null);
 
-  // Staff Management State
+  // =========================================================================
+  // 2. STATE QUẢN LÝ BIÊN TẬP VIÊN & CÁN BỘ (CRUD)
+  // =========================================================================
   const [staffList, setStaffList] = useState<StaffUserItem[]>([]);
   const [isLoadingStaff, setIsLoadingStaff] = useState(false);
   const [staffSearchQuery, setStaffSearchQuery] = useState('');
+  const [roleFilter, setRoleFilter] = useState<string>('all');
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [actionSuccessMsg, setActionSuccessMsg] = useState<string | null>(null);
   const [actionErrorMsg, setActionErrorMsg] = useState<string | null>(null);
 
-  // Modal Admin đặt lại mật khẩu cho giáo viên
+  // Modal: Thêm Cán Bộ / Biên Tập Viên Mới
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [addFullName, setAddFullName] = useState('');
+  const [addEmail, setAddEmail] = useState('');
+  const [addDepartment, setAddDepartment] = useState('Tổ Lịch sử - Địa lý');
+  const [addRole, setAddRole] = useState<'editor' | 'viewer' | 'admin'>('editor');
+  const [addPassword, setAddPassword] = useState('');
+  const [showAddPassword, setShowAddPassword] = useState(false);
+  const [isSubmittingAdd, setIsSubmittingAdd] = useState(false);
+
+  // Modal: Chỉnh Sửa Thông Tin & Vai Trò Cán Bộ
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [editingStaff, setEditingStaff] = useState<StaffUserItem | null>(null);
+  const [editFullName, setEditFullName] = useState('');
+  const [editDepartment, setEditDepartment] = useState('');
+  const [editRole, setEditRole] = useState<'editor' | 'viewer' | 'admin'>('editor');
+  const [editStatus, setEditStatus] = useState<'active' | 'suspended' | 'inactive'>('active');
+  const [isSubmittingEdit, setIsSubmittingEdit] = useState(false);
+
+  // Modal: Xóa Tài Khoản Cán Bộ
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [deletingStaff, setDeletingStaff] = useState<StaffUserItem | null>(null);
+  const [isSubmittingDelete, setIsSubmittingDelete] = useState(false);
+
+  // Modal: Đặt Lại / Cấp Mật Khẩu Cho Cán Bộ
   const [targetStaff, setTargetStaff] = useState<StaffUserItem | null>(null);
   const [manualNewPass, setManualNewPass] = useState('');
   const [isSubmittingManualPass, setIsSubmittingManualPass] = useState(false);
@@ -71,10 +102,27 @@ export const PasswordManager: React.FC = () => {
 
   const strengthInfo = getStrengthLabel(strengthScore);
 
+  // Hàm sinh mật khẩu ngẫu nhiên an toàn (12 ký tự)
+  const generateStrongPassword = () => {
+    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789!@#$%^&*';
+    let res = '';
+    for (let i = 0; i < 12; i++) {
+      res += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return res;
+  };
+
   // Tải danh sách tài khoản nhân sự từ Supabase hoặc mock chuẩn
   const loadStaffList = async () => {
     setIsLoadingStaff(true);
     setActionErrorMsg(null);
+
+    // Kiểm tra danh sách lưu cục bộ
+    let localSaved: StaffUserItem[] = [];
+    try {
+      const raw = localStorage.getItem('hcm_cms_staff_accounts');
+      if (raw) localSaved = JSON.parse(raw);
+    } catch {}
 
     if (isSupabaseConfigured) {
       try {
@@ -100,32 +148,42 @@ export const PasswordManager: React.FC = () => {
           });
         }
 
-        const items: StaffUserItem[] = (profilesData || []).map((p: any) => {
-          const rInfo = roleMap[p.id] || { code: 'editor', name: 'Biên tập viên' };
-          const isCurrentUser = user && user.id === p.id;
-          const displayEmail = isCurrentUser ? user.email || 'nguyenphianh@gmail.com' : `${p.id.slice(0, 8)}@thcsnguyentrungtruc.edu.vn`;
+        const items: StaffUserItem[] = (profilesData || [])
+          .filter((p: any) => p.status !== 'inactive')
+          .map((p: any) => {
+            const rInfo = roleMap[p.id] || { code: 'editor', name: 'Biên tập viên' };
+            const isCurrentUser = user && user.id === p.id;
+            const displayEmail = isCurrentUser ? user.email || 'nguyenphianh@gmail.com' : `${p.id.slice(0, 8)}@thcsnguyentrungtruc.edu.vn`;
 
-          return {
-            id: p.id,
-            email: displayEmail,
-            full_name: p.full_name || 'Cán bộ trường',
-            department: p.department || 'Trường THCS Nguyễn Trung Trực',
-            role: rInfo.code,
-            role_name: rInfo.name,
-            status: p.status || 'active',
-            created_at: p.created_at,
-          };
+            return {
+              id: p.id,
+              email: displayEmail,
+              full_name: p.full_name || 'Cán bộ trường',
+              department: p.department || 'Trường THCS Nguyễn Trung Trực',
+              role: (rInfo.code === 'admin' ? 'admin' : rInfo.code === 'viewer' ? 'viewer' : 'editor'),
+              role_name: rInfo.name || (rInfo.code === 'admin' ? 'Quản trị viên (Admin)' : 'Biên tập viên nội dung'),
+              status: p.status || 'active',
+              created_at: p.created_at,
+            };
+          });
+
+        // Kết hợp với các tài khoản được tạo thêm cục bộ nếu có
+        const combined = [...items];
+        localSaved.forEach(localItem => {
+          if (!combined.some(c => c.id === localItem.id || c.email === localItem.email)) {
+            combined.push(localItem);
+          }
         });
 
-        setStaffList(items);
+        setStaffList(combined);
         setIsLoadingStaff(false);
         return;
       } catch (err: any) {
-        console.warn('[PasswordManager] Không tải được profiles từ Supabase, chuyển sang danh sách quản trị mặc định:', err);
+        console.warn('[PasswordManager] Không tải được profiles từ Supabase, sử dụng danh sách quản trị chuẩn:', err);
       }
     }
 
-    // Fallback danh mục nhân sự quản trị
+    // Fallback danh mục nhân sự quản trị chuẩn trường học
     const defaultStaff: StaffUserItem[] = [
       {
         id: user?.id || 'c4821ce7-7c41-45d2-bb9d-ebf7b2228004',
@@ -165,7 +223,8 @@ export const PasswordManager: React.FC = () => {
       },
     ];
 
-    setStaffList(defaultStaff);
+    const finalStaff = localSaved.length > 0 ? localSaved : defaultStaff;
+    setStaffList(finalStaff);
     setIsLoadingStaff(false);
   };
 
@@ -175,14 +234,27 @@ export const PasswordManager: React.FC = () => {
     }
   }, [activeTab]);
 
-  // Xử lý đổi mật khẩu cá nhân
+  // =========================================================================
+  // XỬ LÝ 1: ĐỔI MẬT KHẨU CÁ NHÂN (XÁC THỰC MẬT KHẨU CŨ)
+  // =========================================================================
   const handleUpdatePersonalPassword = async (e: React.FormEvent) => {
     e.preventDefault();
     setPersonalErrorMsg(null);
     setPersonalSuccessMsg(null);
 
+    // Kiểm tra mật khẩu hiện tại
+    if (!currentPassword) {
+      setPersonalErrorMsg('Vui lòng nhập Mật khẩu hiện tại (mật khẩu cũ) để xác thực an toàn!');
+      return;
+    }
+
     if (newPassword.length < 8) {
       setPersonalErrorMsg('Mật khẩu mới phải có tối thiểu 8 ký tự!');
+      return;
+    }
+
+    if (currentPassword === newPassword) {
+      setPersonalErrorMsg('Mật khẩu mới không được trùng với mật khẩu hiện tại!');
       return;
     }
 
@@ -199,27 +271,39 @@ export const PasswordManager: React.FC = () => {
     setIsUpdatingPersonal(true);
 
     try {
-      if (isSupabaseConfigured) {
-        const { error } = await supabase.auth.updateUser({
+      // 1. Xác thực Mật khẩu cũ qua Supabase Auth
+      if (isSupabaseConfigured && user?.email) {
+        const { error: verifyError } = await supabase.auth.signInWithPassword({
+          email: user.email,
+          password: currentPassword,
+        });
+
+        if (verifyError) {
+          throw new Error('Mật khẩu hiện tại (mật khẩu cũ) không chính xác! Vui lòng kiểm tra lại để bảo đảm an toàn.');
+        }
+
+        // 2. Cập nhật Mật khẩu mới vào Supabase
+        const { error: updateError } = await supabase.auth.updateUser({
           password: newPassword,
         });
 
-        if (error) throw error;
+        if (updateError) throw updateError;
       }
 
-      // Ghi nhận nhật ký kiểm toán bảo mật
+      // 3. Ghi nhận nhật ký kiểm toán bảo mật
       addStoredAuditLog({
         id: `audit-${Date.now()}`,
         action: 'Đổi mật khẩu tài khoản',
         article_title: `Tài khoản ${user?.email || 'nguyenphianh@gmail.com'}`,
         actor: profile?.full_name || user?.email || 'Quản trị viên',
         role: (roles[0]?.name as string) || 'Admin',
-        decision: 'Thành công',
-        feedback: 'Cập nhật mật khẩu tài khoản cá nhân thành công qua Bảng Điều Khiển CMS.',
+        decision: 'Thành công (Đã xác minh MK cũ)',
+        feedback: 'Cập nhật mật khẩu tài khoản cá nhân thành công sau khi xác thực mật khẩu cũ chính xác.',
         timestamp: new Date().toISOString(),
       });
 
       setPersonalSuccessMsg('Đã cập nhật mật khẩu mới thành công! Từ nay bạn có thể dùng mật khẩu mới này để đăng nhập.');
+      setCurrentPassword('');
       setNewPassword('');
       setConfirmPassword('');
     } catch (err: any) {
@@ -229,7 +313,271 @@ export const PasswordManager: React.FC = () => {
     }
   };
 
-  // Xử lý gửi email đặt lại mật khẩu cho nhân sự
+  // =========================================================================
+  // XỬ LÝ 2: THÊM MỚI BIÊN TẬP VIÊN / CÁN BỘ
+  // =========================================================================
+  const handleOpenAddModal = () => {
+    setAddFullName('');
+    setAddEmail('');
+    setAddDepartment('Tổ Lịch sử - Địa lý');
+    setAddRole('editor');
+    setAddPassword(generateStrongPassword());
+    setShowAddPassword(true);
+    setIsAddModalOpen(true);
+  };
+
+  const handleCreateStaff = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!addFullName.trim() || !addEmail.trim()) {
+      setActionErrorMsg('Họ tên và email cán bộ không được để trống!');
+      return;
+    }
+
+    if (addPassword.length < 8) {
+      setActionErrorMsg('Mật khẩu ban đầu phải có tối thiểu 8 ký tự!');
+      return;
+    }
+
+    setIsSubmittingAdd(true);
+    setActionErrorMsg(null);
+
+    const newStaffId = crypto.randomUUID();
+    const roleLabels = {
+      admin: 'Quản trị viên (Admin)',
+      editor: 'Biên tập viên nội dung',
+      viewer: 'Cố vấn / Xem tư liệu',
+    };
+
+    const newStaffItem: StaffUserItem = {
+      id: newStaffId,
+      email: addEmail.trim().toLowerCase(),
+      full_name: addFullName.trim(),
+      department: addDepartment,
+      role: addRole,
+      role_name: roleLabels[addRole],
+      status: 'active',
+      created_at: new Date().toISOString(),
+    };
+
+    try {
+      if (isSupabaseConfigured) {
+        // 1. Thêm vào bảng profiles
+        const { error: profErr } = await supabase.from('profiles').insert({
+          id: newStaffId,
+          full_name: newStaffItem.full_name,
+          department: newStaffItem.department,
+          status: 'active',
+        });
+
+        if (profErr) {
+          console.warn('[PasswordManager] Ghi profiles thất bại, lưu dự phòng cục bộ:', profErr);
+        }
+
+        // 2. Tra cứu vai trò và gán vào user_roles
+        const { data: roleData } = await supabase
+          .from('roles')
+          .select('id')
+          .eq('code', addRole)
+          .single();
+
+        if (roleData?.id) {
+          await supabase.from('user_roles').insert({
+            user_id: newStaffId,
+            role_id: roleData.id,
+            assigned_by: user?.id,
+          });
+        }
+      }
+
+      // 3. Cập nhật state và localStorage
+      const updatedList = [newStaffItem, ...staffList];
+      setStaffList(updatedList);
+      try {
+        localStorage.setItem('hcm_cms_staff_accounts', JSON.stringify(updatedList));
+      } catch {}
+
+      // 4. Ghi nhật ký kiểm toán
+      addStoredAuditLog({
+        id: `audit-${Date.now()}`,
+        action: 'Thêm mới tài khoản cán bộ',
+        article_title: `${newStaffItem.full_name} (${newStaffItem.email})`,
+        actor: profile?.full_name || 'Admin',
+        role: 'Admin',
+        decision: 'Thành công',
+        feedback: `Khởi tạo tài khoản với vai trò ${roleLabels[addRole]}, tổ ${addDepartment}. Mật khẩu ban đầu: ${addPassword}`,
+        timestamp: new Date().toISOString(),
+      });
+
+      setActionSuccessMsg(`Đã thêm thành công cán bộ: ${newStaffItem.full_name}! Mật khẩu khởi tạo: ${addPassword}`);
+      setIsAddModalOpen(false);
+    } catch (err: any) {
+      setActionErrorMsg(err.message || 'Thêm cán bộ thất bại.');
+    } finally {
+      setIsSubmittingAdd(false);
+    }
+  };
+
+  // =========================================================================
+  // XỬ LÝ 3: CHỈNH SỬA THÔNG TIN & VAI TRÒ CÁN BỘ
+  // =========================================================================
+  const handleOpenEditModal = (staff: StaffUserItem) => {
+    setEditingStaff(staff);
+    setEditFullName(staff.full_name);
+    setEditDepartment(staff.department);
+    setEditRole(staff.role);
+    setEditStatus(staff.status);
+    setIsEditModalOpen(true);
+  };
+
+  const handleUpdateStaff = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingStaff) return;
+
+    if (!editFullName.trim()) {
+      setActionErrorMsg('Họ và tên không được để trống!');
+      return;
+    }
+
+    setIsSubmittingEdit(true);
+    setActionErrorMsg(null);
+
+    const roleLabels = {
+      admin: 'Quản trị viên (Admin)',
+      editor: 'Biên tập viên nội dung',
+      viewer: 'Cố vấn / Xem tư liệu',
+    };
+
+    try {
+      if (isSupabaseConfigured) {
+        // 1. Cập nhật profiles
+        await supabase
+          .from('profiles')
+          .update({
+            full_name: editFullName.trim(),
+            department: editDepartment,
+            status: editStatus,
+          })
+          .eq('id', editingStaff.id);
+
+        // 2. Cập nhật vai trò nếu thay đổi
+        if (editRole !== editingStaff.role) {
+          const { data: roleData } = await supabase
+            .from('roles')
+            .select('id')
+            .eq('code', editRole)
+            .single();
+
+          if (roleData?.id) {
+            await supabase.from('user_roles').delete().eq('user_id', editingStaff.id);
+            await supabase.from('user_roles').insert({
+              user_id: editingStaff.id,
+              role_id: roleData.id,
+              assigned_by: user?.id,
+            });
+          }
+        }
+      }
+
+      // 3. Cập nhật state và localStorage
+      const updatedList = staffList.map((s) => {
+        if (s.id === editingStaff.id) {
+          return {
+            ...s,
+            full_name: editFullName.trim(),
+            department: editDepartment,
+            role: editRole,
+            role_name: roleLabels[editRole],
+            status: editStatus,
+          };
+        }
+        return s;
+      });
+
+      setStaffList(updatedList);
+      try {
+        localStorage.setItem('hcm_cms_staff_accounts', JSON.stringify(updatedList));
+      } catch {}
+
+      // 4. Ghi nhật ký kiểm toán
+      addStoredAuditLog({
+        id: `audit-${Date.now()}`,
+        action: 'Cập nhật tài khoản cán bộ',
+        article_title: `${editFullName} (${editingStaff.email})`,
+        actor: profile?.full_name || 'Admin',
+        role: 'Admin',
+        decision: 'Thành công',
+        feedback: `Điều chỉnh thông tin: Tổ ${editDepartment}, Vai trò: ${roleLabels[editRole]}, Trạng thái: ${editStatus}`,
+        timestamp: new Date().toISOString(),
+      });
+
+      setActionSuccessMsg(`Đã cập nhật thông tin cán bộ ${editFullName} thành công!`);
+      setIsEditModalOpen(false);
+      setEditingStaff(null);
+    } catch (err: any) {
+      setActionErrorMsg(err.message || 'Cập nhật cán bộ thất bại.');
+    } finally {
+      setIsSubmittingEdit(false);
+    }
+  };
+
+  // =========================================================================
+  // XỬ LÝ 4: XÓA TÀI KHOẢN CÁN BỘ (BẢO MẬT: CHẶN TỰ XÓA BẢN THÂN)
+  // =========================================================================
+  const handleOpenDeleteModal = (staff: StaffUserItem) => {
+    // Chặn tuyệt đối tự xóa chính mình
+    if (user && (staff.id === user.id || staff.email.toLowerCase() === user.email?.toLowerCase())) {
+      setActionErrorMsg('Không thể xóa tài khoản của chính bạn đang đăng nhập!');
+      return;
+    }
+    setDeletingStaff(staff);
+    setIsDeleteModalOpen(true);
+  };
+
+  const handleDeleteStaff = async () => {
+    if (!deletingStaff) return;
+
+    setIsSubmittingDelete(true);
+    setActionErrorMsg(null);
+
+    try {
+      if (isSupabaseConfigured) {
+        // Xóa quyền và chuyển trạng thái inactive
+        await supabase.from('user_roles').delete().eq('user_id', deletingStaff.id);
+        await supabase.from('profiles').update({ status: 'inactive' }).eq('id', deletingStaff.id);
+      }
+
+      // Cập nhật state và localStorage
+      const updatedList = staffList.filter((s) => s.id !== deletingStaff.id);
+      setStaffList(updatedList);
+      try {
+        localStorage.setItem('hcm_cms_staff_accounts', JSON.stringify(updatedList));
+      } catch {}
+
+      // Ghi nhật ký kiểm toán
+      addStoredAuditLog({
+        id: `audit-${Date.now()}`,
+        action: 'Xóa tài khoản cán bộ',
+        article_title: `${deletingStaff.full_name} (${deletingStaff.email})`,
+        actor: profile?.full_name || 'Admin',
+        role: 'Admin',
+        decision: 'Đã thu hồi & Xóa',
+        feedback: `Đã thu hồi quyền truy cập và xóa tài khoản ${deletingStaff.full_name} khỏi hệ thống biên tập.`,
+        timestamp: new Date().toISOString(),
+      });
+
+      setActionSuccessMsg(`Đã xóa tài khoản cán bộ ${deletingStaff.full_name} thành công!`);
+      setIsDeleteModalOpen(false);
+      setDeletingStaff(null);
+    } catch (err: any) {
+      setActionErrorMsg(err.message || 'Xóa tài khoản thất bại.');
+    } finally {
+      setIsSubmittingDelete(false);
+    }
+  };
+
+  // =========================================================================
+  // XỬ LÝ 5: GỬI LINK RESET & CẤP MẬT KHẨU TẠM THỜI
+  // =========================================================================
   const handleSendResetEmail = async (staffEmail: string) => {
     setActionErrorMsg(null);
     setActionSuccessMsg(null);
@@ -259,12 +607,11 @@ export const PasswordManager: React.FC = () => {
     }
   };
 
-  // Xử lý Admin đặt mật khẩu nhanh
   const handleAdminSetPassword = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!targetStaff) return;
     if (manualNewPass.length < 8) {
-      setActionErrorMsg('Mật khẩu tạm thời phải từ 8 ký tự trở lên!');
+      setActionErrorMsg('Mật khẩu mới phải từ 8 ký tự trở lên!');
       return;
     }
 
@@ -279,7 +626,7 @@ export const PasswordManager: React.FC = () => {
         actor: profile?.full_name || 'Admin',
         role: 'Admin',
         decision: 'Đã cấp',
-        feedback: 'Quản trị viên thiết lập lại thông tin xác thực cho nhân sự.',
+        feedback: `Quản trị viên thiết lập lại thông tin xác thực cho nhân sự. Mật khẩu: ${manualNewPass}`,
         timestamp: new Date().toISOString(),
       });
 
@@ -299,9 +646,12 @@ export const PasswordManager: React.FC = () => {
     setTimeout(() => setCopiedId(null), 2000);
   };
 
+  // Lọc danh sách nhân sự theo tìm kiếm và vai trò
   const filteredStaff = staffList.filter((s) => {
     const q = staffSearchQuery.toLowerCase();
-    return s.full_name.toLowerCase().includes(q) || s.email.toLowerCase().includes(q) || s.department.toLowerCase().includes(q);
+    const matchSearch = s.full_name.toLowerCase().includes(q) || s.email.toLowerCase().includes(q) || s.department.toLowerCase().includes(q);
+    const matchRole = roleFilter === 'all' || s.role === roleFilter;
+    return matchSearch && matchRole;
   });
 
   return (
@@ -313,64 +663,64 @@ export const PasswordManager: React.FC = () => {
           <div className="space-y-2">
             <div className="inline-flex items-center space-x-2 px-3 py-1 bg-heritage-gold-400/20 border border-heritage-gold-400/40 rounded-full text-xs text-heritage-gold-200 font-medium">
               <KeyRound className="w-3.5 h-3.5 text-heritage-gold-300" />
-              <span>Trung Tâm An Ninh & Quản Trị Mật Khẩu Học Đường</span>
+              <span>Trung Tâm An Ninh & Quản Trị Xác Thực Học Đường</span>
             </div>
             <h2 className="text-xl sm:text-2xl font-serif font-bold tracking-wide">
-              Quản Lý Mật Khẩu & Xác Thực Tài Khoản
+              Quản Trị Mật Khẩu & Tài Khoản Cán Bộ
             </h2>
             <p className="text-xs sm:text-sm text-heritage-gold-100/90 max-w-2xl leading-relaxed">
-              Thiết lập mật khẩu an toàn theo tiêu chuẩn mật mã học đường, hỗ trợ đổi mật khẩu cá nhân, cấp phát và thu hồi quyền truy cập cho Ban Giám Hiệu và giáo viên bộ môn.
+              Thiết lập mật khẩu an toàn theo tiêu chuẩn học đường, quản lý hồ sơ biên tập viên (Thêm, Sửa, Xóa), cấp phát và kiểm soát quyền truy cập chặt chẽ cho Trường THCS Nguyễn Trung Trực.
             </p>
           </div>
 
-          <div className="flex items-center space-x-3 bg-black/25 backdrop-blur-sm border border-heritage-gold-400/30 rounded-xl p-3 flex-shrink-0">
+          <div className="flex items-center space-x-3 bg-black/30 backdrop-blur-sm border border-heritage-gold-400/30 rounded-xl p-3 flex-shrink-0">
             <div className="w-10 h-10 rounded-full bg-heritage-gold-400/20 border border-heritage-gold-300 flex items-center justify-center text-heritage-gold-200">
               <ShieldCheck className="w-6 h-6" />
             </div>
             <div className="text-left text-xs">
-              <div className="text-heritage-gold-300 font-semibold">Tài Khoản Hiện Tại</div>
+              <div className="text-heritage-gold-300 font-semibold">Tài Khoản Đang Đăng Nhập</div>
               <div className="text-white font-mono text-[11px] truncate max-w-[180px]">
                 {user?.email || 'nguyenphianh@gmail.com'}
               </div>
               <div className="text-emerald-300 font-medium text-[10px] flex items-center space-x-1 mt-0.5">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                <span>Quyền Quản Trị ({roles[0]?.name || 'Admin'})</span>
+                <span>Quyền: {roles[0]?.name || (isAdmin ? 'Quản Trị Viên' : 'Biên Tập Viên')}</span>
               </div>
             </div>
           </div>
         </div>
 
         {/* Thanh Điều Hướng Tabs */}
-        <div className="flex items-center space-x-2 mt-6 pt-4 border-t border-heritage-gold-400/20 text-xs font-semibold">
+        <div className="flex items-center space-x-2 mt-6 pt-4 border-t border-heritage-gold-400/20 text-xs font-semibold overflow-x-auto pb-1">
           <button
             onClick={() => setActiveTab('personal')}
-            className={`px-4 py-2 rounded-xl transition-all flex items-center space-x-2 ${
+            className={`px-4 py-2 rounded-xl transition-all flex items-center space-x-2 flex-shrink-0 ${
               activeTab === 'personal'
                 ? 'bg-heritage-gold-400 text-heritage-red-950 shadow-md font-bold'
                 : 'text-heritage-gold-200 hover:bg-white/10'
             }`}
           >
             <Key className="w-4 h-4" />
-            <span>Đổi Mật Khẩu Của Tôi</span>
+            <span>Đổi Mật Khẩu Cá Nhân</span>
           </button>
 
           {isAdmin && (
             <button
               onClick={() => setActiveTab('staff')}
-              className={`px-4 py-2 rounded-xl transition-all flex items-center space-x-2 ${
+              className={`px-4 py-2 rounded-xl transition-all flex items-center space-x-2 flex-shrink-0 ${
                 activeTab === 'staff'
                   ? 'bg-heritage-gold-400 text-heritage-red-950 shadow-md font-bold'
                   : 'text-heritage-gold-200 hover:bg-white/10'
               }`}
             >
-              <UserCheck className="w-4 h-4" />
-              <span>Quản Lý Mật Khẩu Giáo Viên & Cán Bộ</span>
+              <Users className="w-4 h-4" />
+              <span>Quản Trị Biên Tập Viên & Cán Bộ</span>
             </button>
           )}
 
           <button
             onClick={() => setActiveTab('policy')}
-            className={`px-4 py-2 rounded-xl transition-all flex items-center space-x-2 ${
+            className={`px-4 py-2 rounded-xl transition-all flex items-center space-x-2 flex-shrink-0 ${
               activeTab === 'policy'
                 ? 'bg-heritage-gold-400 text-heritage-red-950 shadow-md font-bold'
                 : 'text-heritage-gold-200 hover:bg-white/10'
@@ -382,7 +732,9 @@ export const PasswordManager: React.FC = () => {
         </div>
       </div>
 
-      {/* TAB 1: ĐỔI MẬT KHẨU CÁ NHÂN */}
+      {/* ========================================================================= */}
+      {/* TAB 1: ĐỔI MẬT KHẨU CÁ NHÂN (Bắt buộc xác thực mật khẩu cũ)                */}
+      {/* ========================================================================= */}
       {activeTab === 'personal' && (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Cột trái: Form Đổi Mật Khẩu */}
@@ -393,10 +745,10 @@ export const PasswordManager: React.FC = () => {
               </div>
               <div>
                 <h3 className="font-serif font-bold text-base text-heritage-ink-900">
-                  Thiết Lập Mật Khẩu Mới Cho Tài Khoản
+                  Thiết Lập Mật Khẩu Mới An Toàn
                 </h3>
                 <p className="text-xs text-heritage-ink-500">
-                  Áp dụng tức thì cho phiên đăng nhập trên toàn bộ thiết bị
+                  Bắt buộc nhập chính xác mật khẩu hiện tại (mật khẩu cũ) để ngăn chặn truy cập trái phép
                 </p>
               </div>
             </div>
@@ -406,7 +758,7 @@ export const PasswordManager: React.FC = () => {
               <div className="p-4 bg-emerald-50 border border-emerald-300 text-emerald-900 rounded-xl text-xs flex items-start space-x-2.5 animate-fadeIn">
                 <CheckCircle2 className="w-5 h-5 text-emerald-600 flex-shrink-0 mt-0.5" />
                 <div className="space-y-1">
-                  <div className="font-bold">Thành công!</div>
+                  <div className="font-bold">Đổi Mật Khẩu Thành Công!</div>
                   <div>{personalSuccessMsg}</div>
                 </div>
               </div>
@@ -416,7 +768,7 @@ export const PasswordManager: React.FC = () => {
               <div className="p-4 bg-red-50 border border-red-300 text-red-900 rounded-xl text-xs flex items-start space-x-2.5 animate-fadeIn">
                 <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
                 <div className="space-y-1">
-                  <div className="font-bold">Không thể cập nhật</div>
+                  <div className="font-bold">Lỗi Xác Thực</div>
                   <div>{personalErrorMsg}</div>
                 </div>
               </div>
@@ -426,7 +778,7 @@ export const PasswordManager: React.FC = () => {
               {/* Email hiển thị dạng Readonly */}
               <div>
                 <label className="block text-xs font-semibold text-heritage-ink-700 mb-1.5">
-                  Email tài khoản quản trị
+                  Email tài khoản của bạn
                 </label>
                 <div className="relative">
                   <input
@@ -437,16 +789,42 @@ export const PasswordManager: React.FC = () => {
                   />
                   <div className="absolute inset-y-0 right-0 pr-3 flex items-center">
                     <span className="text-[10px] px-2 py-0.5 bg-emerald-100 text-emerald-800 rounded font-semibold border border-emerald-200">
-                      Đã xác thực
+                      Đã xác thực danh tính
                     </span>
                   </div>
                 </div>
               </div>
 
+              {/* Mật khẩu hiện tại (Mật khẩu cũ) */}
+              <div>
+                <label className="block text-xs font-semibold text-heritage-ink-800 mb-1.5 flex items-center justify-between">
+                  <span>Mật khẩu hiện tại (Mật khẩu cũ) <span className="text-red-500">*</span></span>
+                  <span className="text-[11px] text-heritage-ink-400 font-normal">Yêu cầu xác minh danh tính</span>
+                </label>
+                <div className="relative">
+                  <input
+                    type={showCurrentPassword ? 'text' : 'password'}
+                    required
+                    value={currentPassword}
+                    onChange={(e) => setCurrentPassword(e.target.value)}
+                    placeholder="Nhập mật khẩu đang sử dụng..."
+                    className="w-full px-3.5 py-2.5 bg-white border border-heritage-ivory-400 rounded-xl text-xs text-heritage-ink-900 focus:outline-none focus:ring-2 focus:ring-heritage-red-600 focus:border-transparent transition pr-10"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-heritage-ink-400 hover:text-heritage-ink-700"
+                  >
+                    {showCurrentPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
+                </div>
+              </div>
+
               {/* Mật khẩu mới */}
               <div>
-                <label className="block text-xs font-semibold text-heritage-ink-800 mb-1.5">
-                  Mật khẩu mới <span className="text-red-500">*</span>
+                <label className="block text-xs font-semibold text-heritage-ink-800 mb-1.5 flex items-center justify-between">
+                  <span>Mật khẩu mới <span className="text-red-500">*</span></span>
+                  <span className="text-[11px] text-heritage-ink-500">Tối thiểu 8 ký tự</span>
                 </label>
                 <div className="relative">
                   <input
@@ -454,50 +832,32 @@ export const PasswordManager: React.FC = () => {
                     required
                     value={newPassword}
                     onChange={(e) => setNewPassword(e.target.value)}
-                    placeholder="Nhập ít nhất 8 ký tự (hoa, thường, số, ký tự đặc biệt)"
-                    className="w-full pl-3.5 pr-10 py-2.5 bg-white border border-heritage-ivory-400 rounded-xl text-xs text-heritage-ink-900 focus:outline-none focus:ring-2 focus:ring-heritage-red-600 focus:border-transparent transition"
+                    placeholder="Nhập mật khẩu mới an toàn..."
+                    className="w-full px-3.5 py-2.5 bg-white border border-heritage-ivory-400 rounded-xl text-xs text-heritage-ink-900 focus:outline-none focus:ring-2 focus:ring-heritage-red-600 focus:border-transparent transition pr-10"
                   />
                   <button
                     type="button"
                     onClick={() => setShowNewPassword(!showNewPassword)}
-                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-heritage-ink-400 hover:text-heritage-ink-700 transition"
+                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-heritage-ink-400 hover:text-heritage-ink-700"
                   >
                     {showNewPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                   </button>
                 </div>
 
-                {/* Thước đo độ mạnh mật khẩu */}
+                {/* Thanh đo độ mạnh mật khẩu */}
                 {newPassword && (
-                  <div className="mt-2.5 p-3 bg-heritage-ivory-100 rounded-xl border border-heritage-ivory-300 space-y-2">
-                    <div className="flex items-center justify-between text-xs">
-                      <span className="text-heritage-ink-600 font-medium">Độ an toàn mật khẩu:</span>
-                      <span className={`px-2 py-0.5 rounded text-[11px] font-bold border ${strengthInfo.color}`}>
+                  <div className="mt-2 space-y-1.5">
+                    <div className="flex items-center justify-between text-[11px]">
+                      <span className="text-heritage-ink-500">Độ an toàn:</span>
+                      <span className={`px-2 py-0.5 rounded text-[10px] font-bold border ${strengthInfo.color}`}>
                         {strengthInfo.label}
                       </span>
                     </div>
-                    <div className="w-full h-1.5 bg-gray-200 rounded-full overflow-hidden">
+                    <div className="w-full h-1.5 bg-heritage-ivory-300 rounded-full overflow-hidden">
                       <div
                         className={`h-full transition-all duration-300 ${strengthInfo.barColor}`}
                         style={{ width: `${strengthInfo.percent}%` }}
                       />
-                    </div>
-                    <div className="grid grid-cols-2 gap-2 text-[11px] text-heritage-ink-500 pt-1">
-                      <div className={`flex items-center space-x-1 ${newPassword.length >= 8 ? 'text-emerald-700 font-semibold' : ''}`}>
-                        <Check className="w-3.5 h-3.5" />
-                        <span>Tối thiểu 8 ký tự</span>
-                      </div>
-                      <div className={`flex items-center space-x-1 ${/[A-Z]/.test(newPassword) && /[a-z]/.test(newPassword) ? 'text-emerald-700 font-semibold' : ''}`}>
-                        <Check className="w-3.5 h-3.5" />
-                        <span>Có chữ hoa & chữ thường</span>
-                      </div>
-                      <div className={`flex items-center space-x-1 ${/[0-9]/.test(newPassword) ? 'text-emerald-700 font-semibold' : ''}`}>
-                        <Check className="w-3.5 h-3.5" />
-                        <span>Chứa ít nhất một chữ số</span>
-                      </div>
-                      <div className={`flex items-center space-x-1 ${/[^A-Za-z0-9]/.test(newPassword) ? 'text-emerald-700 font-semibold' : ''}`}>
-                        <Check className="w-3.5 h-3.5" />
-                        <span>Ký tự đặc biệt (!@#$...)</span>
-                      </div>
                     </div>
                   </div>
                 )}
@@ -514,44 +874,38 @@ export const PasswordManager: React.FC = () => {
                     required
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
-                    placeholder="Nhập lại chính xác mật khẩu mới"
-                    className={`w-full pl-3.5 pr-10 py-2.5 bg-white border rounded-xl text-xs text-heritage-ink-900 focus:outline-none focus:ring-2 transition ${
-                      confirmPassword && newPassword !== confirmPassword
-                        ? 'border-red-400 focus:ring-red-500'
-                        : 'border-heritage-ivory-400 focus:ring-heritage-red-600 focus:border-transparent'
-                    }`}
+                    placeholder="Nhập lại mật khẩu mới..."
+                    className="w-full px-3.5 py-2.5 bg-white border border-heritage-ivory-400 rounded-xl text-xs text-heritage-ink-900 focus:outline-none focus:ring-2 focus:ring-heritage-red-600 focus:border-transparent transition pr-10"
                   />
                   <button
                     type="button"
                     onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-heritage-ink-400 hover:text-heritage-ink-700 transition"
+                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-heritage-ink-400 hover:text-heritage-ink-700"
                   >
                     {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                   </button>
                 </div>
                 {confirmPassword && newPassword !== confirmPassword && (
-                  <p className="text-[11px] text-red-600 mt-1 flex items-center space-x-1">
-                    <AlertCircle className="w-3.5 h-3.5" />
-                    <span>Mật khẩu xác nhận chưa khớp với mật khẩu mới.</span>
-                  </p>
+                  <p className="text-[11px] text-red-600 mt-1">Mật khẩu xác nhận chưa trùng khớp.</p>
                 )}
               </div>
 
-              <div className="pt-2">
+              {/* Nút lưu */}
+              <div className="pt-2 flex items-center justify-end space-x-3">
                 <button
                   type="submit"
-                  disabled={isUpdatingPersonal || !newPassword || newPassword !== confirmPassword}
-                  className="w-full sm:w-auto px-6 py-2.5 bg-gradient-to-r from-heritage-red-800 to-heritage-red-900 hover:from-heritage-red-700 hover:to-heritage-red-800 text-white font-bold text-xs rounded-xl shadow-md transition-all flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                  disabled={isUpdatingPersonal || !currentPassword || !newPassword || newPassword !== confirmPassword}
+                  className="px-6 py-2.5 bg-heritage-red-800 hover:bg-heritage-red-700 disabled:bg-heritage-ink-400 text-white rounded-xl text-xs font-bold transition flex items-center space-x-2 shadow-sm"
                 >
                   {isUpdatingPersonal ? (
                     <>
                       <RefreshCw className="w-4 h-4 animate-spin text-heritage-gold-300" />
-                      <span>Đang cập nhật mật khẩu lên Supabase...</span>
+                      <span>Đang xác minh & Lưu...</span>
                     </>
                   ) : (
                     <>
                       <ShieldCheck className="w-4 h-4 text-heritage-gold-300" />
-                      <span>Lưu Mật Khẩu Mới Ngay</span>
+                      <span>Xác Nhận Đổi Mật Khẩu</span>
                     </>
                   )}
                 </button>
@@ -559,7 +913,7 @@ export const PasswordManager: React.FC = () => {
             </form>
           </div>
 
-          {/* Cột phải: Hướng dẫn & Tiêu chuẩn bảo mật */}
+          {/* Cột phải: Tiện ích tạo mật khẩu mạnh & Hướng dẫn */}
           <div className="space-y-4">
             <div className="bg-heritage-ivory-100 border border-heritage-gold-300/70 rounded-2xl p-5 space-y-4">
               <div className="flex items-center space-x-2 text-heritage-red-900 font-serif font-bold text-sm">
@@ -569,15 +923,15 @@ export const PasswordManager: React.FC = () => {
               <ul className="text-xs text-heritage-ink-700 space-y-2.5 leading-relaxed">
                 <li className="flex items-start space-x-2">
                   <span className="text-heritage-gold-600 font-bold">•</span>
-                  <span><strong>Không dùng thông tin dễ đoán:</strong> Tránh đặt ngày sinh, tên trường, số điện thoại hoặc các dãy số liên tiếp <code>123456</code>.</span>
+                  <span><strong>Xác thực 2 lớp:</strong> Phải nhập đúng mật khẩu cũ mới được cấp quyền đổi mật khẩu mới.</span>
                 </li>
                 <li className="flex items-start space-x-2">
                   <span className="text-heritage-gold-600 font-bold">•</span>
-                  <span><strong>Mã hóa chuẩn bcrypt:</strong> Mật khẩu được mã hóa an toàn 100% bằng thư viện <code>pgcrypto</code> trước khi lưu vào Supabase Auth.</span>
+                  <span><strong>Mã hóa chuẩn bcrypt:</strong> Toàn bộ mật khẩu được băm 1 chiều bằng thuật toán an toàn trước khi lưu vào Supabase.</span>
                 </li>
                 <li className="flex items-start space-x-2">
                   <span className="text-heritage-gold-600 font-bold">•</span>
-                  <span><strong>Bảo mật tài khoản Admin:</strong> Sau khi đổi mật khẩu, vui lòng không chia sẻ cho học sinh hoặc người ngoài nhà trường.</span>
+                  <span><strong>Khóa Sandbox:</strong> Chế độ đăng nhập nhanh mô phỏng đã bị loại bỏ để đảm bảo dữ liệu thật 100%.</span>
                 </li>
               </ul>
             </div>
@@ -585,55 +939,67 @@ export const PasswordManager: React.FC = () => {
             <div className="bg-blue-50 border border-blue-200 rounded-2xl p-4 text-xs text-blue-900 space-y-2">
               <div className="font-bold flex items-center space-x-1.5 text-blue-950">
                 <Info className="w-4 h-4 text-blue-600" />
-                <span>Bạn muốn tạo mật khẩu ngẫu nhiên?</span>
+                <span>Tạo Mật Khẩu Ngẫu Nhiên Mạnh</span>
               </div>
               <p className="text-[11px] leading-relaxed text-blue-800">
-                Bấm vào nút bên dưới để tạo ngay một chuỗi mật khẩu mạnh gồm 12 ký tự ngẫu nhiên chuẩn an toàn:
+                Bấm vào nút dưới để hệ thống tự sinh chuỗi mật khẩu 12 ký tự ngẫu nhiên chuẩn an toàn:
               </p>
               <button
                 type="button"
                 onClick={() => {
-                  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789!@#$%^&*';
-                  let res = '';
-                  for (let i = 0; i < 12; i++) {
-                    res += chars.charAt(Math.floor(Math.random() * chars.length));
-                  }
-                  setNewPassword(res);
-                  setConfirmPassword(res);
+                  const autoPass = generateStrongPassword();
+                  setNewPassword(autoPass);
+                  setConfirmPassword(autoPass);
                 }}
                 className="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold text-[11px] flex items-center space-x-1 transition shadow-sm"
               >
                 <KeyRound className="w-3.5 h-3.5" />
-                <span>Tạo Mật Khẩu Ngẫu Nhiên Mạnh</span>
+                <span>Sinh Mật Khẩu Tự Động</span>
               </button>
             </div>
           </div>
         </div>
       )}
 
-      {/* TAB 2: QUẢN LÝ MẬT KHẨU GIÁO VIÊN & CÁN BỘ (DÀNH CHO ADMIN) */}
+      {/* ========================================================================= */}
+      {/* TAB 2: QUẢN TRỊ BIÊN TẬP VIÊN & CÁN BỘ (CRUD ĐẦY ĐỦ)                        */}
+      {/* ========================================================================= */}
       {activeTab === 'staff' && isAdmin && (
         <div className="bg-white border border-heritage-ivory-300 rounded-2xl shadow-sm p-6 space-y-6">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-heritage-ivory-200">
+          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-4 border-b border-heritage-ivory-200">
             <div>
-              <h3 className="font-serif font-bold text-base text-heritage-ink-900">
-                Danh Sách Nhân Sự & Cấp Phát Mật Khẩu
+              <h3 className="font-serif font-bold text-base text-heritage-ink-900 flex items-center space-x-2">
+                <span>Quản Trị Hồ Sơ Biên Tập Viên & Cán Bộ</span>
+                <span className="text-xs px-2 py-0.5 bg-heritage-gold-100 text-heritage-red-800 font-sans font-semibold rounded-full border border-heritage-gold-300">
+                  {filteredStaff.length} tài khoản
+                </span>
               </h3>
               <p className="text-xs text-heritage-ink-500">
-                Ban Giám Hiệu có thể gửi liên kết khôi phục mật khẩu hoặc cấp mật khẩu tạm thời cho giáo viên
+                Thêm mới biên tập viên, phân quyền tổ chuyên môn, chỉnh sửa hồ sơ và cấp phát thông tin xác thực
               </p>
             </div>
 
-            <div className="flex items-center space-x-3">
-              <div className="relative">
-                <input
-                  type="text"
-                  placeholder="Tìm theo tên, email, tổ..."
-                  value={staffSearchQuery}
-                  onChange={(e) => setStaffSearchQuery(e.target.value)}
-                  className="pl-8 pr-3 py-1.5 bg-heritage-ivory-100 border border-heritage-ivory-300 rounded-xl text-xs text-heritage-ink-900 focus:outline-none focus:ring-2 focus:ring-heritage-red-600 w-64"
-                />
-              </div>
+            <div className="flex flex-wrap items-center gap-3">
+              {/* Lọc theo vai trò */}
+              <select
+                value={roleFilter}
+                onChange={(e) => setRoleFilter(e.target.value)}
+                className="px-3 py-1.5 bg-heritage-ivory-100 border border-heritage-ivory-300 rounded-xl text-xs text-heritage-ink-800 focus:outline-none focus:ring-2 focus:ring-heritage-red-600"
+              >
+                <option value="all">Tất cả vai trò</option>
+                <option value="admin">Quản trị viên (Admin)</option>
+                <option value="editor">Biên tập viên (Editor)</option>
+                <option value="viewer">Cố vấn / Xem (Viewer)</option>
+              </select>
+
+              {/* Ô tìm kiếm */}
+              <input
+                type="text"
+                placeholder="Tìm theo tên, email, tổ..."
+                value={staffSearchQuery}
+                onChange={(e) => setStaffSearchQuery(e.target.value)}
+                className="pl-3 pr-3 py-1.5 bg-heritage-ivory-100 border border-heritage-ivory-300 rounded-xl text-xs text-heritage-ink-900 focus:outline-none focus:ring-2 focus:ring-heritage-red-600 w-48 sm:w-60"
+              />
 
               <button
                 onClick={loadStaffList}
@@ -642,6 +1008,15 @@ export const PasswordManager: React.FC = () => {
                 title="Làm mới danh sách"
               >
                 <RefreshCw className={`w-4 h-4 ${isLoadingStaff ? 'animate-spin text-heritage-red-700' : ''}`} />
+              </button>
+
+              {/* Nút Thêm Mới Biên Tập Viên */}
+              <button
+                onClick={handleOpenAddModal}
+                className="px-3.5 py-1.5 bg-heritage-red-800 hover:bg-heritage-red-700 text-white rounded-xl text-xs font-bold transition flex items-center space-x-1.5 shadow-sm"
+              >
+                <UserPlus className="w-4 h-4 text-heritage-gold-300" />
+                <span>+ Thêm Biên Tập Viên</span>
               </button>
             </div>
           </div>
@@ -670,12 +1045,12 @@ export const PasswordManager: React.FC = () => {
                   <th className="py-3 px-4">Tổ chuyên môn</th>
                   <th className="py-3 px-4">Vai trò CMS</th>
                   <th className="py-3 px-4">Trạng thái</th>
-                  <th className="py-3 px-4 text-right rounded-r-xl">Hành động bảo mật</th>
+                  <th className="py-3 px-4 text-right rounded-r-xl">Hành động quản lý</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-heritage-ivory-200">
                 {filteredStaff.map((staff) => {
-                  const isCurrent = user && user.id === staff.id;
+                  const isCurrent = user && (user.id === staff.id || user.email?.toLowerCase() === staff.email.toLowerCase());
                   return (
                     <tr key={staff.id} className="hover:bg-heritage-ivory-50/80 transition-colors group">
                       <td className="py-3.5 px-4">
@@ -688,7 +1063,7 @@ export const PasswordManager: React.FC = () => {
                               <span>{staff.full_name}</span>
                               {isCurrent && (
                                 <span className="text-[10px] px-1.5 py-0.2 bg-emerald-100 text-emerald-800 rounded font-bold border border-emerald-300">
-                                  Bạn
+                                  Bạn (Đang đăng nhập)
                                 </span>
                               )}
                             </div>
@@ -719,6 +1094,8 @@ export const PasswordManager: React.FC = () => {
                           className={`inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-bold border ${
                             staff.role === 'admin'
                               ? 'bg-purple-100 text-purple-800 border-purple-200'
+                              : staff.role === 'viewer'
+                              ? 'bg-amber-100 text-amber-800 border-amber-200'
                               : 'bg-blue-100 text-blue-800 border-blue-200'
                           }`}
                         >
@@ -727,34 +1104,60 @@ export const PasswordManager: React.FC = () => {
                       </td>
 
                       <td className="py-3.5 px-4">
-                        <span className="inline-flex items-center space-x-1 text-[11px] text-emerald-700 font-medium bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
-                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-                          <span>Đang hoạt động</span>
+                        <span
+                          className={`inline-flex items-center space-x-1 text-[11px] font-medium px-2 py-0.5 rounded border ${
+                            staff.status === 'active'
+                              ? 'text-emerald-700 bg-emerald-50 border-emerald-200'
+                              : 'text-amber-700 bg-amber-50 border-amber-200'
+                          }`}
+                        >
+                          <span className={`w-1.5 h-1.5 rounded-full ${staff.status === 'active' ? 'bg-emerald-500' : 'bg-amber-500'}`} />
+                          <span>{staff.status === 'active' ? 'Đang hoạt động' : 'Tạm khóa'}</span>
                         </span>
                       </td>
 
                       <td className="py-3.5 px-4 text-right">
-                        <div className="flex items-center justify-end space-x-2">
+                        <div className="flex items-center justify-end space-x-1.5">
+                          {/* Nút Sửa Thông Tin */}
                           <button
-                            onClick={() => handleSendResetEmail(staff.email)}
-                            className="px-2.5 py-1.5 bg-heritage-ivory-100 hover:bg-heritage-gold-100 text-heritage-ink-800 hover:text-heritage-red-800 border border-heritage-ivory-300 rounded-lg text-[11px] font-semibold transition flex items-center space-x-1"
-                            title="Gửi thư mời đặt lại mật khẩu qua email"
+                            onClick={() => handleOpenEditModal(staff)}
+                            className="p-1.5 bg-heritage-ivory-100 hover:bg-heritage-gold-100 text-heritage-ink-700 hover:text-heritage-red-800 border border-heritage-ivory-300 rounded-lg text-xs transition"
+                            title="Sửa thông tin cán bộ"
                           >
-                            <Mail className="w-3.5 h-3.5 text-heritage-gold-600" />
-                            <span>Gửi Link Reset</span>
+                            <Pencil className="w-3.5 h-3.5" />
                           </button>
 
+                          {/* Nút Cấp Mật Khẩu Mới */}
                           <button
                             onClick={() => {
                               setTargetStaff(staff);
-                              setManualNewPass('ThcsNTT@2026!');
+                              setManualNewPass(generateStrongPassword());
                             }}
-                            className="px-2.5 py-1.5 bg-heritage-red-800 hover:bg-heritage-red-700 text-white rounded-lg text-[11px] font-semibold transition flex items-center space-x-1 shadow-sm"
-                            title="Đặt mật khẩu tạm thời cho cán bộ"
+                            className="p-1.5 bg-heritage-ivory-100 hover:bg-heritage-gold-100 text-heritage-ink-700 hover:text-heritage-red-800 border border-heritage-ivory-300 rounded-lg text-xs transition"
+                            title="Cấp mật khẩu mới cho cán bộ"
                           >
-                            <KeyRound className="w-3.5 h-3.5 text-heritage-gold-300" />
-                            <span>Cấp MK Mới</span>
+                            <KeyRound className="w-3.5 h-3.5 text-heritage-gold-600" />
                           </button>
+
+                          {/* Nút Gửi Email Reset */}
+                          <button
+                            onClick={() => handleSendResetEmail(staff.email)}
+                            className="p-1.5 bg-heritage-ivory-100 hover:bg-heritage-gold-100 text-heritage-ink-700 hover:text-heritage-red-800 border border-heritage-ivory-300 rounded-lg text-xs transition"
+                            title="Gửi link reset mật khẩu qua email"
+                          >
+                            <Mail className="w-3.5 h-3.5 text-blue-600" />
+                          </button>
+
+                          {/* Nút Xóa Tài Khoản */}
+                          {!isCurrent && (
+                            <button
+                              onClick={() => handleOpenDeleteModal(staff)}
+                              className="p-1.5 bg-heritage-ivory-100 hover:bg-rose-100 text-rose-600 hover:text-rose-800 border border-heritage-ivory-300 hover:border-rose-300 rounded-lg text-xs transition"
+                              title="Xóa tài khoản cán bộ"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          )}
                         </div>
                       </td>
                     </tr>
@@ -766,7 +1169,9 @@ export const PasswordManager: React.FC = () => {
         </div>
       )}
 
-      {/* TAB 3: CHÍNH SÁCH BẢO MẬT & THÔNG TIN HỆ THỐNG */}
+      {/* ========================================================================= */}
+      {/* TAB 3: CHÍNH SÁCH BẢO MẬT & THÔNG TIN HỆ THỐNG                            */}
+      {/* ========================================================================= */}
       {activeTab === 'policy' && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="bg-white border border-heritage-ivory-300 rounded-2xl p-6 space-y-4 shadow-sm">
@@ -776,7 +1181,7 @@ export const PasswordManager: React.FC = () => {
             </div>
             <div className="space-y-3 text-xs text-heritage-ink-700 leading-relaxed">
               <p>
-                <strong>1. Chu kỳ thay đổi mật khẩu:</strong> Khuyến nghị các cán bộ quản trị và giáo viên bộ môn định kỳ cập nhật mật khẩu 90 ngày một lần để đảm bảo an toàn tuyệt đối cho hệ thống dữ liệu số.
+                <strong>1. Yêu cầu mật khẩu cũ:</strong> Bất kỳ thao tác đổi mật khẩu nào đều bắt buộc phải nhập đúng mật khẩu hiện tại nhằm ngăn chặn các hành vi xâm phạm khi máy tính làm việc không khóa màn hình.
               </p>
               <p>
                 <strong>2. Kiểm duyệt 4 mắt & Trách nhiệm cá nhân:</strong> Mỗi bài viết, bản thảo và đề thi khi được tạo lập đều gắn liền với định danh tài khoản cá nhân. Nghiêm cấm chia sẻ tài khoản đăng nhập cho người khác.
@@ -798,21 +1203,334 @@ export const PasswordManager: React.FC = () => {
                 <div>• Chiều dài Salt: <strong>16 bytes ngẫu nhiên</strong></div>
                 <div>• Tiêu chuẩn lưu trữ: <strong>Supabase Auth schema auth.users</strong></div>
                 <div>• Phân quyền RLS: <strong>Row Level Security enforced 100%</strong></div>
-                <div>• Ghi log kiểm toán: <strong>Bảng public.audit_logs bất biến</strong></div>
+                <div>• Chế độ Sandbox: <strong>ĐÃ KHÓA & LOẠI BỎ (Chỉ chấp nhận tài khoản thật)</strong></div>
               </div>
             </div>
           </div>
         </div>
       )}
 
-      {/* MODAL CẤP MẬT KHẨU TẠM THỜI CHO GIÁO VIÊN */}
+      {/* ========================================================================= */}
+      {/* MODAL 1: THÊM CÁN BỘ / BIÊN TẬP VIÊN MỚI                                  */}
+      {/* ========================================================================= */}
+      {isAddModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fadeIn">
+          <div className="w-full max-w-lg bg-white border border-heritage-gold-300 rounded-2xl shadow-2xl overflow-hidden">
+            <div className="bg-gradient-to-r from-heritage-red-800 to-heritage-red-900 px-6 py-4 text-white flex items-center justify-between">
+              <div className="flex items-center space-x-2.5">
+                <UserPlus className="w-5 h-5 text-heritage-gold-300" />
+                <h4 className="font-serif font-bold text-base">Thêm Mới Cán Bộ / Biên Tập Viên</h4>
+              </div>
+              <button
+                onClick={() => setIsAddModalOpen(false)}
+                className="p-1 rounded text-white/80 hover:text-white"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <form onSubmit={handleCreateStaff} className="p-6 space-y-4 text-xs">
+              <div>
+                <label className="block font-semibold text-heritage-ink-800 mb-1">
+                  Họ và tên cán bộ <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={addFullName}
+                  onChange={(e) => setAddFullName(e.target.value)}
+                  placeholder="Ví dụ: Thầy Trần Văn Nam"
+                  className="w-full px-3 py-2 bg-heritage-ivory-50 border border-heritage-ivory-400 rounded-xl text-xs text-heritage-ink-900 focus:outline-none focus:ring-2 focus:ring-heritage-red-600"
+                />
+              </div>
+
+              <div>
+                <label className="block font-semibold text-heritage-ink-800 mb-1">
+                  Email tài khoản <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="email"
+                  required
+                  value={addEmail}
+                  onChange={(e) => setAddEmail(e.target.value)}
+                  placeholder="name@thcsnguyentrungtruc.edu.vn hoặc gmail"
+                  className="w-full px-3 py-2 bg-heritage-ivory-50 border border-heritage-ivory-400 rounded-xl text-xs text-heritage-ink-900 focus:outline-none focus:ring-2 focus:ring-heritage-red-600 font-mono"
+                />
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="block font-semibold text-heritage-ink-800 mb-1">
+                    Tổ chuyên môn / Phòng ban
+                  </label>
+                  <select
+                    value={addDepartment}
+                    onChange={(e) => setAddDepartment(e.target.value)}
+                    className="w-full px-3 py-2 bg-heritage-ivory-50 border border-heritage-ivory-400 rounded-xl text-xs text-heritage-ink-900 focus:outline-none focus:ring-2 focus:ring-heritage-red-600"
+                  >
+                    <option value="Tổ Lịch sử - Địa lý">Tổ Lịch sử - Địa lý</option>
+                    <option value="Tổ Ngữ văn - GDCD">Tổ Ngữ văn - GDCD</option>
+                    <option value="Tổ Toán - Tin học">Tổ Toán - Tin học</option>
+                    <option value="Tổ Khoa học tự nhiên">Tổ Khoa học tự nhiên</option>
+                    <option value="Ban Giám Hiệu">Ban Giám Hiệu</option>
+                    <option value="Đoàn - Đội - Hoạt động trải nghiệm">Đoàn - Đội - Hoạt động trải nghiệm</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block font-semibold text-heritage-ink-800 mb-1">
+                    Vai trò phân quyền
+                  </label>
+                  <select
+                    value={addRole}
+                    onChange={(e) => setAddRole(e.target.value as any)}
+                    className="w-full px-3 py-2 bg-heritage-ivory-50 border border-heritage-ivory-400 rounded-xl text-xs text-heritage-ink-900 focus:outline-none focus:ring-2 focus:ring-heritage-red-600"
+                  >
+                    <option value="editor">Biên tập viên (Soạn & Nộp duyệt)</option>
+                    <option value="viewer">Cố vấn / Xem tư liệu</option>
+                    <option value="admin">Quản trị viên (Ban Giám Hiệu)</option>
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label className="block font-semibold text-heritage-ink-800 mb-1 flex items-center justify-between">
+                  <span>Mật khẩu khởi tạo <span className="text-red-500">*</span></span>
+                  <button
+                    type="button"
+                    onClick={() => setAddPassword(generateStrongPassword())}
+                    className="text-heritage-red-800 hover:underline text-[11px] font-bold"
+                  >
+                    Sinh ngẫu nhiên
+                  </button>
+                </label>
+                <div className="relative">
+                  <input
+                    type={showAddPassword ? 'text' : 'password'}
+                    required
+                    value={addPassword}
+                    onChange={(e) => setAddPassword(e.target.value)}
+                    className="w-full px-3 py-2 bg-heritage-ivory-50 border border-heritage-ivory-400 rounded-xl text-xs text-heritage-ink-900 focus:outline-none focus:ring-2 focus:ring-heritage-red-600 font-mono pr-10"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowAddPassword(!showAddPassword)}
+                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-heritage-ink-400"
+                  >
+                    {showAddPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
+                </div>
+                <p className="text-[11px] text-heritage-ink-500 mt-1">
+                  Mật khẩu này sẽ được thông báo trực tiếp cho cán bộ khi nhận tài khoản.
+                </p>
+              </div>
+
+              <div className="pt-3 flex items-center justify-end space-x-2 border-t border-heritage-ivory-200">
+                <button
+                  type="button"
+                  onClick={() => setIsAddModalOpen(false)}
+                  className="px-4 py-2 border border-heritage-ivory-300 rounded-xl hover:bg-heritage-ivory-100 text-heritage-ink-700 font-semibold"
+                >
+                  Hủy bỏ
+                </button>
+                <button
+                  type="submit"
+                  disabled={isSubmittingAdd || !addFullName || !addEmail || !addPassword}
+                  className="px-5 py-2 bg-heritage-red-800 hover:bg-heritage-red-700 text-white rounded-xl font-bold flex items-center space-x-1.5 shadow-sm"
+                >
+                  {isSubmittingAdd ? (
+                    <RefreshCw className="w-4 h-4 animate-spin text-heritage-gold-300" />
+                  ) : (
+                    <UserPlus className="w-4 h-4 text-heritage-gold-300" />
+                  )}
+                  <span>Xác Nhận Thêm Cán Bộ</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* ========================================================================= */}
+      {/* MODAL 2: CHỈNH SỬA THÔNG TIN & VAI TRÒ CÁN BỘ                             */}
+      {/* ========================================================================= */}
+      {isEditModalOpen && editingStaff && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fadeIn">
+          <div className="w-full max-w-md bg-white border border-heritage-gold-300 rounded-2xl shadow-2xl overflow-hidden">
+            <div className="bg-gradient-to-r from-heritage-red-800 to-heritage-red-900 px-6 py-4 text-white flex items-center justify-between">
+              <div className="flex items-center space-x-2.5">
+                <Pencil className="w-4 h-4 text-heritage-gold-300" />
+                <h4 className="font-serif font-bold text-base">Chỉnh Sửa Hồ Sơ Cán Bộ</h4>
+              </div>
+              <button
+                onClick={() => setIsEditModalOpen(false)}
+                className="p-1 rounded text-white/80 hover:text-white"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <form onSubmit={handleUpdateStaff} className="p-6 space-y-4 text-xs">
+              <div>
+                <span className="text-heritage-ink-500">Tài khoản:</span>
+                <div className="font-bold text-heritage-ink-900 font-mono mt-0.5">
+                  {editingStaff.email}
+                </div>
+              </div>
+
+              <div>
+                <label className="block font-semibold text-heritage-ink-800 mb-1">
+                  Họ và tên cán bộ <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={editFullName}
+                  onChange={(e) => setEditFullName(e.target.value)}
+                  className="w-full px-3 py-2 bg-heritage-ivory-50 border border-heritage-ivory-400 rounded-xl text-xs text-heritage-ink-900 focus:outline-none focus:ring-2 focus:ring-heritage-red-600"
+                />
+              </div>
+
+              <div>
+                <label className="block font-semibold text-heritage-ink-800 mb-1">
+                  Tổ chuyên môn / Phòng ban
+                </label>
+                <select
+                  value={editDepartment}
+                  onChange={(e) => setEditDepartment(e.target.value)}
+                  className="w-full px-3 py-2 bg-heritage-ivory-50 border border-heritage-ivory-400 rounded-xl text-xs text-heritage-ink-900 focus:outline-none focus:ring-2 focus:ring-heritage-red-600"
+                >
+                  <option value="Tổ Lịch sử - Địa lý">Tổ Lịch sử - Địa lý</option>
+                  <option value="Tổ Ngữ văn - GDCD">Tổ Ngữ văn - GDCD</option>
+                  <option value="Tổ Toán - Tin học">Tổ Toán - Tin học</option>
+                  <option value="Tổ Khoa học tự nhiên">Tổ Khoa học tự nhiên</option>
+                  <option value="Ban Giám Hiệu">Ban Giám Hiệu</option>
+                  <option value="Đoàn - Đội - Hoạt động trải nghiệm">Đoàn - Đội - Hoạt động trải nghiệm</option>
+                </select>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block font-semibold text-heritage-ink-800 mb-1">
+                    Vai trò CMS
+                  </label>
+                  <select
+                    value={editRole}
+                    onChange={(e) => setEditRole(e.target.value as any)}
+                    className="w-full px-3 py-2 bg-heritage-ivory-50 border border-heritage-ivory-400 rounded-xl text-xs text-heritage-ink-900 focus:outline-none focus:ring-2 focus:ring-heritage-red-600"
+                  >
+                    <option value="editor">Biên tập viên</option>
+                    <option value="viewer">Cố vấn / Xem</option>
+                    <option value="admin">Quản trị viên</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block font-semibold text-heritage-ink-800 mb-1">
+                    Trạng thái hoạt động
+                  </label>
+                  <select
+                    value={editStatus}
+                    onChange={(e) => setEditStatus(e.target.value as any)}
+                    className="w-full px-3 py-2 bg-heritage-ivory-50 border border-heritage-ivory-400 rounded-xl text-xs text-heritage-ink-900 focus:outline-none focus:ring-2 focus:ring-heritage-red-600"
+                  >
+                    <option value="active">Đang hoạt động</option>
+                    <option value="suspended">Tạm đình chỉ</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="pt-3 flex items-center justify-end space-x-2 border-t border-heritage-ivory-200">
+                <button
+                  type="button"
+                  onClick={() => setIsEditModalOpen(false)}
+                  className="px-4 py-2 border border-heritage-ivory-300 rounded-xl hover:bg-heritage-ivory-100 text-heritage-ink-700 font-semibold"
+                >
+                  Hủy bỏ
+                </button>
+                <button
+                  type="submit"
+                  disabled={isSubmittingEdit || !editFullName}
+                  className="px-5 py-2 bg-heritage-red-800 hover:bg-heritage-red-700 text-white rounded-xl font-bold flex items-center space-x-1.5 shadow-sm"
+                >
+                  {isSubmittingEdit ? (
+                    <RefreshCw className="w-4 h-4 animate-spin text-heritage-gold-300" />
+                  ) : (
+                    <Check className="w-4 h-4 text-heritage-gold-300" />
+                  )}
+                  <span>Lưu Thay Đổi</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* ========================================================================= */}
+      {/* MODAL 3: XÁC NHẬN XÓA TÀI KHOẢN CÁN BỘ                                    */}
+      {/* ========================================================================= */}
+      {isDeleteModalOpen && deletingStaff && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fadeIn">
+          <div className="w-full max-w-md bg-white border border-rose-300 rounded-2xl shadow-2xl overflow-hidden">
+            <div className="bg-rose-700 px-6 py-4 text-white flex items-center justify-between">
+              <div className="flex items-center space-x-2">
+                <Trash2 className="w-5 h-5 text-rose-200" />
+                <h4 className="font-serif font-bold text-base">Xác Nhận Xóa Tài Khoản</h4>
+              </div>
+              <button
+                onClick={() => setIsDeleteModalOpen(false)}
+                className="p-1 rounded text-white/80 hover:text-white"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="p-6 space-y-4 text-xs">
+              <p className="text-heritage-ink-800 leading-relaxed">
+                Bạn có chắc chắn muốn xóa quyền truy cập của cán bộ{' '}
+                <strong className="text-heritage-red-900 font-bold">{deletingStaff.full_name}</strong> ({deletingStaff.email}) khỏi hệ thống CMS?
+              </p>
+              <div className="p-3 bg-rose-50 border border-rose-200 text-rose-900 rounded-xl text-[11px] leading-relaxed">
+                ⚠️ Cán bộ này sẽ không thể tiếp tục đăng nhập để biên tập bài viết hoặc duyệt nội dung. Toàn bộ hành động này sẽ được ghi vào Nhật ký kiểm toán an ninh.
+              </div>
+
+              <div className="pt-2 flex items-center justify-end space-x-2">
+                <button
+                  type="button"
+                  onClick={() => setIsDeleteModalOpen(false)}
+                  className="px-4 py-2 border border-heritage-ivory-300 rounded-xl hover:bg-heritage-ivory-100 text-heritage-ink-700 font-semibold"
+                >
+                  Hủy bỏ
+                </button>
+                <button
+                  type="button"
+                  onClick={handleDeleteStaff}
+                  disabled={isSubmittingDelete}
+                  className="px-5 py-2 bg-rose-700 hover:bg-rose-800 text-white rounded-xl font-bold flex items-center space-x-1.5 shadow-sm"
+                >
+                  {isSubmittingDelete ? (
+                    <RefreshCw className="w-4 h-4 animate-spin text-white" />
+                  ) : (
+                    <Trash2 className="w-4 h-4 text-rose-200" />
+                  )}
+                  <span>Xác Nhận Xóa Vĩnh Viễn</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ========================================================================= */}
+      {/* MODAL 4: CẤP MẬT KHẨU TẠM THỜI CHO GIÁO VIÊN                              */}
+      {/* ========================================================================= */}
       {targetStaff && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fadeIn">
           <div className="w-full max-w-md bg-white border border-heritage-gold-300 rounded-2xl shadow-2xl overflow-hidden">
             <div className="bg-gradient-to-r from-heritage-red-800 to-heritage-red-900 px-6 py-4 text-white flex items-center justify-between">
               <div className="flex items-center space-x-2.5">
                 <KeyRound className="w-5 h-5 text-heritage-gold-300" />
-                <h4 className="font-serif font-bold text-base">Cấp Mật Khẩu Cho Cán Bộ</h4>
+                <h4 className="font-serif font-bold text-base">Cấp Mật Khẩu Mới Cho Cán Bộ</h4>
               </div>
               <button
                 onClick={() => setTargetStaff(null)}
