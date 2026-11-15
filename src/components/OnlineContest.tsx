@@ -33,6 +33,7 @@ import {
 import { ContestManagerModal } from './cms/ContestManagerModal';
 import { useAuth } from '../context/AuthContext';
 import { AuthModal } from './cms/AuthModal';
+import { DongSonDrumWatermark } from './DongSonDrumWatermark';
 
 export const OnlineContest: React.FC = () => {
   // Xác thực Cán bộ Quản trị & Ban Giám Khảo (RBAC bảo vệ ngân hàng đề & bảng điểm)
@@ -838,7 +839,11 @@ export const OnlineContest: React.FC = () => {
           {/* Lớp nền ánh sáng hoàng kim lan tỏa */}
           <div className="absolute -right-20 -top-20 w-96 h-96 rounded-full bg-heritage-gold-400/20 pointer-events-none blur-3xl" />
           <div className="absolute -left-20 -bottom-20 w-80 h-80 rounded-full bg-red-600/20 pointer-events-none blur-3xl" />
-          <div className="absolute inset-0 bg-[radial-gradient(#d4af37_1px,transparent_1px)] [background-size:24px_24px] opacity-10 pointer-events-none" />
+          
+          {/* HOA VĂN TRỐNG ĐỒNG ĐÔNG SƠN CHÌM (DONG SON BRONZE DRUM WATERMARK THAY THẾ HOA VĂN LƯỚI DẤU CHẤM) */}
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none select-none overflow-hidden opacity-[0.07] sm:opacity-[0.08] mix-blend-screen" aria-hidden="true">
+            <DongSonDrumWatermark className="w-[650px] h-[650px] sm:w-[850px] sm:h-[850px] lg:w-[1100px] lg:h-[1100px] text-heritage-gold-400 flex-shrink-0" />
+          </div>
 
           <div className="relative z-10 space-y-5 sm:space-y-6">
             {/* ========================================================= */}
