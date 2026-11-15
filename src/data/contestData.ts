@@ -1234,10 +1234,10 @@ export async function fetchSupabaseQuestions(): Promise<ContestQuestion[]> {
     }
 
     const localBank = CONTEST_QUESTIONS_BANK;
-    const mapped: ContestQuestion[] = data.map((q, idx) => {
-      const local = localBank[idx] || localBank.find((l) => l.question === q.question);
+    const mapped: ContestQuestion[] = data.map((q) => {
+      const local = localBank.find((l) => l.id === q.sort_order) || localBank.find((l) => l.question.trim().toLowerCase() === q.question.trim().toLowerCase());
       return {
-        id: q.sort_order || idx + 1,
+        id: q.sort_order || local?.id || 1,
         question: q.question,
         options: (q.options as string[]) || local?.options || [],
         correctIndex: local?.correctIndex ?? 0,
@@ -1272,29 +1272,12 @@ export async function syncContestsAndSubmissionsToSupabase(
   const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
   try {
-    // 1. Đăng nhập song song cả Biên tập viên và Quản trị trưởng
-    const [authorLogin, adminLogin] = await Promise.all([
-      fetch(`${supabaseUrl}/auth/v1/token?grant_type=password`, {
-        method: 'POST',
-        headers: { apikey: anonKey, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: 'test-editor-alpha@sandbox.test', password: 'SandboxTest@2026' }),
-      }),
-      fetch(`${supabaseUrl}/auth/v1/token?grant_type=password`, {
-        method: 'POST',
-        headers: { apikey: anonKey, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: 'test-admin-chief@sandbox.test', password: 'SandboxTest@2026' }),
-      }),
-    ]);
-
-    if (!authorLogin.ok || !adminLogin.ok) {
-      return { success: false, message: 'Không thể xác thực quyền quản trị đồng bộ.' };
-    }
-    const authorData = await authorLogin.json();
-    const authorToken = authorData.access_token;
-    const authorId = authorData.user?.id || '30000000-0000-0000-0000-000000000004';
-
-    const adminData = await adminLogin.json();
-    const adminToken = adminData.access_token;
+    // 1. Lấy token phiên làm việc thực tế từ Supabase Auth
+    const { data: sessionData } = await supabase.auth.getSession();
+    const activeToken = sessionData?.session?.access_token || anonKey;
+    const authorToken = activeToken;
+    const adminToken = activeToken;
+    const authorId = sessionData?.session?.user?.id || 'c4821ce7-7c41-45d2-bb9d-ebf7b2228004';
 
     // 2. Tra cứu version lớn nhất thực tế (Bằng Admin token)
     const checkRes = await fetch(
