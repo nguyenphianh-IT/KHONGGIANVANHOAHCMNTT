@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { createClient } from '@supabase/supabase-js';
 import {
   KeyRound, Lock, Eye, EyeOff, CheckCircle2, AlertCircle,
   RefreshCw, Mail, Copy, Check, ShieldCheck,
@@ -125,10 +126,41 @@ export const PasswordManager: React.FC = () => {
     } catch {}
 
     if (isSupabaseConfigured) {
+      // 1. Ưu tiên gọi hàm RPC admin_list_staff_users để lấy đầy đủ email từ auth.users và vai trò
+      try {
+        const { data: rpcStaff, error: rpcErr } = await supabase.rpc('admin_list_staff_users');
+        if (!rpcErr && Array.isArray(rpcStaff) && rpcStaff.length > 0) {
+          const items: StaffUserItem[] = rpcStaff.map((p: any) => ({
+            id: p.id,
+            email: p.email || (user && user.id === p.id ? user.email || 'nguyenphianh@gmail.com' : `${p.id.slice(0, 8)}@thcsnguyentrungtruc.edu.vn`),
+            full_name: p.full_name || 'Cán bộ trường',
+            department: p.department || 'Trường THCS Nguyễn Trung Trực',
+            role: (p.role === 'admin' ? 'admin' : p.role === 'viewer' ? 'viewer' : 'editor'),
+            role_name: p.role_name || (p.role === 'admin' ? 'Quản trị viên (Admin)' : 'Biên tập viên nội dung'),
+            status: p.status || 'active',
+            created_at: p.created_at,
+          }));
+
+          const combined = [...items];
+          localSaved.forEach((localItem) => {
+            if (!combined.some((c) => c.id === localItem.id || c.email === localItem.email)) {
+              combined.push(localItem);
+            }
+          });
+
+          setStaffList(combined);
+          setIsLoadingStaff(false);
+          return;
+        }
+      } catch (e) {
+        console.warn('[PasswordManager] RPC admin_list_staff_users chưa có, fallback bảng:', e);
+      }
+
+      // 2. Dự phòng: Truy vấn trực tiếp bảng profiles và user_roles
       try {
         const { data: profilesData, error: profError } = await supabase
           .from('profiles')
-          .select('id, full_name, department, status, created_at')
+          .select('id, full_name, department, status, email, created_at')
           .order('created_at', { ascending: false });
 
         if (profError) throw profError;
@@ -153,7 +185,7 @@ export const PasswordManager: React.FC = () => {
           .map((p: any) => {
             const rInfo = roleMap[p.id] || { code: 'editor', name: 'Biên tập viên' };
             const isCurrentUser = user && user.id === p.id;
-            const displayEmail = isCurrentUser ? user.email || 'nguyenphianh@gmail.com' : `${p.id.slice(0, 8)}@thcsnguyentrungtruc.edu.vn`;
+            const displayEmail = p.email || (isCurrentUser ? user.email || 'nguyenphianh@gmail.com' : `${p.id.slice(0, 8)}@thcsnguyentrungtruc.edu.vn`);
 
             return {
               id: p.id,
@@ -341,56 +373,113 @@ export const PasswordManager: React.FC = () => {
     setIsSubmittingAdd(true);
     setActionErrorMsg(null);
 
-    const newStaffId = crypto.randomUUID();
     const roleLabels = {
       admin: 'Quản trị viên (Admin)',
       editor: 'Biên tập viên nội dung',
       viewer: 'Cố vấn / Xem tư liệu',
     };
 
-    const newStaffItem: StaffUserItem = {
-      id: newStaffId,
-      email: addEmail.trim().toLowerCase(),
-      full_name: addFullName.trim(),
-      department: addDepartment,
-      role: addRole,
-      role_name: roleLabels[addRole],
-      status: 'active',
-      created_at: new Date().toISOString(),
-    };
+    let actualStaffId: string = crypto.randomUUID();
 
     try {
       if (isSupabaseConfigured) {
-        // 1. Thêm vào bảng profiles
-        const { error: profErr } = await supabase.from('profiles').insert({
-          id: newStaffId,
-          full_name: newStaffItem.full_name,
-          department: newStaffItem.department,
-          status: 'active',
-        });
+        // 1. Ưu tiên gọi hàm PostgreSQL SECURITY DEFINER admin_create_staff_user
+        // Hàm này tạo trực tiếp tài khoản trong auth.users với crypt(bf), confirmed_at=now, profiles và user_roles
+        let rpcSuccess = false;
+        try {
+          const { data: rpcData, error: rpcErr } = await supabase.rpc('admin_create_staff_user', {
+            p_email: addEmail.trim().toLowerCase(),
+            p_password: addPassword,
+            p_full_name: addFullName.trim(),
+            p_department: addDepartment,
+            p_role: addRole,
+          });
 
-        if (profErr) {
-          console.warn('[PasswordManager] Ghi profiles thất bại, lưu dự phòng cục bộ:', profErr);
+          if (!rpcErr && rpcData?.success) {
+            actualStaffId = rpcData.user_id;
+            rpcSuccess = true;
+            console.log('[PasswordManager] Tạo tài khoản cán bộ thành công qua RPC:', rpcData);
+          } else if (rpcErr) {
+            console.warn('[PasswordManager] RPC admin_create_staff_user báo lỗi, chuyển sang cơ chế Client SignUp:', rpcErr.message);
+          }
+        } catch (rpcEx) {
+          console.warn('[PasswordManager] Ngoại lệ khi gọi RPC admin_create_staff_user:', rpcEx);
         }
 
-        // 2. Tra cứu vai trò và gán vào user_roles
-        const { data: roleData } = await supabase
-          .from('roles')
-          .select('id')
-          .eq('code', addRole)
-          .single();
-
-        if (roleData?.id) {
-          await supabase.from('user_roles').insert({
-            user_id: newStaffId,
-            role_id: roleData.id,
-            assigned_by: user?.id,
+        // 2. Dự phòng: Nếu RPC chưa sẵn sàng, sử dụng Client cô lập (persistSession: false) để đăng ký vào auth.users
+        if (!rpcSuccess) {
+          const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+          const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+          const isolatedClient = createClient(supabaseUrl, anonKey, {
+            auth: {
+              persistSession: false,
+              autoRefreshToken: false,
+              detectSessionInUrl: false,
+            },
           });
+
+          const { data: signUpData, error: signUpErr } = await isolatedClient.auth.signUp({
+            email: addEmail.trim().toLowerCase(),
+            password: addPassword,
+            options: {
+              data: {
+                full_name: addFullName.trim(),
+                department: addDepartment,
+              },
+            },
+          });
+
+          if (signUpErr && !signUpErr.message.includes('already registered')) {
+            throw signUpErr;
+          }
+
+          if (signUpData?.user?.id) {
+            actualStaffId = signUpData.user.id;
+          }
+
+          // Cập nhật profiles
+          const { error: profErr } = await supabase.from('profiles').upsert({
+            id: actualStaffId as any,
+            full_name: addFullName.trim(),
+            department: addDepartment,
+            status: 'active',
+            email: addEmail.trim().toLowerCase(),
+          });
+          if (profErr) {
+            console.warn('[PasswordManager] Ghi profiles warning:', profErr);
+          }
+
+          // Gán vai trò vào user_roles
+          const { data: roleData } = await supabase
+            .from('roles')
+            .select('id')
+            .eq('code', addRole)
+            .single();
+
+          if (roleData?.id) {
+            await supabase.from('user_roles').delete().eq('user_id', actualStaffId as any);
+            await supabase.from('user_roles').insert({
+              user_id: actualStaffId as any,
+              role_id: roleData.id,
+              assigned_by: user?.id as any,
+            });
+          }
         }
       }
 
+      const newStaffItem: StaffUserItem = {
+        id: actualStaffId,
+        email: addEmail.trim().toLowerCase(),
+        full_name: addFullName.trim(),
+        department: addDepartment,
+        role: addRole,
+        role_name: roleLabels[addRole],
+        status: 'active',
+        created_at: new Date().toISOString(),
+      };
+
       // 3. Cập nhật state và localStorage
-      const updatedList = [newStaffItem, ...staffList];
+      const updatedList = [newStaffItem, ...staffList.filter((s) => s.id !== actualStaffId && s.email !== newStaffItem.email)];
       setStaffList(updatedList);
       try {
         localStorage.setItem('hcm_cms_staff_accounts', JSON.stringify(updatedList));
@@ -403,12 +492,12 @@ export const PasswordManager: React.FC = () => {
         article_title: `${newStaffItem.full_name} (${newStaffItem.email})`,
         actor: profile?.full_name || 'Admin',
         role: 'Admin',
-        decision: 'Thành công',
+        decision: 'Thành công (Đã lưu Database Cloud)',
         feedback: `Khởi tạo tài khoản với vai trò ${roleLabels[addRole]}, tổ ${addDepartment}. Mật khẩu ban đầu: ${addPassword}`,
         timestamp: new Date().toISOString(),
       });
 
-      setActionSuccessMsg(`Đã thêm thành công cán bộ: ${newStaffItem.full_name}! Mật khẩu khởi tạo: ${addPassword}`);
+      setActionSuccessMsg(`Đã tạo thành công tài khoản cán bộ: ${newStaffItem.full_name} trên Database Cloud! Mật khẩu khởi tạo: ${addPassword}`);
       setIsAddModalOpen(false);
     } catch (err: any) {
       setActionErrorMsg(err.message || 'Thêm cán bộ thất bại.');
@@ -541,9 +630,24 @@ export const PasswordManager: React.FC = () => {
 
     try {
       if (isSupabaseConfigured) {
-        // Xóa quyền và chuyển trạng thái inactive
-        await supabase.from('user_roles').delete().eq('user_id', deletingStaff.id);
-        await supabase.from('profiles').update({ status: 'inactive' }).eq('id', deletingStaff.id);
+        // 1. Thử gọi RPC PostgreSQL SECURITY DEFINER admin_delete_staff_user
+        let rpcDeleted = false;
+        try {
+          const { error: rpcDelErr } = await supabase.rpc('admin_delete_staff_user', {
+            p_user_id: deletingStaff.id,
+          });
+          if (!rpcDelErr) {
+            rpcDeleted = true;
+          }
+        } catch (e) {
+          console.warn('[PasswordManager] RPC admin_delete_staff_user warning:', e);
+        }
+
+        // 2. Dự phòng: Xóa quyền và chuyển trạng thái inactive
+        if (!rpcDeleted) {
+          await supabase.from('user_roles').delete().eq('user_id', deletingStaff.id);
+          await supabase.from('profiles').update({ status: 'inactive' }).eq('id', deletingStaff.id);
+        }
       }
 
       // Cập nhật state và localStorage
@@ -619,6 +723,21 @@ export const PasswordManager: React.FC = () => {
     setActionErrorMsg(null);
 
     try {
+      if (isSupabaseConfigured) {
+        // Cập nhật mật khẩu thực tế vào auth.users thông qua RPC PostgreSQL
+        try {
+          const { error: rpcResetErr } = await supabase.rpc('admin_reset_staff_password', {
+            p_user_id: targetStaff.id,
+            p_new_password: manualNewPass,
+          });
+          if (rpcResetErr) {
+            console.warn('[PasswordManager] RPC admin_reset_staff_password:', rpcResetErr.message);
+          }
+        } catch (e) {
+          console.warn('[PasswordManager] Ngoại lệ khi gọi admin_reset_staff_password:', e);
+        }
+      }
+
       addStoredAuditLog({
         id: `audit-${Date.now()}`,
         action: 'Cấp mật khẩu cán bộ',

@@ -68,6 +68,7 @@ export interface ContestSubmission {
   timeSpentSeconds: number; // Thời gian làm bài tính bằng giây
   submittedAt: string; // Giờ hoặc ngày nộp bài
   award?: string; // Danh hiệu khen thưởng: "Giải Nhất", "Giải Nhì", "Giải Ba", "Khuyến Khích"
+  answers?: Record<string | number, number>; // Đáp án thí sinh đã chọn
 }
 
 // ==============================================================================
@@ -1100,18 +1101,41 @@ export async function fetchSupabaseContestData(): Promise<{
   }
 
   try {
-    const { data, error } = await supabase
-      .from('content_revisions')
-      .select('id, title, status, data, version_number')
-      .eq('item_id', SUPABASE_CONTEST_ITEM_ID)
-      .eq('status', 'published')
-      .order('version_number', { ascending: false })
-      .limit(1)
-      .maybeSingle();
+    const [revResult, dbSubsResult] = await Promise.allSettled([
+      supabase
+        .from('content_revisions')
+        .select('id, title, status, data, version_number')
+        .eq('item_id', SUPABASE_CONTEST_ITEM_ID)
+        .eq('status', 'published')
+        .order('version_number', { ascending: false })
+        .limit(1)
+        .maybeSingle(),
+      supabase
+        .from('contest_submissions')
+        .select('*')
+        .order('score', { ascending: false })
+    ]);
 
-    if (error) {
-      console.warn('[Supabase Cloud Warning] Lỗi tải dữ liệu hội thi:', error.message);
-      return { success: false, error: error.message };
+    const data = revResult.status === 'fulfilled' ? revResult.value.data : null;
+    const dbSubs = dbSubsResult.status === 'fulfilled' ? dbSubsResult.value.data : null;
+
+    // Chuyển đổi dữ liệu bảng contest_submissions
+    const tableSubs: ContestSubmission[] = [];
+    if (Array.isArray(dbSubs) && dbSubs.length > 0) {
+      dbSubs.forEach((row: any) => {
+        tableSubs.push({
+          id: row.id,
+          contestId: row.contest_id || 'hoi-thi-2024-tuoi-tre-bac-ho',
+          studentName: row.student_name,
+          studentClass: row.student_class,
+          score: Number(row.score),
+          totalQuestions: Number(row.total_questions || 10),
+          timeSpentSeconds: Number(row.time_spent_seconds || 0),
+          submittedAt: row.submitted_at,
+          award: row.award,
+          answers: row.answers,
+        });
+      });
     }
 
     if (data && data.data) {
@@ -1136,31 +1160,40 @@ export async function fetchSupabaseContestData(): Promise<{
         localStorage.setItem(STORAGE_KEY_QUESTION_BANKS, JSON.stringify(cloudData.questionBanks));
       }
 
-      if (Array.isArray(cloudData.submissions) && cloudData.submissions.length > 0) {
-        // Hợp nhất thông minh (Smart Merge): Giữ lại các bài thi mới nộp tại trình duyệt (chưa đồng bộ lên Cloud)
-        // và loại bỏ triệt để các ID bài thi mock cũ (lớp 8A1 cũ)
-        const mockIds = new Set([
-          'sub-1', 'sub-2', 'sub-3', 'sub-4', 'sub-5', 'sub-6', 'sub-7', 'sub-8', 'sub-9', 'sub-10',
-          'sub-archived-1', 'sub-archived-2', 'sub-archived-3', 'sub-archived-4', 'sub-archived-5',
-          'sub-archived-6', 'sub-archived-7', 'sub-archived-8'
-        ]);
-        const localSubs = getContestSubmissions().filter((s) => !mockIds.has(s.id));
-        const mergedMap = new Map<string, ContestSubmission>();
-        // Ưu tiên nạp danh sách chuẩn xác từ Database Cloud
+      // Hợp nhất thông minh (Smart Merge): tableSubs (từ contest_submissions) + cloudData.submissions + localSubs
+      const mockIds = new Set([
+        'sub-1', 'sub-2', 'sub-3', 'sub-4', 'sub-5', 'sub-6', 'sub-7', 'sub-8', 'sub-9', 'sub-10',
+        'sub-archived-1', 'sub-archived-2', 'sub-archived-3', 'sub-archived-4', 'sub-archived-5',
+        'sub-archived-6', 'sub-archived-7', 'sub-archived-8'
+      ]);
+      const localSubs = getContestSubmissions().filter((s) => !mockIds.has(s.id));
+      const mergedMap = new Map<string, ContestSubmission>();
+
+      // 1. Nạp bài nộp chính thức từ bảng quan hệ public.contest_submissions
+      tableSubs.forEach((s) => {
+        if (!mockIds.has(s.id)) {
+          mergedMap.set(s.id, s);
+        }
+      });
+
+      // 2. Nạp bài nộp từ content_revisions nếu chưa có trong map
+      if (Array.isArray(cloudData.submissions)) {
         cloudData.submissions.forEach((s) => {
-          if (!mockIds.has(s.id)) {
+          if (!mockIds.has(s.id) && !mergedMap.has(s.id)) {
             mergedMap.set(s.id, s);
           }
         });
-        // Bổ sung các bài nộp cục bộ mới làm tại máy này nếu Cloud chưa kịp có
-        localSubs.forEach((s) => {
-          if (!mergedMap.has(s.id)) {
-            mergedMap.set(s.id, s);
-          }
-        });
-        const mergedSubs = Array.from(mergedMap.values());
-        localStorage.setItem(STORAGE_KEY_CONTEST, JSON.stringify(mergedSubs));
       }
+
+      // 3. Bổ sung các bài nộp cục bộ mới làm tại máy này nếu Cloud chưa kịp có
+      localSubs.forEach((s) => {
+        if (!mergedMap.has(s.id)) {
+          mergedMap.set(s.id, s);
+        }
+      });
+
+      const mergedSubs = Array.from(mergedMap.values());
+      localStorage.setItem(STORAGE_KEY_CONTEST, JSON.stringify(mergedSubs));
 
       // Nếu Cloud đã có bản sửa đổi chính thức chứa ngân hàng câu hỏi do quản trị viên xuất bản
       if (Array.isArray(cloudData.questions) && cloudData.questions.length > 0) {
@@ -1185,10 +1218,38 @@ export async function fetchSupabaseContestData(): Promise<{
       return {
         success: true,
         contests: cloudData.contests || getStoredContestsList(),
-        submissions: getContestSubmissions(),
+        submissions: mergedSubs,
         questions: cloudData.questions || getStoredContestQuestions(),
         classes: cloudData.classes || getStoredClasses(),
         roster: cloudData.roster || getStoredStudentsByClass(),
+      };
+    }
+
+    // Nếu không có content_revisions nhưng có tableSubs từ contest_submissions
+    if (tableSubs.length > 0) {
+      const mockIds = new Set([
+        'sub-1', 'sub-2', 'sub-3', 'sub-4', 'sub-5', 'sub-6', 'sub-7', 'sub-8', 'sub-9', 'sub-10',
+        'sub-archived-1', 'sub-archived-2', 'sub-archived-3', 'sub-archived-4', 'sub-archived-5',
+        'sub-archived-6', 'sub-archived-7', 'sub-archived-8'
+      ]);
+      const localSubs = getContestSubmissions().filter((s) => !mockIds.has(s.id));
+      const mergedMap = new Map<string, ContestSubmission>();
+      tableSubs.forEach((s) => !mockIds.has(s.id) && mergedMap.set(s.id, s));
+      localSubs.forEach((s) => !mergedMap.has(s.id) && mergedMap.set(s.id, s));
+      const mergedSubs = Array.from(mergedMap.values());
+      localStorage.setItem(STORAGE_KEY_CONTEST, JSON.stringify(mergedSubs));
+
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new Event(EVENT_CONTEST_DATA_CHANGED));
+      }
+
+      return {
+        success: true,
+        contests: getStoredContestsList(),
+        submissions: mergedSubs,
+        questions: getStoredContestQuestions(),
+        classes: getStoredClasses(),
+        roster: getStoredStudentsByClass(),
       };
     }
 
@@ -1376,6 +1437,27 @@ export async function syncContestsAndSubmissionsToSupabase(
       return { success: false, message: `Lỗi xuất bản: ${pubErr}` };
     }
 
+    // 8. Đồng bộ đồng thời vào bảng quan hệ public.contest_submissions để đảm bảo tính nhất quán
+    if (Array.isArray(submissions) && submissions.length > 0) {
+      try {
+        const rows = submissions.map((s) => ({
+          id: s.id,
+          contest_id: s.contestId || 'hoi-thi-2024-tuoi-tre-bac-ho',
+          student_name: s.studentName,
+          student_class: s.studentClass,
+          score: s.score,
+          total_questions: s.totalQuestions || 10,
+          time_spent_seconds: s.timeSpentSeconds || 0,
+          submitted_at: s.submittedAt || new Date().toISOString(),
+          award: s.award,
+          answers: s.answers || {},
+        }));
+        await supabase.from('contest_submissions').upsert(rows);
+      } catch (upsertErr) {
+        console.warn('[Supabase Sync contest_submissions exception]', upsertErr);
+      }
+    }
+
     return {
       success: true,
       message: `Đã đồng bộ thành công lên Supabase Cloud Database (Phiên bản v${nextVer})!`,
@@ -1420,174 +1502,133 @@ async function executeSubmitExamToSupabase(
     return { success: false, message: 'Chưa cấu hình Supabase Cloud.' };
   }
 
-  const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-  const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
-
   try {
-    // 1. Đăng nhập song song cả Biên tập viên (Author) và Ban giám hiệu (Admin) để tối ưu thời gian phản hồi
-    const [authorLogin, adminLogin] = await Promise.all([
-      fetch(`${supabaseUrl}/auth/v1/token?grant_type=password`, {
-        method: 'POST',
-        headers: { apikey: anonKey, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: 'test-editor-alpha@sandbox.test', password: 'SandboxTest@2026' }),
-      }),
-      fetch(`${supabaseUrl}/auth/v1/token?grant_type=password`, {
-        method: 'POST',
-        headers: { apikey: anonKey, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: 'test-admin-chief@sandbox.test', password: 'SandboxTest@2026' }),
-      }),
-    ]);
+    // 1. GỌI HÀM RPC submit_contest_exam (Chạy trên PostgreSQL với SECURITY DEFINER)
+    // Cho phép học sinh gửi bài thi an toàn, không phụ thuộc vào token tài khoản biên tập/admin
+    const { data: rpcData, error: rpcErr } = await supabase.rpc('submit_contest_exam', {
+      p_submission: {
+        id: newSub.id,
+        contestId: newSub.contestId,
+        studentName: newSub.studentName,
+        studentClass: newSub.studentClass,
+        score: newSub.score,
+        totalQuestions: newSub.totalQuestions,
+        timeSpentSeconds: newSub.timeSpentSeconds,
+        submittedAt: newSub.submittedAt,
+        award: newSub.award,
+        answers: newSub.answers || {},
+      },
+    });
 
-    if (!authorLogin.ok || !adminLogin.ok) {
-      if (retriesLeft > 0) {
-        await new Promise((r) => setTimeout(r, 600));
-        return executeSubmitExamToSupabase(newSub, retriesLeft - 1);
+    if (!rpcErr && rpcData?.success) {
+      const mockIds = new Set([
+        'sub-1', 'sub-2', 'sub-3', 'sub-4', 'sub-5', 'sub-6', 'sub-7', 'sub-8', 'sub-9', 'sub-10',
+        'sub-archived-1', 'sub-archived-2', 'sub-archived-3', 'sub-archived-4', 'sub-archived-5',
+        'sub-archived-6', 'sub-archived-7', 'sub-archived-8'
+      ]);
+      const currentSubs = getContestSubmissions().filter((s) => !mockIds.has(s.id));
+      const updatedSubs = [newSub, ...currentSubs.filter((s) => s.id !== newSub.id)];
+      localStorage.setItem(STORAGE_KEY_CONTEST, JSON.stringify(updatedSubs));
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new Event(EVENT_CONTEST_DATA_CHANGED));
       }
-      return { success: false, message: 'Lỗi xác thực dịch vụ nộp bài.' };
+
+      console.log(`[Supabase Cloud Sync Success] Bài thi của ${newSub.studentName} đã lên Database Cloud qua RPC!`);
+      return {
+        success: true,
+        message: 'Đã lưu kết quả thi thành công lên Database Cloud Bảng Vàng toàn trường!',
+      };
     }
 
-    const authorData = await authorLogin.json();
-    const authorToken = authorData.access_token;
-    const authorId = authorData.user?.id || '30000000-0000-0000-0000-000000000004';
+    // 2. DỰ PHÒNG 1: Ghi trực tiếp vào bảng public.contest_submissions qua RLS
+    const { error: directInsertErr } = await supabase.from('contest_submissions').upsert({
+      id: newSub.id,
+      contest_id: newSub.contestId || 'hoi-thi-2024-tuoi-tre-bac-ho',
+      student_name: newSub.studentName,
+      student_class: newSub.studentClass,
+      score: newSub.score,
+      total_questions: newSub.totalQuestions || 10,
+      time_spent_seconds: newSub.timeSpentSeconds || 0,
+      submitted_at: newSub.submittedAt || new Date().toISOString(),
+      award: newSub.award,
+      answers: newSub.answers || {},
+    });
 
-    const adminData = await adminLogin.json();
-    const adminToken = adminData.access_token;
-
-    // 2. Lấy bản ghi published hiện hành
-    const pubRes = await fetch(
-      `${supabaseUrl}/rest/v1/content_revisions?item_id=eq.${SUPABASE_CONTEST_ITEM_ID}&status=eq.published&order=version_number.desc&limit=1`,
-      {
-        headers: {
-          apikey: anonKey,
-          Authorization: `Bearer ${adminToken}`,
-        },
+    if (!directInsertErr) {
+      const mockIds = new Set([
+        'sub-1', 'sub-2', 'sub-3', 'sub-4', 'sub-5', 'sub-6', 'sub-7', 'sub-8', 'sub-9', 'sub-10',
+        'sub-archived-1', 'sub-archived-2', 'sub-archived-3', 'sub-archived-4', 'sub-archived-5',
+        'sub-archived-6', 'sub-archived-7', 'sub-archived-8'
+      ]);
+      const currentSubs = getContestSubmissions().filter((s) => !mockIds.has(s.id));
+      const updatedSubs = [newSub, ...currentSubs.filter((s) => s.id !== newSub.id)];
+      localStorage.setItem(STORAGE_KEY_CONTEST, JSON.stringify(updatedSubs));
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new Event(EVENT_CONTEST_DATA_CHANGED));
       }
-    );
-    const pubList = await pubRes.json();
-    const currentPub = pubList?.[0] || {};
-    const currentData = currentPub.data || {};
-    const existingSubs: ContestSubmission[] = Array.isArray(currentData.submissions)
-      ? currentData.submissions
-      : [];
 
-    // Lọc bỏ bài trùng và các bài mock cũ
-    const mockIds = new Set([
-      'sub-1', 'sub-2', 'sub-3', 'sub-4', 'sub-5', 'sub-6', 'sub-7', 'sub-8', 'sub-9', 'sub-10',
-      'sub-archived-1', 'sub-archived-2', 'sub-archived-3', 'sub-archived-4', 'sub-archived-5',
-      'sub-archived-6', 'sub-archived-7', 'sub-archived-8'
-    ]);
-    const cleanExisting = existingSubs.filter((s) => s.id !== newSub.id && !mockIds.has(s.id));
-    const updatedSubs = [newSub, ...cleanExisting];
+      console.log(`[Supabase Cloud Sync Success] Bài thi của ${newSub.studentName} đã lưu trực tiếp vào bảng contest_submissions!`);
+      return {
+        success: true,
+        message: 'Đã nộp bài và lưu thành công lên Bảng Vàng toàn trường!',
+      };
+    }
 
-    // 3. Lấy số phiên bản lớn nhất thực tế (Dùng Admin Token để không bị RLS của Editor lọc mất)
-    const checkRes = await fetch(
-      `${supabaseUrl}/rest/v1/content_revisions?item_id=eq.${SUPABASE_CONTEST_ITEM_ID}&order=version_number.desc&limit=1`,
-      {
-        headers: {
-          apikey: anonKey,
-          Authorization: `Bearer ${adminToken}`,
-        },
-      }
-    );
-    const maxVerList = await checkRes.json();
-    const maxVer = maxVerList?.[0]?.version_number || 1;
-    const nextVer = maxVer + 1;
-    // DÙNG RANDOM UUID ĐỂ BẢO VỆ TUYỆT ĐỐI KHÔNG BAO GIỜ BỊ TRÙNG KHÓA CHÍNH (PKEY)
-    const newRevId = crypto.randomUUID();
-
-    // 4. Tạo draft revision với Author Token
-    const insertRes = await fetch(`${supabaseUrl}/rest/v1/content_revisions`, {
-      method: 'POST',
-      headers: {
-        apikey: anonKey,
-        Authorization: `Bearer ${authorToken}`,
-        'Content-Type': 'application/json',
-        Prefer: 'return=representation',
-      },
-      body: JSON.stringify([
+    // 3. DỰ PHÒNG 2: Nếu có phiên làm việc của Quản trị viên/Biên tập viên, cập nhật vào content_revisions
+    const { data: sessionData } = await supabase.auth.getSession();
+    const activeToken = sessionData?.session?.access_token;
+    if (activeToken) {
+      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+      const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+      const pubRes = await fetch(
+        `${supabaseUrl}/rest/v1/content_revisions?item_id=eq.${SUPABASE_CONTEST_ITEM_ID}&status=eq.published&order=version_number.desc&limit=1`,
         {
-          id: newRevId,
-          item_id: SUPABASE_CONTEST_ITEM_ID,
-          version_number: nextVer,
-          title: `Hồ Sơ Hội Thi & Kết Quả Học Đường THCS Nguyễn Trung Trực (Bản v${nextVer})`,
-          summary: `Thí sinh ${newSub.studentName} (Lớp ${newSub.studentClass}) hoàn thành bài thi`,
-          data: {
-            ...currentData,
-            submissions: updatedSubs,
-            syncedAt: new Date().toISOString(),
-          },
-          status: 'draft',
-          author_id: authorId,
-        },
-      ]),
-    });
+          headers: { apikey: anonKey, Authorization: `Bearer ${activeToken}` },
+        }
+      );
+      if (pubRes.ok) {
+        const pubList = await pubRes.json();
+        const currentPub = pubList?.[0] || {};
+        const currentData = currentPub.data || {};
+        const existingSubs: ContestSubmission[] = Array.isArray(currentData.submissions)
+          ? currentData.submissions
+          : [];
+        const cleanExisting = existingSubs.filter((s) => s.id !== newSub.id);
+        const updatedSubs = [newSub, ...cleanExisting];
 
-    if (!insertRes.ok) {
-      if (retriesLeft > 0) {
-        await new Promise((r) => setTimeout(r, 600));
-        return executeSubmitExamToSupabase(newSub, retriesLeft - 1);
+        if (currentPub.id) {
+          await fetch(`${supabaseUrl}/rest/v1/content_revisions?id=eq.${currentPub.id}`, {
+            method: 'PATCH',
+            headers: {
+              apikey: anonKey,
+              Authorization: `Bearer ${activeToken}`,
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              data: { ...currentData, submissions: updatedSubs, syncedAt: new Date().toISOString() },
+              updated_at: new Date().toISOString(),
+            }),
+          });
+
+          localStorage.setItem(STORAGE_KEY_CONTEST, JSON.stringify(updatedSubs));
+          if (typeof window !== 'undefined') {
+            window.dispatchEvent(new Event(EVENT_CONTEST_DATA_CHANGED));
+          }
+          return {
+            success: true,
+            message: 'Đã cập nhật bài thi vào phiên bản xuất bản trên Cloud!',
+          };
+        }
       }
-      return { success: false, message: 'Lỗi tạo bản ghi bài thi nháp.' };
     }
 
-    // 5. Submit for review với Author Token
-    await fetch(`${supabaseUrl}/rest/v1/rpc/submit_revision_for_review`, {
-      method: 'POST',
-      headers: {
-        apikey: anonKey,
-        Authorization: `Bearer ${authorToken}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ p_revision_id: newRevId }),
-    });
-
-    // 6. Review Approve với Admin Token (Tuân thủ nghiêm ngặt nguyên tắc 4 mắt)
-    await fetch(`${supabaseUrl}/rest/v1/rpc/review_revision`, {
-      method: 'POST',
-      headers: {
-        apikey: anonKey,
-        Authorization: `Bearer ${adminToken}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        p_revision_id: newRevId,
-        p_decision: 'approved',
-        p_feedback: 'Tự động duyệt kết quả thi của thí sinh',
-      }),
-    });
-
-    // 7. Xuất bản chính thức (Publish) với Admin Token
-    const pubResponse = await fetch(`${supabaseUrl}/rest/v1/rpc/publish_revision`, {
-      method: 'POST',
-      headers: {
-        apikey: anonKey,
-        Authorization: `Bearer ${adminToken}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ p_revision_id: newRevId }),
-    });
-
-    if (!pubResponse.ok) {
-      if (retriesLeft > 0) {
-        await new Promise((r) => setTimeout(r, 600));
-        return executeSubmitExamToSupabase(newSub, retriesLeft - 1);
-      }
-      return { success: false, message: 'Lỗi xuất bản bài thi lên Cloud.' };
+    if (retriesLeft > 0) {
+      await new Promise((r) => setTimeout(r, 600));
+      return executeSubmitExamToSupabase(newSub, retriesLeft - 1);
     }
 
-    // Lưu ngay danh sách mới vào LocalStorage và dispatch event cập nhật toàn trang
-    localStorage.setItem(STORAGE_KEY_CONTEST, JSON.stringify(updatedSubs));
-    if (typeof window !== 'undefined') {
-      window.dispatchEvent(new Event(EVENT_CONTEST_DATA_CHANGED));
-    }
-
-    console.log(`[Supabase Cloud Sync Success] Bài thi của ${newSub.studentName} đã lên DB (v${nextVer})!`);
-
-    return {
-      success: true,
-      message: `Đã nộp bài và cập nhật thành công lên Bảng Vàng toàn trường (v${nextVer})!`,
-      version: nextVer,
-    };
+    const failureReason = rpcErr?.message || directInsertErr?.message || 'Không thể ghi nhận bài thi lên Database Cloud';
+    return { success: false, message: `Lỗi lưu Database Cloud: ${failureReason}` };
   } catch (err: any) {
     if (retriesLeft > 0) {
       await new Promise((r) => setTimeout(r, 600));
