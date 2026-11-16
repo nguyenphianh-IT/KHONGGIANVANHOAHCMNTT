@@ -174,9 +174,17 @@ export class DocumentRegistry {
         if (raw) {
           const overrides = JSON.parse(raw);
           for (const [id, ov] of Object.entries(overrides)) {
-            const doc = this.documents.get(id);
-            if (doc && ov && typeof ov === 'object') {
-              Object.assign(doc, ov);
+            if ((ov as any)?.isDeleted) {
+              const doc = this.documents.get(id);
+              if (doc && doc.checksum) {
+                this.checksumIndex.delete(doc.checksum);
+              }
+              this.documents.delete(id);
+            } else {
+              const doc = this.documents.get(id);
+              if (doc && ov && typeof ov === 'object') {
+                Object.assign(doc, ov);
+              }
             }
           }
         }
@@ -395,6 +403,21 @@ export class DocumentRegistry {
       updatedAt: doc.updatedAt
     });
     return doc;
+  }
+
+  /**
+   * Delete document completely from registry and persist deleted status in localStorage
+   */
+  public deleteDocument(docId: string): boolean {
+    const doc = this.documents.get(docId);
+    if (!doc) return false;
+
+    if (doc.checksum) {
+      this.checksumIndex.delete(doc.checksum);
+    }
+    this.documents.delete(docId);
+    this.saveLocalStorageOverride(docId, { isDeleted: true } as any);
+    return true;
   }
 
   /**

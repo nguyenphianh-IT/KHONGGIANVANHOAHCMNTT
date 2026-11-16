@@ -5,7 +5,7 @@ import {
   CheckCircle2, AlertCircle, Send,
   ExternalLink, Sparkles, ArrowRight,
   Upload, Copy, Check, Trash2, Trophy, GraduationCap, LogOut, Cloud, Database,
-  KeyRound, Eye
+  KeyRound, Eye, Archive
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { FullScreenEditor } from './FullScreenEditor';
@@ -23,7 +23,7 @@ import {
   getStoredAuditLogs, addStoredAuditLog,
   EVENT_ARTICLES_CHANGED, EVENT_MEDIA_CHANGED,
   CMS_CATEGORIES, getCategoryLabel, normalizeCategoryToHomepage,
-  fetchArticlesFromSupabase
+  fetchArticlesFromSupabase, unpublishArticleInCloud, deleteArticleInCloud
 } from '../../lib/cmsStore';
 import {
   getAllViewCounts,
@@ -320,6 +320,74 @@ export const CmsDashboard: React.FC<CmsDashboardProps> = ({ isOpen, onClose }) =
     setToastMsg({
       type: 'info',
       text: `Đã từ chối bản thảo và gửi yêu cầu chỉnh sửa cho tác giả.`,
+    });
+  };
+
+  // 4b. Action: Unpublish Article (Revert to Draft)
+  const handleUnpublishArticle = async (article: ArticleData) => {
+    if (!window.confirm(`GỠ BÀI VIẾT:\n\nBạn có chắc chắn muốn gỡ bài viết "${article.title}" về trạng thái bản nháp?\n\nBài viết sẽ ngay lập tức không còn hiển thị công khai trên website.`)) {
+      return;
+    }
+
+    const updatedList = articles.map((a) =>
+      a.id === article.id ? { ...a, status: 'draft' as const, updated_at: 'Đã gỡ bài' } : a
+    );
+    setArticles(updatedList);
+    saveStoredArticles(updatedList);
+
+    if (article.id) {
+      unpublishArticleInCloud(article.id);
+    }
+
+    const newLog: AuditLogItem = {
+      id: `evt-${Date.now()}`,
+      action: 'article.unpublish',
+      article_title: article.title,
+      actor: currentPersona.name,
+      role: currentPersona.roleLabel,
+      decision: 'draft',
+      feedback: 'Thu hồi bài viết đã đăng về bản nháp.',
+      timestamp: new Date().toISOString().replace('T', ' ').substring(0, 19),
+    };
+    addStoredAuditLog(newLog);
+    setAuditLogs((prev) => [newLog, ...prev]);
+
+    setToastMsg({
+      type: 'info',
+      text: `Đã gỡ bài viết "${article.title}" về bản nháp. Bài viết đã được ẩn khỏi trang chủ.`,
+    });
+  };
+
+  // 4c. Action: Delete Article permanently
+  const handleDeleteArticle = async (article: ArticleData) => {
+    if (!window.confirm(`CẢNH BÁO: HÀNH ĐỘNG KHÔNG THỂ HOÀN TÁC!\n\nBạn có chắc chắn muốn XÓA VĨNH VIỄN bài viết "${article.title}"?`)) {
+      return;
+    }
+
+    const updatedList = articles.filter((a) => a.id !== article.id);
+    setArticles(updatedList);
+    saveStoredArticles(updatedList);
+
+    if (article.id) {
+      deleteArticleInCloud(article.id);
+    }
+
+    const newLog: AuditLogItem = {
+      id: `evt-${Date.now()}`,
+      action: 'article.delete',
+      article_title: article.title,
+      actor: currentPersona.name,
+      role: currentPersona.roleLabel,
+      decision: 'deleted',
+      feedback: 'Xóa bài viết khỏi cơ sở dữ liệu CMS.',
+      timestamp: new Date().toISOString().replace('T', ' ').substring(0, 19),
+    };
+    addStoredAuditLog(newLog);
+    setAuditLogs((prev) => [newLog, ...prev]);
+
+    setToastMsg({
+      type: 'success',
+      text: `Đã xóa vĩnh viễn bài viết "${article.title}".`,
     });
   };
 
@@ -1183,6 +1251,17 @@ export const CmsDashboard: React.FC<CmsDashboardProps> = ({ isOpen, onClose }) =
                                   </button>
                                 )}
 
+                                {art.status === 'published' && (
+                                  <button
+                                    onClick={() => handleUnpublishArticle(art)}
+                                    className="px-2.5 py-1 bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-300 rounded-lg text-xs font-bold transition inline-flex items-center space-x-1 shadow-xs"
+                                    title="Gỡ bài viết đã xuất bản về bản nháp"
+                                  >
+                                    <Archive className="w-3.5 h-3.5 text-amber-700" />
+                                    <span>Gỡ bài</span>
+                                  </button>
+                                )}
+
                                 <button
                                   onClick={() => {
                                     setEditingArticle(art);
@@ -1192,6 +1271,14 @@ export const CmsDashboard: React.FC<CmsDashboardProps> = ({ isOpen, onClose }) =
                                   title="Chỉnh sửa toàn màn hình"
                                 >
                                   <PenTool className="w-3.5 h-3.5" />
+                                </button>
+
+                                <button
+                                  onClick={() => handleDeleteArticle(art)}
+                                  className="p-1.5 hover:bg-rose-50 text-rose-700 hover:text-rose-900 rounded-lg transition inline-block border border-rose-200"
+                                  title="Xóa vĩnh viễn bài viết"
+                                >
+                                  <Trash2 className="w-3.5 h-3.5" />
                                 </button>
                               </td>
                             </tr>

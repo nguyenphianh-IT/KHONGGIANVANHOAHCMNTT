@@ -4,7 +4,7 @@ import {
   Search, RefreshCw, AlertCircle,
   Database, Plus, Lock, Clock,
   BarChart2, Activity, HelpCircle, ThumbsUp, ThumbsDown, MessageSquare, Bot, ExternalLink,
-  FileText, Layers, Copy, Check
+  FileText, Layers, Copy, Check, Trash2, Archive
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { RagService } from '../../services/ragService';
@@ -223,6 +223,44 @@ export const RagKnowledgeManager: React.FC = () => {
       alert(err?.message || 'Lỗi xử lý');
     } finally {
       setIsProcessingApproval(false);
+    }
+  };
+
+  // Handle Archive / Revoke Document from active RAG retrieval
+  const handleArchiveDocument = async (doc: RealKnowledgeDocument) => {
+    const confirmArchive = window.confirm(
+      `THU HỒI TÀI LIỆU KHỎI KHO RAG:\n\nBạn có chắc chắn muốn thu hồi tài liệu "${doc.title}" (Mã: ${doc.documentId})?\n\nSau khi thu hồi:\n• Tài liệu sẽ chuyển sang trạng thái "LƯU TRỮ" (ARCHIVED).\n• Trợ lý AI RAG sẽ NGỪNG TRÍCH DẪN tài liệu này ngay lập tức.\n• Dữ liệu vẫn được bảo lưu để kiểm toán và có thể kích hoạt lại bất kỳ lúc nào.`
+    );
+    if (!confirmArchive) return;
+
+    try {
+      const res = await RagService.archiveDocument(doc.documentId, userRoleCode);
+      if (res.success) {
+        loadDocuments();
+      } else {
+        alert(res.error || 'Lỗi thu hồi tài liệu');
+      }
+    } catch (err: any) {
+      alert(err?.message || 'Lỗi thu hồi tài liệu');
+    }
+  };
+
+  // Handle Permanent Delete of Document & Chunks
+  const handleDeleteDocument = async (doc: RealKnowledgeDocument) => {
+    const confirmDelete = window.confirm(
+      `CẢNH BÁO: HÀNH ĐỘNG KHÔNG THỂ HOÀN TÁC!\n\nBạn có chắc chắn muốn XÓA VĨNH VIỄN tài liệu "${doc.title}" (Mã: ${doc.documentId})?\n\n• Toàn bộ nội dung và ${doc.chunksCount || 0} phân đoạn (chunks) sẽ bị xóa khỏi cơ sở dữ liệu.\n• Trợ lý AI RAG sẽ hoàn toàn không còn dữ liệu này.`
+    );
+    if (!confirmDelete) return;
+
+    try {
+      const res = await RagService.deleteDocument(doc.documentId, userRoleCode);
+      if (res.success) {
+        loadDocuments();
+      } else {
+        alert(res.error || 'Lỗi xóa tài liệu');
+      }
+    } catch (err: any) {
+      alert(err?.message || 'Lỗi xóa tài liệu');
     }
   };
 
@@ -487,6 +525,40 @@ export const RagKnowledgeManager: React.FC = () => {
                             className="px-2.5 py-1 rounded bg-heritage-red-700 hover:bg-heritage-red-800 text-white font-medium text-[11px] transition-colors"
                           >
                             Duyệt 4 Mắt
+                          </button>
+                        )}
+
+                        {isApproved && canApprove && (
+                          <button
+                            type="button"
+                            onClick={() => handleArchiveDocument(doc)}
+                            className="px-2.5 py-1 rounded bg-amber-100 hover:bg-amber-200 text-amber-900 border border-amber-300 font-medium text-[11px] transition-colors inline-flex items-center space-x-1"
+                            title="Thu hồi tài liệu khỏi kho tìm kiếm RAG"
+                          >
+                            <Archive className="w-3 h-3 text-amber-700" />
+                            <span>Gỡ khỏi RAG</span>
+                          </button>
+                        )}
+
+                        {doc.approvalStatus === 'ARCHIVED' && canApprove && (
+                          <button
+                            type="button"
+                            onClick={() => setApprovalDoc(doc)}
+                            className="px-2.5 py-1 rounded bg-emerald-100 hover:bg-emerald-200 text-emerald-900 border border-emerald-300 font-medium text-[11px] transition-colors"
+                            title="Kích hoạt lại tài liệu vào kho RAG"
+                          >
+                            Kích hoạt lại
+                          </button>
+                        )}
+
+                        {canApprove && (
+                          <button
+                            type="button"
+                            onClick={() => handleDeleteDocument(doc)}
+                            className="p-1 rounded bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 transition-colors inline-flex items-center"
+                            title="Xóa vĩnh viễn tài liệu khỏi cơ sở dữ liệu"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
                           </button>
                         )}
                       </td>

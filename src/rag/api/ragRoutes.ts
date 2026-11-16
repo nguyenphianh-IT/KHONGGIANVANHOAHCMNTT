@@ -552,11 +552,11 @@ export async function handlePatchDocumentRoute(
 }
 
 /**
- * POST /api/rag/documents/:id/approve (Protected: Four-Eyes Approval Workflow)
+ * POST /api/rag/documents/:id/approve (Protected: Four-Eyes Approval & Revoke/Archive Workflow)
  */
 export async function handleApproveDocumentRoute(
   docId: string,
-  body: { action: 'approve' | 'reject'; reason?: string },
+  body: { action: 'approve' | 'reject' | 'archive'; reason?: string },
   authHeader?: string,
   roleHeader?: string
 ): Promise<ApiResponse> {
@@ -571,11 +571,11 @@ export async function handleApproveDocumentRoute(
 
   try {
     const action = body?.action;
-    if (action !== 'approve' && action !== 'reject') {
+    if (action !== 'approve' && action !== 'reject' && action !== 'archive') {
       return {
         success: false,
         statusCode: 400,
-        error: 'Tham số "action" phải là "approve" hoặc "reject".'
+        error: 'Tham số "action" phải là "approve", "reject" hoặc "archive".'
       };
     }
 
@@ -597,7 +597,9 @@ export async function handleApproveDocumentRoute(
       };
     }
 
-    const newStatus: DocumentApprovalStatus = action === 'approve' ? 'APPROVED' : 'REJECTED';
+    const newStatus: DocumentApprovalStatus =
+      action === 'approve' ? 'APPROVED' : action === 'reject' ? 'REJECTED' : 'ARCHIVED';
+
     const updatedDoc = await persistentRagStore.updateDocumentStatus(
       docId,
       newStatus,
@@ -607,7 +609,7 @@ export async function handleApproveDocumentRoute(
     );
 
     // Dynamic Retrieval Engine Index Update:
-    // When a document is approved, re-index all approved chunks immediately!
+    // When a document is approved or revoked/archived, re-index all approved chunks immediately!
     const allApprovedChunks = await persistentRagStore.getAllApprovedChunks();
     ragRuntime.reindex(allApprovedChunks);
 
@@ -628,6 +630,57 @@ export async function handleApproveDocumentRoute(
       success: false,
       statusCode: 500,
       error: `Lỗi xử lý phê duyệt tài liệu: ${err?.message || 'Lỗi không xác định'}`
+    };
+  }
+}
+
+/**
+ * DELETE /api/rag/documents/:id (Protected: Hard delete document & chunks)
+ */
+export async function handleDeleteDocumentRoute(
+  docId: string,
+  authHeader?: string,
+  roleHeader?: string
+): Promise<ApiResponse> {
+  const auth = await validateAdminAuth(authHeader, roleHeader, 'admin');
+  if (!auth.authorized) {
+    return {
+      success: false,
+      statusCode: auth.statusCode || 403,
+      error: auth.error
+    };
+  }
+
+  try {
+    const existingDoc = await persistentRagStore.getDocumentById(docId);
+    if (!existingDoc) {
+      return {
+        success: false,
+        statusCode: 404,
+        error: `Không tìm thấy tài liệu với ID "${docId}".`
+      };
+    }
+
+    await persistentRagStore.deleteDocument(docId);
+
+    // Re-index RAG runtime so deleted document chunks are removed immediately
+    const allApprovedChunks = await persistentRagStore.getAllApprovedChunks();
+    ragRuntime.reindex(allApprovedChunks);
+
+    return {
+      success: true,
+      statusCode: 200,
+      data: {
+        documentId: docId,
+        message: `Đã xóa hoàn toàn tài liệu "${existingDoc.title}" khỏi kho RAG.`,
+        totalActiveChunks: allApprovedChunks.length
+      }
+    };
+  } catch (err: any) {
+    return {
+      success: false,
+      statusCode: 500,
+      error: `Lỗi xóa tài liệu: ${err?.message || 'Lỗi không xác định'}`
     };
   }
 }

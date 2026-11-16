@@ -435,6 +435,59 @@ const DEFAULT_AUDIT_LOGS: AuditLogItem[] = [
 const KEY_ARTICLES = 'hcm_cultural_articles_v4';
 const KEY_MEDIA = 'hcm_cultural_media_v4';
 const KEY_AUDIT = 'hcm_cultural_audit_v4';
+const KEY_DELETED_ARTICLES = 'hcm_cultural_deleted_articles_v4';
+
+export function getDeletedArticleIds(): Set<string> {
+  try {
+    const raw = localStorage.getItem(KEY_DELETED_ARTICLES);
+    if (!raw) return new Set();
+    const arr = JSON.parse(raw);
+    return new Set(Array.isArray(arr) ? arr : []);
+  } catch {
+    return new Set();
+  }
+}
+
+export function saveDeletedArticleId(id: string): void {
+  try {
+    const set = getDeletedArticleIds();
+    set.add(id);
+    localStorage.setItem(KEY_DELETED_ARTICLES, JSON.stringify(Array.from(set)));
+  } catch {
+    // ignore
+  }
+}
+
+export async function unpublishArticleInCloud(articleId: string): Promise<boolean> {
+  if (!isSupabaseConfigured) return true;
+  try {
+    const { error } = await supabase
+      .from('content_revisions')
+      .update({ status: 'draft', updated_at: new Date().toISOString() })
+      .or(`id.eq.${articleId},item_id.eq.${articleId}`);
+    if (error) console.warn('[CMS Cloud Unpublish Warning]', error.message);
+    return !error;
+  } catch (err: any) {
+    console.warn('[CMS Cloud Unpublish Exception]', err?.message || err);
+    return false;
+  }
+}
+
+export async function deleteArticleInCloud(articleId: string): Promise<boolean> {
+  saveDeletedArticleId(articleId);
+  if (!isSupabaseConfigured) return true;
+  try {
+    const { error } = await supabase
+      .from('content_revisions')
+      .delete()
+      .or(`id.eq.${articleId},item_id.eq.${articleId}`);
+    if (error) console.warn('[CMS Cloud Delete Warning]', error.message);
+    return !error;
+  } catch (err: any) {
+    console.warn('[CMS Cloud Delete Exception]', err?.message || err);
+    return false;
+  }
+}
 
 // Dọn dẹp an toàn và triệt để các khóa cũ có thể chứa payload Base64 quá tải gây RESULT_CODE_HUNG
 try {
@@ -508,8 +561,16 @@ export function getStoredArticles(): ArticleData[] {
     if (modified) {
       localStorage.setItem(KEY_ARTICLES, JSON.stringify(cleanedArticles));
     }
+    const deletedIds = getDeletedArticleIds();
+    if (deletedIds.size > 0) {
+      return cleanedArticles.filter((art) => !art.id || (!deletedIds.has(art.id) && !deletedIds.has(art.slug)));
+    }
     return cleanedArticles;
   } catch {
+    const deletedIds = getDeletedArticleIds();
+    if (deletedIds.size > 0) {
+      return DEFAULT_ARTICLES.filter((art) => !art.id || (!deletedIds.has(art.id) && !deletedIds.has(art.slug)));
+    }
     return DEFAULT_ARTICLES;
   }
 }
@@ -750,19 +811,36 @@ export async function fetchArticlesFromSupabase(): Promise<{
       });
 
       if (postRevs.length > 0) {
-        const mappedArticles: ArticleData[] = postRevs.map((rev) => {
+        const deletedIds = getDeletedArticleIds();
+        const validRevs = postRevs.filter((rev) => {
+          const revId = rev.item_id || rev.id;
+          const slug = rev.data?.slug;
+          return !deletedIds.has(revId) && !deletedIds.has(rev.id) && (!slug || !deletedIds.has(slug));
+        });
+
+        const currentLocal = getStoredArticles();
+        const localStatusMap = new Map(currentLocal.map((a) => [a.id || a.slug, a.status]));
+
+        const mappedArticles: ArticleData[] = validRevs.map((rev) => {
           const revData = rev.data || {};
+          const articleId = rev.item_id || rev.id;
+          const slug = revData.slug || rev.title.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-');
+          
+          // Preserve local draft / unpublish status if operator previously unpublished it
+          const localStatus = localStatusMap.get(articleId) || localStatusMap.get(slug);
+          const status = (localStatus && localStatus !== 'published') ? localStatus : 'published';
+
           return {
-            id: rev.item_id || rev.id,
+            id: articleId,
             title: rev.title,
-            slug: revData.slug || rev.title.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-'),
+            slug,
             summary: rev.summary || '',
             content: revData.content || '',
             category: revData.category || 'article',
             topic: revData.topic || 'Không gian văn hóa Hồ Chí Minh',
             featured_image: revData.featured_image || '',
             references: revData.references || '',
-            status: 'published',
+            status,
             author_id: revData.author_id || '',
             author_name: revData.author_name || 'Ban Biên Tập THCS Nguyễn Trung Trực',
             created_at: rev.created_at || '',
@@ -771,8 +849,8 @@ export async function fetchArticlesFromSupabase(): Promise<{
         });
 
         // Kết hợp với các bài nháp nội bộ nếu có
-        const currentLocal = getStoredArticles();
-        const nonPublishedLocal = currentLocal.filter((a) => a.status !== 'published');
+        const mappedIdSet = new Set(mappedArticles.map((m) => m.id));
+        const nonPublishedLocal = currentLocal.filter((a) => !mappedIdSet.has(a.id));
         const merged = [...mappedArticles, ...nonPublishedLocal];
 
         saveStoredArticles(merged);

@@ -2587,9 +2587,17 @@ var DocumentRegistry = class {
         if (raw) {
           const overrides = JSON.parse(raw);
           for (const [id, ov] of Object.entries(overrides)) {
-            const doc = this.documents.get(id);
-            if (doc && ov && typeof ov === "object") {
-              Object.assign(doc, ov);
+            if (ov?.isDeleted) {
+              const doc = this.documents.get(id);
+              if (doc && doc.checksum) {
+                this.checksumIndex.delete(doc.checksum);
+              }
+              this.documents.delete(id);
+            } else {
+              const doc = this.documents.get(id);
+              if (doc && ov && typeof ov === "object") {
+                Object.assign(doc, ov);
+              }
             }
           }
         }
@@ -2779,6 +2787,19 @@ var DocumentRegistry = class {
       updatedAt: doc.updatedAt
     });
     return doc;
+  }
+  /**
+   * Delete document completely from registry and persist deleted status in localStorage
+   */
+  deleteDocument(docId) {
+    const doc = this.documents.get(docId);
+    if (!doc) return false;
+    if (doc.checksum) {
+      this.checksumIndex.delete(doc.checksum);
+    }
+    this.documents.delete(docId);
+    this.saveLocalStorageOverride(docId, { isDeleted: true });
+    return true;
   }
   /**
    * Update document chunks count
@@ -3419,6 +3440,25 @@ var PersistentRagStore = class {
     return updatedDoc;
   }
   /**
+   * Delete document permanently from local chunks, documentRegistry, and remote Supabase tables
+   */
+  async deleteDocument(docId) {
+    await this.ensureInitialized();
+    this.localChunks.delete(docId);
+    const removed = documentRegistry.deleteDocument(docId);
+    if (this.isSupabaseLive) {
+      try {
+        const admin = getSupabaseAdmin();
+        const client = admin || supabase;
+        await client.from("rag_document_chunks").delete().eq("document_id", docId);
+        await client.from("rag_documents").delete().eq("document_id", docId);
+      } catch (err) {
+        console.warn("[PersistentRagStore] Supabase delete error:", err);
+      }
+    }
+    return removed;
+  }
+  /**
    * Get all approved chunks for retrieval indexing
    */
   async getAllApprovedChunks() {
@@ -3984,12 +4024,50 @@ async function handlePatchDocumentRoute(docId, body, authHeader, roleHeader) {
     };
   }
 }
+async function handleDeleteDocumentRoute(docId, authHeader, roleHeader) {
+  const auth = await validateAdminAuth(authHeader, roleHeader, "admin");
+  if (!auth.authorized) {
+    return {
+      success: false,
+      statusCode: auth.statusCode || 403,
+      error: auth.error
+    };
+  }
+  try {
+    const existingDoc = await persistentRagStore.getDocumentById(docId);
+    if (!existingDoc) {
+      return {
+        success: false,
+        statusCode: 404,
+        error: `Kh\xF4ng t\xECm th\u1EA5y t\xE0i li\u1EC7u v\u1EDBi ID "${docId}".`
+      };
+    }
+    await persistentRagStore.deleteDocument(docId);
+    const allApprovedChunks = await persistentRagStore.getAllApprovedChunks();
+    ragRuntime.reindex(allApprovedChunks);
+    return {
+      success: true,
+      statusCode: 200,
+      data: {
+        documentId: docId,
+        message: `\u0110\xE3 x\xF3a ho\xE0n to\xE0n t\xE0i li\u1EC7u "${existingDoc.title}" kh\u1ECFi kho RAG.`,
+        totalActiveChunks: allApprovedChunks.length
+      }
+    };
+  } catch (err) {
+    return {
+      success: false,
+      statusCode: 500,
+      error: `L\u1ED7i x\xF3a t\xE0i li\u1EC7u: ${err?.message || "L\u1ED7i kh\xF4ng x\xE1c \u0111\u1ECBnh"}`
+    };
+  }
+}
 var FEEDBACK_RATE_LIMIT_WINDOW_MS = 60 * 1e3;
 
 // api/rag/documents/[id].ts
 async function handler(req, res) {
   res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader("Access-Control-Allow-Methods", "GET, PATCH, OPTIONS");
+  res.setHeader("Access-Control-Allow-Methods", "GET, PATCH, DELETE, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization, X-User-Role");
   if (req.method === "OPTIONS") {
     return res.status(204).end();
@@ -4009,6 +4087,12 @@ async function handler(req, res) {
     const authHeader = req.headers.authorization;
     const roleHeader = req.headers["x-user-role"];
     const result = await handlePatchDocumentRoute(docId, req.body, authHeader, roleHeader);
+    return res.status(result.statusCode).json(result);
+  }
+  if (req.method === "DELETE") {
+    const authHeader = req.headers.authorization;
+    const roleHeader = req.headers["x-user-role"];
+    const result = await handleDeleteDocumentRoute(docId, authHeader, roleHeader);
     return res.status(result.statusCode).json(result);
   }
   return res.status(405).json({ success: false, error: "Method Not Allowed" });

@@ -2587,9 +2587,17 @@ var DocumentRegistry = class {
         if (raw) {
           const overrides = JSON.parse(raw);
           for (const [id, ov] of Object.entries(overrides)) {
-            const doc = this.documents.get(id);
-            if (doc && ov && typeof ov === "object") {
-              Object.assign(doc, ov);
+            if (ov?.isDeleted) {
+              const doc = this.documents.get(id);
+              if (doc && doc.checksum) {
+                this.checksumIndex.delete(doc.checksum);
+              }
+              this.documents.delete(id);
+            } else {
+              const doc = this.documents.get(id);
+              if (doc && ov && typeof ov === "object") {
+                Object.assign(doc, ov);
+              }
             }
           }
         }
@@ -2779,6 +2787,19 @@ var DocumentRegistry = class {
       updatedAt: doc.updatedAt
     });
     return doc;
+  }
+  /**
+   * Delete document completely from registry and persist deleted status in localStorage
+   */
+  deleteDocument(docId) {
+    const doc = this.documents.get(docId);
+    if (!doc) return false;
+    if (doc.checksum) {
+      this.checksumIndex.delete(doc.checksum);
+    }
+    this.documents.delete(docId);
+    this.saveLocalStorageOverride(docId, { isDeleted: true });
+    return true;
   }
   /**
    * Update document chunks count
@@ -3419,6 +3440,25 @@ var PersistentRagStore = class {
     return updatedDoc;
   }
   /**
+   * Delete document permanently from local chunks, documentRegistry, and remote Supabase tables
+   */
+  async deleteDocument(docId) {
+    await this.ensureInitialized();
+    this.localChunks.delete(docId);
+    const removed = documentRegistry.deleteDocument(docId);
+    if (this.isSupabaseLive) {
+      try {
+        const admin = getSupabaseAdmin();
+        const client = admin || supabase;
+        await client.from("rag_document_chunks").delete().eq("document_id", docId);
+        await client.from("rag_documents").delete().eq("document_id", docId);
+      } catch (err) {
+        console.warn("[PersistentRagStore] Supabase delete error:", err);
+      }
+    }
+    return removed;
+  }
+  /**
    * Get all approved chunks for retrieval indexing
    */
   async getAllApprovedChunks() {
@@ -3926,11 +3966,11 @@ async function handleApproveDocumentRoute(docId, body, authHeader, roleHeader) {
   }
   try {
     const action = body?.action;
-    if (action !== "approve" && action !== "reject") {
+    if (action !== "approve" && action !== "reject" && action !== "archive") {
       return {
         success: false,
         statusCode: 400,
-        error: 'Tham s\u1ED1 "action" ph\u1EA3i l\xE0 "approve" ho\u1EB7c "reject".'
+        error: 'Tham s\u1ED1 "action" ph\u1EA3i l\xE0 "approve", "reject" ho\u1EB7c "archive".'
       };
     }
     const existingDoc = await persistentRagStore.getDocumentById(docId);
@@ -3948,7 +3988,7 @@ async function handleApproveDocumentRoute(docId, body, authHeader, roleHeader) {
         error: `Vi ph\u1EA1m nguy\xEAn t\u1EAFc Ph\xEA duy\u1EC7t 4 m\u1EAFt (Four-Eyes Principle): Ng\u01B0\u1EDDi t\u1EA3i t\xE0i li\u1EC7u (${existingDoc.uploadedByName || existingDoc.uploadedBy}) kh\xF4ng \u0111\u01B0\u1EE3c t\u1EF1 ph\xEA duy\u1EC7t t\xE0i li\u1EC7u do ch\xEDnh m\xECnh t\u1EA3i l\xEAn!`
       };
     }
-    const newStatus = action === "approve" ? "APPROVED" : "REJECTED";
+    const newStatus = action === "approve" ? "APPROVED" : action === "reject" ? "REJECTED" : "ARCHIVED";
     const updatedDoc = await persistentRagStore.updateDocumentStatus(
       docId,
       newStatus,

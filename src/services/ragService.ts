@@ -330,6 +330,106 @@ export class RagService {
   }
 
   /**
+   * Revoke / Archive document (Immediately de-indexes from active RAG retrieval)
+   */
+  public static async archiveDocument(
+    docId: string,
+    userRole?: string,
+    reason?: string
+  ): Promise<{
+    success: boolean;
+    document?: RealKnowledgeDocument;
+    error?: string;
+  }> {
+    try {
+      const headers = await this.getHeaders(userRole);
+      const response = await fetch(`${this.apiBase}/documents/${encodeURIComponent(docId)}/approve`, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({ action: 'archive', reason })
+      });
+
+      if (response.ok) {
+        const json = await response.json();
+        if (json.success && json.data) {
+          await persistentRagStore.ensureInitialized();
+          await persistentRagStore.updateDocumentStatus(
+            docId,
+            'ARCHIVED',
+            userRole === 'super_admin' ? 'Quản Trị Viên Tối Cao' : 'Cán Bộ Quản Trị',
+            reason
+          );
+          const allApprovedChunks = await persistentRagStore.getAllApprovedChunks();
+          ragRuntime.reindex(allApprovedChunks);
+          return {
+            success: true,
+            document: json.data.document
+          };
+        }
+      }
+    } catch (err: any) {
+      console.warn('[RagService] Archive API error, falling back to local persistent store:', err);
+    }
+
+    try {
+      await persistentRagStore.ensureInitialized();
+      const updated = await persistentRagStore.updateDocumentStatus(
+        docId,
+        'ARCHIVED',
+        userRole === 'super_admin' ? 'Quản Trị Viên Tối Cao' : 'Cán Bộ Quản Trị',
+        reason
+      );
+      const allApprovedChunks = await persistentRagStore.getAllApprovedChunks();
+      ragRuntime.reindex(allApprovedChunks);
+      return { success: true, document: updated };
+    } catch (e: any) {
+      return { success: false, error: e?.message || 'Lỗi thu hồi tài liệu' };
+    }
+  }
+
+  /**
+   * Delete document permanently from RAG knowledge base
+   */
+  public static async deleteDocument(
+    docId: string,
+    userRole?: string
+  ): Promise<{
+    success: boolean;
+    error?: string;
+  }> {
+    try {
+      const headers = await this.getHeaders(userRole);
+      const response = await fetch(`${this.apiBase}/documents/${encodeURIComponent(docId)}`, {
+        method: 'DELETE',
+        headers
+      });
+
+      if (response.ok) {
+        const json = await response.json();
+        if (json.success) {
+          await persistentRagStore.ensureInitialized();
+          await persistentRagStore.deleteDocument(docId);
+          const allApprovedChunks = await persistentRagStore.getAllApprovedChunks();
+          ragRuntime.reindex(allApprovedChunks);
+          return { success: true };
+        }
+      }
+    } catch (err: any) {
+      console.warn('[RagService] Delete document API error, deleting locally:', err);
+    }
+
+    try {
+      await persistentRagStore.ensureInitialized();
+      await persistentRagStore.deleteDocument(docId);
+      const allApprovedChunks = await persistentRagStore.getAllApprovedChunks();
+      ragRuntime.reindex(allApprovedChunks);
+      return { success: true };
+    } catch (e: any) {
+      return { success: false, error: e?.message || 'Lỗi xóa tài liệu' };
+    }
+  }
+
+  /**
    * Reprocess existing document chunks
    */
   public static async reprocessDocument(

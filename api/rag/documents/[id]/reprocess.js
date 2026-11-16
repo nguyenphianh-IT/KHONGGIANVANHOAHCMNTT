@@ -2587,9 +2587,17 @@ var DocumentRegistry = class {
         if (raw) {
           const overrides = JSON.parse(raw);
           for (const [id, ov] of Object.entries(overrides)) {
-            const doc = this.documents.get(id);
-            if (doc && ov && typeof ov === "object") {
-              Object.assign(doc, ov);
+            if (ov?.isDeleted) {
+              const doc = this.documents.get(id);
+              if (doc && doc.checksum) {
+                this.checksumIndex.delete(doc.checksum);
+              }
+              this.documents.delete(id);
+            } else {
+              const doc = this.documents.get(id);
+              if (doc && ov && typeof ov === "object") {
+                Object.assign(doc, ov);
+              }
             }
           }
         }
@@ -2779,6 +2787,19 @@ var DocumentRegistry = class {
       updatedAt: doc.updatedAt
     });
     return doc;
+  }
+  /**
+   * Delete document completely from registry and persist deleted status in localStorage
+   */
+  deleteDocument(docId) {
+    const doc = this.documents.get(docId);
+    if (!doc) return false;
+    if (doc.checksum) {
+      this.checksumIndex.delete(doc.checksum);
+    }
+    this.documents.delete(docId);
+    this.saveLocalStorageOverride(docId, { isDeleted: true });
+    return true;
   }
   /**
    * Update document chunks count
@@ -3417,6 +3438,25 @@ var PersistentRagStore = class {
       }
     }
     return updatedDoc;
+  }
+  /**
+   * Delete document permanently from local chunks, documentRegistry, and remote Supabase tables
+   */
+  async deleteDocument(docId) {
+    await this.ensureInitialized();
+    this.localChunks.delete(docId);
+    const removed = documentRegistry.deleteDocument(docId);
+    if (this.isSupabaseLive) {
+      try {
+        const admin = getSupabaseAdmin();
+        const client = admin || supabase;
+        await client.from("rag_document_chunks").delete().eq("document_id", docId);
+        await client.from("rag_documents").delete().eq("document_id", docId);
+      } catch (err) {
+        console.warn("[PersistentRagStore] Supabase delete error:", err);
+      }
+    }
+    return removed;
   }
   /**
    * Get all approved chunks for retrieval indexing

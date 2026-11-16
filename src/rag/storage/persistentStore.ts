@@ -421,6 +421,28 @@ export class PersistentRagStore {
   }
 
   /**
+   * Delete document permanently from local chunks, documentRegistry, and remote Supabase tables
+   */
+  public async deleteDocument(docId: string): Promise<boolean> {
+    await this.ensureInitialized();
+    this.localChunks.delete(docId);
+    const removed = documentRegistry.deleteDocument(docId);
+
+    if (this.isSupabaseLive) {
+      try {
+        const admin = getSupabaseAdmin();
+        const client = admin || supabase;
+        await client.from('rag_document_chunks').delete().eq('document_id', docId);
+        await client.from('rag_documents').delete().eq('document_id', docId);
+      } catch (err) {
+        console.warn('[PersistentRagStore] Supabase delete error:', err);
+      }
+    }
+
+    return removed;
+  }
+
+  /**
    * Get all approved chunks for retrieval indexing
    */
   public async getAllApprovedChunks(): Promise<DocumentChunk[]> {
