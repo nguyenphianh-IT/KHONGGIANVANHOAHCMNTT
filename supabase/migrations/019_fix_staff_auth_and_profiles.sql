@@ -3,8 +3,7 @@
 -- MỤC ĐÍCH: 
 -- 1. Sửa lỗi "Database error querying schema / Database error finding user" trong Supabase GoTrue
 --    khi đăng nhập tài khoản giáo viên/cán bộ.
---    Nguyên nhân gốc rễ: Trong Supabase hiện đại, auth.identities bắt buộc cột `provider_id` (NOT NULL).
---    Hàm SQL cũ thiếu cột `provider_id` dẫn đến auth.identities bị rỗng và GoTrue gặp lỗi 500.
+--    Nguyên nhân: Bảng auth.identities bắt buộc cột `id` kiểu UUID và `provider_id` kiểu TEXT.
 -- 2. Khắc phục triệt để và tự phục hồi dữ liệu (Self-Healing) cho các tài khoản hiện có
 --    (npanh7@gmail.com, test_teacher_..., teacher_demo_...) bằng cách tạo bản ghi auth.identities hợp lệ.
 -- 3. Cập nhật trigger enforce_profile_immutability() và check_role_assignment_hierarchy()
@@ -80,6 +79,7 @@ $$;
 -- ------------------------------------------------------------------------------
 
 -- 1. Bổ sung bản ghi auth.identities cho TẤT CẢ người dùng trong auth.users đang bị thiếu
+-- Lưu ý: Cột id là UUID (= u.id), cột provider_id là TEXT (= u.id::text)
 INSERT INTO auth.identities (
     id,
     user_id,
@@ -91,8 +91,8 @@ INSERT INTO auth.identities (
     updated_at
 )
 SELECT 
-    u.id::text,
-    u.id,
+    u.id, -- UUID
+    u.id, -- UUID
     jsonb_build_object(
         'sub', u.id::text,
         'email', lower(u.email),
@@ -100,14 +100,15 @@ SELECT
         'phone_verified', false
     ),
     'email',
-    u.id::text,
+    u.id::text, -- TEXT
     now(),
     now(),
     now()
 FROM auth.users u
 WHERE NOT EXISTS (
     SELECT 1 FROM auth.identities i WHERE i.user_id = u.id AND i.provider = 'email'
-);
+)
+ON CONFLICT DO NOTHING;
 
 -- 2. Đảm bảo xác thực email (email_confirmed_at) cho tất cả tài khoản cán bộ
 UPDATE auth.users
@@ -241,7 +242,8 @@ BEGIN
         );
     END IF;
 
-    -- 3. Tạo hoặc cập nhật bản ghi trong auth.identities kèm provider_id bắt buộc
+    -- 3. Tạo hoặc cập nhật bản ghi trong auth.identities
+    -- Cột id là UUID (v_user_id), cột provider_id là TEXT (v_user_id::text)
     BEGIN
         INSERT INTO auth.identities (
             id,
@@ -253,7 +255,7 @@ BEGIN
             created_at,
             updated_at
         ) VALUES (
-            v_user_id::text,
+            v_user_id,
             v_user_id,
             jsonb_build_object(
                 'sub', v_user_id::text,
@@ -382,7 +384,7 @@ BEGIN
             created_at,
             updated_at
         ) VALUES (
-            p_user_id::text,
+            p_user_id,
             p_user_id,
             jsonb_build_object(
                 'sub', p_user_id::text,
@@ -395,10 +397,18 @@ BEGIN
             now(),
             now(),
             now()
-        ) ON CONFLICT (provider, provider_id) DO UPDATE SET
-            identity_data = EXCLUDED.identity_data,
-            updated_at = now();
-    EXCEPTION WHEN OTHERS THEN
+        );
+    EXCEPTION WHEN unique_violation THEN
+        UPDATE auth.identities
+        SET identity_data = jsonb_build_object(
+                'sub', p_user_id::text,
+                'email', lower(v_user.email),
+                'email_verified', true,
+                'phone_verified', false
+            ),
+            updated_at = now()
+        WHERE user_id = p_user_id AND provider = 'email';
+    WHEN OTHERS THEN
         NULL;
     END;
 
