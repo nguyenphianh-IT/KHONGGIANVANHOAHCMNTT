@@ -384,7 +384,7 @@ export const PasswordManager: React.FC = () => {
     try {
       if (isSupabaseConfigured) {
         // 1. Ưu tiên gọi hàm PostgreSQL SECURITY DEFINER admin_create_staff_user
-        // Hàm này tạo trực tiếp tài khoản trong auth.users với crypt(bf), confirmed_at=now, profiles và user_roles
+        // Hàm này tạo trực tiếp tài khoản trong auth.users với crypt(bf), confirmed_at=now, auth.identities, profiles và user_roles
         let rpcSuccess = false;
         try {
           const { data: rpcData, error: rpcErr } = await supabase.rpc('admin_create_staff_user', {
@@ -400,13 +400,13 @@ export const PasswordManager: React.FC = () => {
             rpcSuccess = true;
             console.log('[PasswordManager] Tạo tài khoản cán bộ thành công qua RPC:', rpcData);
           } else if (rpcErr) {
-            console.warn('[PasswordManager] RPC admin_create_staff_user báo lỗi, chuyển sang cơ chế Client SignUp:', rpcErr.message);
+            console.warn('[PasswordManager] RPC admin_create_staff_user báo lỗi, thử Client SignUp:', rpcErr.message);
           }
-        } catch (rpcEx) {
-          console.warn('[PasswordManager] Ngoại lệ khi gọi RPC admin_create_staff_user:', rpcEx);
+        } catch (rpcEx: any) {
+          console.warn('[PasswordManager] Ngoại lệ khi gọi RPC admin_create_staff_user:', rpcEx?.message);
         }
 
-        // 2. Dự phòng: Nếu RPC chưa sẵn sàng, sử dụng Client cô lập (persistSession: false) để đăng ký vào auth.users
+        // 2. Dự phòng: Nếu RPC chưa sẵn sàng hoặc gặp lỗi tạm thời, sử dụng Client cô lập để đăng ký vào auth.users
         if (!rpcSuccess) {
           const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
           const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
@@ -499,6 +499,11 @@ export const PasswordManager: React.FC = () => {
 
       setActionSuccessMsg(`Đã tạo thành công tài khoản cán bộ: ${newStaffItem.full_name} trên Database Cloud! Mật khẩu khởi tạo: ${addPassword}`);
       setIsAddModalOpen(false);
+
+      // Tự động tải lại danh sách mới nhất từ Database Cloud
+      setTimeout(() => {
+        loadStaffList();
+      }, 500);
     } catch (err: any) {
       setActionErrorMsg(err.message || 'Thêm cán bộ thất bại.');
     } finally {
@@ -672,6 +677,9 @@ export const PasswordManager: React.FC = () => {
       setActionSuccessMsg(`Đã xóa tài khoản cán bộ ${deletingStaff.full_name} thành công!`);
       setIsDeleteModalOpen(false);
       setDeletingStaff(null);
+      setTimeout(() => {
+        loadStaffList();
+      }, 500);
     } catch (err: any) {
       setActionErrorMsg(err.message || 'Xóa tài khoản thất bại.');
     } finally {
@@ -752,6 +760,9 @@ export const PasswordManager: React.FC = () => {
       setActionSuccessMsg(`Đã cấp mật khẩu mới thành công cho ${targetStaff.full_name}! Mật khẩu mới: ${manualNewPass}`);
       setTargetStaff(null);
       setManualNewPass('');
+      setTimeout(() => {
+        loadStaffList();
+      }, 500);
     } catch (err: any) {
       setActionErrorMsg(err.message || 'Thao tác không thành công.');
     } finally {
