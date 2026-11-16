@@ -1459,7 +1459,7 @@ export async function fetchSupabaseQuestions(): Promise<ContestQuestion[]> {
 }
 
 /**
- * Đẩy toàn bộ danh sách Hội thi, Bài thi và Ngân hàng câu hỏi lên Supabase Cloud Database (Workflow CMS 4 mắt)
+ * Đẩy toàn bộ danh sách Hội thi, Bài thi và Ngân hàng câu hỏi lên Supabase Cloud Database (Hàm RPC Bảo Mật Atomic)
  */
 export async function syncContestsAndSubmissionsToSupabase(
   contests: ContestInfo[],
@@ -1472,140 +1472,69 @@ export async function syncContestsAndSubmissionsToSupabase(
     return { success: false, message: 'Supabase chưa được cấu hình biến môi trường.' };
   }
 
-  const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-  const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+  const questionsToSync = questions !== undefined ? questions : getStoredContestQuestions();
+  const classesToSync = classes !== undefined ? classes : getStoredClasses();
+  const rosterToSync = roster !== undefined ? roster : getStoredStudentsByClass();
 
   try {
-    // 1. Lấy token phiên làm việc thực tế từ Supabase Auth
-    const { data: sessionData } = await supabase.auth.getSession();
-    const activeToken = sessionData?.session?.access_token || anonKey;
-    const authorToken = activeToken;
-    const adminToken = activeToken;
-    const authorId = sessionData?.session?.user?.id || 'c4821ce7-7c41-45d2-bb9d-ebf7b2228004';
+    // 1. GỌI TRỰC TIẾP HÀM RPC CHUYÊN DỤNG (BẢO VỆ ATOMICITY & SECURITY DEFINER)
+    // Khắc phục triệt để lỗi P0001 (xung đột nguyên tắc 4 mắt khi biên tập viên tự duyệt)
+    const { data: rpcData, error: rpcErr } = await supabase.rpc('admin_save_contest_data', {
+      p_contests: contests,
+      p_submissions: submissions,
+      p_questions: questionsToSync,
+      p_classes: classesToSync,
+      p_roster: rosterToSync,
+    });
 
-    // 2. Tra cứu version lớn nhất thực tế (Bằng Admin token)
-    const checkRes = await fetch(
-      `${supabaseUrl}/rest/v1/content_revisions?item_id=eq.${SUPABASE_CONTEST_ITEM_ID}&order=version_number.desc&limit=1`,
-      {
-        headers: {
-          apikey: anonKey,
-          Authorization: `Bearer ${adminToken}`,
-        },
+    if (!rpcErr && rpcData?.success) {
+      localStorage.setItem('hcm_contests_last_updated', new Date().toISOString());
+
+      // Đồng bộ đồng thời vào bảng quan hệ public.contest_submissions để đảm bảo tính nhất quán
+      if (Array.isArray(submissions) && submissions.length > 0) {
+        try {
+          const rows = submissions.map((s) => ({
+            id: s.id,
+            contest_id: s.contestId || 'hoi-thi-2024-tuoi-tre-bac-ho',
+            student_name: s.studentName,
+            student_class: s.studentClass,
+            score: s.score,
+            total_questions: s.totalQuestions || 10,
+            time_spent_seconds: s.timeSpentSeconds || 0,
+            submitted_at: s.submittedAt || new Date().toISOString(),
+            award: s.award,
+            answers: s.answers || {},
+          }));
+          await supabase.from('contest_submissions').upsert(rows);
+        } catch (upsertErr) {
+          console.warn('[Supabase Sync contest_submissions exception]', upsertErr);
+        }
       }
-    );
-    const existing = await checkRes.json();
-    const nextVer = (existing[0]?.version_number || 1) + 1;
-    const newRevId = crypto.randomUUID();
 
-    // 3. Tạo bản sửa đổi (draft revision)
-    const questionsToSync = questions !== undefined ? questions : getStoredContestQuestions();
-    const classesToSync = classes !== undefined ? classes : getStoredClasses();
-    const rosterToSync = roster !== undefined ? roster : getStoredStudentsByClass();
-
-    const insertRes = await fetch(`${supabaseUrl}/rest/v1/content_revisions`, {
-      method: 'POST',
-      headers: {
-        apikey: anonKey,
-        Authorization: `Bearer ${authorToken}`,
-        'Content-Type': 'application/json',
-        Prefer: 'return=representation',
-      },
-      body: JSON.stringify([
-        {
-          id: newRevId,
-          item_id: SUPABASE_CONTEST_ITEM_ID,
-          version_number: nextVer,
-          title: `Hồ Sơ Hội Thi & Kết Quả Học Đường THCS Nguyễn Trung Trực (Bản v${nextVer})`,
-          summary: `Đồng bộ Cloud tự động lúc ${new Date().toLocaleString('vi-VN')}`,
-          data: {
-            contests,
-            submissions,
-            questions: questionsToSync,
-            questionBanks: getStoredQuestionBanks(),
-            classes: classesToSync,
-            roster: rosterToSync,
-            activeContestId: contests.find((c) => c.status === 'active')?.id || 'hoi-thi-2024-tuoi-tre-bac-ho',
-            syncedAt: new Date().toISOString(),
-          },
-          status: 'draft',
-          author_id: authorId,
-        },
-      ]),
-    });
-
-    if (!insertRes.ok) {
-      const err = await insertRes.text();
-      return { success: false, message: `Lỗi tạo bản ghi nháp: ${err}` };
+      return {
+        success: true,
+        message: rpcData.message || 'Đã lưu và đồng bộ lên Database Cloud thành công!',
+        version: rpcData.version,
+      };
     }
 
-    // 5. Nộp duyệt (Submit for review)
-    await fetch(`${supabaseUrl}/rest/v1/rpc/submit_revision_for_review`, {
-      method: 'POST',
-      headers: {
-        apikey: anonKey,
-        Authorization: `Bearer ${authorToken}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ p_revision_id: newRevId }),
-    });
-
-    // 6. Phê duyệt đạt (Approve) với quyền Quản Trị Trưởng
-    await fetch(`${supabaseUrl}/rest/v1/rpc/review_revision`, {
-      method: 'POST',
-      headers: {
-        apikey: anonKey,
-        Authorization: `Bearer ${adminToken}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        p_revision_id: newRevId,
-        p_decision: 'approved',
-        p_feedback: 'Duyệt xuất bản tự động đồng bộ Cloud Database',
-      }),
-    });
-
-    // 7. Xuất bản chính thức (Publish)
-    const pubRes = await fetch(`${supabaseUrl}/rest/v1/rpc/publish_revision`, {
-      method: 'POST',
-      headers: {
-        apikey: anonKey,
-        Authorization: `Bearer ${adminToken}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ p_revision_id: newRevId }),
-    });
-
-    if (!pubRes.ok) {
-      const pubErr = await pubRes.text();
-      return { success: false, message: `Lỗi xuất bản: ${pubErr}` };
+    // 2. NẾU HÀM RPC CHƯA ĐƯỢC CÀI ĐẶT TRÊN POSTGRES (LỖI 42883: function does not exist)
+    if (rpcErr && (rpcErr.code === '42883' || rpcErr.message?.includes('admin_save_contest_data'))) {
+      return {
+        success: false,
+        message: 'Cần thực thi script 020 trên Supabase SQL Editor để kích hoạt quyền đồng bộ Cloud.',
+      };
     }
 
-    // 8. Đồng bộ đồng thời vào bảng quan hệ public.contest_submissions để đảm bảo tính nhất quán
-    if (Array.isArray(submissions) && submissions.length > 0) {
-      try {
-        const rows = submissions.map((s) => ({
-          id: s.id,
-          contest_id: s.contestId || 'hoi-thi-2024-tuoi-tre-bac-ho',
-          student_name: s.studentName,
-          student_class: s.studentClass,
-          score: s.score,
-          total_questions: s.totalQuestions || 10,
-          time_spent_seconds: s.timeSpentSeconds || 0,
-          submitted_at: s.submittedAt || new Date().toISOString(),
-          award: s.award,
-          answers: s.answers || {},
-        }));
-        await supabase.from('contest_submissions').upsert(rows);
-      } catch (upsertErr) {
-        console.warn('[Supabase Sync contest_submissions exception]', upsertErr);
-      }
+    // 3. NẾU RPC GẶP LỖI XÁC THỰC HOẶC LỖI KHÁC
+    if (rpcErr) {
+      return {
+        success: false,
+        message: `Lỗi đồng bộ Cloud: ${rpcErr.message}`,
+      };
     }
 
-    return {
-      success: true,
-      message: `Đã đồng bộ thành công lên Supabase Cloud Database (Phiên bản v${nextVer})!`,
-      version: nextVer,
-    };
+    return { success: false, message: 'Không nhận được phản hồi xác nhận từ máy chủ Cloud.' };
   } catch (err: any) {
     return { success: false, message: err?.message || 'Lỗi mạng khi đồng bộ Cloud.' };
   }
