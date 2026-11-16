@@ -1327,8 +1327,8 @@ Y\xCAU C\u1EA6U \u0110\u1ED0I V\u1EDAI C\xC1C TR\u01AF\u1EDCNG THCS:
     categoryLabel: "Ch\u1EE7 t\u1ECBch H\u1ED3 Ch\xED Minh \u2013 Ti\u1EC3u s\u1EED v\xE0 s\u1EF1 nghi\u1EC7p",
     authorOrSource: "Vi\u1EC7n L\u1ECBch s\u1EED \u0110\u1EA3ng - H\u1ECDc vi\u1EC7n Ch\xEDnh tr\u1ECB Qu\u1ED1c gia H\u1ED3 Ch\xED Minh (NXB S\u1EF1 th\u1EADt)",
     dateOrEra: "1890 - 1929",
-    status: "PENDING_REVIEW",
-    isAllowedForRag: false,
+    status: "APPROVED",
+    isAllowedForRag: true,
     topics: ["Bi\xEAn ni\xEAn ti\u1EC3u s\u1EED", "Nguy\u1EC5n Sinh Cung", "Nguy\u1EC5n T\u1EA5t Th\xE0nh", "Nguy\u1EC5n \xC1i Qu\u1ED1c", "B\u1EBFn Nh\xE0 R\u1ED3ng", "\u0110\u1EA1i h\u1ED9i Tours", "H\u1ED9i VN C\xE1ch m\u1EA1ng Thanh ni\xEAn"],
     sourceUrl: "https://hochiminh.vn/book/cuoc-doi-su-nghiep/bien-nien-tieu-su-ho-chi-minh/ho-chi-minh-bien-nien-tieu-su-tap-1-19-5-1890-1929-21",
     content: `H\u1ED3 s\u01A1 th\u01B0 m\u1EE5c v\xE0 tr\xEDch y\u1EBFu m\u1ED1c ni\xEAn bi\u1EC3u l\u1ECBch s\u1EED giai \u0111o\u1EA1n 1890 - 1929:
@@ -1352,8 +1352,8 @@ Y\xCAU C\u1EA6U \u0110\u1ED0I V\u1EDAI C\xC1C TR\u01AF\u1EDCNG THCS:
     categoryLabel: "Ch\u1EE7 t\u1ECBch H\u1ED3 Ch\xED Minh \u2013 Ti\u1EC3u s\u1EED v\xE0 s\u1EF1 nghi\u1EC7p",
     authorOrSource: "Vi\u1EC7n L\u1ECBch s\u1EED \u0110\u1EA3ng - H\u1ECDc vi\u1EC7n Ch\xEDnh tr\u1ECB Qu\u1ED1c gia H\u1ED3 Ch\xED Minh (NXB S\u1EF1 th\u1EADt)",
     dateOrEra: "1930 - 9/1945",
-    status: "PENDING_REVIEW",
-    isAllowedForRag: false,
+    status: "APPROVED",
+    isAllowedForRag: true,
     topics: ["Bi\xEAn ni\xEAn ti\u1EC3u s\u1EED", "Th\xE0nh l\u1EADp \u0110\u1EA3ng", "H\u1ED9i ngh\u1ECB Trung \u01B0\u01A1ng 8", "P\xE1c B\xF3 1941", "M\u1EB7t tr\u1EADn Vi\u1EC7t Minh", "C\xE1ch m\u1EA1ng Th\xE1ng T\xE1m", "Tuy\xEAn ng\xF4n \u0110\u1ED9c l\u1EADp"],
     sourceUrl: "https://hochiminh.vn/book/cuoc-doi-su-nghiep/bien-nien-tieu-su-ho-chi-minh/ho-chi-minh-bien-nien-tieu-su-tap-2-1930-9-1945-22",
     content: `H\u1ED3 s\u01A1 th\u01B0 m\u1EE5c v\xE0 tr\xEDch y\u1EBFu m\u1ED1c ni\xEAn bi\u1EC3u l\u1ECBch s\u1EED giai \u0111o\u1EA1n 1930 - th\xE1ng 9/1945:
@@ -1378,8 +1378,8 @@ Y\xCAU C\u1EA6U \u0110\u1ED0I V\u1EDAI C\xC1C TR\u01AF\u1EDCNG THCS:
     categoryLabel: "T\u01B0 t\u01B0\u1EDFng, \u0111\u1EA1o \u0111\u1EE9c, phong c\xE1ch H\u1ED3 Ch\xED Minh",
     authorOrSource: "L\xE3nh t\u1EE5 Nguy\u1EC5n \xC1i Qu\u1ED1c (B\u1EA3o v\u1EADt Qu\u1ED1c gia s\u1ED1 1)",
     dateOrEra: "1927",
-    status: "PENDING_REVIEW",
-    isAllowedForRag: false,
+    status: "APPROVED",
+    isAllowedForRag: true,
     topics: ["\u0110\u01B0\u1EDDng K\xE1ch m\u1EC7nh", "T\u01B0 c\xE1ch ng\u01B0\u1EDDi c\xE1ch m\u1EC7nh", "Qu\u1EA3ng Ch\xE2u", "L\xFD lu\u1EADn v\xE0 th\u1EF1c ti\u1EC5n", "\u0110o\xE0n k\u1EBFt", "B\u1EA3o v\u1EADt Qu\u1ED1c gia"],
     sourceUrl: "https://hochiminh.vn/tac-pham-cua-ho-chi-minh",
     content: `T\xE1c ph\u1EA9m \u0110\u01B0\u1EDDng K\xE1ch m\u1EC7nh xu\u1EA5t b\u1EA3n n\u0103m 1927 t\u1EA1i Qu\u1EA3ng Ch\xE2u, l\xE0 c\u1EA9m nang ch\xEDnh tr\u1ECB n\u1EC1n t\u1EA3ng chu\u1EA9n b\u1ECB cho vi\u1EC7c th\xE0nh l\u1EADp \u0110\u1EA3ng.
@@ -1401,8 +1401,8 @@ Y\xCAU C\u1EA6U \u0110\u1ED0I V\u1EDAI C\xC1C TR\u01AF\u1EDCNG THCS:
     categoryLabel: "T\u01B0 t\u01B0\u1EDFng, \u0111\u1EA1o \u0111\u1EE9c, phong c\xE1ch H\u1ED3 Ch\xED Minh",
     authorOrSource: "\u0110\u1ED3ng ch\xED Nguy\u1EC5n \xC1i Qu\u1ED1c ch\u1EE7 tr\xEC H\u1ED9i ngh\u1ECB th\xE0nh l\u1EADp \u0110\u1EA3ng",
     dateOrEra: "03/02/1930",
-    status: "PENDING_REVIEW",
-    isAllowedForRag: false,
+    status: "APPROVED",
+    isAllowedForRag: true,
     topics: ["Ch\xE1nh c\u01B0\u01A1ng v\u1EAFn t\u1EAFt", "S\xE1ch l\u01B0\u1EE3c v\u1EAFn t\u1EAFt", "Ch\u01B0\u01A1ng tr\xECnh t\xF3m t\u1EAFt", "\u0110i\u1EC1u l\u1EC7 v\u1EAFn t\u1EAFt", "L\u1EDDi k\xEAu g\u1ECDi th\xE0nh l\u1EADp \u0110\u1EA3ng", "C\u1EEDu Long 1930", "C\u01B0\u01A1ng l\u0129nh ch\xEDnh tr\u1ECB \u0111\u1EA7u ti\xEAn"],
     sourceUrl: "https://tulieuvankien.dangcongsan.vn",
     content: `C\xE1c v\u0103n ki\u1EC7n th\xE0nh l\u1EADp \u0110\u1EA3ng \u0111\u01B0\u1EE3c H\u1ED9i ngh\u1ECB h\u1EE3p nh\u1EA5t th\xF4ng qua (t\u1EEB 06/01 \u0111\u1EBFn 07/02/1930 t\u1EA1i C\u1EEDu Long, H\u01B0\u01A1ng C\u1EA3ng, do \u0111\u1ED3ng ch\xED Nguy\u1EC5n \xC1i Qu\u1ED1c ch\u1EE7 tr\xEC):
@@ -1438,8 +1438,8 @@ L\u1EDDi k\xEAu g\u1ECDi l\u1ECBch s\u1EED c\u1EE7a Nguy\u1EC5n \xC1i Qu\u1ED1c 
     categoryLabel: "T\u01B0 t\u01B0\u1EDFng, \u0111\u1EA1o \u0111\u1EE9c, phong c\xE1ch H\u1ED3 Ch\xED Minh",
     authorOrSource: "Ch\u1EE7 t\u1ECBch H\u1ED3 Ch\xED Minh (B\xFAt danh L\xEA Quy\u1EBFt Th\u1EAFng - B\xE1o C\u1EE9u Qu\u1ED1c)",
     dateOrEra: "Th\xE1ng 5 - 6/1949",
-    status: "PENDING_REVIEW",
-    isAllowedForRag: false,
+    status: "APPROVED",
+    isAllowedForRag: true,
     topics: ["C\u1EA7n", "Ki\u1EC7m", "Li\xEAm", "Ch\xEDnh", "Ch\xED c\xF4ng v\xF4 t\u01B0", "L\xEA Quy\u1EBFt Th\u1EAFng", "\u0110\u1EA1o \u0111\u1EE9c c\xF4ng d\xE2n", "B\u1ED1n m\xF9a c\u1EE7a tr\u1EDDi", "B\xE1o C\u1EE9u Qu\u1ED1c 1949"],
     sourceUrl: "https://hochiminh.vn/upload/3000001/20251024/65e0340736cc411805ab4818604f62f1HO_CHI_MINH_TOAN_TAP_-_TAP_6.pdf",
     content: `B\u1ED9 b\u1ED1n b\xE0i vi\u1EBFt chuy\xEAn kh\u1EA3o v\u1EC1 \u0111\u1EA1o \u0111\u1EE9c m\u1EDBi c\u1EE7a Ch\u1EE7 t\u1ECBch H\u1ED3 Ch\xED Minh, k\xFD b\xFAt danh L\xEA Quy\u1EBFt Th\u1EAFng \u0111\u0103ng li\xEAn ti\u1EBFp tr\xEAn B\xE1o C\u1EE9u Qu\u1ED1c:
@@ -1478,8 +1478,8 @@ Thi\u1EBFu m\u1ED9t \u0111\u1EE9c, th\xEC kh\xF4ng th\xE0nh ng\u01B0\u1EDDi".`,
     categoryLabel: "Gi\xE1o d\u1EE5c truy\u1EC1n th\u1ED1ng & Thi \u0111ua \xE1i qu\u1ED1c h\u1ECDc \u0111\u01B0\u1EDDng",
     authorOrSource: "Ch\u1EE7 t\u1ECBch H\u1ED3 Ch\xED Minh (Vi\u1EBFt ng\xE0y 11/6/1948; \u0110\u0103ng B\xE1o C\u1EE9u Qu\u1ED1c s\u1ED1 968 ng\xE0y 24/6/1948)",
     dateOrEra: "11/06/1948 (\u0110\u0103ng b\xE1o: 24/06/1948)",
-    status: "PENDING_REVIEW",
-    isAllowedForRag: false,
+    status: "APPROVED",
+    isAllowedForRag: true,
     topics: ["Thi \u0111ua \xE1i qu\u1ED1c", "11/6/1948", "B\xE1o C\u1EE9u Qu\u1ED1c s\u1ED1 968", "Di\u1EC7t gi\u1EB7c \u0111\xF3i", "Di\u1EC7t gi\u1EB7c d\u1ED1t", "Di\u1EC7t gi\u1EB7c ngo\u1EA1i x\xE2m", "Ng\u01B0\u1EDDi ng\u01B0\u1EDDi thi \u0111ua", "Thi \u0111ua l\xE0 y\xEAu n\u01B0\u1EDBc"],
     sourceUrl: "https://hochiminh.vn",
     content: `L\u1EDDi k\xEAu g\u1ECDi thi \u0111ua \xE1i qu\u1ED1c c\u1EE7a Ch\u1EE7 t\u1ECBch H\u1ED3 Ch\xED Minh:
@@ -1507,8 +1507,8 @@ N\u1ED9i dung c\u1ED1t l\xF5i c\u1EE7a L\u1EDDi k\xEAu g\u1ECDi:
     categoryLabel: "T\u01B0 t\u01B0\u1EDFng, \u0111\u1EA1o \u0111\u1EE9c, phong c\xE1ch H\u1ED3 Ch\xED Minh",
     authorOrSource: "Ch\u1EE7 t\u1ECBch H\u1ED3 Ch\xED Minh (B\xFAt danh Tr\u1EA7n L\u1EF1c - T\u1EA1p ch\xED H\u1ECDc t\u1EADp s\u1ED1 12/1958)",
     dateOrEra: "Th\xE1ng 12/1958",
-    status: "PENDING_REVIEW",
-    isAllowedForRag: false,
+    status: "APPROVED",
+    isAllowedForRag: true,
     topics: ["\u0110\u1EA1o \u0111\u1EE9c c\xE1ch m\u1EA1ng", "Ch\u1ED1ng ch\u1EE7 ngh\u0129a c\xE1 nh\xE2n", "Tr\u1EA7n L\u1EF1c", "T\u1EA1p ch\xED H\u1ECDc t\u1EADp", "Ng\u1ECDc c\xE0ng m\xE0i c\xE0ng s\xE1ng", "\u0110\u1EB7t l\u1EE3i \xEDch nh\xE2n d\xE2n l\xEAn tr\xEAn h\u1EBFt"],
     sourceUrl: "https://hochiminh.vn/tac-pham-cua-ho-chi-minh/nang-cao-dao-duc-cach-mang-quet-sach-chu-nghia-ca-nhan-7748",
     content: `T\xE1c ph\u1EA9m \u0111\u0103ng tr\xEAn T\u1EA1p ch\xED H\u1ECDc t\u1EADp s\u1ED1 12/1958 d\u01B0\u1EDBi b\xFAt danh Tr\u1EA7n L\u1EF1c:
@@ -1614,8 +1614,8 @@ C\xE2u n\xF3i ch\xE2n th\xE0nh, m\u1ED9c m\u1EA1c c\u1EE7a Ng\u01B0\u1EDDi l\xE0
     categoryLabel: "L\u1ECBch s\u1EED Th\xE0nh ph\u1ED1 H\u1ED3 Ch\xED Minh",
     authorOrSource: "UBND Th\xE0nh ph\u1ED1 H\u1ED3 Ch\xED Minh & \u1EE6y ban Th\u01B0\u1EDDng v\u1EE5 Qu\u1ED1c h\u1ED9i",
     dateOrEra: "1997 - 2025 - Hi\u1EC7n h\xE0nh",
-    status: "PENDING_REVIEW",
-    isAllowedForRag: false,
+    status: "APPROVED",
+    isAllowedForRag: true,
     topics: ["\u0110\u1ECBa gi\u1EDBi h\xE0nh ch\xEDnh", "Ph\u01B0\u1EDDng Th\u1EDBi An", "Ph\u01B0\u1EDDng Th\u1EA1nh Xu\xE2n", "Qu\u1EADn 12", "Ngh\u1ECB quy\u1EBFt 1685", "Quy\u1EBFt \u0111\u1ECBnh 1195", "S\u1EAFp x\u1EBFp \u0110VHC 2025"],
     sourceUrl: "https://xaydungchinhsach.chinhphu.vn/toan-van-nghi-quyet-so-1685-nq-ubtvqh15-sap-xep-cac-dvhc-cap-xa-cua-thanh-pho-ho-chi-minh-nam-2025-119250616211341304.htm",
     content: `\u0110\u1ECBa gi\u1EDBi h\xE0nh ch\xEDnh ph\u01B0\u1EDDng Th\u1EDBi An qua c\xE1c th\u1EDDi k\u1EF3 (1997 \u2013 2025 v\xE0 hi\u1EC7n h\xE0nh):
@@ -1657,8 +1657,8 @@ Theo Quy\u1EBFt \u0111\u1ECBnh s\u1ED1 1195/Q\u0110-UB-NC ng\xE0y 18/03/1997 c\u
     categoryLabel: "Ho\u1EA1t \u0111\u1ED9ng gi\xE1o d\u1EE5c v\xE0 h\u1ECDc t\u1EADp t\u1EA1i nh\xE0 tr\u01B0\u1EDDng",
     authorOrSource: "Tr\u01B0\u1EDDng THCS Nguy\u1EC5n Trung Tr\u1EF1c & UBND Ph\u01B0\u1EDDng Th\u1EDBi An",
     dateOrEra: "2014 - Hi\u1EC7n nay",
-    status: "PENDING_REVIEW",
-    isAllowedForRag: false,
+    status: "APPROVED",
+    isAllowedForRag: true,
     topics: ["Tr\u01B0\u1EDDng THCS Nguy\u1EC5n Trung Tr\u1EF1c", "Th\xE0nh l\u1EADp n\u0103m 2014", "Quy\u1EBFt \u0111\u1ECBnh 155", "Quy\u1EBFt \u0111\u1ECBnh 76", "K\u1EBF ho\u1EA1ch 01/KH-NTT", "Kh\xF4ng gian V\u0103n h\xF3a HCM", "Tr\u01B0\u1EDDng h\u1ECDc H\u1EA1nh ph\xFAc"],
     sourceUrl: "https://thcsnguyentrungtruc.hcm.edu.vn/gioi-thieu/gioi-thieu-truong-thcs-nguyen-trung-truc/ct/12684/691487",
     content: `L\u1ECBch s\u1EED h\xECnh th\xE0nh v\xE0 ph\xE1t tri\u1EC3n Tr\u01B0\u1EDDng THCS Nguy\u1EC5n Trung Tr\u1EF1c (2014 \u2013 nay):
@@ -1689,8 +1689,8 @@ Nh\xE0 tr\u01B0\u1EDDng x\xE2y d\u1EF1ng m\xF4 h\xECnh Tr\u01B0\u1EDDng h\u1ECDc
     categoryLabel: "L\u1ECBch s\u1EED Th\xE0nh ph\u1ED1 H\u1ED3 Ch\xED Minh",
     authorOrSource: "Nguy\xEAn t\xE1c: Tr\u1ECBnh Ho\xE0i \u0110\u1EE9c (Gia \u0110\u1ECBnh th\xE0nh th\xF4ng ch\xED, kho\u1EA3ng 1820) | Tr\xEDch y\u1EBFu s\u1EF1 ki\u1EC7n l\u1ECBch s\u1EED c\xF4ng c\u1ED9ng: Kh\xF4ng gian V\u0103n h\xF3a HCM THCS Nguy\u1EC5n Trung Tr\u1EF1c",
     dateOrEra: "Th\u1EBF k\u1EF7 XVII - Gi\u1EEFa th\u1EBF k\u1EF7 XIX (1698 - 1858)",
-    status: "PENDING_REVIEW",
-    isAllowedForRag: false,
+    status: "APPROVED",
+    isAllowedForRag: true,
     topics: ["Gia \u0110\u1ECBnh th\xE0nh th\xF4ng ch\xED", "Tr\u1ECBnh Ho\xE0i \u0110\u1EE9c", "L\u1EC5 Th\xE0nh h\u1EA7u Nguy\u1EC5n H\u1EEFu C\u1EA3nh", "N\u0103m 1698", "Ph\u1EE7 Gia \u0110\u1ECBnh", "B\u1EBFn Ngh\xE9", "Khai hoang m\u1EDF c\xF5i", "Th\u01B0\u01A1ng c\u1EA3ng S\xE0i G\xF2n"],
     sourceUrl: "https://tulieuvankien.dangcongsan.vn",
     content: `Tr\xEDch y\u1EBFu L\u1ECBch s\u1EED S\xE0i G\xF2n \u2013 Gia \u0110\u1ECBnh th\u1EDDi Nguy\u1EC5n theo Gia \u0110\u1ECBnh th\xE0nh th\xF4ng ch\xED:
@@ -2568,11 +2568,47 @@ var DocumentRegistry = class {
    * Synchronously seed initial corpus so that documents are immediately available upon instantiation
    */
   seedSync() {
-    if (this.documents.size > 0) return;
-    const initialDocs = seedInitialDocumentsSync();
-    for (const doc of initialDocs) {
-      this.documents.set(doc.documentId, doc);
-      this.checksumIndex.set(doc.checksum, doc.documentId);
+    if (this.documents.size === 0) {
+      const initialDocs = seedInitialDocumentsSync();
+      for (const doc of initialDocs) {
+        this.documents.set(doc.documentId, doc);
+        this.checksumIndex.set(doc.checksum, doc.documentId);
+      }
+    }
+    this.applyLocalStorageOverrides();
+  }
+  /**
+   * Load any document approval overrides from browser localStorage
+   */
+  applyLocalStorageOverrides() {
+    if (typeof window !== "undefined" && window.localStorage) {
+      try {
+        const raw = window.localStorage.getItem("rag_doc_overrides");
+        if (raw) {
+          const overrides = JSON.parse(raw);
+          for (const [id, ov] of Object.entries(overrides)) {
+            const doc = this.documents.get(id);
+            if (doc && ov && typeof ov === "object") {
+              Object.assign(doc, ov);
+            }
+          }
+        }
+      } catch (e) {
+      }
+    }
+  }
+  /**
+   * Save document approval override to browser localStorage
+   */
+  saveLocalStorageOverride(docId, patch) {
+    if (typeof window !== "undefined" && window.localStorage) {
+      try {
+        const raw = window.localStorage.getItem("rag_doc_overrides") || "{}";
+        const overrides = JSON.parse(raw);
+        overrides[docId] = { ...overrides[docId] || {}, ...patch };
+        window.localStorage.setItem("rag_doc_overrides", JSON.stringify(overrides));
+      } catch (e) {
+      }
     }
   }
   /**
@@ -2586,6 +2622,7 @@ var DocumentRegistry = class {
       this.documents.set(doc.documentId, doc);
       this.checksumIndex.set(doc.checksum, doc.documentId);
     }
+    this.applyLocalStorageOverrides();
     this.isInitialized = true;
   }
   /**
@@ -2693,6 +2730,14 @@ var DocumentRegistry = class {
     doc.approvedAt = (/* @__PURE__ */ new Date()).toISOString();
     doc.updatedAt = (/* @__PURE__ */ new Date()).toISOString();
     this.documents.set(docId, doc);
+    this.saveLocalStorageOverride(docId, {
+      approvalStatus: "APPROVED",
+      isAllowedForRag: true,
+      approvedBy: approverName,
+      approverId,
+      approvedAt: doc.approvedAt,
+      updatedAt: doc.updatedAt
+    });
     return doc;
   }
   /**
@@ -2708,6 +2753,14 @@ var DocumentRegistry = class {
     doc.rejectionReason = `B\u1ECB t\u1EEB ch\u1ED1i b\u1EDFi ${rejecterName}: ${reason}`;
     doc.updatedAt = (/* @__PURE__ */ new Date()).toISOString();
     this.documents.set(docId, doc);
+    this.saveLocalStorageOverride(docId, {
+      approvalStatus: "REJECTED",
+      isAllowedForRag: false,
+      approvedBy: rejecterName,
+      approverId: rejecterId,
+      rejectionReason: doc.rejectionReason,
+      updatedAt: doc.updatedAt
+    });
     return doc;
   }
   /**
@@ -2720,6 +2773,11 @@ var DocumentRegistry = class {
     doc.isAllowedForRag = false;
     doc.updatedAt = (/* @__PURE__ */ new Date()).toISOString();
     this.documents.set(docId, doc);
+    this.saveLocalStorageOverride(docId, {
+      approvalStatus: "ARCHIVED",
+      isAllowedForRag: false,
+      updatedAt: doc.updatedAt
+    });
     return doc;
   }
   /**

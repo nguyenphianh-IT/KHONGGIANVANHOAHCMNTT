@@ -154,11 +154,51 @@ export class DocumentRegistry {
    * Synchronously seed initial corpus so that documents are immediately available upon instantiation
    */
   private seedSync(): void {
-    if (this.documents.size > 0) return;
-    const initialDocs = seedInitialDocumentsSync();
-    for (const doc of initialDocs) {
-      this.documents.set(doc.documentId, doc);
-      this.checksumIndex.set(doc.checksum, doc.documentId);
+    if (this.documents.size === 0) {
+      const initialDocs = seedInitialDocumentsSync();
+      for (const doc of initialDocs) {
+        this.documents.set(doc.documentId, doc);
+        this.checksumIndex.set(doc.checksum, doc.documentId);
+      }
+    }
+    this.applyLocalStorageOverrides();
+  }
+
+  /**
+   * Load any document approval overrides from browser localStorage
+   */
+  private applyLocalStorageOverrides(): void {
+    if (typeof window !== 'undefined' && window.localStorage) {
+      try {
+        const raw = window.localStorage.getItem('rag_doc_overrides');
+        if (raw) {
+          const overrides = JSON.parse(raw);
+          for (const [id, ov] of Object.entries(overrides)) {
+            const doc = this.documents.get(id);
+            if (doc && ov && typeof ov === 'object') {
+              Object.assign(doc, ov);
+            }
+          }
+        }
+      } catch (e) {
+        // ignore storage access errors
+      }
+    }
+  }
+
+  /**
+   * Save document approval override to browser localStorage
+   */
+  private saveLocalStorageOverride(docId: string, patch: Partial<RealKnowledgeDocument>): void {
+    if (typeof window !== 'undefined' && window.localStorage) {
+      try {
+        const raw = window.localStorage.getItem('rag_doc_overrides') || '{}';
+        const overrides = JSON.parse(raw);
+        overrides[docId] = { ...(overrides[docId] || {}), ...patch };
+        window.localStorage.setItem('rag_doc_overrides', JSON.stringify(overrides));
+      } catch (e) {
+        // ignore storage access errors
+      }
     }
   }
 
@@ -173,6 +213,7 @@ export class DocumentRegistry {
       this.documents.set(doc.documentId, doc);
       this.checksumIndex.set(doc.checksum, doc.documentId);
     }
+    this.applyLocalStorageOverrides();
     this.isInitialized = true;
   }
 
@@ -299,6 +340,14 @@ export class DocumentRegistry {
     doc.updatedAt = new Date().toISOString();
 
     this.documents.set(docId, doc);
+    this.saveLocalStorageOverride(docId, {
+      approvalStatus: 'APPROVED',
+      isAllowedForRag: true,
+      approvedBy: approverName,
+      approverId: approverId,
+      approvedAt: doc.approvedAt,
+      updatedAt: doc.updatedAt
+    });
     return doc;
   }
 
@@ -317,6 +366,14 @@ export class DocumentRegistry {
     doc.updatedAt = new Date().toISOString();
 
     this.documents.set(docId, doc);
+    this.saveLocalStorageOverride(docId, {
+      approvalStatus: 'REJECTED',
+      isAllowedForRag: false,
+      approvedBy: rejecterName,
+      approverId: rejecterId,
+      rejectionReason: doc.rejectionReason,
+      updatedAt: doc.updatedAt
+    });
     return doc;
   }
 
@@ -332,6 +389,11 @@ export class DocumentRegistry {
     doc.updatedAt = new Date().toISOString();
 
     this.documents.set(docId, doc);
+    this.saveLocalStorageOverride(docId, {
+      approvalStatus: 'ARCHIVED',
+      isAllowedForRag: false,
+      updatedAt: doc.updatedAt
+    });
     return doc;
   }
 
