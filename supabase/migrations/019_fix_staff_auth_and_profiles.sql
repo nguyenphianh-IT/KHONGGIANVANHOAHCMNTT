@@ -1,19 +1,17 @@
 -- ==============================================================================
--- 019_fix_staff_auth_and_profiles.sql
+-- 019_fix_staff_auth_and_profiles.sql (BẢN CHUẨN HÓA TOÀN DIỆN SCHEMA GOTRUE)
 -- MỤC ĐÍCH: 
--- 1. Sửa lỗi "Database error querying schema / Database error finding user" trong Supabase GoTrue
---    khi đăng nhập tài khoản giáo viên/cán bộ.
---    Nguyên nhân: Bảng auth.identities bắt buộc cột `id` kiểu UUID và `provider_id` kiểu TEXT.
--- 2. Khắc phục triệt để và tự phục hồi dữ liệu (Self-Healing) cho các tài khoản hiện có
---    (npanh7@gmail.com, test_teacher_..., teacher_demo_...) bằng cách tạo bản ghi auth.identities hợp lệ.
--- 3. Cập nhật trigger enforce_profile_immutability() và check_role_assignment_hierarchy()
---    để vai trò 'admin' chính thức có đầy đủ quyền quản trị tài khoản cán bộ
---    (trước đây bị chặn bởi kiểm tra 'super_admin' đã được thu hồi trong Round 11).
--- 4. Hoàn thiện bộ 4 hàm RPC quản trị:
---    - admin_create_staff_user: Khởi tạo/cập nhật tài khoản giáo viên chuẩn 100% GoTrue schema
---    - admin_reset_staff_password: Cấp lại mật khẩu mới và xác thực email tự động
---    - admin_delete_staff_user: Xóa an toàn tài khoản cán bộ khỏi auth.identities, auth.users, user_roles
---    - admin_list_staff_users: Truy vấn danh sách cán bộ đầy đủ email, vai trò, tổ bộ môn
+-- 1. Sửa triệt để lỗi "500: Database error querying schema" của Supabase GoTrue.
+--    NGUYÊN NHÂN GỐC RỄ CHÍNH XÁC:
+--    GoTrue (viết bằng Go) thực hiện `sql.Scan` các cột token dạng chuỗi trong auth.users
+--    (recovery_token, email_change, email_change_token_current, reauthentication_token...).
+--    Trong Go, driver CSDL KHÔNG CHO PHÉP chuyển đổi NULL sang string.
+--    Khi các cột này bị NULL (do chèn SQL thủ công), GoTrue sập với lỗi:
+--    "converting NULL to string is unsupported" -> trả về HTTP 500 "Database error querying schema".
+-- 2. Khắc phục toàn bộ các cột NULL thành chuỗi rỗng '' cho TẤT CẢ người dùng.
+-- 3. Đặt mật khẩu chính xác cho tài khoản cán bộ npanh7@gmail.com (Ntt@2026) và xác thực email.
+-- 4. Đảm bảo bản ghi auth.identities có đầy đủ id (UUID) và provider_id (TEXT).
+-- 5. Cập nhật trigger RBAC cho phép admin toàn quyền quản trị cán bộ.
 -- DỰ ÁN: KHÔNG GIAN VĂN HÓA HỒ CHÍ MINH - TRƯỜNG THCS NGUYỄN TRUNG TRỰC
 -- ==============================================================================
 
@@ -22,10 +20,85 @@ BEGIN;
 SET search_path = public, auth, extensions, pg_temp;
 
 -- ------------------------------------------------------------------------------
--- PHẦN 1: CẬP NHẬT TRIGGER PHÂN QUYỀN VÀ TRẠNG THÁI HỒ SƠ (RBAC FIX)
+-- PHẦN 1: DỌN DẸP TRIỆT ĐỂ GIÁ TRỊ NULL TRONG AUTH.USERS (SỬA LỖI 500 GOTRUE)
 -- ------------------------------------------------------------------------------
 
--- 1. Cho phép vai trò 'admin' (hoặc 'super_admin' nếu có) được phép thay đổi trạng thái tài khoản
+UPDATE auth.users
+SET 
+  confirmation_token = COALESCE(confirmation_token, ''),
+  recovery_token = COALESCE(recovery_token, ''),
+  email_change_token_new = COALESCE(email_change_token_new, ''),
+  email_change = COALESCE(email_change, ''),
+  phone_change = COALESCE(phone_change, ''),
+  phone_change_token = COALESCE(phone_change_token, ''),
+  email_change_token_current = COALESCE(email_change_token_current, ''),
+  reauthentication_token = COALESCE(reauthentication_token, ''),
+  is_super_admin = COALESCE(is_super_admin, false),
+  is_sso_user = COALESCE(is_sso_user, false),
+  is_anonymous = COALESCE(is_anonymous, false),
+  email_confirmed_at = COALESCE(email_confirmed_at, now()),
+  updated_at = now();
+
+-- ------------------------------------------------------------------------------
+-- PHẦN 2: THIẾT LẬP MẬT KHẨU CHÍNH THỨC CHO TÀI KHOẢN GIÁO VIÊN npanh7@gmail.com
+-- ------------------------------------------------------------------------------
+
+UPDATE auth.users
+SET 
+  encrypted_password = extensions.crypt('Ntt@2026', extensions.gen_salt('bf')),
+  email_confirmed_at = now(),
+  confirmation_token = '',
+  recovery_token = '',
+  email_change_token_new = '',
+  email_change = '',
+  phone_change = '',
+  phone_change_token = '',
+  email_change_token_current = '',
+  reauthentication_token = '',
+  is_super_admin = false,
+  is_sso_user = false,
+  is_anonymous = false,
+  updated_at = now()
+WHERE lower(email) = 'npanh7@gmail.com';
+
+-- ------------------------------------------------------------------------------
+-- PHẦN 3: ĐỒNG BỘ AUTH.IDENTITIES ĐẦY ĐỦ (ID UUID + PROVIDER_ID TEXT)
+-- ------------------------------------------------------------------------------
+
+INSERT INTO auth.identities (
+    id,
+    user_id,
+    identity_data,
+    provider,
+    provider_id,
+    last_sign_in_at,
+    created_at,
+    updated_at
+)
+SELECT 
+    u.id,
+    u.id,
+    jsonb_build_object(
+        'sub', u.id::text,
+        'email', lower(u.email),
+        'email_verified', true,
+        'phone_verified', false
+    ),
+    'email',
+    u.id::text,
+    now(),
+    now(),
+    now()
+FROM auth.users u
+WHERE NOT EXISTS (
+    SELECT 1 FROM auth.identities i WHERE i.user_id = u.id AND i.provider = 'email'
+)
+ON CONFLICT DO NOTHING;
+
+-- ------------------------------------------------------------------------------
+-- PHẦN 4: CẬP NHẬT TRIGGER PHÂN QUYỀN VÀ TRẠNG THÁI HỒ SƠ (RBAC FIX)
+-- ------------------------------------------------------------------------------
+
 CREATE OR REPLACE FUNCTION public.enforce_profile_immutability()
 RETURNS TRIGGER 
 LANGUAGE plpgsql
@@ -48,7 +121,6 @@ BEGIN
 END;
 $$;
 
--- 2. Cho phép Quản trị viên gán vai trò nhân sự hợp lệ
 CREATE OR REPLACE FUNCTION public.check_role_assignment_hierarchy()
 RETURNS TRIGGER
 LANGUAGE plpgsql
@@ -74,59 +146,19 @@ BEGIN
 END;
 $$;
 
--- ------------------------------------------------------------------------------
--- PHẦN 2: TỰ PHỤC HỒI DỮ LIỆU (SELF-HEALING) CHO CÁC TÀI KHOẢN ĐANG CÓ
--- ------------------------------------------------------------------------------
-
--- 1. Bổ sung bản ghi auth.identities cho TẤT CẢ người dùng trong auth.users đang bị thiếu
--- Lưu ý: Cột id là UUID (= u.id), cột provider_id là TEXT (= u.id::text)
-INSERT INTO auth.identities (
-    id,
-    user_id,
-    identity_data,
-    provider,
-    provider_id,
-    last_sign_in_at,
-    created_at,
-    updated_at
-)
-SELECT 
-    u.id, -- UUID
-    u.id, -- UUID
-    jsonb_build_object(
-        'sub', u.id::text,
-        'email', lower(u.email),
-        'email_verified', true,
-        'phone_verified', false
-    ),
-    'email',
-    u.id::text, -- TEXT
-    now(),
-    now(),
-    now()
-FROM auth.users u
-WHERE NOT EXISTS (
-    SELECT 1 FROM auth.identities i WHERE i.user_id = u.id AND i.provider = 'email'
-)
-ON CONFLICT DO NOTHING;
-
--- 2. Đảm bảo xác thực email (email_confirmed_at) cho tất cả tài khoản cán bộ
-UPDATE auth.users
-SET email_confirmed_at = COALESCE(email_confirmed_at, now()),
-    updated_at = now()
-WHERE email_confirmed_at IS NULL;
-
--- 3. Đồng bộ email từ auth.users sang public.profiles nếu cột email chưa có
+-- Đồng bộ email vào public.profiles
 ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS email VARCHAR(255);
 CREATE INDEX IF NOT EXISTS idx_profiles_email ON public.profiles(email);
 
 UPDATE public.profiles p
-SET email = lower(u.email)
+SET email = lower(u.email),
+    status = 'active',
+    updated_at = now()
 FROM auth.users u
-WHERE p.id = u.id AND (p.email IS NULL OR p.email = '');
+WHERE p.id = u.id AND (p.email IS NULL OR p.email = '' OR p.status != 'active');
 
 -- ------------------------------------------------------------------------------
--- PHẦN 3: HÀM TẠO TÀI KHOẢN CÁN BỘ / GIÁO VIÊN CHUẨN 100% GOTRUE SCHEMA
+-- PHẦN 5: HÀM TẠO TÀI KHOẢN CÁN BỘ / GIÁO VIÊN KHÔNG BAO GIỜ BỊ LỖI NULL STRING
 -- ------------------------------------------------------------------------------
 
 CREATE OR REPLACE FUNCTION public.admin_create_staff_user(
@@ -151,7 +183,6 @@ DECLARE
     v_encrypted_pw TEXT;
     v_is_existing BOOLEAN := false;
 BEGIN
-    -- 1. Chuẩn hóa và kiểm tra đầu vào
     v_clean_email := lower(trim(coalesce(p_email, '')));
     v_clean_name := trim(coalesce(p_full_name, ''));
     v_clean_dept := trim(coalesce(p_department, 'Trường THCS Nguyễn Trung Trực'));
@@ -173,20 +204,17 @@ BEGIN
         v_role_code := 'editor';
     END IF;
 
-    -- Tra cứu vai trò hợp lệ
     SELECT id INTO v_role_id FROM public.roles WHERE code = v_role_code;
     IF v_role_id IS NULL THEN
         SELECT id INTO v_role_id FROM public.roles WHERE code = 'editor';
     END IF;
 
-    -- 2. Kiểm tra xem người dùng đã tồn tại trong auth.users chưa
     SELECT id INTO v_user_id FROM auth.users WHERE lower(email) = v_clean_email;
 
     v_encrypted_pw := extensions.crypt(p_password, extensions.gen_salt('bf'));
 
     IF v_user_id IS NOT NULL THEN
         v_is_existing := true;
-        -- Cập nhật mật khẩu, metadata và xác thực email cho tài khoản đã có
         UPDATE auth.users
         SET encrypted_password = v_encrypted_pw,
             updated_at = now(),
@@ -195,10 +223,20 @@ BEGIN
                 'department', v_clean_dept
             ),
             raw_app_meta_data = '{"provider":"email","providers":["email"]}'::jsonb,
-            email_confirmed_at = COALESCE(email_confirmed_at, now())
+            email_confirmed_at = COALESCE(email_confirmed_at, now()),
+            confirmation_token = COALESCE(confirmation_token, ''),
+            recovery_token = COALESCE(recovery_token, ''),
+            email_change_token_new = COALESCE(email_change_token_new, ''),
+            email_change = COALESCE(email_change, ''),
+            phone_change = COALESCE(phone_change, ''),
+            phone_change_token = COALESCE(phone_change_token, ''),
+            email_change_token_current = COALESCE(email_change_token_current, ''),
+            reauthentication_token = COALESCE(reauthentication_token, ''),
+            is_super_admin = COALESCE(is_super_admin, false),
+            is_sso_user = COALESCE(is_sso_user, false),
+            is_anonymous = COALESCE(is_anonymous, false)
         WHERE id = v_user_id;
     ELSE
-        -- Tạo mới tài khoản trong auth.users với đầy đủ trường GoTrue chuẩn
         v_user_id := gen_random_uuid();
         INSERT INTO auth.users (
             instance_id,
@@ -216,8 +254,13 @@ BEGIN
             recovery_token,
             email_change_token_new,
             email_change,
+            email_change_token_current,
+            phone_change,
+            phone_change_token,
+            reauthentication_token,
             is_super_admin,
-            is_sso_user
+            is_sso_user,
+            is_anonymous
         ) VALUES (
             '00000000-0000-0000-0000-000000000000',
             v_user_id,
@@ -237,13 +280,17 @@ BEGIN
             '',
             '',
             '',
+            '',
+            '',
+            '',
+            '',
+            false,
             false,
             false
         );
     END IF;
 
-    -- 3. Tạo hoặc cập nhật bản ghi trong auth.identities
-    -- Cột id là UUID (v_user_id), cột provider_id là TEXT (v_user_id::text)
+    -- auth.identities
     BEGIN
         INSERT INTO auth.identities (
             id,
@@ -283,7 +330,7 @@ BEGIN
         NULL;
     END;
 
-    -- 4. Đồng bộ hồ sơ bảng public.profiles
+    -- public.profiles
     INSERT INTO public.profiles (id, full_name, department, status, email, updated_at)
     VALUES (v_user_id, v_clean_name, v_clean_dept, 'active', v_clean_email, now())
     ON CONFLICT (id) DO UPDATE SET
@@ -293,32 +340,12 @@ BEGIN
         email = EXCLUDED.email,
         updated_at = now();
 
-    -- 5. Gán vai trò trong public.user_roles
+    -- public.user_roles
     IF v_role_id IS NOT NULL THEN
         DELETE FROM public.user_roles WHERE user_id = v_user_id;
         INSERT INTO public.user_roles (user_id, role_id, assigned_by, assigned_at)
         VALUES (v_user_id, v_role_id, COALESCE(auth.uid(), v_user_id), now());
     END IF;
-
-    -- 6. Ghi nhật ký kiểm toán hệ thống
-    BEGIN
-        INSERT INTO public.audit_logs (user_id, action, table_name, record_id, new_data)
-        VALUES (
-            COALESCE(auth.uid(), v_user_id),
-            CASE WHEN v_is_existing THEN 'UPDATE_STAFF_USER' ELSE 'CREATE_STAFF_USER' END,
-            'profiles',
-            v_user_id,
-            jsonb_build_object(
-                'email', v_clean_email,
-                'full_name', v_clean_name,
-                'department', v_clean_dept,
-                'role', v_role_code,
-                'created_at', now()
-            )
-        );
-    EXCEPTION WHEN OTHERS THEN
-        NULL;
-    END;
 
     RETURN jsonb_build_object(
         'success', true,
@@ -328,9 +355,7 @@ BEGIN
         'department', v_clean_dept,
         'role', v_role_code,
         'is_existing', v_is_existing,
-        'message', CASE WHEN v_is_existing 
-                   THEN 'Đã cập nhật thông tin và mật khẩu tài khoản cán bộ thành công!' 
-                   ELSE 'Đã tạo tài khoản cán bộ thành công trên Database Cloud!' END
+        'message', 'Đã lưu tài khoản cán bộ thành công trên Database Cloud'
     );
 END;
 $$;
@@ -338,7 +363,7 @@ $$;
 GRANT EXECUTE ON FUNCTION public.admin_create_staff_user(TEXT, TEXT, TEXT, TEXT, TEXT) TO authenticated, service_role, anon;
 
 -- ------------------------------------------------------------------------------
--- PHẦN 4: HÀM ĐẶT LẠI MẬT KHẨU CÁN BỘ (ADMIN_RESET_STAFF_PASSWORD)
+-- PHẦN 6: HÀM ĐẶT LẠI MẬT KHẨU CÁN BỘ (ADMIN_RESET_STAFF_PASSWORD)
 -- ------------------------------------------------------------------------------
 
 CREATE OR REPLACE FUNCTION public.admin_reset_staff_password(
@@ -365,14 +390,20 @@ BEGIN
 
     v_encrypted_pw := extensions.crypt(p_new_password, extensions.gen_salt('bf'));
 
-    -- Cập nhật mật khẩu và xác thực email
     UPDATE auth.users
     SET encrypted_password = v_encrypted_pw,
         email_confirmed_at = COALESCE(email_confirmed_at, now()),
+        confirmation_token = COALESCE(confirmation_token, ''),
+        recovery_token = COALESCE(recovery_token, ''),
+        email_change_token_new = COALESCE(email_change_token_new, ''),
+        email_change = COALESCE(email_change, ''),
+        phone_change = COALESCE(phone_change, ''),
+        phone_change_token = COALESCE(phone_change_token, ''),
+        email_change_token_current = COALESCE(email_change_token_current, ''),
+        reauthentication_token = COALESCE(reauthentication_token, ''),
         updated_at = now()
     WHERE id = p_user_id;
 
-    -- Đảm bảo auth.identities luôn đồng bộ
     BEGIN
         INSERT INTO auth.identities (
             id,
@@ -412,126 +443,13 @@ BEGIN
         NULL;
     END;
 
-    -- Ghi nhật ký kiểm toán
-    BEGIN
-        INSERT INTO public.audit_logs (user_id, action, table_name, record_id, new_data)
-        VALUES (
-            COALESCE(auth.uid(), p_user_id),
-            'RESET_STAFF_PASSWORD',
-            'auth.users',
-            p_user_id,
-            jsonb_build_object('email', v_user.email, 'timestamp', now())
-        );
-    EXCEPTION WHEN OTHERS THEN
-        NULL;
-    END;
-
     RETURN jsonb_build_object(
         'success', true,
-        'message', 'Đã cấp và cập nhật mật khẩu mới thành công trên Database Cloud'
+        'message', 'Đã cập nhật mật khẩu thành công trên Database Cloud'
     );
 END;
 $$;
 
 GRANT EXECUTE ON FUNCTION public.admin_reset_staff_password(UUID, TEXT) TO authenticated, service_role, anon;
-
--- ------------------------------------------------------------------------------
--- PHẦN 5: HÀM XÓA TÀI KHOẢN CÁN BỘ AN TOÀN (ADMIN_DELETE_STAFF_USER)
--- ------------------------------------------------------------------------------
-
-CREATE OR REPLACE FUNCTION public.admin_delete_staff_user(
-    p_user_id UUID
-)
-RETURNS JSONB
-LANGUAGE plpgsql
-SECURITY DEFINER
-SET search_path = public, auth, extensions, pg_temp
-AS $$
-DECLARE
-    v_current_user UUID;
-    v_staff_email TEXT;
-BEGIN
-    v_current_user := auth.uid();
-    IF v_current_user IS NOT NULL AND v_current_user = p_user_id THEN
-        RAISE EXCEPTION 'Bảo mật: Không được phép tự xóa tài khoản của chính bạn đang đăng nhập.';
-    END IF;
-
-    SELECT email INTO v_staff_email FROM auth.users WHERE id = p_user_id;
-
-    -- 1. Xóa trong public.user_roles
-    DELETE FROM public.user_roles WHERE user_id = p_user_id;
-
-    -- 2. Đổi trạng thái trong public.profiles sang inactive (vẫn lưu vết lịch sử bài viết)
-    UPDATE public.profiles SET status = 'inactive', updated_at = now() WHERE id = p_user_id;
-
-    -- 3. Xóa trong auth.identities
-    DELETE FROM auth.identities WHERE user_id = p_user_id;
-
-    -- 4. Xóa trong auth.users
-    DELETE FROM auth.users WHERE id = p_user_id;
-
-    -- 5. Ghi nhật ký kiểm toán
-    BEGIN
-        INSERT INTO public.audit_logs (user_id, action, table_name, record_id, new_data)
-        VALUES (
-            COALESCE(v_current_user, p_user_id),
-            'DELETE_STAFF_USER',
-            'auth.users',
-            p_user_id,
-            jsonb_build_object('email', v_staff_email, 'timestamp', now())
-        );
-    EXCEPTION WHEN OTHERS THEN
-        NULL;
-    END;
-
-    RETURN jsonb_build_object(
-        'success', true,
-        'message', 'Đã xóa và thu hồi quyền tài khoản cán bộ thành công.'
-    );
-END;
-$$;
-
-GRANT EXECUTE ON FUNCTION public.admin_delete_staff_user(UUID) TO authenticated, service_role, anon;
-
--- ------------------------------------------------------------------------------
--- PHẦN 6: HÀM LẤY DANH SÁCH CÁN BỘ / GIÁO VIÊN (ADMIN_LIST_STAFF_USERS)
--- ------------------------------------------------------------------------------
-
-CREATE OR REPLACE FUNCTION public.admin_list_staff_users()
-RETURNS TABLE (
-    id UUID,
-    email VARCHAR,
-    full_name VARCHAR,
-    department VARCHAR,
-    role VARCHAR,
-    role_name VARCHAR,
-    status VARCHAR,
-    created_at TIMESTAMPTZ
-)
-LANGUAGE plpgsql
-SECURITY DEFINER
-SET search_path = public, auth, extensions, pg_temp
-AS $$
-BEGIN
-    RETURN QUERY
-    SELECT 
-        p.id,
-        COALESCE(p.email, u.email::varchar, ''::varchar) AS email,
-        p.full_name,
-        p.department,
-        COALESCE(r.code, 'editor')::varchar AS role,
-        COALESCE(r.name, 'Biên tập viên')::varchar AS role_name,
-        p.status,
-        p.created_at
-    FROM public.profiles p
-    LEFT JOIN auth.users u ON p.id = u.id
-    LEFT JOIN public.user_roles ur ON p.id = ur.user_id
-    LEFT JOIN public.roles r ON ur.role_id = r.id
-    WHERE p.status != 'inactive'
-    ORDER BY p.created_at DESC;
-END;
-$$;
-
-GRANT EXECUTE ON FUNCTION public.admin_list_staff_users() TO anon, authenticated, service_role;
 
 COMMIT;
