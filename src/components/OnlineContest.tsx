@@ -24,9 +24,10 @@ import {
   fetchSupabaseContestData,
   fetchSupabaseQuestions,
   submitContestExamToSupabase,
+  getContestAdmissionStatus,
 } from '../data/contestData';
 import {
-  Trophy, Award, Clock, CheckCircle2, AlertTriangle, ChevronRight,
+  Trophy, Award, Clock, CheckCircle2, AlertTriangle, AlertOctagon, ChevronRight,
   User, Printer, Settings, BookOpen, Layers, FolderArchive, Cloud, Lock,
   Users, Sparkles, Medal, Search, Filter, RefreshCw
 } from 'lucide-react';
@@ -115,6 +116,11 @@ export const OnlineContest: React.FC = () => {
   const activeContests = useMemo(() => {
     return contestsList.filter((c) => c.status === 'active');
   }, [contestsList]);
+
+  // Trạng thái tiếp nhận dự thi theo thời hạn và cấu hình của hội thi đang chọn
+  const admissionStatus = useMemo(() => {
+    return getContestAdmissionStatus(contestInfo);
+  }, [contestInfo]);
 
   // Số lượng bài nộp của riêng hội thi đang được chọn
   const activeContestSubmissionsCount = useMemo(() => {
@@ -277,9 +283,12 @@ export const OnlineContest: React.FC = () => {
   // Lắng nghe sự kiện đồng bộ dữ liệu từ Modal Quản trị hoặc Tab khác
   useEffect(() => {
     const handleSync = () => {
-      const active = getStoredContestInfo();
-      setContestsList(getStoredContestsList());
-      setContestInfo(active);
+      const all = getStoredContestsList();
+      setContestsList(all);
+      setContestInfo((prev) => {
+        const found = all.find((c) => c.id === prev?.id);
+        return found || getStoredContestInfo(prev?.id);
+      });
       setQuestions(getStoredContestQuestions());
       setClassesList(getStoredClasses());
       setSubmissions(getContestSubmissions());
@@ -340,8 +349,10 @@ export const OnlineContest: React.FC = () => {
 
   // Xác thực và bắt đầu thi (KẾT HỢP GIẢI PHÁP 1 & GIẢI PHÁP 2)
   const handleStartExam = () => {
-    if (contestInfo.isOpen === false) {
-      alert('Cổng thi hiện đang tạm đóng theo thông báo của Ban Tổ Chức!');
+    const admission = getContestAdmissionStatus(contestInfo);
+    if (!admission.allowed) {
+      alert(`Không thể bắt đầu làm bài thi: ${admission.reason}`);
+      setScreen('intro');
       return;
     }
 
@@ -432,6 +443,13 @@ export const OnlineContest: React.FC = () => {
 
   // Tính điểm & lưu bảng xếp hạng
   const finalizeExam = () => {
+    const admission = getContestAdmissionStatus(contestInfo);
+    if (!admission.allowed) {
+      alert(`Không thể nộp bài thi: ${admission.reason}`);
+      setScreen('intro');
+      return;
+    }
+
     setIsExamCompleted(true);
 
     const questionsToScore = activeExamQuestions;
@@ -753,6 +771,7 @@ export const OnlineContest: React.FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             {activeContests.map((c, idx) => {
               const isSelected = c.id === contestInfo.id;
+              const cardAdmission = getContestAdmissionStatus(c);
               const subCount = submissions.filter((s) => s.contestId === c.id).length;
               return (
                 <button
@@ -774,6 +793,33 @@ export const OnlineContest: React.FC = () => {
                         }`}>
                           Hội thi số {idx + 1}
                         </span>
+                        {cardAdmission.code === 'OPEN' && (
+                          <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
+                            isSelected
+                              ? 'bg-emerald-500/30 text-emerald-300 border border-emerald-400/40'
+                              : 'bg-emerald-100 text-emerald-800 border border-emerald-300'
+                          }`}>
+                            🟢 Đang mở
+                          </span>
+                        )}
+                        {cardAdmission.code === 'EXPIRED' && (
+                          <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
+                            isSelected
+                              ? 'bg-red-500/40 text-red-200 border border-red-400/50'
+                              : 'bg-red-100 text-red-800 border border-red-300'
+                          }`}>
+                            🔴 Đã hết hạn
+                          </span>
+                        )}
+                        {cardAdmission.code === 'CLOSED' && (
+                          <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
+                            isSelected
+                              ? 'bg-amber-500/30 text-amber-200 border border-amber-400/50'
+                              : 'bg-amber-100 text-amber-800 border border-amber-300'
+                          }`}>
+                            🔒 Tạm đóng
+                          </span>
+                        )}
                         {c.targetAudience && (
                           <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold ${
                             isSelected
@@ -788,11 +834,11 @@ export const OnlineContest: React.FC = () => {
                       {isSelected ? (
                         <span className="inline-flex items-center space-x-1 px-2.5 py-0.5 rounded-full bg-emerald-500/25 text-emerald-300 text-[11px] font-bold border border-emerald-400/40">
                           <CheckCircle2 className="w-3.5 h-3.5 text-emerald-300" />
-                          <span>Đang chọn thi</span>
+                          <span>Đang chọn</span>
                         </span>
                       ) : (
                         <span className="text-[11px] text-heritage-red-700 font-bold group-hover:underline">
-                          Bấm chọn thi →
+                          {cardAdmission.allowed ? 'Bấm chọn thi →' : 'Xem thông tin / Điểm →'}
                         </span>
                       )}
                     </div>
@@ -857,20 +903,40 @@ export const OnlineContest: React.FC = () => {
                   <span>{contestInfo.bannerTag || 'HỘI THI TRỰC TUYẾN CHÍNH THỨC'}</span>
                 </div>
                 
-                {contestInfo.isOpen !== false ? (
+                {admissionStatus.code === 'OPEN' ? (
                   <span className="inline-flex items-center space-x-1.5 px-2.5 sm:px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-400/40 text-[11px] sm:text-xs font-bold shadow-xs">
                     <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
                     <span>Đang mở nhận bài dự thi</span>
+                    {contestInfo.endDate && (
+                      <span className="text-emerald-200/80 font-normal ml-1">
+                        • Hạn chót: {new Date(contestInfo.endDate + 'T23:59:59').toLocaleDateString('vi-VN')}
+                      </span>
+                    )}
+                  </span>
+                ) : admissionStatus.code === 'EXPIRED' ? (
+                  <span className="inline-flex items-center space-x-1.5 px-2.5 sm:px-3 py-1 rounded-full bg-red-600/30 text-red-200 border border-red-400/50 text-[11px] sm:text-xs font-bold shadow-xs">
+                    <AlertOctagon className="w-3.5 h-3.5 text-red-300 flex-shrink-0" />
+                    <span>HỘI THI ĐÃ HẾT HẠN NHẬN BÀI</span>
+                    {contestInfo.endDate && (
+                      <span className="text-red-200/90 font-medium ml-1">
+                        ({new Date(contestInfo.endDate + 'T23:59:59').toLocaleDateString('vi-VN')})
+                      </span>
+                    )}
+                  </span>
+                ) : admissionStatus.code === 'CLOSED' ? (
+                  <span className="inline-flex items-center space-x-1 px-2.5 sm:px-3 py-1 rounded-full bg-red-500/30 text-red-200 border border-red-400/50 text-[11px] sm:text-xs font-bold">
+                    <Lock className="w-3.5 h-3.5 text-red-300 flex-shrink-0" />
+                    <span>Cổng thi đang tạm đóng</span>
                   </span>
                 ) : (
-                  <span className="inline-flex items-center space-x-1 px-2.5 sm:px-3 py-1 rounded-full bg-red-500/30 text-red-200 border border-red-400/50 text-[11px] sm:text-xs font-bold">
-                    <Lock className="w-3.5 h-3.5 text-red-300" />
-                    <span>Cổng thi đang tạm đóng</span>
+                  <span className="inline-flex items-center space-x-1 px-2.5 sm:px-3 py-1 rounded-full bg-slate-500/30 text-slate-200 border border-slate-400/50 text-[11px] sm:text-xs font-bold">
+                    <Clock className="w-3.5 h-3.5 text-slate-300 flex-shrink-0" />
+                    <span>{admissionStatus.badgeLabel}</span>
                   </span>
                 )}
 
                 <span className="hidden sm:inline-flex items-center space-x-1 px-2.5 py-1 rounded-full bg-white/10 text-heritage-gold-200 text-xs font-medium border border-white/10">
-                  <span>Niên khóa 2025 - 2026</span>
+                  <span>{contestInfo.academicYear || 'Niên khóa 2025 - 2026'}</span>
                 </span>
               </div>
 
@@ -947,12 +1013,29 @@ export const OnlineContest: React.FC = () => {
                     </div>
                   </div>
 
-                  {/* Thông báo khi cổng đóng */}
-                  {contestInfo.isOpen === false && (
-                    <div className="mb-4 sm:mb-5 p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-amber-500/20 border border-amber-400/50 text-amber-200 text-xs sm:text-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2.5 shadow-md">
-                      <div className="flex items-center space-x-2">
-                        <span className="text-base sm:text-lg">🔒</span>
-                        <span>Cổng thi trực tuyến hiện đang tạm đóng theo thông báo của Ban Tổ Chức.</span>
+                  {/* Thông báo khi cổng đóng hoặc hết hạn */}
+                  {!admissionStatus.allowed && (
+                    <div className={`mb-4 sm:mb-5 p-3.5 sm:p-4 rounded-xl sm:rounded-2xl border text-xs sm:text-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-md ${
+                      admissionStatus.code === 'EXPIRED'
+                        ? 'bg-red-950/70 border-red-500/60 text-red-100'
+                        : 'bg-amber-500/20 border-amber-400/50 text-amber-200'
+                    }`}>
+                      <div className="flex items-start sm:items-center space-x-2.5">
+                        {admissionStatus.code === 'EXPIRED' ? (
+                          <AlertOctagon className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5 sm:mt-0" />
+                        ) : (
+                          <Lock className="w-4 h-4 text-amber-300 flex-shrink-0 mt-0.5 sm:mt-0" />
+                        )}
+                        <div>
+                          <strong className="block text-white font-bold">
+                            {admissionStatus.code === 'EXPIRED' && 'Hội thi đã hết hạn nhận bài dự thi!'}
+                            {admissionStatus.code === 'CLOSED' && 'Cổng thi trực tuyến hiện đang tạm đóng!'}
+                            {admissionStatus.code === 'NOT_STARTED' && 'Chưa đến ngày mở cổng dự thi!'}
+                            {admissionStatus.code === 'ARCHIVED' && 'Hội thi đã lưu trữ kỷ yếu!'}
+                            {admissionStatus.code === 'DRAFT' && 'Hội thi đang trong giai đoạn dự thảo!'}
+                          </strong>
+                          <span className="text-xs opacity-90">{admissionStatus.reason}</span>
+                        </div>
                       </div>
                       {isStaff && (
                         <button
@@ -960,9 +1043,9 @@ export const OnlineContest: React.FC = () => {
                             setManagerInitialTab('contest');
                             setIsManagerOpen(true);
                           }}
-                          className="px-3.5 py-1.5 bg-amber-400 text-amber-950 font-bold text-xs rounded-xl hover:bg-amber-300 transition whitespace-nowrap shadow self-start sm:self-auto"
+                          className="px-3.5 py-1.5 bg-amber-400 text-amber-950 font-bold text-xs rounded-xl hover:bg-amber-300 transition whitespace-nowrap shadow self-start sm:self-auto cursor-pointer"
                         >
-                          Mở cổng thi
+                          Cấu hình hội thi
                         </button>
                       )}
                     </div>
@@ -972,17 +1055,38 @@ export const OnlineContest: React.FC = () => {
                 {/* Các nút hành động chính */}
                 <div className="flex flex-col gap-2 sm:gap-2.5 pt-1">
                   <button
-                    onClick={() => setScreen('register')}
-                    disabled={contestInfo.isOpen === false}
-                    className={`w-full py-3 sm:py-4 px-4 sm:px-6 font-black text-sm sm:text-base rounded-xl sm:rounded-2xl shadow-xl transition-all transform active:scale-95 flex items-center justify-center space-x-2 touch-manipulation cursor-pointer ${
-                      contestInfo.isOpen !== false
-                        ? 'bg-gradient-to-r from-heritage-gold-400 via-amber-300 to-heritage-gold-500 hover:from-amber-300 hover:to-heritage-gold-400 text-heritage-red-950 shadow-amber-950/40 hover:shadow-2xl hover:shadow-amber-400/30'
-                        : 'bg-white/20 text-white/50 cursor-not-allowed'
+                    onClick={() => {
+                      if (!admissionStatus.allowed) {
+                        alert(admissionStatus.reason);
+                        return;
+                      }
+                      setScreen('register');
+                    }}
+                    disabled={!admissionStatus.allowed}
+                    className={`w-full py-3 sm:py-4 px-4 sm:px-6 font-black text-sm sm:text-base rounded-xl sm:rounded-2xl shadow-xl transition-all flex items-center justify-center space-x-2 touch-manipulation ${
+                      admissionStatus.allowed
+                        ? 'bg-gradient-to-r from-heritage-gold-400 via-amber-300 to-heritage-gold-500 hover:from-amber-300 hover:to-heritage-gold-400 text-heritage-red-950 shadow-amber-950/40 hover:shadow-2xl hover:shadow-amber-400/30 transform active:scale-95 cursor-pointer'
+                        : 'bg-white/10 text-white/40 border border-white/10 cursor-not-allowed select-none'
                     }`}
                   >
-                    <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 text-heritage-red-950" />
-                    <span>Tham Gia Dự Thi Ngay</span>
-                    <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5 text-heritage-red-950" />
+                    {admissionStatus.allowed ? (
+                      <>
+                        <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 text-heritage-red-950" />
+                        <span>Tham Gia Dự Thi Ngay</span>
+                        <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5 text-heritage-red-950" />
+                      </>
+                    ) : (
+                      <>
+                        <Lock className="w-4 h-4 sm:w-5 sm:h-5 text-white/40" />
+                        <span>
+                          {admissionStatus.code === 'EXPIRED' && 'Đã Hết Hạn Nhận Bài Thi'}
+                          {admissionStatus.code === 'CLOSED' && 'Cổng Thi Đang Tạm Đóng'}
+                          {admissionStatus.code === 'NOT_STARTED' && 'Chưa Đến Ngày Mở Cổng Thi'}
+                          {admissionStatus.code === 'ARCHIVED' && 'Hội Thi Đã Lưu Trữ Kỷ Yếu'}
+                          {admissionStatus.code === 'DRAFT' && 'Kế Hoạch Dự Thảo'}
+                        </span>
+                      </>
+                    )}
                   </button>
 
                   <div className="flex flex-col sm:flex-row gap-2 sm:gap-2.5">
@@ -1200,6 +1304,28 @@ export const OnlineContest: React.FC = () => {
 
       {/* 2. MÀN HÌNH ĐĂNG KÝ THI (KẾT HỢP GIẢI PHÁP 1 & GIẢI PHÁP 2) */}
       {screen === 'register' && (
+        !admissionStatus.allowed ? (
+          <div className="max-w-xl mx-auto bg-heritage-ivory-100 rounded-2xl sm:rounded-3xl p-6 sm:p-8 border-2 border-red-300 shadow-xl text-center space-y-4 animate-fadeIn my-6">
+            <div className="w-16 h-16 rounded-full bg-red-100 text-red-600 flex items-center justify-center mx-auto shadow-inner">
+              <AlertOctagon className="w-8 h-8" />
+            </div>
+            <h3 className="font-serif text-xl sm:text-2xl font-bold text-red-950">
+              Cổng Nhận Bài Đang Khóa
+            </h3>
+            <p className="text-sm text-red-900 leading-relaxed max-w-md mx-auto">
+              {admissionStatus.reason}
+            </p>
+            <div className="pt-2">
+              <button
+                type="button"
+                onClick={() => setScreen('intro')}
+                className="px-6 py-2.5 bg-heritage-red-700 hover:bg-heritage-red-800 text-white font-bold rounded-xl text-sm transition shadow-md"
+              >
+                Quay Lại Trang Hội Thi
+              </button>
+            </div>
+          </div>
+        ) : (
         <div className="max-w-2xl mx-auto bg-heritage-ivory-100 rounded-2xl sm:rounded-3xl p-4 sm:p-8 md:p-10 border border-heritage-gold-400 shadow-xl animate-fadeIn">
           <div className="text-center mb-5 sm:mb-6 pb-4 sm:pb-5 border-b border-heritage-ivory-300">
             <div className="inline-flex items-center space-x-1.5 text-xs uppercase tracking-wider text-heritage-red-700 font-bold bg-heritage-red-50 px-3 py-1 rounded-full border border-heritage-red-200 mb-2">
@@ -1368,6 +1494,7 @@ export const OnlineContest: React.FC = () => {
             </div>
           </div>
         </div>
+        )
       )}
 
       {/* 3. PHÒNG THI CHÍNH THỨC (EXAM ROOM CÓ ĐẾM GIỜ) */}

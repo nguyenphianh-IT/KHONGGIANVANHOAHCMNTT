@@ -35,6 +35,15 @@ export interface ContestQuestion {
 
 export type ContestStatus = 'active' | 'closed' | 'archived' | 'draft';
 
+export interface ContestAdmissionStatus {
+  allowed: boolean;
+  code: 'OPEN' | 'EXPIRED' | 'NOT_STARTED' | 'CLOSED' | 'ARCHIVED' | 'DRAFT';
+  reason: string;
+  badgeLabel: string;
+  badgeColor: 'emerald' | 'red' | 'amber' | 'slate';
+  daysLeft?: number;
+}
+
 export interface ContestInfo {
   id: string;
   title: string;
@@ -51,6 +60,7 @@ export interface ContestInfo {
   archivedAt?: string;
   summaryNote?: string; // Ghi chú tổng kết của Ban Giám Khảo khi lưu trữ
   createdAt?: string;
+  updatedAt?: string;
   targetAudience?: string; // Đối tượng dự thi: "Khối 6 & Khối 7" hoặc "Khối 8, Khối 9 & Toàn trường"
   categoryFilter?: 'cuoc-doi' | 'tu-tuong' | '5-dieu-bac-day' | 'thoi-an-truyen-thong' | 'all';
   // Cấu hình ngân hàng đề thi: 'dedicated' (Ngân hàng riêng của hội thi), 'combined' (Kết hợp nhiều ngân hàng), 'all' (Toàn bộ)
@@ -129,7 +139,7 @@ export const DEFAULT_CONTESTS_LIST: ContestInfo[] = [
     id: 'hoi-thi-2024-tuoi-tre-bac-ho',
     title: 'Hội Thi Trực Tuyến: "Tuổi Trẻ THCS Nguyễn Trung Trực Học Tập & Làm Theo Lời Bác"',
     subtitle: 'Đợt thi đua rèn đức luyện tài chào mừng Không gian văn hóa Hồ Chí Minh học đường',
-    academicYear: 'Năm học 2024 - 2025',
+    academicYear: 'Niên khóa 2025 - 2026',
     durationMinutes: 10,
     totalQuestions: 10,
     organizer: 'Liên đội & Chi đoàn Giáo viên Trường THCS Nguyễn Trung Trực (Phường Thới An)',
@@ -137,9 +147,9 @@ export const DEFAULT_CONTESTS_LIST: ContestInfo[] = [
     targetAudience: 'Dành cho Khối 8, Khối 9 & Toàn trường',
     status: 'active',
     isOpen: true,
-    startDate: '2024-10-15',
-    endDate: '2024-11-20',
-    createdAt: '2024-10-15',
+    startDate: '2025-10-15',
+    endDate: '2026-12-31',
+    createdAt: '2025-10-15',
     questionBankMode: 'combined',
     selectedBankIds: ['bank-cuoc-doi', 'bank-tu-tuong', 'bank-thoi-an-truyen-thong'],
   },
@@ -147,7 +157,7 @@ export const DEFAULT_CONTESTS_LIST: ContestInfo[] = [
     id: 'hoi-thi-2024-5-dieu-bac-day',
     title: 'Hội Thi: "Thiếu Nhi Thới An - Ngàn Hoa Dâng Bác Xứng Danh Cháu Ngoan Bác Hồ"',
     subtitle: 'Đợt thi đua chuyên đề: Tìm hiểu 5 Điều Bác Hồ dạy & 83 năm truyền thống Đội TNTP Hồ Chí Minh',
-    academicYear: 'Năm học 2024 - 2025',
+    academicYear: 'Niên khóa 2025 - 2026',
     durationMinutes: 10,
     totalQuestions: 10,
     organizer: 'Ban Phụ trách Đội & Liên đội Trường THCS Nguyễn Trung Trực',
@@ -155,10 +165,10 @@ export const DEFAULT_CONTESTS_LIST: ContestInfo[] = [
     targetAudience: 'Dành cho Khối 6 & Khối 7',
     status: 'active',
     isOpen: true,
-    startDate: '2024-10-20',
-    endDate: '2024-11-25',
+    startDate: '2025-10-20',
+    endDate: '2026-12-31',
     summaryNote: 'Đợt thi đua chuyên đề dành cho các chi đội khối 6 và 7 nhân kỷ niệm 83 năm ngày thành lập Đội.',
-    createdAt: '2024-10-20',
+    createdAt: '2025-10-20',
     questionBankMode: 'combined',
     selectedBankIds: ['bank-5-dieu-bac-day', 'bank-thoi-an-truyen-thong'],
   },
@@ -166,7 +176,7 @@ export const DEFAULT_CONTESTS_LIST: ContestInfo[] = [
     id: 'hoi-thi-2025-hanh-trinh-theo-dau-chan-bac',
     title: 'Hội Thi: "Hành Trình Mùa Xuân 1930 - Ánh Sáng Soi Đường Cách Mạng"',
     subtitle: 'Đợt thi đua chào mừng 95 năm Ngày thành lập Đảng Cộng sản Việt Nam (03/02/1930 - 03/02/2025)',
-    academicYear: 'Năm học 2024 - 2025',
+    academicYear: 'Niên khóa 2025 - 2026',
     durationMinutes: 15,
     totalQuestions: 15,
     organizer: 'Tổ Lịch sử - GDCD & Chi đoàn Giáo viên THCS Nguyễn Trung Trực',
@@ -174,9 +184,9 @@ export const DEFAULT_CONTESTS_LIST: ContestInfo[] = [
     targetAudience: 'Kế hoạch thi đua Đợt 2',
     status: 'draft',
     isOpen: false,
-    startDate: '2025-01-10',
-    endDate: '2025-02-15',
-    createdAt: '2024-11-01',
+    startDate: '2026-01-10',
+    endDate: '2026-02-15',
+    createdAt: '2025-11-01',
     questionBankMode: 'combined',
     selectedBankIds: ['bank-cuoc-doi', 'bank-tu-tuong'],
   },
@@ -526,8 +536,119 @@ const STORAGE_KEY_QUESTION_BANKS = 'hcm_contest_question_banks_v1';
 export const EVENT_CONTEST_DATA_CHANGED = 'hcm_contest_data_changed';
 
 // ==============================================================================
-// 1. QUẢN TRỊ DANH SÁCH TỪNG HỘI THI (MULTI-CONTEST MANAGEMENT)
+// 1. QUẢN TRỊ DANH SÁCH TỪNG HỘI THI & KIỂM SOÁT THỜI HẠN (MULTI-CONTEST & ADMISSION)
 // ==============================================================================
+
+/**
+ * Kiểm tra trạng thái tiếp nhận bài thi của hội thi dựa trên cả trạng thái (status)
+ * và thời hạn ngày bắt đầu / ngày kết thúc (startDate / endDate).
+ */
+export function getContestAdmissionStatus(contest?: ContestInfo | null): ContestAdmissionStatus {
+  if (!contest) {
+    return {
+      allowed: false,
+      code: 'CLOSED',
+      reason: 'Hội thi không tồn tại hoặc đã bị gỡ bỏ khỏi hệ thống.',
+      badgeLabel: 'Không khả dụng',
+      badgeColor: 'slate',
+    };
+  }
+
+  // 1. Kiểm tra trạng thái lưu trữ kỷ yếu
+  if (contest.status === 'archived') {
+    return {
+      allowed: false,
+      code: 'ARCHIVED',
+      reason: 'Hội thi đã kết thúc thành công và được lưu trữ vào Kỷ yếu học đường.',
+      badgeLabel: 'Đã lưu trữ kỷ yếu',
+      badgeColor: 'slate',
+    };
+  }
+
+  // 2. Kiểm tra trạng thái dự thảo
+  if (contest.status === 'draft') {
+    return {
+      allowed: false,
+      code: 'DRAFT',
+      reason: 'Hội thi đang trong giai đoạn dự thảo kế hoạch thi đua, chưa mở cổng thi.',
+      badgeLabel: 'Kế hoạch dự thảo',
+      badgeColor: 'amber',
+    };
+  }
+
+  // 3. Kiểm tra trạng thái tạm đóng của Ban Tổ Chức
+  if (contest.status === 'closed' || contest.isOpen === false) {
+    return {
+      allowed: false,
+      code: 'CLOSED',
+      reason: 'Cổng thi trực tuyến hiện đang tạm đóng nhận bài theo thông báo của Ban Tổ Chức.',
+      badgeLabel: 'Cổng thi đang tạm đóng',
+      badgeColor: 'red',
+    };
+  }
+
+  const now = new Date();
+
+  // 4. Kiểm tra ngày bắt đầu mở cổng (nếu có cấu hình)
+  if (contest.startDate && contest.startDate.trim() !== '') {
+    const startDateTime = new Date(`${contest.startDate}T00:00:00`);
+    if (!isNaN(startDateTime.getTime()) && now < startDateTime) {
+      const formattedStart = startDateTime.toLocaleDateString('vi-VN');
+      return {
+        allowed: false,
+        code: 'NOT_STARTED',
+        reason: `Hội thi sẽ chính thức mở cổng nhận bài thi từ ngày ${formattedStart}. Thí sinh vui lòng quay lại sau!`,
+        badgeLabel: `Mở thi từ ${formattedStart}`,
+        badgeColor: 'amber',
+      };
+    }
+  }
+
+  // 5. Kiểm tra ngày kết thúc / quá hạn thi (Hạn chót tính đến 23:59:59 của ngày endDate)
+  if (contest.endDate && contest.endDate.trim() !== '') {
+    const endDateTime = new Date(`${contest.endDate}T23:59:59`);
+    if (!isNaN(endDateTime.getTime())) {
+      if (now > endDateTime) {
+        const formattedEnd = endDateTime.toLocaleDateString('vi-VN');
+        return {
+          allowed: false,
+          code: 'EXPIRED',
+          reason: `Hội thi đã hết hạn nhận bài dự thi (Thời hạn kết thúc: 23:59 ngày ${formattedEnd}). Cổng thi đã chính thức khép lại.`,
+          badgeLabel: `Đã hết hạn (${formattedEnd})`,
+          badgeColor: 'red',
+        };
+      }
+      // Tính số ngày còn lại nếu đang mở
+      const diffMs = endDateTime.getTime() - now.getTime();
+      const daysLeft = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+      return {
+        allowed: true,
+        code: 'OPEN',
+        reason: 'Hội thi đang mở nhận bài dự thi trực tuyến.',
+        badgeLabel: daysLeft <= 3 ? `Còn ${daysLeft} ngày` : 'Đang mở nhận bài',
+        badgeColor: 'emerald',
+        daysLeft,
+      };
+    }
+  }
+
+  // 6. Đang mở nhận bài bình thường
+  return {
+    allowed: true,
+    code: 'OPEN',
+    reason: 'Hội thi đang mở nhận bài dự thi trực tuyến.',
+    badgeLabel: 'Đang mở nhận bài dự thi',
+    badgeColor: 'emerald',
+  };
+}
+
+export function isContestAcceptingSubmissions(contest?: ContestInfo | null): boolean {
+  return getContestAdmissionStatus(contest).allowed;
+}
+
+export function isContestExpired(contest?: ContestInfo | null): boolean {
+  return getContestAdmissionStatus(contest).code === 'EXPIRED';
+}
 
 export function getStoredContestsList(): ContestInfo[] {
   try {
@@ -541,11 +662,13 @@ export function getStoredContestsList(): ContestInfo[] {
       // Bổ sung các trường mới (targetAudience, bannerTag, questionBankMode...) nếu dữ liệu cũ còn thiếu
       const merged = parsed.map((item) => {
         const def = DEFAULT_CONTESTS_LIST.find((d) => d.id === item.id);
+        const effectiveStatus: ContestStatus = item.status || (item.isOpen === false ? 'closed' : 'active');
         return {
           ...def,
           ...item,
+          status: effectiveStatus,
           targetAudience: item.targetAudience || def?.targetAudience || 'Toàn trường',
-          isOpen: item.status === 'active',
+          isOpen: effectiveStatus === 'active',
           questionBankMode: item.questionBankMode || def?.questionBankMode || 'combined',
           selectedBankIds:
             item.selectedBankIds ||
@@ -558,25 +681,6 @@ export function getStoredContestsList(): ContestInfo[] {
         };
       });
 
-      // Nếu hệ thống trước đó chỉ có 1 hội thi active, kích hoạt thêm hội thi số 2
-      // để người dùng trải nghiệm ngay tính năng 2 hội thi song song
-      const activeCount = merged.filter((c) => c.status === 'active').length;
-      if (activeCount < 2 && merged.some((c) => c.id === 'hoi-thi-2024-5-dieu-bac-day')) {
-        const parallelReady = merged.map((c) =>
-          c.id === 'hoi-thi-2024-5-dieu-bac-day'
-            ? {
-                ...c,
-                status: 'active' as ContestStatus,
-                isOpen: true,
-                bannerTag: '🌸 HỘI THI ĐỘI VIÊN CHUYÊN ĐỀ (SONG SONG)',
-                targetAudience: 'Dành cho Khối 6 & Khối 7',
-              }
-            : c
-        );
-        localStorage.setItem(STORAGE_KEY_CONTESTS_LIST, JSON.stringify(parallelReady));
-        return parallelReady;
-      }
-
       return merged;
     }
     return DEFAULT_CONTESTS_LIST;
@@ -588,6 +692,7 @@ export function getStoredContestsList(): ContestInfo[] {
 export function saveStoredContestsList(contests: ContestInfo[]): ContestInfo[] {
   try {
     localStorage.setItem(STORAGE_KEY_CONTESTS_LIST, JSON.stringify(contests));
+    localStorage.setItem('hcm_contests_last_updated', new Date().toISOString());
     if (typeof window !== 'undefined') {
       window.dispatchEvent(new Event(EVENT_CONTEST_DATA_CHANGED));
     }
@@ -637,10 +742,18 @@ export function toggleContestActive(contestId: string, isActive: boolean): Conte
         ...c,
         status: newStatus,
         isOpen: isActive,
+        updatedAt: new Date().toISOString(),
       };
     }
     return c;
   });
+  const activeId = getActiveContestId();
+  if (contestId === activeId) {
+    const target = updated.find((c) => c.id === contestId);
+    if (target) {
+      localStorage.setItem(STORAGE_KEY_CONTEST_INFO, JSON.stringify(target));
+    }
+  }
   saveStoredContestsList(updated);
   return updated;
 }
@@ -656,10 +769,18 @@ export function setContestStatus(contestId: string, status: ContestStatus): Cont
         ...c,
         status,
         isOpen: status === 'active',
+        updatedAt: new Date().toISOString(),
       };
     }
     return c;
   });
+  const activeId = getActiveContestId();
+  if (contestId === activeId) {
+    const target = updated.find((c) => c.id === contestId);
+    if (target) {
+      localStorage.setItem(STORAGE_KEY_CONTEST_INFO, JSON.stringify(target));
+    }
+  }
   saveStoredContestsList(updated);
   return updated;
 }
@@ -667,7 +788,7 @@ export function setContestStatus(contestId: string, status: ContestStatus): Cont
 export function setActiveContest(contestId: string): ContestInfo[] {
   const currentList = getStoredContestsList();
   const updated = currentList.map((c) =>
-    c.id === contestId ? { ...c, status: 'active' as ContestStatus, isOpen: true } : c
+    c.id === contestId ? { ...c, status: 'active' as ContestStatus, isOpen: true, updatedAt: new Date().toISOString() } : c
   );
   localStorage.setItem(STORAGE_KEY_ACTIVE_CONTEST_ID, contestId);
   saveStoredContestsList(updated);
@@ -700,14 +821,15 @@ export function saveStoredContestInfo(info: ContestInfo): ContestInfo {
     const list = getStoredContestsList();
     const exists = list.some((c) => c.id === info.id);
     let updatedList: ContestInfo[];
+    const withTimestamp = { ...info, updatedAt: new Date().toISOString() };
     if (exists) {
-      updatedList = list.map((c) => (c.id === info.id ? { ...c, ...info } : c));
+      updatedList = list.map((c) => (c.id === info.id ? { ...c, ...withTimestamp } : c));
     } else {
-      updatedList = [info, ...list];
+      updatedList = [withTimestamp, ...list];
     }
     saveStoredContestsList(updatedList);
-    localStorage.setItem(STORAGE_KEY_CONTEST_INFO, JSON.stringify(info));
-    return info;
+    localStorage.setItem(STORAGE_KEY_CONTEST_INFO, JSON.stringify(withTimestamp));
+    return withTimestamp;
   } catch (err) {
     console.error('Lỗi lưu cấu hình hội thi:', err);
     return info;
@@ -721,6 +843,7 @@ export function addContest(contestData: Omit<ContestInfo, 'id'> & { id?: string 
     ...contestData,
     id: newId,
     createdAt: new Date().toISOString().substring(0, 10),
+    updatedAt: new Date().toISOString(),
   };
   const updated = [newContest, ...list];
   return saveStoredContestsList(updated);
@@ -728,7 +851,12 @@ export function addContest(contestData: Omit<ContestInfo, 'id'> & { id?: string 
 
 export function updateContest(contest: ContestInfo): ContestInfo[] {
   const list = getStoredContestsList();
-  const updated = list.map((c) => (c.id === contest.id ? contest : c));
+  const withTimestamp = { ...contest, updatedAt: new Date().toISOString() };
+  const updated = list.map((c) => (c.id === contest.id ? withTimestamp : c));
+  const activeId = getActiveContestId();
+  if (contest.id === activeId || updated.length === 1) {
+    localStorage.setItem(STORAGE_KEY_CONTEST_INFO, JSON.stringify(withTimestamp));
+  }
   return saveStoredContestsList(updated);
 }
 
@@ -1150,9 +1278,24 @@ export async function fetchSupabaseContestData(): Promise<{
       };
 
       if (Array.isArray(cloudData.contests) && cloudData.contests.length > 0) {
-        localStorage.setItem(STORAGE_KEY_CONTESTS_LIST, JSON.stringify(cloudData.contests));
-        if (cloudData.activeContestId) {
-          localStorage.setItem(STORAGE_KEY_ACTIVE_CONTEST_ID, cloudData.activeContestId);
+        const localLastUpdated = localStorage.getItem('hcm_contests_last_updated');
+        const cloudSyncedAt = (cloudData as any).syncedAt;
+        let shouldUpdateLocalContests = true;
+
+        if (localLastUpdated && cloudSyncedAt) {
+          const localTime = new Date(localLastUpdated).getTime();
+          const cloudTime = new Date(cloudSyncedAt).getTime();
+          // Nếu dữ liệu cục bộ được cập nhật mới hơn trên Cloud, không ghi đè dữ liệu cũ từ Cloud
+          if (localTime > cloudTime) {
+            shouldUpdateLocalContests = false;
+          }
+        }
+
+        if (shouldUpdateLocalContests) {
+          localStorage.setItem(STORAGE_KEY_CONTESTS_LIST, JSON.stringify(cloudData.contests));
+          if (cloudData.activeContestId) {
+            localStorage.setItem(STORAGE_KEY_ACTIVE_CONTEST_ID, cloudData.activeContestId);
+          }
         }
       }
 

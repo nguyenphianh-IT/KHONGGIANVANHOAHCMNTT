@@ -10,6 +10,7 @@ import {
   Search,
   CheckCircle2,
   AlertCircle,
+  AlertTriangle,
   RotateCcw,
   X,
   Check,
@@ -62,7 +63,8 @@ import {
   compareSubmissions,
   EVENT_CONTEST_DATA_CHANGED,
   syncContestsAndSubmissionsToSupabase,
-  fetchSupabaseContestData
+  fetchSupabaseContestData,
+  isContestExpired
 } from '../../data/contestData';
 import {
   ClassInfo,
@@ -544,6 +546,25 @@ export const ContestManagerModal: React.FC<ContestManagerModalProps> = ({
   };
 
   // ─── MULTI-CONTEST MANAGEMENT HANDLERS ────────────────────────────
+  const autoSyncContestsToCloud = async (updatedContests: ContestInfo[], toastPrefix: string) => {
+    try {
+      const res = await syncContestsAndSubmissionsToSupabase(
+        updatedContests,
+        submissions,
+        questions,
+        classesList,
+        roster
+      );
+      if (res.success) {
+        showToast('success', `${toastPrefix} (Đã đồng bộ lên Database Cloud)`);
+      } else {
+        showToast('info', `${toastPrefix} (Đã lưu thiết bị; Cloud: ${res.message})`);
+      }
+    } catch (err: any) {
+      console.warn('[Auto Sync Exception]', err);
+    }
+  };
+
   const handleToggleContestActive = (contestId: string, isActive: boolean) => {
     const updated = toggleContestActive(contestId, isActive);
     setContestsList(updated);
@@ -552,12 +573,11 @@ export const ContestManagerModal: React.FC<ContestManagerModalProps> = ({
       if (target.id === activeContestId) {
         setContestInfo(target);
       }
-      showToast(
-        isActive ? 'success' : 'info',
-        isActive
-          ? `Đã mở cổng thi song song cho "${target.title}"!`
-          : `Đã tạm đóng cổng nhận bài cho "${target.title}"!`
-      );
+      const msg = isActive
+        ? `Đã mở cổng thi song song cho "${target.title}"!`
+        : `Đã tạm đóng cổng nhận bài cho "${target.title}"!`;
+      showToast(isActive ? 'success' : 'info', msg);
+      autoSyncContestsToCloud(updated, msg);
     }
   };
 
@@ -569,7 +589,9 @@ export const ContestManagerModal: React.FC<ContestManagerModalProps> = ({
     if (target) {
       setContestInfo(target);
       setSelectedContestFilter(contestId);
-      showToast('success', `Đã chọn "${target.title}" làm Hội thi hiển thị chính trên trang chủ!`);
+      const msg = `Đã chọn "${target.title}" làm Hội thi hiển thị chính trên trang chủ!`;
+      showToast('success', msg);
+      autoSyncContestsToCloud(updated, msg);
     }
   };
 
@@ -578,7 +600,7 @@ export const ContestManagerModal: React.FC<ContestManagerModalProps> = ({
     setContestFormData({
       title: '',
       subtitle: '',
-      academicYear: 'Năm học 2024 - 2025',
+      academicYear: 'Niên khóa 2025 - 2026',
       durationMinutes: 10,
       totalQuestions: 10,
       organizer: 'Liên đội & Chi đoàn Giáo viên Trường THCS Nguyễn Trung Trực (Phường Thới An)',
@@ -586,7 +608,7 @@ export const ContestManagerModal: React.FC<ContestManagerModalProps> = ({
       targetAudience: 'Dành cho Khối 6, 7 hoặc Khối 8, 9',
       status: 'active',
       startDate: new Date().toISOString().substring(0, 10),
-      endDate: '',
+      endDate: '2026-12-31',
       summaryNote: '',
       questionBankMode: 'combined',
       selectedBankIds: ['bank-cuoc-doi', 'bank-tu-tuong', 'bank-5-dieu-bac-day', 'bank-thoi-an-truyen-thong'],
@@ -633,7 +655,9 @@ export const ContestManagerModal: React.FC<ContestManagerModalProps> = ({
       if (updatedContest.id === activeContestId) {
         setContestInfo(updatedContest);
       }
-      showToast('success', `Đã cập nhật thông tin hội thi "${updatedContest.title}"!`);
+      const msg = `Đã cập nhật thông tin hội thi "${updatedContest.title}"!`;
+      showToast('success', msg);
+      autoSyncContestsToCloud(res, msg);
     } else {
       const newId = `hoi-thi-${Date.now()}`;
       const res = addContest({
@@ -642,7 +666,9 @@ export const ContestManagerModal: React.FC<ContestManagerModalProps> = ({
         isOpen: contestFormData.status === 'active',
       });
       setContestsList(res);
-      showToast('success', 'Đã khởi tạo hội thi mới thành công!');
+      const msg = 'Đã khởi tạo hội thi mới thành công!';
+      showToast('success', msg);
+      autoSyncContestsToCloud(res, msg);
     }
     setIsContestFormOpen(false);
   };
@@ -659,7 +685,9 @@ export const ContestManagerModal: React.FC<ContestManagerModalProps> = ({
         if (c.id === activeContestId) {
           handleSwitchActiveContest(res[0].id);
         }
-        showToast('info', `Đã xóa hội thi "${c.title}"`);
+        const msg = `Đã xóa hội thi "${c.title}"`;
+        showToast('info', msg);
+        autoSyncContestsToCloud(res, msg);
       } catch (err: any) {
         showToast('error', err?.message || 'Lỗi khi xóa hội thi');
       }
@@ -682,7 +710,9 @@ export const ContestManagerModal: React.FC<ContestManagerModalProps> = ({
     const res = archiveContest(archivingContest.id, archiveSummaryInput.trim());
     setContestsList(res);
     setIsArchiveModalOpen(false);
-    showToast('success', `Đã đóng gói và lưu trữ hồ sơ kết quả hội thi "${archivingContest.title}" vào Kỷ yếu thành công!`);
+    const msg = `Đã đóng gói và lưu trữ hồ sơ kết quả hội thi "${archivingContest.title}" vào Kỷ yếu thành công!`;
+    showToast('success', msg);
+    autoSyncContestsToCloud(res, msg);
   };
 
   // ─── SUBMISSIONS & GRADES HANDLERS ────────────────────────────────
@@ -1223,7 +1253,13 @@ export const ContestManagerModal: React.FC<ContestManagerModalProps> = ({
                         {/* Status Badge & Banner tag */}
                         <div className="flex flex-wrap items-center justify-between gap-2">
                           <div className="flex items-center space-x-2 flex-wrap gap-y-1">
-                            {c.status === 'active' && (
+                            {c.status === 'active' && isContestExpired(c) && (
+                              <span className="inline-flex items-center space-x-1 px-2.5 py-1 rounded-full text-[11px] font-bold bg-red-100 text-red-800 border border-red-300">
+                                <AlertTriangle className="w-3.5 h-3.5 text-red-600" />
+                                <span>ĐÃ QUÁ HẠN ({c.endDate})</span>
+                              </span>
+                            )}
+                            {c.status === 'active' && !isContestExpired(c) && (
                               <span className="inline-flex items-center space-x-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-300">
                                 <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
                                 <span>ĐANG MỞ THI (SONG SONG)</span>
@@ -1291,6 +1327,32 @@ export const ContestManagerModal: React.FC<ContestManagerModalProps> = ({
                             <span>{contestSubmissionsCount} Bài nộp</span>
                           </div>
                         </div>
+
+                        {/* Dates Bar */}
+                        {(c.startDate || c.endDate) && (
+                          <div className={`flex items-center justify-between text-[11px] px-3 py-1.5 rounded-xl border ${
+                            isContestExpired(c)
+                              ? 'bg-red-50 border-red-200 text-red-900 font-medium'
+                              : 'bg-heritage-ivory-100/90 border-heritage-ivory-300 text-heritage-ink-700'
+                          }`}>
+                            <span className="flex items-center space-x-1 truncate mr-2">
+                              <Clock className="w-3.5 h-3.5 text-heritage-ink-500 flex-shrink-0" />
+                              <span className="text-heritage-ink-600">Thời hạn:</span>
+                              <strong className="truncate">
+                                {c.startDate ? new Date(c.startDate).toLocaleDateString('vi-VN') : '—'} → {c.endDate ? new Date(c.endDate).toLocaleDateString('vi-VN') : 'Không giới hạn'}
+                              </strong>
+                            </span>
+                            {isContestExpired(c) ? (
+                              <span className="px-2 py-0.5 rounded-full bg-red-200/80 text-red-900 font-bold text-[10px] flex-shrink-0">
+                                Đã hết hạn
+                              </span>
+                            ) : c.endDate ? (
+                              <span className="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-bold text-[10px] flex-shrink-0">
+                                Còn hạn
+                              </span>
+                            ) : null}
+                          </div>
+                        )}
 
                         {/* Nguồn ngân hàng câu hỏi của hội thi */}
                         {(() => {
