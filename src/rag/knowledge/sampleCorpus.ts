@@ -8,7 +8,7 @@
  * 3. teachings-children: Những lời dạy của Bác đối với thiếu nhi
  * 4. cultural-heritage: Di sản văn hóa Hồ Chí Minh
  * 5. hcm-cultural-space: Không gian văn hóa Hồ Chí Minh TP.HCM
- * 6. hcmc-history: Lịch sử Thành phố Hồ Chí Minh (và Thới An - Quận 12)
+ * 6. hcmc-history: Lịch sử Thành phố Hồ Chí Minh (và Phường Thới An)
  * 7. school-education: Hoạt động giáo dục và học tập tại nhà trường
  * 8. official-dispatches: Tài liệu chính thức của cơ quan quản lý
  *
@@ -269,16 +269,16 @@ Ngày 5 tháng 6 năm 1911, từ Bến Cảng Nhà Rồng (Sài Gòn - nay là T
 
   {
     id: 'DOC-HCM-011',
-    title: 'Truyền thống Lịch sử Anh hùng Dân tộc Nguyễn Trung Trực và Vùng đất Thới An - Quận 12',
+    title: 'Truyền thống Lịch sử Anh hùng Dân tộc Nguyễn Trung Trực và Vùng đất Thới An',
     category: 'hcmc-history',
     categoryLabel: 'Lịch sử Thành phố Hồ Chí Minh',
     authorOrSource: 'Ban Giám hiệu & Tổ Lịch sử Trường THCS Nguyễn Trung Trực',
     dateOrEra: '1838 - 1868 & Hiện nay',
     status: 'APPROVED',
     isAllowedForRag: true,
-    topics: ['Nguyễn Trung Trực', 'Trường THCS Nguyễn Trung Trực', 'Bảo bối tinh thần', 'Khởi nghĩa kháng Pháp', 'Thới An', 'Quận 12'],
+    topics: ['Nguyễn Trung Trực', 'Trường THCS Nguyễn Trung Trực', 'Bảo bối tinh thần', 'Khởi nghĩa kháng Pháp', 'Thới An', 'Thành phố Hồ Chí Minh'],
     sourceUrl: 'https://thcsnguyentrungtruc.hcm.edu.vn',
-    content: `Trường THCS Nguyễn Trung Trực tọa lạc tại phường Thới An, Quận 12, TP. Hồ Chí Minh - vùng đất giàu truyền thống cách mạng Chiến khu An Phú Đông oanh liệt.
+    content: `Trường THCS Nguyễn Trung Trực tọa lạc tại phường Thới An, TP. Hồ Chí Minh - vùng đất giàu truyền thống cách mạng kiên cường của Chiến khu An Phú Đông oanh liệt.
 
 Ngôi trường tự hào mang tên người anh hùng nghĩa quân Nam Bộ kiên cường bất khuất trong cuộc kháng chiến chống thực dân Pháp:
 Anh hùng Nguyễn Trung Trực (1838 - 1868) nổi tiếng với hai chiến công vang dội:
@@ -292,7 +292,7 @@ Noi gương tinh thần yêu nước quật cường của Anh hùng Nguyễn Tr
     metadata: {
       heroBirthYear: 1838,
       heroDeathYear: 1868,
-      schoolLocation: 'Phường Thới An, Quận 12, TP.HCM'
+      schoolLocation: 'Phường Thới An, TP.HCM'
     }
   },
 
@@ -694,8 +694,10 @@ Câu nói chân thành, mộc mạc của Người làm các đồng chí có m�
     }
   },
 
-  // Security Canary test document: PENDING_REVIEW & isAllowedForRag: false
-  // Must NEVER be returned by retrieval engine!
+  // ============================================================================
+  // BATCH B: BỔ SUNG TRI THỨC ĐỊA PHƯƠNG & KHÔNG GIAN VĂN HÓA (DOC-HCM-026 ĐẾN DOC-HCM-028)
+  // ============================================================================
+
   {
     id: 'DOC-HCM-026',
     title: 'Địa giới hành chính phường Thới An qua các thời kỳ (1997–2025 và hiện hành)',
@@ -1248,6 +1250,238 @@ Chi bộ và Ban Giám hiệu nhà trường cụ thể hóa Chỉ thị 05-CT/T
       batch: 'BATCH_C_EXPANSION_01',
       directiveNumber: '05-CT/TW',
       issuingBody: 'Bộ Chính trị Ban Chấp hành Trung ương Đảng'
+    }
+  },
+
+  // ============================================================================
+  // BATCH D: BỔ SUNG TRI THỨC TỪ TỦ SÁCH ĐIỆN TỬ HỒ CHÍ MINH (HOCHIMINH.VN)
+  // (DOC-HCM-041 đến DOC-HCM-046) - Nguồn kiểm chứng: hochiminh.vn (categoryId=3000402)
+  // ============================================================================
+
+  {
+    id: 'DOC-HCM-041',
+    title: 'Học ở trường, học ở sách vở, học lẫn nhau và học nhân dân – Phương pháp học tập suốt đời của Chủ tịch Hồ Chí Minh',
+    category: 'teachings-children',
+    categoryLabel: 'Những lời dạy của Bác đối với thiếu nhi',
+    authorOrSource: 'Chủ tịch Hồ Chí Minh - Tủ sách điện tử Hồ Chí Minh (hochiminh.vn) & NXB Trẻ',
+    dateOrEra: '1945 - 1969',
+    status: 'APPROVED',
+    isAllowedForRag: true,
+    topics: ['Tự học', 'Phương pháp học tập', 'Học suốt đời', 'Học ở nhân dân', 'Học sinh THCS', 'Tủ sách điện tử Hồ Chí Minh'],
+    sourceUrl: 'https://hochiminh.vn/book/tac-pham-ve-ho-chi-minh/tac-pham-trong-nuoc/hoc-o-truong-hoc-o-sach-vo-hoc-lan-nhau-va-hoc-nhan-dan-484',
+    content: `1. LỜI HUẤN THỊ CỐT LÕI CỦA CHỦ TỊCH HỒ CHÍ MINH VỀ VIỆC HỌC:
+Sinh thời, Chủ tịch Hồ Chí Minh luôn căn dặn cán bộ, giáo viên và học sinh:
+"Học ở trường, học ở sách vở, học lẫn nhau và học nhân dân, không học nhân dân là một thiếu sót rất lớn".
+Theo Bác, tri thức không bao giờ đóng khung trong bốn bức tường lớp học. Trường học cung cấp nền tảng kiến thức căn bản, nhưng người học muốn thực sự trưởng thành và đóng góp cho đất nước thì phải mở rộng không gian học tập ra toàn bộ đời sống xã hội.
+
+2. NGUYÊN LÝ TỰ HỌC VÀ HỌC TẬP SUỐT ĐỜI:
+- Học đi đôi với hành: "Học để hành: Học với hành phải đi đôi. Học mà không hành thì vô ích. Hành mà không học thì hành không trôi chảy".
+- Học suốt đời: "Còn sống thì còn phải học", "Đường đời là một chiếc thang không có nấc chót; việc học là một quyển sách không có trang cuối cùng".
+- Rèn luyện óc suy nghĩ độc lập: Bác phê phán gay gắt lối học vẹt, học tủ, học chỉ để lấy bằng cấp đối phó. Người yêu cầu học trò phải có tinh thần tự lực cánh sinh, đào sâu suy nghĩ, dám thắc mắc và tìm tòi chân lý.
+
+3. TẤM GƯƠNG TỰ HỌC SÁNG NGỜI CỦA BÁC HỒ:
+- Trong hơn 30 năm bôn ba qua gần 30 quốc gia trên thế giới, Người vừa lao động nặng nhọc (phụ bếp, cào tuyết, thợ ảnh, viết báo) vừa kiên trì tự học ngoại ngữ và các môn khoa học xã hội.
+- Mỗi ngày Người quy định phải học và ghi nhớ một số từ mới, viết chữ lên cánh tay để vừa làm việc vừa nhẩm thuộc lòng. Nhờ tinh thần tự học phi thường, Người đã sử dụng thông thạo nhiều ngoại ngữ như tiếng Pháp, Anh, Nga, Trung Quốc, Đức, Tây Ban Nha, Ý...
+
+4. BÀI HỌC VẬN DỤNG CHO ĐỘI VIÊN, HỌC SINH THCS NGUYỄN TRUNG TRỰC:
+- Xây dựng thói quen đọc sách mỗi ngày tại Thư viện thông minh và Không gian văn hóa Hồ Chí Minh của trường.
+- Tinh thần "học lẫn nhau": Tích cực tham gia mô hình "Đôi bạn cùng tiến", học nhóm, giúp đỡ bạn bè học yếu cùng vươn lên.
+- Tinh thần "học nhân dân": Biết lễ phép, lắng nghe, học hỏi những đức tính cần cù, thật thà, yêu lao động từ ông bà, cha mẹ và người lao động xung quanh.`,
+    metadata: {
+      batch: 'BATCH_D_HOCHIMINH_VN_EXPANSION',
+      bookId: 484,
+      pdfUrl: 'https://hochiminh.vn/upload/3000001/20251024/06027212f502726cbace66eb3f4cfb2bHoc-o-truong--HCM.pdf',
+      publisher: 'NXB Trẻ & hochiminh.vn'
+    }
+  },
+
+  {
+    id: 'DOC-HCM-042',
+    title: 'Tác phẩm "Văn hóa soi đường cho quốc dân đi" – Tư tưởng Hồ Chí Minh về xây dựng nền văn hóa Việt Nam tiên tiến',
+    category: 'ideology-ethics',
+    categoryLabel: 'Tư tưởng, đạo đức, phong cách Hồ Chí Minh',
+    authorOrSource: 'Chủ tịch Hồ Chí Minh - Vang vọng lời nước non (Tập 8), NXB Chính trị quốc gia Sự thật & hochiminh.vn',
+    dateOrEra: '24/11/1946',
+    status: 'APPROVED',
+    isAllowedForRag: true,
+    topics: ['Văn hóa soi đường cho quốc dân đi', 'Hội nghị Văn hóa toàn quốc 1946', 'Nền văn hóa mới', 'Đạo đức văn hóa', 'Không gian văn hóa Hồ Chí Minh'],
+    sourceUrl: 'https://hochiminh.vn/book/tac-pham-ve-ho-chi-minh/tac-pham-trong-nuoc/vang-vong-loi-nuoc-non-tap-8-van-hoa-soi-duong-cho-quoc-dan-di-463',
+    content: `1. BỐI CẢNH VÀ LUẬN ĐIỂM LỊCH SỬ TẠI HỘI NGHỊ VĂN HÓA TOÀN QUỐC 1946:
+Ngày 24 tháng 11 năm 1946, tại Nhà hát Lớn Hà Nội, Hội nghị Văn hóa toàn quốc lần thứ nhất đã long trọng khai mạc.
+Tại diễn đàn này, Chủ tịch Hồ Chí Minh đã khẳng định luận điểm bất hủ mang tính định hướng chiến lược:
+"Văn hóa soi đường cho quốc dân đi".
+Người nhấn mạnh: Văn hóa không phải là thứ trang sức bên ngoài xã hội, mà văn hóa chính là ngọn đuốc dẫn đường, bồi đắp tâm hồn, khai sáng dân trí và khơi dậy khát vọng độc lập, tự do, tự cường của toàn thể dân tộc.
+
+2. ĐỊNH NGHĨA KHOA HỌC VÀ TOÀN DIỆN CỦA HỒ CHÍ MINH VỀ VĂN HÓA:
+Tháng 8 năm 1943, trong trang sổ tay "Nhật ký trong tù", Bác Hồ đã ghi lại định nghĩa sâu sắc về văn hóa:
+"Vì lẽ sinh tồn cũng như mục đích của cuộc sống, loài người mới sáng tạo và phát minh ra ngôn ngữ, chữ viết, đạo đức, pháp luật, khoa học, tôn giáo, văn học, nghệ thuật, những công cụ cho sinh hoạt hằng ngày về mặc, ăn, ở và các phương thức sử dụng. Toàn bộ những sáng tạo và phát minh đó tức là văn hóa".
+
+3. MỐI QUAN HỆ GIỮA VĂN HÓA VỚI CHÍNH TRỊ VÀ KINH TẾ:
+- Bác chỉ rõ: Văn hóa không thể đứng ngoài mà phải ở trong kinh tế và chính trị.
+- Kinh tế phát triển sẽ tạo tiền đề vật chất cho văn hóa nảy nở; nhưng văn hóa lại là động lực nội sinh, nâng đỡ đạo đức xã hội, ngăn ngừa sự tha hóa, suy đồi nhân cách.
+- Nền văn hóa mới Việt Nam phải thấm nhuần 3 tính chất căn bản: Dân tộc, Khoa học và Đại chúng.
+
+4. Ý NGHĨA ĐỐI VỚI KHÔNG GIAN VĂN HÓA HỒ CHÍ MINH HỌC ĐƯỜNG:
+- Luận điểm "Văn hóa soi đường cho quốc dân đi" chính là kim chỉ nam cho việc xây dựng Không gian văn hóa Hồ Chí Minh tại Trường THCS Nguyễn Trung Trực (Phường Thới An, TP.HCM).
+- Không gian văn hóa Hồ Chí Minh học đường không dừng lại ở các pano, triển lãm tĩnh, mà phải thẩm thấu vào văn hóa ứng xử hằng ngày: nếp sống văn minh, thầy mẫu mực, trò chăm ngoan, trung thực trong thi cử và tương thân tương ái giữa các học sinh.`,
+    metadata: {
+      batch: 'BATCH_D_HOCHIMINH_VN_EXPANSION',
+      bookId: 463,
+      pdfUrl: 'https://hochiminh.vn/upload/3000001/20251024/43ff43ed3f86cd37ac3683f7aea3813avang-vong-loi-nuoc-non-tap-8.pdf',
+      publisher: 'NXB Chính trị quốc gia Sự thật & hochiminh.vn'
+    }
+  },
+
+  {
+    id: 'DOC-HCM-043',
+    title: 'Tác phẩm "Đại đoàn kết là một lực lượng tất thắng" – Cội nguồn sức mạnh dân tộc theo tư tưởng Hồ Chí Minh',
+    category: 'ideology-ethics',
+    categoryLabel: 'Tư tưởng, đạo đức, phong cách Hồ Chí Minh',
+    authorOrSource: 'Chủ tịch Hồ Chí Minh - Vang vọng lời nước non (Tập 9), NXB Chính trị quốc gia Sự thật & hochiminh.vn',
+    dateOrEra: '1930 - 1969',
+    status: 'APPROVED',
+    isAllowedForRag: true,
+    topics: ['Đại đoàn kết toàn dân tộc', 'Đoàn kết đoàn kết đại đoàn kết', 'Sức mạnh dân tộc', 'Yêu thương đồng bào', 'Đoàn kết học đường'],
+    sourceUrl: 'https://hochiminh.vn/book/tac-pham-ve-ho-chi-minh/tac-pham-trong-nuoc/vang-vong-loi-nuoc-non-tap-9-dai-doan-ket-la-mot-luc-luong-tat-thang-464',
+    content: `1. CHÂN LÝ BẤT HỦ VỀ ĐẠI ĐOÀN KẾT:
+Trong suốt cuộc đời hoạt động cách mạng của mình, Chủ tịch Hồ Chí Minh đã đúc kết chân lý lịch sử vĩ đại:
+"Đoàn kết, đoàn kết, đại đoàn kết,
+Thành công, thành công, đại thành công!".
+Đoàn kết không chỉ là một sách lược chính trị nhất thời, mà là đường lối chiến lược sống còn, xuyên suốt của cách mạng Việt Nam, là cội nguồn tạo nên sức mạnh vô địch giúp dân tộc ta chiến thắng mọi kẻ thù xâm lược và vượt qua mọi bão giông thử thách.
+
+2. NGUYÊN TẮC VÀ LỰC LƯỢNG CỦA KHỐI ĐẠI ĐOÀN KẾT:
+- Đại đoàn kết toàn dân tộc: Tập hợp không phân biệt tôn giáo (lương hay giáo), không phân biệt giai cấp, gái trai, già trẻ, 54 dân tộc anh em cùng chung một dải non sông đất nước.
+- Lấy liên minh công - nông - trí thức làm nền tảng, dưới sự lãnh đạo của Đảng Cộng sản Việt Nam.
+- Kết hợp đại đoàn kết toàn dân tộc với đoàn kết quốc tế: Tranh thủ sự ủng hộ của các lực lượng tiến bộ, yêu chuộng hòa bình trên toàn thế giới vì mục tiêu độc lập, tự do và tình huynh đệ nhân loại.
+
+3. LỜI DẶN DÒ TÂM HUYẾT VỀ ĐOÀN KẾT TRONG DI CHÚC (1969):
+Trước lúc đi xa, Người đã thiết tha căn dặn:
+"Đoàn kết là một truyền thống cực kỳ quý báu của Đảng và của dân ta. Các đồng chí từ Trung ương đến các chi bộ cần phải giữ gìn sự đoàn kết nhất trí của Đảng như giữ gìn con ngươi của mắt mình".
+
+4. BÀI HỌC THỰC TIỄN CHO HỌC SINH THCS NGUYỄN TRUNG TRỰC:
+- Rèn luyện Điều 3 trong 5 Điều Bác Hồ dạy: "Đoàn kết tốt, kỷ luật tốt".
+- Tinh thần đồng đội và tình bạn trong sáng: Biết bao dung, sẻ chia khó khăn, tương trợ bạn bè trong học tập, kiên quyết bài trừ vấn nạn bạo lực học đường và chia rẽ bè phái.
+- Chung tay xây dựng tập thể lớp đoàn kết vững mạnh, ngôi trường hạnh phúc nghĩa tình tại Phường Thới An.`,
+    metadata: {
+      batch: 'BATCH_D_HOCHIMINH_VN_EXPANSION',
+      bookId: 464,
+      pdfUrl: 'https://hochiminh.vn/upload/3000001/20251024/7efb763da178a1e30c1e72126c829714vang-vong-loi-nuoc-non-tap-9-%C4%91%C3%A3-n%C3%A9n.pdf',
+      publisher: 'NXB Chính trị quốc gia Sự thật & hochiminh.vn'
+    }
+  },
+
+  {
+    id: 'DOC-HCM-044',
+    title: 'Ký sự "Một giờ với đồng chí Hồ Chí Minh" – Tầm vóc văn hóa Nguyễn Ái Quốc qua góc nhìn báo chí quốc tế năm 1923',
+    category: 'bio-career',
+    categoryLabel: 'Cuộc đời và sự nghiệp Chủ tịch Hồ Chí Minh',
+    authorOrSource: 'Nhà báo Osip Mandelstam (Tạp chí Ogoniok Liên Xô 1923), NXB Chính trị quốc gia Sự thật & hochiminh.vn',
+    dateOrEra: '23/12/1923',
+    status: 'APPROVED',
+    isAllowedForRag: true,
+    topics: ['Nguyễn Ái Quốc', 'Osip Mandelstam', 'Tạp chí Ogoniok', 'Moskva 1923', 'Văn hóa tương lai', 'Tình huynh đệ quốc tế'],
+    sourceUrl: 'https://hochiminh.vn/book/tac-pham-ve-ho-chi-minh/tac-pham-trong-nuoc/mot-gio-voi-dong-chi-ho-chi-minh-475',
+    content: `1. HOÀN CẢNH LỊCH SỬ CỦA BÀI KÝ SỰ BÁO CHÍ NĂM 1923:
+Tháng 6 năm 1923, người thanh niên yêu nước Nguyễn Ái Quốc rời Paris sang thủ đô Moskva (Liên Xô) để dự Hội nghị Quốc tế Nông dân và chuẩn bị tham dự Đại hội V Quốc tế Cộng sản.
+Vào tháng 12 năm 1923, Osip Mandelstam - nhà thơ, nhà báo danh tiếng của nước Nga Xô Viết đã có một cuộc tiếp xúc, phỏng vấn đặc biệt với Người. Bài ký sự mang tựa đề "Thăm một chiến sĩ Quốc tế Cộng sản - Nguyễn Ái Quốc" được đăng trên Tạp chí Ogoniok (Ngọn lửa nhỏ) số 39 ngày 23/12/1923.
+
+2. NHẬN ĐỊNH BẤT HỦ VỀ VĂN HÓA CỦA NGUYỄN ÁI QUỐC:
+Trong bài ký sự, Osip Mandelstam đã ghi lại lời bình luận mang tầm tiên tri và dự báo sâu sắc về văn hóa:
+"Từ Nguyễn Ái Quốc đã tỏa ra một thứ văn hóa, không phải văn hóa Âu châu, mà có lẽ là một nền văn hóa của tương lai...
+Qua cử chỉ cao thượng, tiếng nói trầm ấm của Nguyễn Ái Quốc, chúng ta như nghe thấy ngày mai, như thấy sự yên tĩnh mênh mông của tình huynh đệ toàn thế giới".
+
+3. KHẮC HỌA CHÂN DUNG VÀ PHONG THÁI CỦA NGƯỜI THANH NIÊN VIỆT NAM:
+- Tác giả miêu tả Nguyễn Ái Quốc: Một chàng thanh niên dáng người mảnh khảnh, khuôn mặt thanh tú, đôi mắt sáng rực toát lên sự thông tuệ và lòng quả cảm phi thường.
+- Phong thái lịch thiệp, điềm tĩnh, khiêm nhường nhưng ẩn chứa một ý chí thép và khát vọng tự do cháy bỏng cho nhân dân bị áp bức ở xứ Đông Dương và khắp các thuộc địa.
+- Sự kết hợp nhuần nhuyễn giữa chiều sâu văn hóa truyền thống phương Đông với những giá trị dân chủ, tự do tiến bộ của văn hóa phương Tây.
+
+4. GIÁ TRỊ GIÁO DỤC LÝ TƯỞNG CHO HỌC SINH THCS:
+- Tự hào về nhân cách và tầm vóc văn hóa toàn cầu của Bác Hồ ngay từ những năm tháng Người còn là người thanh niên trẻ tuổi bôn ba tìm đường cứu nước.
+- Học tập ở Bác phong thái giao tiếp văn minh, hòa nhã, khiêm tốn, biết lắng nghe và tôn trọng người khác.
+- Nuôi dưỡng tinh thần công dân toàn cầu: Mở rộng tầm nhìn tri thức ra thế giới bên ngoài nhưng luôn giữ trọn bản sắc văn hóa và lòng yêu nước nồng nàn của dân tộc Việt Nam.`,
+    metadata: {
+      batch: 'BATCH_D_HOCHIMINH_VN_EXPANSION',
+      bookId: 475,
+      pdfUrl: 'https://hochiminh.vn/upload/3000001/20251024/416d7d46d9cd711eee69ce36ec5dc253M%E1%BB%99t-gi%E1%BB%9D-v%E1%BB%9Bi-%C4%91%E1%BB%93ng-ch%C3%AD-H%E1%BB%93-ch%C3%AD-Minh.pdf',
+      publisher: 'NXB Chính trị quốc gia Sự thật & hochiminh.vn'
+    }
+  },
+
+  {
+    id: 'DOC-HCM-045',
+    title: 'Ký sự lịch sử "Giữ yên giấc ngủ của Người" – Kỳ tích giữ gìn thi hài Bác Hồ và công trình Lăng Chủ tịch Hồ Chí Minh',
+    category: 'cultural-heritage',
+    categoryLabel: 'Di sản và tác phẩm văn hóa nghệ thuật',
+    authorOrSource: 'NXB Quân đội Nhân dân, NXB Trẻ & Tủ sách điện tử hochiminh.vn',
+    dateOrEra: '1969 - 1975 & Hiện nay',
+    status: 'APPROVED',
+    isAllowedForRag: true,
+    topics: ['Lăng Chủ tịch Hồ Chí Minh', 'Giữ yên giấc ngủ của Người', 'Bộ Tư lệnh Bảo vệ Lăng', 'Khu K84 Đá Chông', 'Quảng trường Ba Đình', 'Địa chỉ đỏ thiêng liêng'],
+    sourceUrl: 'https://hochiminh.vn/book/tac-pham-ve-ho-chi-minh/tac-pham-trong-nuoc/giu-yen-giac-ngu-cua-nguoi-483',
+    content: `1. BỐI CẢNH LỊCH SỬ THÁNG 9 NĂM 1969 VÀ QUYẾT ĐỊNH LỊCH SỬ CỦA ĐẢNG:
+Ngày 2 tháng 9 năm 1969, Chủ tịch Hồ Chí Minh - vị lãnh tụ kính yêu của dân tộc Việt Nam qua đời.
+Đáp ứng nguyện vọng thiết tha, thiêng liêng của toàn Đảng, toàn quân, toàn dân cả nước, đặc biệt là đồng bào chiến sĩ miền Nam ruột thịt đang trong khói lửa kháng chiến khát khao ngày thống nhất được gặp Bác, Bộ Chính trị và Trung ương Đảng đã quyết định:
+"Phải giữ gìn lâu dài thi hài Bác Hồ và xây dựng Lăng của Người tại Quảng trường Ba Đình lịch sử để nhân dân cả nước và bầu bạn quốc tế mãi mãi được đến viếng Người".
+
+2. KỲ TÍCH GIỮ GÌN BẢO VỆ TUYỆT ĐỐI AN TOÀN THI HÀI BÁC TRONG CHIẾN TRANH:
+- Đội ngũ cán bộ y tế, chiến sĩ công binh Đoàn 69 (tiền thân của Bộ Tư lệnh Bảo vệ Lăng) phối hợp chặt chẽ với các chuyên gia y học hàng đầu của Liên Xô thực hiện nhiệm vụ bảo quản y tế thi hài Bác.
+- Trong điều kiện máy bay Mỹ leo thang ném bom phá hoại miền Bắc dữ dội, thi hài Bác đã được di chuyển tuyệt mật, vượt qua hiểm nguy qua 6 lần sơ tán giữa các căn cứ:
+  + Công trình 75A (Bệnh viện Trung ương Quân đội 108).
+  + Căn cứ K84 (Khu căn cứ Đá Chông, Ba Vì, Hà Nội).
+  + Căn cứ H21 và các hang đá an toàn ven rừng núi.
+Mỗi chuyến hành quân di chuyển thi hài Bác đều là một chiến công thầm lặng, kỳ công và chan chứa nước mắt của cán bộ, chiến sĩ.
+
+3. XÂY DỰNG CÔNG TRÌNH LĂNG CHỦ TỊCH HỒ CHÍ MINH:
+- Khởi công ngày 2 tháng 9 năm 1973 và long trọng khánh thành ngày 29 tháng 8 năm 1975 tại Quảng trường Ba Đình lịch sử.
+- Công trình là biểu tượng hội tụ tinh hoa và tình cảm của cả non sông: Đá hoa cương từ Thanh Hóa, đá cẩm thạch Ngũ Hành Sơn (Đà Nẵng), gỗ quý Tây Nguyên, cát từ sông Hồng và phù sa đất Mũi Cà Mau... cùng hàng vạn cây xanh quý giá từ khắp các miền quê được gửi về hội tụ bên Lăng Bác.
+
+4. GIÁ TRỊ GIÁO DỤC TRUYỀN THỐNG "UỐNG NƯỚC NHỚ NGUỒN":
+- Lăng Bác và Quảng trường Ba Đình là Địa chỉ đỏ thiêng liêng bậc nhất của dân tộc Việt Nam.
+- Giáo dục học sinh lòng biết ơn sâu sắc đối với công lao trời biển của Bác Hồ và sự hy sinh to lớn của các thế hệ cha anh đi trước.
+- Khơi dậy ý thức phấn đấu rèn luyện, sống xứng đáng với niềm tin yêu mà Bác đã trao trọn cho thế hệ tương lai.`,
+    metadata: {
+      batch: 'BATCH_D_HOCHIMINH_VN_EXPANSION',
+      bookId: 483,
+      pdfUrl: 'https://hochiminh.vn/upload/3000001/20251024/a3e23ccabaa80672d9956924ce57dd13Giu-yen-giac-ngu-cua-nguoi.pdf',
+      publisher: 'NXB Quân đội Nhân dân & hochiminh.vn'
+    }
+  },
+
+  {
+    id: 'DOC-HCM-046',
+    title: 'Tác phẩm "Bản án chế độ thực dân Pháp" (1925) – Đòn sấm sét chính luận vạch trần tội ác của chủ nghĩa thực dân',
+    category: 'cultural-heritage',
+    categoryLabel: 'Di sản và tác phẩm văn hóa nghệ thuật',
+    authorOrSource: 'Nguyễn Ái Quốc - Thư quán Lao động Paris (1925), NXB Sự thật tái bản & hochiminh.vn',
+    dateOrEra: '1925',
+    status: 'APPROVED',
+    isAllowedForRag: true,
+    topics: ['Bản án chế độ thực dân Pháp', 'Nguyễn Ái Quốc', 'Paris 1925', 'Le Procès de la colonisation française', 'Thuế máu', 'Gửi thanh niên An Nam'],
+    sourceUrl: 'https://hochiminh.vn/tu-sach-dien-tu-ho-chi-minh?categoryId=3000402',
+    content: `1. BỐI CẢNH RA ĐỜI CỦA TÁC PHẨM CHÍNH LUẬN NĂM 1925:
+Năm 1925, tác phẩm "Bản án chế độ thực dân Pháp" (nguyên bản tiếng Pháp: "Le Procès de la colonisation française") của đồng chí Nguyễn Ái Quốc được xuất bản lần đầu tiên tại Paris bởi Thư quán Lao động (Librairie du Travail).
+Tác phẩm gồm 12 chương và một phần Phụ lục nổi tiếng: "Gửi thanh niên An Nam".
+Đây là bản cáo trạng đanh thép, mang tính khoa học và thực tiễn sâu sắc, vạch trần toàn bộ bản chất dã man, tàn bạo, phi nhân đạo của chế độ thống trị thực dân Pháp tại Đông Dương và các thuộc địa khác trên thế giới.
+
+2. CÁC NỘI DUNG CHÍNH YẾU VÀ ĐÒN ĐÁNH CHÍNH LUẬN SẮC BÉN:
+- Chương 1: "Thuế máu" - Vạch trần sự dối trá của chiêu bài "mẹ mẫu quốc bảo hộ", đẩy hàng vạn người dân bản xứ vô tội sang châu Âu làm bia đỡ đạn cho thực dân Pháp trong Chiến tranh thế giới thứ nhất (1914 - 1918).
+- Các chương tiếp theo vạch trần tội ác: Áp đặt sưu cao thuế nặng; đầu độc người dân bằng việc độc quyền buôn bán thuốc phiện và rượu cồn; thi hành chính sách ngu dân để dễ bề áp bức; đàn áp dã man các cuộc nổi dậy yêu nước.
+- Phần Phụ lục "Gửi thanh niên An Nam": Lời hiệu triệu lay động hàng triệu trái tim tuổi trẻ:
+"Hỡi thanh niên An Nam!... Các bạn hãy nhìn thẳng vào sự thật... Hãy tự giải phóng mình bằng con đường cách mạng!".
+
+3. GIÁ TRỊ LỊCH SỬ VÀ TƯ TƯỞNG CỦA TÁC PHẨM:
+- Là vũ khí lý luận sắc bén chuẩn bị về mặt chính trị và tư tưởng cho sự ra đời của Đảng Cộng sản Việt Nam vào mùa xuân năm 1930.
+- Khẳng định mối quan hệ khăng khít giữa cách mạng giải phóng dân tộc ở thuộc địa với cách mạng vô sản ở chính quốc; nhấn mạnh công cuộc giải phóng dân tộc phải do chính nhân dân thuộc địa tự đứng lên giành lấy.
+
+4. BÀI HỌC GIÁO DỤC TRUYỀN THỐNG YÊU NƯỚC CHO HỌC SINH THCS:
+- Giúp học sinh thấu hiểu sâu sắc những nỗi đau thương, mất mát và áp bức bóc lột cùng cực mà dân tộc ta đã phải gánh chịu dưới ách đô hộ của ngoại bang.
+- Bồi dưỡng lòng căm thù áp bức bất công, nâng cao ý thức trân trọng độc lập, tự do và hòa bình hôm nay.
+- Học tập nghệ thuật hành văn chính luận khúc chiết, giàu dẫn chứng thép và ngọn lửa nhiệt huyết vì độc lập dân tộc của Nguyễn Ái Quốc.`,
+    metadata: {
+      batch: 'BATCH_D_HOCHIMINH_VN_EXPANSION',
+      publicationYear: 1925,
+      originalLanguage: 'Tiếng Pháp (Le Procès de la colonisation française)',
+      publisher: 'Thư quán Lao động Paris (1925) & hochiminh.vn'
     }
   },
 

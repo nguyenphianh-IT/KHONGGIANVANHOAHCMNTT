@@ -163,6 +163,48 @@ export const SAMPLE_QUESTIONS_MAP: Record<string, SampleQuestion[]> = {
     { questionId: 'Q-040-3', question: 'Vai trò gương mẫu của đội ngũ cán bộ quản lý và thầy cô giáo trong việc "học tập và làm theo Bác" được nhấn mạnh ra sao?' },
     { questionId: 'Q-040-4', question: 'Học sinh học tập tư tưởng, đạo đức, phong cách Hồ Chí Minh qua những môn học và hoạt động giáo dục cụ thể nào ở trường THCS?' },
     { questionId: 'Q-040-5', question: 'Kế hoạch hành động của Chi bộ và Ban Giám hiệu Trường THCS Nguyễn Trung Trực nhằm đưa Chỉ thị 05-CT/TW đi vào thực chất?' }
+  ],
+  'DOC-HCM-041': [
+    { questionId: 'Q-041-1', question: 'Câu huấn thị nổi tiếng của Bác Hồ về các môi trường học tập toàn diện gồm những yếu tố nào?' },
+    { questionId: 'Q-041-2', question: 'Vì sao Bác Hồ căn dặn "không học nhân dân là một thiếu sót rất lớn"?' },
+    { questionId: 'Q-041-3', question: 'Quan điểm "Học đi đôi với hành" và "Học suốt đời" được Bác Hồ diễn giải bằng những hình ảnh so sánh sinh động nào?' },
+    { questionId: 'Q-041-4', question: 'Trong hơn 30 năm bôn ba tìm đường cứu nước, Bác Hồ đã tự học ngoại ngữ và tri thức khoa học bằng phương pháp kiên trì như thế nào?' },
+    { questionId: 'Q-041-5', question: 'Học sinh THCS Nguyễn Trung Trực có thể vận dụng phương châm "học lẫn nhau" và "học nhân dân" vào đời sống học đường ra sao?' }
+  ],
+  'DOC-HCM-042': [
+    { questionId: 'Q-042-1', question: 'Luận điểm lịch sử "Văn hóa soi đường cho quốc dân đi" được Chủ tịch Hồ Chí Minh khẳng định tại hội nghị nào và vào thời gian nào?' },
+    { questionId: 'Q-042-2', question: 'Định nghĩa kinh điển của Hồ Chí Minh về nguồn gốc và bản chất của "Văn hóa" trong Nhật ký trong tù (tháng 8/1943) được diễn đạt ra sao?' },
+    { questionId: 'Q-042-3', question: 'Theo tư tưởng Hồ Chí Minh, nền văn hóa mới Việt Nam phải thấm nhuần 3 tính chất căn bản nào?' },
+    { questionId: 'Q-042-4', question: 'Mối quan hệ biện chứng giữa văn hóa với kinh tế và chính trị được Bác Hồ chỉ rõ như thế nào?' },
+    { questionId: 'Q-042-5', question: 'Luận điểm "Văn hóa soi đường cho quốc dân đi" có ý nghĩa định hướng thế nào đối với việc xây dựng Không gian văn hóa Hồ Chí Minh tại trường học?' }
+  ],
+  'DOC-HCM-043': [
+    { questionId: 'Q-043-1', question: 'Câu châm ngôn bất hủ gồm hai vế đúc kết chân lý chiến thắng của cách mạng Việt Nam về đại đoàn kết của Bác Hồ là gì?' },
+    { questionId: 'Q-043-2', question: 'Theo tư tưởng Hồ Chí Minh, khối đại đoàn kết toàn dân tộc được xây dựng trên những nguyên tắc và lực lượng nòng cốt nào?' },
+    { questionId: 'Q-043-3', question: 'Trong bản Di chúc lịch sử năm 1969, Bác Hồ căn dặn việc giữ gìn sự đoàn kết nhất trí trong Đảng quý giá và cẩn trọng như thế nào?' },
+    { questionId: 'Q-043-4', question: 'Mối quan hệ giữa đại đoàn kết toàn dân tộc với tinh thần đoàn kết quốc tế được Bác Hồ vận dụng ra sao trong sự nghiệp cứu nước?' },
+    { questionId: 'Q-043-5', question: 'Học sinh THCS thực hiện Điều 3 trong 5 Điều Bác Hồ dạy ("Đoàn kết tốt, kỷ luật tốt") bằng những hành động cụ thể nào trong lớp học và trường học?' }
+  ],
+  'DOC-HCM-044': [
+    { questionId: 'Q-044-1', question: 'Bài ký sự lịch sử "Thăm một chiến sĩ Quốc tế Cộng sản - Nguyễn Ái Quốc" do nhà báo, nhà thơ nào thực hiện, đăng trên ấn phẩm nào vào năm 1923?' },
+    { questionId: 'Q-044-2', question: 'Nhận định mang tính tiên tri và dự báo sâu sắc của Osip Mandelstam về vẻ đẹp văn hóa toát ra từ Nguyễn Ái Quốc là gì?' },
+    { questionId: 'Q-044-3', question: 'Chân dung và phong thái của người thanh niên Việt Nam Nguyễn Ái Quốc được phóng viên Liên Xô khắc họa qua những chi tiết tiêu biểu nào?' },
+    { questionId: 'Q-044-4', question: 'Vì sao cuộc phỏng vấn năm 1923 tại Moskva được xem là một tư liệu lịch sử quốc tế vô cùng quý giá về Bác Hồ thời trẻ?' },
+    { questionId: 'Q-044-5', question: 'Thế hệ trẻ THCS rút ra được bài học gì về phong thái giao tiếp, học vấn và lòng tự hào dân tộc từ tấm gương Nguyễn Ái Quốc năm 1923?' }
+  ],
+  'DOC-HCM-045': [
+    { questionId: 'Q-045-1', question: 'Trước nguyện vọng thiết tha của đồng bào chiến sĩ cả nước sau ngày 02/09/1969, Bộ Chính trị và Trung ương Đảng đã đưa ra quyết định lịch sử gì?' },
+    { questionId: 'Q-045-2', question: 'Đơn vị quân đội nào cùng các chuyên gia y tế Liên Xô đã thực hiện nhiệm vụ bảo quản, giữ gìn tuyệt đối an toàn thi hài Bác Hồ trong chiến tranh?' },
+    { questionId: 'Q-045-3', question: 'Kể tên một số căn cứ bí mật thời chiến (như Công trình 75A, K84 Đá Chông...) từng là nơi di chuyển và bảo vệ thi hài Bác dưới mưa bom bão đạn?' },
+    { questionId: 'Q-045-4', question: 'Công trình Lăng Chủ tịch Hồ Chí Minh tại Quảng trường Ba Đình được khởi công và khánh thành vào các mốc thời gian nào, quy tụ vật liệu từ khắp non sông ra sao?' },
+    { questionId: 'Q-045-5', question: 'Vì sao Lăng Chủ tịch Hồ Chí Minh và Quảng trường Ba Đình là "Địa chỉ đỏ" thiêng liêng giáo dục truyền thống "Uống nước nhớ nguồn" cho thiếu nhi?' }
+  ],
+  'DOC-HCM-046': [
+    { questionId: 'Q-046-1', question: 'Tác phẩm "Bản án chế độ thực dân Pháp" (Le Procès de la colonisation française) được Nguyễn Ái Quốc xuất bản lần đầu tiên ở đâu, vào năm nào và bằng ngôn ngữ gì?' },
+    { questionId: 'Q-046-2', question: 'Nội dung chính yếu của Chương 1 mang tên "Thuế máu" trong tác phẩm đã vạch trần tội ác dã man gì của thực dân Pháp?' },
+    { questionId: 'Q-046-3', question: 'Trong tác phẩm, Nguyễn Ái Quốc đã lên án những chính sách tàn bạo nào của thực dân Pháp đối với nhân dân thuộc địa (về thuế, thuốc phiện, giáo dục)?' },
+    { questionId: 'Q-046-4', question: 'Lời hiệu triệu trong phần Phụ lục "Gửi thanh niên An Nam" có ý nghĩa thức tỉnh tinh thần đấu tranh yêu nước của tuổi trẻ như thế nào?' },
+    { questionId: 'Q-046-5', question: 'Vì sao tác phẩm "Bản án chế độ thực dân Pháp" được coi là đòn sấm sét chính luận chuẩn bị về tư tưởng cho sự ra đời của Đảng Cộng sản Việt Nam?' }
   ]
 };
 
