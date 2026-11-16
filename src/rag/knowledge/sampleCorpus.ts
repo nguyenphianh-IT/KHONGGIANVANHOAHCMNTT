@@ -809,6 +809,448 @@ Tác phẩm "Gia Định thành thông chí" của Trịnh Hoài Đức là bộ
     }
   },
 
+  // ============================================================================
+  // KNOWLEDGE EXPANSION BATCH C (DOC-HCM-029 ĐẾN DOC-HCM-040)
+  // Bổ sung chuyên sâu 12 hồ sơ tri thức toàn diện 8 danh mục chuẩn mực
+  // ============================================================================
+
+  {
+    id: 'DOC-HCM-029',
+    title: 'Thư Bác Hồ gửi thiếu niên, nhi đồng nhân dịp Tết Trung thu qua các thời kỳ',
+    category: 'teachings-children',
+    categoryLabel: 'Những lời dạy của Bác đối với thiếu nhi',
+    authorOrSource: 'Chủ tịch Hồ Chí Minh - Trích Hồ Chí Minh Toàn tập (NXB Chính trị Quốc gia Sự thật)',
+    dateOrEra: '1951 - 1960',
+    status: 'APPROVED',
+    isAllowedForRag: true,
+    topics: ['Tết Trung thu', 'Thiếu nhi', 'Lời dạy của Bác', 'Kháng chiến', 'Yêu nước', 'Thi đua học hành'],
+    sourceUrl: 'https://baotanghochiminh.vn',
+    content: `Sinh thời, Chủ tịch Hồ Chí Minh luôn dành cho thiếu niên, nhi đồng tình yêu thương bao la và sự quan tâm đặc biệt nhất. Cứ mỗi dịp Tết Trung thu đến, dù bận trăm công nghìn việc quốc gia đại sự, Bác luôn dành thời gian viết thư, làm thơ gửi tặng các cháu thiếu nhi cả nước và kiều bào ở nước ngoài.
+
+1. BÀI THƠ TRUNG THU NĂM 1951 - TÌNH YÊU THƯƠNG BAO LA CỦA BÁC:
+Giữa khói lửa của cuộc kháng chiến chống thực dân Pháp gian lao, Bác viết bức thư gửi các cháu bằng những vần thơ mộc mạc, tha thiết:
+"Ai yêu các nhi đồng
+Bằng Bác Hồ Chí Minh?
+Tính các cháu ngoan ngoãn,
+Mặt các cháu xinh xinh.
+Mong các cháu cố gắng,
+Thi đua học và hành.
+Tuổi nhỏ làm việc nhỏ,
+Tùy theo sức của mình:
+Để tham gia kháng chiến,
+Để gìn giữ hòa bình.
+Các cháu hãy xứng đáng:
+Cháu Bác Hồ Chí Minh!".
+Lời dạy "Tuổi nhỏ làm việc nhỏ, tùy theo sức của mình" đã trở thành phương châm sống, kim chỉ nam rèn luyện của lớp lớp thế hệ măng non Việt Nam trong suốt hơn nửa thế kỷ qua.
+
+2. THƯ TRUNG THU NĂM 1952 VÀ NĂM 1960 - NIỀM TIN VÀO TƯƠNG LAI NƯỚC NHÀ:
+Trong thư Trung thu năm 1952, Bác căn dặn các cháu: "Bác mong các cháu: Ngoan ngoãn, đoàn kết, thi đua học tập, thi đua tăng gia. Mong các cháu tiến bộ nhiều. Mai sau các cháu thành người chủ của nước nhà".
+Đến Tết Trung thu năm 1960, Bác chia sẻ niềm vui đón trăng cùng các cháu thiếu nhi miền Bắc và gửi trọn nỗi nhớ thương da diết tới các cháu thiếu nhi miền Nam ruột thịt đang sống dưới ách kìm kẹp của quân xâm lược, hẹn ngày non sông liền một dải để Bác cháu sum họp một nhà.
+
+3. Ý NGHĨA SƯ PHẠM VÀ HÀNH ĐỘNG CỦA HỌC SINH THCS:
+Những bức thư Trung thu của Bác Hồ không chỉ là món quà tinh thần vô giá mà còn là bài học lớn về lòng yêu nước, ý thức trách nhiệm cộng đồng và tinh thần tự lập. Học sinh Trường THCS Nguyễn Trung Trực noi gương Bác bằng việc tích cực tham gia phong trào "Nghìn việc tốt", giúp đỡ bạn bè có hoàn cảnh khó khăn, chăm ngoan học giỏi để xứng đáng với sự kỳ vọng của Người.`,
+    metadata: {
+      batch: 'BATCH_C_EXPANSION_01',
+      educationalLevel: 'THCS',
+      primaryTarget: 'Đội viên & Thiếu nhi toàn trường'
+    }
+  },
+
+  {
+    id: 'DOC-HCM-030',
+    title: 'Tuyển tập những mẩu chuyện cảm động về Bác Hồ với thiếu niên, nhi đồng',
+    category: 'teachings-children',
+    categoryLabel: 'Những lời dạy của Bác đối với thiếu nhi',
+    authorOrSource: 'Bảo tàng Hồ Chí Minh & Nhà xuất bản Kim Đồng',
+    dateOrEra: 'Tuyển tập truyền thống',
+    status: 'APPROVED',
+    isAllowedForRag: true,
+    topics: ['Chiếc vòng bạc', 'Quả táo của Bác', 'Ai ngoan sẽ được thưởng', 'Giữ lời hứa', 'Thật thà', 'Lòng nhân ái'],
+    sourceUrl: 'https://nxbkimdong.com.vn',
+    content: `Những mẩu chuyện đời thường giản dị về Chủ tịch Hồ Chí Minh là kho tàng bài học đạo đức sống động, gần gũi và sâu sắc nhất đối với lứa tuổi học sinh THCS.
+
+1. CHUYỆN "CHIẾC VÒNG BẠC" - BÀI HỌC VỀ GIỮ CHỮ TÍN VÀ TÔN TRỌNG LỜI HỨA:
+Hơn hai năm sau khi Bác đi công tác về vùng cao, lúc trở lại, đồng bào và các cháu thiếu nhi ùa ra đón Bác rộn rã. Bác mở túi lấy ra một chiếc vòng bạc nhỏ sáng lóa trao tận tay một em bé gái. Mọi người đều ngạc nhiên. Bác giải thích: "Trước đây hai năm, khi chia tay, cháu bé này có nói Bác đi đâu về nhớ mua cho cháu một chiếc vòng bạc. Nay Bác về, Bác giữ đúng lời hứa".
+-> Bài học: Đã hứa điều gì thì phải cố gắng thực hiện cho bằng được, dù là với một đứa trẻ nhỏ. Giữ chữ tín là nền tảng cao quý nhất của đạo đức làm người.
+
+2. CHUYỆN "QUẢ TÁO CỦA BÁC HỒ" - TÌNH YÊU THƯƠNG TRẺ THƠ KHÔNG BIÊN GIỚI:
+Năm 1946, khi sang thăm nước Pháp với tư cách là thượng khách của Chính phủ Pháp, trong một bữa tiệc ngoại giao sang trọng, Bác Hồ đã cầm theo một quả táo ngon khi rời bàn tiệc. Ra đến cửa điện, thấy một phụ nữ nghèo bế em bé đứng nhìn, Bác đã tiến lại mỉm cười ân cần trao quả táo cho cháu bé. Cử chỉ đầy tình nhân ái của Bác đã làm xúc động hàng triệu trái tim nhân dân Pháp và truyền thông quốc tế thời bấy giờ.
+-> Bài học: Lòng nhân ái, sự sẻ chia và tình thương yêu trẻ em chân thành, vượt qua mọi ranh giới dân tộc, màu da hay đẳng cấp.
+
+3. CHUYỆN "AI NGOAN SẼ ĐƯỢC THƯỞNG" - BÀI HỌC VỀ TÍNH THẬT THÀ VÀ DŨNG CẢM:
+Khi Bác đến thăm một trại nhi đồng, Bác chia kẹo cho các cháu. Cậu bé Tộ đứng nép vào góc lớp không dám nhận kẹo. Khi Bác hỏi lý do, Tộ lí nhí: "Thưa Bác, hôm nay cháu chưa vâng lời cô giáo, cháu chưa ngoan nên không dám nhận kẹo của Bác ạ". Bác cười hiền từ, xoa đầu Tộ và nói: "Cháu biết nhận lỗi, thế là dũng cảm và thật thà, cháu vẫn là đứa trẻ ngoan!". Bác vẫn chia phần kẹo cho Tộ và em hứa từ nay sẽ ngoan ngoãn hơn.
+-> Bài học: "Khiêm tốn, thật thà, dũng cảm" theo Điều 5 Bác Hồ dạy. Biết nhận lỗi và dũng cảm sửa đổi là phẩm chất đáng quý nhất của người học sinh.`,
+    metadata: {
+      batch: 'BATCH_C_EXPANSION_01',
+      educationalLevel: 'THCS',
+      valuesHighlighted: ['Chữ tín', 'Lòng nhân ái', 'Sự trung thực']
+    }
+  },
+
+  {
+    id: 'DOC-HCM-031',
+    title: 'Cẩm nang thực hành 5 Điều Bác Hồ dạy dành cho Đội viên thiếu niên tiền phong THCS',
+    category: 'teachings-children',
+    categoryLabel: 'Những lời dạy của Bác đối với thiếu nhi',
+    authorOrSource: 'Hội đồng Đội Trung ương & Liên đội Trường THCS Nguyễn Trung Trực',
+    dateOrEra: '1961 - Hiện hành',
+    status: 'APPROVED',
+    isAllowedForRag: true,
+    topics: ['5 Điều Bác Hồ dạy', 'Đội TNTP Hồ Chí Minh', 'Rèn đức luyện tài', 'Vệ sinh thật tốt', 'Khiêm tốn thật thà dũng cảm'],
+    sourceUrl: 'https://thieunhitphcm.vn',
+    content: `1. HOÀN CẢNH RA ĐỜI 5 ĐIỀU BÁC HỒ DẠY THIẾU NIÊN NHI ĐỒNG:
+Năm 1961, nhân dịp kỷ niệm 20 năm ngày thành lập Đội Thiếu niên Tiền phong (15/5/1941 - 15/5/1961), Chủ tịch Hồ Chí Minh đã gửi thư căn dặn thiếu niên, nhi đồng cả nước 5 điều ngắn gọn, súc tích.
+Đến năm 1965, khi chuẩn bị in lại thư khen ngợi các cháu thiếu nhi có thành tích học tập và chống Mỹ cứu nước, Bác đã tự tay bổ sung chữ "thật" vào điều thứ tư: từ "Giữ gìn vệ sinh tốt" thành "Giữ gìn vệ sinh THẬT tốt", thể hiện sự quan tâm tỉ mỉ, thiết thực của Bác đối với nếp sống sạch sẽ, sức khỏe và thể chất của thế hệ tương lai.
+
+2. NỘI DUNG VÀ HƯỚNG DẪN THỰC HÀNH CỤ THỂ CHO HỌC SINH THCS NGUYỄN TRUNG TRỰC:
+
+- Điều 1: Yêu Tổ quốc, yêu đồng bào
+  + Thực hành: Đứng nghiêm trang, hát to, đúng nhạc bài Quốc ca - Đội ca trong các lễ chào cờ đầu tuần; tích cực học tập lịch sử dựng nước và giữ nước; yêu thương, giúp đỡ bạn bè trong lớp, không phân biệt hoàn cảnh; kính trọng ông bà, cha mẹ, thầy cô giáo.
+
+- Điều 2: Học tập tốt, lao động tốt
+  + Thực hành: Lắng nghe thầy cô giảng bài, làm bài tập đầy đủ, tự giác đọc sách mở rộng tri thức; chủ động tham gia lao động vệ sinh phòng học, giữ gìn tài sản chung của nhà trường, phụ giúp gia đình công việc nhà vừa sức.
+
+- Điều 3: Đoàn kết tốt, kỷ luật tốt
+  + Thực hành: Luôn hòa đồng, xây dựng tình bạn trong sáng, tuyệt đối nói không với bạo lực học đường; chấp hành nghiêm túc Nội quy học sinh Trường THCS Nguyễn Trung Trực, chấp hành luật an toàn giao thông khi đến trường.
+
+- Điều 4: Giữ gìn vệ sinh thật tốt
+  + Thực hành: Giữ gìn vệ sinh cá nhân, trang phục sạch sẽ, đeo khăn quàng đỏ chỉnh tề; phân loại rác thải tại lớp học, bỏ rác đúng nơi quy định, bảo vệ cây xanh và không gian xanh của nhà trường và địa bàn Phường Thới An.
+
+- Điều 5: Khiêm tốn, thật thà, dũng cảm
+  + Thực hành: Luôn lễ phép với người lớn, khiêm tốn học hỏi bạn bè xung quanh; không gian lận trong giờ kiểm tra và thi cử; dũng cảm nhận khuyết điểm khi làm sai và có tinh thần đấu tranh bảo vệ lẽ phải.`,
+    metadata: {
+      batch: 'BATCH_C_EXPANSION_01',
+      organizationUnit: 'Liên đội THCS Nguyễn Trung Trực',
+      practicalChecklist: true
+    }
+  },
+
+  {
+    id: 'DOC-HCM-032',
+    title: 'Lời kêu gọi Toàn quốc kháng chiến của Chủ tịch Hồ Chí Minh (19/12/1946)',
+    category: 'cultural-heritage',
+    categoryLabel: 'Di sản văn hóa Hồ Chí Minh',
+    authorOrSource: 'Chủ tịch Hồ Chí Minh - Bảo vật Quốc gia & Viện Lịch sử Đảng',
+    dateOrEra: '19/12/1946',
+    status: 'APPROVED',
+    isAllowedForRag: true,
+    topics: ['Toàn quốc kháng chiến', '1946', 'Vạn Phúc Hà Đông', 'Độc lập tự do', 'Kháng chiến kiến quốc'],
+    sourceUrl: 'https://tulieuvankien.dangcongsan.vn',
+    content: `1. HOÀN CẢNH LỊCH SỬ RA ĐỜI BẢN HIỆU TRIỆU:
+Sau ngày Cách mạng Tháng Tám năm 1945 thành công, thực dân Pháp quyết tâm dùng vũ lực để xâm lược nước ta một lần nữa. Với thiện chí hòa bình, Chủ tịch Hồ Chí Minh và Chính phủ Việt Nam Dân chủ Cộng hòa đã hết sức nhân nhượng, ký Hiệp định Sơ bộ ngày 6/3/1946 và Tạm ước ngày 14/9/1946. Nhưng thực dân Pháp liên tiếp bội ước, gây hấn ở Hải Phòng, Lạng Sơn và gửi tối hậu thư đòi tước vũ khí của lực lượng tự vệ Thủ đô Hà Nội.
+Trước tình thế "ngàn cân treo sợi tóc", tối ngày 19 tháng 12 năm 1946, tại làng Vạn Phúc (Hà Đông, nay thuộc Hà Nội), Chủ tịch Hồ Chí Minh đã viết bản "Lời kêu gọi Toàn quốc kháng chiến". Tiếng súng kháng chiến toàn quốc chính thức bùng nổ đêm 19/12/1946.
+
+2. TOÀN VĂN LỜI KÊU GỌI BẤT HỦ:
+"Hỡi đồng bào toàn quốc!
+Chúng ta muốn hòa bình, chúng ta phải nhân nhượng. Nhưng chúng ta càng nhân nhượng, thực dân Pháp càng lấn tới, vì chúng quyết tâm cướp nước ta lần nữa!
+Không! Chúng ta thà hy sinh tất cả, chứ nhất định không chịu mất nước, nhất định không chịu làm nô lệ.
+Hỡi đồng bào!
+Chúng ta phải đứng lên!
+Bất kỳ đàn ông, đàn bà, bất kỳ người già, người trẻ, không chia tôn giáo, đảng phái, dân tộc. Hễ là người Việt Nam thì phải đứng lên đánh thực dân Pháp để cứu Tổ quốc. Ai có súng dùng súng. Ai có gươm dùng gươm, không có gươm thì dùng cuốc, thuổng, gậy gộc. Ai cũng phải ra sức chống thực dân Pháp cứu nước.
+Hỡi anh em binh sĩ, tự vệ, dân quân!
+Giờ cứu quốc đã đến. Ta phải hy sinh đến giọt máu cuối cùng, để giữ gìn đất nước.
+Dù phải gian lao kháng chiến, nhưng với một lòng kiên quyết hy sinh, thắng lợi nhất định về dân tộc ta!
+Việt Nam độc lập và thống nhất muôn năm!
+Kháng chiến thắng lợi muôn năm!".
+
+3. Ý NGHĨA THỜI ĐẠI VÀ BÀI HỌC Ý CHÍ:
+"Lời kêu gọi Toàn quốc kháng chiến" là áng hùng văn cứu quốc, kết tinh ý chí quật cường của hàng triệu con tim Việt Nam. Tinh thần "Thà hy sinh tất cả, chứ nhất định không chịu mất nước, nhất định không chịu làm nô lệ" là ngọn đuốc soi đường bồi dưỡng lòng yêu nước nồng nàn và ý thức tự tôn dân tộc cho các thế hệ học sinh trường Nguyễn Trung Trực hôm nay.`,
+    metadata: {
+      batch: 'BATCH_C_EXPANSION_01',
+      legalStatus: 'Bảo vật Quốc gia',
+      speechLocation: 'Làng Vạn Phúc, Hà Đông'
+    }
+  },
+
+  {
+    id: 'DOC-HCM-033',
+    title: 'Tác phẩm "Nhật ký trong tù" – Giá trị nhân văn và các bài thơ rèn luyện ý chí cho thế hệ trẻ',
+    category: 'cultural-heritage',
+    categoryLabel: 'Di sản văn hóa Hồ Chí Minh',
+    authorOrSource: 'Chủ tịch Hồ Chí Minh - Bảo vật Quốc gia (Viện Văn học & NXB Văn học)',
+    dateOrEra: '1942 - 1943',
+    status: 'APPROVED',
+    isAllowedForRag: true,
+    topics: ['Nhật ký trong tù', 'Ngục trung nhật ký', 'Học dịch kinh', 'Nghe tiếng giã gạo', 'Tự khuyên mình', 'Ý chí rèn luyện'],
+    sourceUrl: 'https://baotanghochiminh.vn',
+    content: `1. HOÀN CẢNH SÁNG TÁC TẬP THƠ BẢO VẬT QUỐC GIA:
+Từ tháng 8/1942 đến tháng 9/1943, lãnh tụ Nguyễn Ái Quốc lấy tên là Hồ Chí Minh lên đường sang Trung Quốc để liên lạc với các lực lượng dân chủ quốc tế. Vừa đến thị trấn Túc Vinh (tỉnh Quảng Tây), Người bị chính quyền Tưởng Giới Thạch bắt giữ vô cớ. Suốt 14 tháng bị giam cầm đày ải, bị giải qua gần 30 nhà giam của 13 huyện thuộc tỉnh Quảng Tây, Người đã viết tập thơ "Ngục trung nhật ký" (Nhật ký trong tù) gồm 133 bài thơ bằng chữ Hán trong một cuốn sổ tay nhỏ.
+
+2. NHỮNG BÀI THƠ TIÊU BIỂU VỀ RÈN LUYỆN Ý CHÍ VÀ NHÂN CÁCH HỌC SINH:
+
+- Bài 1: "Tự khuyên mình" (Tự miễn)
+  "Ví không có cảnh đông tàn,
+  Thì đâu có cảnh huy hoàng ngày xuân;
+  Nghĩ mình trong bước gian truân,
+  Tai ương rèn luyện tinh thần thêm hăng."
+  -> Ý nghĩa: Khó khăn, thử thách chỉ là môi trường tôi luyện bản lĩnh con người. Như sau mùa đông giá rét sẽ là mùa xuân nở hoa, con người vượt qua gian nan sẽ đạt tới thành công rực rỡ.
+
+- Bài 2: "Nghe tiếng giã gạo" (Văn thối mễ thanh)
+  "Gạo đem vào giã bao đau đớn,
+  Gạo giã xong rồi trắng tựa bông;
+  Sống ở trên đời người cũng vậy,
+  Gian nan rèn luyện mới thành công."
+  -> Ý nghĩa: Triết lý sâu sắc về sự tu dưỡng, rèn luyện nhân cách và học tập. Không có vinh quang nào tự nhiên đến nếu không trải qua quá trình khổ luyện kiên trì mỗi ngày.
+
+- Bài 3: "Học dịch kinh" (Độc Dịch kinh)
+  "Hết mưa là nắng hửng lên thôi,
+  Hết khổ là vui vốn lẽ đời;
+  Mây tạnh mù tan bay hết sạch,
+  Thênh thang non nước một phương trời."
+  -> Ý nghĩa: Tinh thần lạc quan cách mạng phi thường, làm chủ hoàn cảnh, luôn hướng về ánh sáng và tương lai tươi sáng.
+
+3. BÀI HỌC GIÁO DỤC CHO HỌC SINH THCS:
+Tập thơ là tấm gương sáng về tinh thần thép, phong thái ung dung tự tại và tình yêu thiên nhiên, con người bao la. Đối với học sinh, đây là nguồn cảm hứng mạnh mẽ để các em không chùn bước trước các môn học khó, vượt qua áp lực học tập và rèn luyện ý chí vươn lên thành tài.`,
+    metadata: {
+      batch: 'BATCH_C_EXPANSION_01',
+      legalStatus: 'Bảo vật Quốc gia số 02',
+      originalLanguage: 'Chữ Hán'
+    }
+  },
+
+  {
+    id: 'DOC-HCM-034',
+    title: 'Thơ chúc Tết của Chủ tịch Hồ Chí Minh qua các thời kỳ lịch sử (1947–1969)',
+    category: 'cultural-heritage',
+    categoryLabel: 'Di sản văn hóa Hồ Chí Minh',
+    authorOrSource: 'Chủ tịch Hồ Chí Minh - Báo Nhân Dân & NXB Chính trị Quốc gia Sự thật',
+    dateOrEra: '1947 - 1969',
+    status: 'APPROVED',
+    isAllowedForRag: true,
+    topics: ['Thơ chúc Tết', 'Mừng Xuân', 'Xuân Mậu Thân 1968', 'Xuân Kỷ Dậu 1969', 'Đánh cho Mỹ cút đánh cho Ngụy nhào'],
+    sourceUrl: 'https://nhandan.vn',
+    content: `Cứ mỗi độ Giao thừa thiêng liêng, người dân Việt Nam trên khắp mọi miền Tổ quốc và kiều bào ở nước ngoài lại quây quần bên chiếc máy thu thanh để hồi hộp lắng nghe giọng đọc thơ chúc Tết ấm áp, hào sảng của Bác Hồ. Thơ chúc Tết của Bác vừa là thi phẩm xuân thắm đượm tình cảm non sông, vừa là lời hiệu triệu hiệu lệnh tiến công lịch sử.
+
+1. XUÂN ĐINH HỢI 1947 - BÀI THƠ CHÚC TẾT KHÁNG CHIẾN ĐẦU TIÊN:
+Giữa núi rừng Việt Bắc những ngày đầu toàn quốc kháng chiến, Bác chúc Tết đồng bào:
+"Cờ đỏ sao vàng tung bay trước gió,
+Tiếng kèn kháng chiến vang dậy non sông.
+Toàn dân kháng chiến, toàn diện kháng chiến,
+Chí ta đã quyết, lòng ta đã đồng.
+Tiến lên chiến sĩ! Tiến lên đồng bào!
+Sức ta đã mạnh, người ta đã đông.
+Trường kỳ kháng chiến, nhất định thắng lợi!
+Thống nhất độc lập, nhất định thành công!".
+
+2. XUÂN MẬU THÂN 1968 - HIỆU LỆNH TỔNG TIẾN CÔNG VÀ NỔI DẬY:
+Giao thừa Tết Mậu Thân 1968, lời thơ của Bác vang lên như sấm rền thôi thúc quân dân miền Nam đồng loạt nổi dậy:
+"Xuân này hơn hẳn mấy xuân qua,
+Thắng trận tin vui khắp nước nhà.
+Nam Bắc thi đua đánh giặc Mỹ.
+Tiến lên!
+Toàn thắng ắt về ta!".
+
+3. XUÂN KỶ DẬU 1969 - BÀI THƠ CHÚC TẾT CUỐI CÙNG CỦA BÁC:
+Mùa xuân cuối cùng trước lúc Người đi xa, Bác đã đúc kết phương châm chiến lược đánh đuổi đế quốc Mỹ xâm lược, giải phóng hoàn toàn miền Nam:
+"Năm qua thắng lợi vẻ vang,
+Năm nay tiền tuyến chắc càng thắng to.
+Vì độc lập, vì tự do,
+Đánh cho Mỹ cút, đánh cho Ngụy nhào.
+Tiến lên! Chiến sĩ, đồng bào,
+Bắc - Nam sum họp, xuân nào vui hơn!".
+
+4. GIÁ TRỊ VĂN HÓA VÀ TINH THẦN BẤT DIỆT:
+Thơ chúc Tết của Bác Hồ là di sản văn hóa tinh thần vô giá của dân tộc Việt Nam. Mỗi câu thơ là niềm tin mãnh liệt vào chính nghĩa, là lời nhắc nhở thế hệ trẻ không ngừng thi đua rèn đức, luyện tài để giữ vững độc lập, chủ quyền và xây dựng quê hương phồn vinh.`,
+    metadata: {
+      batch: 'BATCH_C_EXPANSION_01',
+      genre: 'Thơ mừng Xuân & Văn kiện lãnh đạo',
+      historicalSpan: '1947 - 1969'
+    }
+  },
+
+  {
+    id: 'DOC-HCM-035',
+    title: 'Anh hùng dân tộc Nguyễn Trung Trực – Thân thế, khí tiết và tấm gương trung dũng',
+    category: 'hcmc-history',
+    categoryLabel: 'Lịch sử Thành phố Hồ Chí Minh',
+    authorOrSource: 'Hội Khoa học Lịch sử Việt Nam & Ban Tuyên giáo Quận 12',
+    dateOrEra: '1838 - 1868',
+    status: 'APPROVED',
+    isAllowedForRag: true,
+    topics: ['Nguyễn Trung Trực', 'Trường THCS Nguyễn Trung Trực', 'Hỏa hồng Nhật Tảo', 'Đốt tàu Hy Vọng', 'Đồn Rạch Giá', 'Bao giờ người Tây nhổ hết cỏ nước Nam'],
+    sourceUrl: 'https://hcmcpv.org.vn',
+    content: `1. THÂN THẾ VÀ TƯ CHẤT NGƯỜI ANH HÙNG DÂN TỘC:
+Nguyễn Trung Trực (1838 - 1868), tên thuở nhỏ là Nguyễn Văn Lịch, sinh ra trong một gia đình làm nghề chài lưới bên bờ sông Vàm Cỏ, thuộc làng Bình Đức, phủ Tân An (nay thuộc xã Bình Đức, huyện Bến Lức, tỉnh Long An). Từ nhỏ, ông đã có tư chất thông minh, sức khỏe phi thường, tinh thần trượng nghĩa và lòng căm thù giặc sâu sắc khi chứng kiến cảnh thực dân Pháp xâm chiếm nước ta.
+
+2. HAI CHIẾN CÔNG HIỂN HÁCH LỪNG LẪY NON SÔNG:
+- Chiến công thứ nhất: Hỏa công đốt cháy tàu chiến L'Espérance (Hy Vọng) của Pháp ngày 10/12/1861 trên sông Nhật Tảo.
+  Dưới sự chỉ huy mưu trí của ông, nghĩa quân đã ngụy trang áp sát tàu tuần tra tối tân bậc nhất của giặc Pháp, đồng loạt tấn công và châm ngòi hỏa công thiêu rụi toàn bộ tàu chiến cùng quân lính Pháp, làm nức lòng đồng bào cả nước. Danh sĩ Huỳnh Mẫn Đạt đã ca ngợi: "Hỏa hồng Nhật Tảo oanh thiên địa" (Lửa đỏ Nhật Tảo rực trời đất).
+- Chiến công thứ hai: Tập kích tiêu diệt đồn Rạch Giá đêm ngày 16/6/1968.
+  Nghĩa quân bất ngờ tấn công đánh chiếm tòa thành đầu não của giặc Pháp tại Rạch Giá, tiêu diệt tên chủ tỉnh và toàn bộ quân đồn trú, làm rung chuyển cả hệ thống cai trị của thực dân Pháp ở Nam Bộ. Danh sĩ Huỳnh Mẫn Đạt tiếp tục đề tặng: "Kiếm bạt Kiên Giang khấp quỷ thần" (Kiếm tuốt Kiên Giang quỷ thần khóc).
+
+3. KHÍ TIẾT HIÊN NGANG VÀ CÂU NÓI BẤT HỦ TRƯỚC PHÁP TRƯỜNG:
+Sau đó, giặc Pháp tập trung binh lực đàn áp khốc liệt và bắt giữ mẹ già cùng đồng bào để ép ông ra nộp mình. Để cứu tính mạng của mẹ và nhân dân, ông đã chấp nhận hy sinh. Giặc Pháp dùng nhiều bổng lộc, chức tước để mua chuộc dụ dỗ ông quy hàng. Trước mặt bọn xâm lược, ông đã khảng khái tuyên bố câu nói bất hủ khắc sâu vào lịch sử ngàn đời:
+"BAO GIỜ NGƯỜI TÂY NHỔ HẾT CỎ NƯỚC NAM THÌ MỚI HẾT NGƯỜI NAM ĐÁNH TÂY!".
+Ngày 27 tháng 10 năm 1868, người anh hùng Nguyễn Trung Trực đã hiên ngang đón nhận cái chết tại chợ Rạch Giá khi mới tròn 30 tuổi.
+
+4. NIỀM TỰ HÀO CỦA TRƯỜNG THCS NGUYỄN TRUNG TRỰC:
+Được học tập và rèn luyện dưới mái trường vinh dự mang tên Anh hùng dân tộc Nguyễn Trung Trực tại Quận 12, mỗi học sinh luôn khắc ghi truyền thống bất khuất của Người anh hùng áo vải, không ngừng trau dồi tri thức, rèn luyện phẩm chất để trở thành những công dân có ích, xứng đáng với truyền thống vẻ vang của dân tộc.`,
+    metadata: {
+      batch: 'BATCH_C_EXPANSION_01',
+      schoolPatron: 'Anh hùng dân tộc bảo trợ danh hiệu nhà trường',
+      monumentLocations: ['Rạch Giá, Kiên Giang', 'Nhật Tảo, Long An']
+    }
+  },
+
+  {
+    id: 'DOC-HCM-036',
+    title: 'Vườn Cau Đỏ – Di tích lịch sử căn cứ cách mạng kiên cường của quân dân Quận 12',
+    category: 'hcmc-history',
+    categoryLabel: 'Lịch sử Thành phố Hồ Chí Minh',
+    authorOrSource: 'Ban Tuyên giáo Quận ủy Quận 12 & Trung tâm Văn hóa Quận 12',
+    dateOrEra: '1945 - Hiện hành',
+    status: 'APPROVED',
+    isAllowedForRag: true,
+    topics: ['Vườn Cau Đỏ', 'Căn cứ lõm', 'Chiến khu An Phú Đông', 'Quận 12', 'Thới An', 'Thạnh Xuân', 'Địa chỉ đỏ'],
+    sourceUrl: 'https://quan12.hochiminhcity.gov.vn',
+    content: `1. VỊ TRÍ ĐỊA LÝ VÀ ĐẶC ĐIỂM TỰ NHIÊN:
+Khu di tích lịch sử - Khu tưởng niệm Vườn Cau Đỏ tọa lạc tại số 12 đường Thạnh Xuân 52, Quận 12, nằm ở vị trí giao thoa truyền thống giữa các vùng đất Thới An, Thạnh Xuân và Thạnh Lộc.
+Vùng đất này trước đây là vùng bán đảo trũng thấp ven sông Sài Gòn, kênh rạch chằng chịt, sình lầy hiểm trở, nổi bật với những cánh rừng cau bạt ngàn xen lẫn những vườn trầu xanh ngát của người dân lao động hiền hòa, chất phác.
+
+2. NGUỒN GỐC TÊN GỌI VÀ Ý NGHĨA THIÊNG LIÊNG CỦA CHỮ "ĐỎ":
+- Tên gọi Vườn Cau Đỏ bắt nguồn từ thực tế địa hình trồng cau bạt ngàn. Nhưng trong hai cuộc kháng chiến chống thực dân Pháp và đế quốc Mỹ xâm lược, do vị trí chiến lược sát nách Sài Gòn, quân giặc đã điên cuồng dội bom đạn, pháo kích và rải chất độc hóa học xuống khu vực này. Thân cau và ngọn cau bị bom đạn cháy xém, ngả sang màu úa đỏ rực.
+- Đặc biệt, chữ "ĐỎ" mang tầng ý nghĩa sâu xa và thiêng liêng nhất: Đó là màu cờ đỏ sao vàng cách mạng mà nhân dân một lòng bảo vệ; là màu máu đỏ của biết bao anh hùng liệt sĩ, cán bộ kiên trung và đồng bào yêu nước đã dũng cảm ngã xuống để che chở cán bộ, giữ vững ngọn lửa kháng chiến cho tới ngày toàn thắng.
+
+3. VAI TRÒ CĂN CỨ ĐỊA CÁCH MẠNG CHIẾN LƯỢC:
+- Ngày 25/12/1945, ngay tại Vườn Cau Đỏ, Hội nghị cán bộ chủ chốt tỉnh Gia Định đã họp và ra quyết định lịch sử thành lập Chiến khu An Phú Đông (bao gồm các xã An Phú Đông, Thạnh Lộc, Quới Xuân). Nơi đây trở thành pháo đài thép kiên cường, trung tâm lãnh đạo kháng chiến ở cửa ngõ Tây Bắc Sài Gòn.
+- Trong thời kỳ chống Mỹ, Vườn Cau Đỏ được xây dựng thành một "căn cứ lõm" độc đáo: đóng ngay trong lòng địch, giữa vòng vây đồn bốt kìm kẹp nhưng nhờ lòng dân che chở, các cơ quan đầu não của Xứ ủy, Khu ủy Sài Gòn - Gia Định vẫn bám trụ an toàn.
+- Nơi đây là trạm dừng chân, tập kết lực lượng của Trung đoàn Gia Định, bộ đội Gò Môn, E115 chuẩn bị bàn đạp xuất kích tiến công vào các cơ quan đầu não của giặc trong cuộc Tổng tiến công và nổi dậy Xuân Mậu Thân 1968 và Chiến dịch Hồ Chí Minh lịch sử mùa Xuân năm 1975.
+
+4. KHU TƯỞNG NIỆM VƯỜN CAU ĐỎ NGÀY NAY:
+Năm 2010, Đảng bộ và nhân dân Quận 12 đã xây dựng Khu tưởng niệm Vườn Cau Đỏ trang nghiêm với diện tích hơn 4.000 m². Tượng đài trung tâm là hình ảnh biểu tượng hai hàng cau cao vút đan lá vào nhau thể hiện tình quân dân gắn bó keo sơn máu thịt. Di tích là địa chỉ đỏ truyền thống, nơi thầy trò Trường THCS Nguyễn Trung Trực thường xuyên tổ chức các hoạt động về nguồn, báo công dâng Bác và kết nạp Đội viên, Đoàn viên mới.`,
+    metadata: {
+      batch: 'BATCH_C_EXPANSION_01',
+      siteArea: 'Hơn 4.000 m2',
+      memorialYear: 2010,
+      classification: 'Địa chỉ đỏ di tích lịch sử cấp địa phương'
+    }
+  },
+
+  {
+    id: 'DOC-HCM-037',
+    title: 'Bến Nhà Rồng – Nơi người thanh niên Nguyễn Tất Thành ra đi tìm đường cứu nước (05/06/1911)',
+    category: 'bio-career',
+    categoryLabel: 'Chủ tịch Hồ Chí Minh – Tiểu sử và sự nghiệp',
+    authorOrSource: 'Bảo tàng Hồ Chí Minh - Chi nhánh Thành phố Hồ Chí Minh',
+    dateOrEra: '05/06/1911 - Hiện hành',
+    status: 'APPROVED',
+    isAllowedForRag: true,
+    topics: ['Bến Nhà Rồng', 'Nguyễn Tất Thành', 'Văn Ba', 'Tàu Amiral Latouche-Tréville', 'Tìm đường cứu nước', '05/06/1911'],
+    sourceUrl: 'https://baotanghochiminh.vn',
+    content: `1. BỐI CẢNH LỊCH SỬ VÀ Ý CHÍ CỨU NƯỚC CỦA NGƯỜI THANH NIÊN YÊU NƯỚC:
+Đầu thế kỷ XX, đất nước ta chìm trong đêm dài nô lệ dưới ách thống trị tàn bạo của thực dân Pháp. Các phong trào yêu nước theo khuynh hướng phong kiến (Cần Vương) hay dân chủ tư sản (Đông Du của Phan Bội Châu, Duy Tân của Phan Châu Trinh) đều lần lượt thất bại.
+Người thanh niên yêu nước Nguyễn Tất Thành (khi đó mới 21 tuổi), với tầm nhìn chiến lược vượt thời đại, đã không đi theo con đường mòn của các bậc tiền bối. Người nung nấu một quyết định táo bạo: Đi sang phương Tây - nơi khởi nguồn của khẩu hiệu "Tự do - Bình đẳng - Bác ái", để xem nước Pháp và các nước khác làm như thế nào, rồi trở về giúp đỡ đồng bào mình.
+
+2. DẤU MỐC LỊCH SỬ NGÀY 05/06/1911 TẠI BẾN CẢNG SÀI GÒN:
+Ngày 5 tháng 6 năm 1911, từ Bến cảng Nhà Rồng (Sài Gòn), với tên gọi "Văn Ba", Người bước chân lên con tàu buôn Amiral Latouche-Tréville của hãng vận tải Năm Sao (Pháp), nhận làm công việc phụ bếp nặng nhọc nhất để bắt đầu cuộc hành trình vĩ đại kéo dài suốt 30 năm bôn ba qua 3 đại dương, 4 châu lục và gần 30 quốc gia trên thế giới.
+Hành trang mang theo của Người chỉ có lòng yêu nước nồng nàn, bầu nhiệt huyết của tuổi trẻ và hai bàn tay lao động cần cù.
+
+3. TẦM VÓC THỜI ĐẠI CỦA SỰ KIỆN:
+Sự kiện ngày 5/6/1911 đã mở ra bước ngoặt quyết định cho vận mệnh dân tộc Việt Nam. Chính từ cuộc bôn ba khảo sát thực tiễn ấy, Người đã tìm thấy ánh sáng của Chủ nghĩa Mác - Lênin, khẳng định con đường cứu nước duy nhất đúng đắn: Con đường cách mạng vô sản, độc lập dân tộc gắn liền với chủ nghĩa xã hội.
+
+4. BẾN NHÀ RỒNG TRONG TRÁI TIM NGƯỜI DÂN THÀNH PHỐ:
+Tòa nhà Bến Nhà Rồng ngày nay là Bảo tàng Hồ Chí Minh - Chi nhánh TP.HCM, tọa lạc tại số 01 đường Nguyễn Tất Thành, Quận 4. Nơi đây lưu giữ hàng nghìn hiện vật quý giá về cuộc đời hoạt động cách mạng của Bác và là biểu tượng thiêng liêng thể hiện tấm lòng son sắt thủy chung của đồng bào miền Nam, nhân dân TP.HCM đối với Chủ tịch Hồ Chí Minh vĩ đại.`,
+    metadata: {
+      batch: 'BATCH_C_EXPANSION_01',
+      monumentName: 'Bảo tàng Hồ Chí Minh - Chi nhánh TP.HCM',
+      departureDate: '05/06/1911'
+    }
+  },
+
+  {
+    id: 'DOC-HCM-038',
+    title: 'Nghị quyết Đại hội Đảng bộ TP.HCM lần thứ XI về xây dựng Không gian văn hóa Hồ Chí Minh',
+    category: 'hcm-cultural-space',
+    categoryLabel: 'Không gian văn hóa Hồ Chí Minh TP.HCM',
+    authorOrSource: 'Đảng bộ Thành phố Hồ Chí Minh (Văn kiện Đại hội XI nhiệm kỳ 2020-2025)',
+    dateOrEra: '2020 - 2025',
+    status: 'APPROVED',
+    isAllowedForRag: true,
+    topics: ['Không gian văn hóa Hồ Chí Minh', 'Đại hội XI Đảng bộ TP.HCM', 'Giá trị văn hóa', 'Con người thành phố', 'Thành phố mang tên Bác'],
+    sourceUrl: 'https://hcmcpv.org.vn',
+    content: `1. MỤC TIÊU VÀ TẦM NHÌN CHIẾN LƯỢC:
+Đại hội đại biểu Đảng bộ Thành phố Hồ Chí Minh lần thứ XI (nhiệm kỳ 2020 - 2025) đã đề ra chủ trương mang tính đột phá và nhân văn sâu sắc: "Xây dựng Thành phố Hồ Chí Minh trở thành Không gian văn hóa Hồ Chí Minh".
+Mục tiêu là làm cho tư tưởng, đạo đức, phong cách và sự nghiệp của Chủ tịch Hồ Chí Minh thấm sâu vào đời sống xã hội, trở thành nền tảng tinh thần vững chắc, nét văn hóa đặc trưng, nếp sống nghĩa tình tiêu biểu của cán bộ, đảng viên và nhân dân thành phố mang tên Bác.
+
+2. BA TRỤ CỘT CỦA KHÔNG GIAN VĂN HÓA HỒ CHÍ MINH:
+- Trụ cột 1: Không gian văn hóa vật thể
+  Quy hoạch, trùng tu, nâng cấp các di tích lịch sử, bảo tàng, nhà lưu niệm, tượng đài Bác Hồ và các công trình văn hóa công cộng mang dấu ấn lịch sử trên địa bàn thành phố, tạo thành mạng lưới địa chỉ đỏ giáo dục truyền thống cho nhân dân.
+- Trụ cột 2: Không gian văn hóa phi vật thể
+  Bồi đắp các giá trị văn hóa tinh thần, lối sống nghĩa tình, tinh thần tương thân tương ái, "mình vì mọi người", xây dựng chuẩn mực con người Thành phố Hồ Chí Minh: văn minh, hiện đại, nghĩa tình, trung thực, trách nhiệm và năng động sáng tạo.
+- Trụ cột 3: Không gian văn hóa số trên không gian mạng
+  Ứng dụng mạnh mẽ chuyển đổi số để xây dựng các nền tảng trực tuyến: thư viện số, không gian thực tế ảo 3D, hệ thống trợ lý AI học đường nhằm đưa kho tư liệu quý giá về Bác Hồ đến gần hơn với thế hệ trẻ mọi lúc, mọi nơi.
+
+3. TRÁCH NHIỆM CỦA NGÀNH GIÁO DỤC VÀ NHÀ TRƯỜNG:
+Mỗi trường học trên địa bàn thành phố, trong đó có Trường THCS Nguyễn Trung Trực tại Quận 12, phải là một "Không gian văn hóa Hồ Chí Minh thu nhỏ" sinh động, nơi thầy cô mẫu mực, học trò chăm ngoan, môi trường học đường tràn đầy tình yêu thương, kỷ cương và hạnh phúc.`,
+    metadata: {
+      batch: 'BATCH_C_EXPANSION_01',
+      congressSession: 'Đại hội Đảng bộ TP.HCM lần thứ XI',
+      period: '2020 - 2025'
+    }
+  },
+
+  {
+    id: 'DOC-HCM-039',
+    title: 'Mô hình Trường học hạnh phúc gắn liền với Không gian văn hóa Hồ Chí Minh tại trường THCS',
+    category: 'hcm-cultural-space',
+    categoryLabel: 'Không gian văn hóa Hồ Chí Minh TP.HCM',
+    authorOrSource: 'Sở Giáo dục và Đào tạo Thành phố Hồ Chí Minh',
+    dateOrEra: '2023 - 2026',
+    status: 'APPROVED',
+    isAllowedForRag: true,
+    topics: ['Trường học hạnh phúc', 'Không gian văn hóa số', 'THCS Nguyễn Trung Trực', 'Thầy cô hạnh phúc', 'Học sinh tích cực'],
+    sourceUrl: 'https://hcm.edu.vn',
+    content: `1. KHÁI NIỆM TRƯỜNG HỌC HẠNH PHÚC:
+Theo định hướng của Sở GD&ĐT Thành phố Hồ Chí Minh, "Trường học hạnh phúc" là môi trường giáo dục được xây dựng dựa trên ba giá trị cốt lõi: YÊU THƯƠNG - AN TOÀN - TÔN TRỌNG. Đó là nơi mỗi ngày đến trường của học sinh thực sự là một ngày vui; nơi thầy cô giáo tìm thấy nguồn cảm hứng sáng tạo và được thấu hiểu; nơi không có áp lực tiêu cực hay bạo lực học đường.
+
+2. MỐI QUAN HỆ HỮU CƠ VỚI KHÔNG GIAN VĂN HÓA HỒ CHÍ MINH:
+Xây dựng Không gian văn hóa Hồ Chí Minh trong trường học chính là giải pháp nền tảng vững chắc nhất để kiến tạo Trường học hạnh phúc:
+- Lấy tư tưởng giáo dục của Bác "Dạy tốt, học tốt", "Vì lợi ích mười năm thì phải trồng cây, vì lợi ích trăm năm thì phải trồng người" làm kim chỉ nam cho mọi hoạt động sư phạm.
+- Triển khai phong trào "Mỗi ngày một việc tốt theo lời Bác dạy": Khuyến khích học sinh biết nói lời cảm ơn, xin lỗi, chia sẻ đồ dùng học tập với bạn nghèo, nhặt được của rơi trả người đánh mất.
+- Xây dựng góc thư viện Bác Hồ và phòng truyền thống số: Giúp các em học sinh tự do khám phá, đọc sách, nghiên cứu lịch sử và tương tác với trợ lý ảo trong không gian học tập cởi mở, thân thiện.
+
+3. BỘ TIÊU CHÍ ĐÁNH GIÁ TẠI TRƯỜNG THCS NGUYỄN TRUNG TRỰC:
+- Tiêu chí 1 về Môi trường nhà trường: Cảnh quan xanh, sạch, đẹp, an toàn, có các biển bảng trích dẫn lời Bác dạy phù hợp tâm lý lứa tuổi.
+- Tiêu chí 2 về Hoạt động dạy và học: Thầy cô đổi mới phương pháp giảng dạy, khích lệ sự tự tin sáng tạo của học sinh, không dùng hình phạt xúc phạm danh dự.
+- Tiêu chí 3 về Mối quan hệ ứng xử: Xây dựng văn hóa giao tiếp thanh lịch, lễ phép, đoàn kết, chan hòa tình thầy trò và bạn bè.`,
+    metadata: {
+      batch: 'BATCH_C_EXPANSION_01',
+      governingBody: 'Sở GD&ĐT TP.HCM',
+      schoolApplication: 'Trường THCS Nguyễn Trung Trực'
+    }
+  },
+
+  {
+    id: 'DOC-HCM-040',
+    title: 'Chỉ thị số 05-CT/TW của Bộ Chính trị về đẩy mạnh học tập và làm theo tư tưởng, đạo đức, phong cách Hồ Chí Minh',
+    category: 'official-dispatches',
+    categoryLabel: 'Tài liệu chính thức của cơ quan quản lý',
+    authorOrSource: 'Bộ Chính trị Ban Chấp hành Trung ương Đảng khóa XII',
+    dateOrEra: '15/05/2016',
+    status: 'APPROVED',
+    isAllowedForRag: true,
+    topics: ['Chỉ thị 05-CT/TW', 'Bộ Chính trị', 'Đạo đức phong cách Hồ Chí Minh', 'Giáo dục học đường', 'Chi bộ nhà trường'],
+    sourceUrl: 'https://tulieuvankien.dangcongsan.vn',
+    content: `1. MỤC TIÊU VÀ Ý NGHĨA CỦA CHỈ THỊ SỐ 05-CT/TW:
+Ngày 15 tháng 5 năm 2016, Bộ Chính trị khóa XII đã ban hành Chỉ thị số 05-CT/TW về "Đẩy mạnh học tập và làm theo tư tưởng, đạo đức, phong cách Hồ Chí Minh".
+Chỉ thị nhấn mạnh: Việc học tập và làm theo Bác là một nội dung quan trọng của công tác xây dựng, chỉnh đốn Đảng; góp phần xây dựng Đảng trong sạch, vững mạnh về chính trị, tư tưởng, tổ chức và đạo đức; xây dựng đội ngũ cán bộ, công chức đủ năng lực, phẩm chất, ngang tầm nhiệm vụ; ngăn chặn, đẩy lùi sự suy thoái về tư tưởng chính trị, đạo đức, lối sống.
+
+2. CÁC NỘI DUNG TRỌNG TÂM TRONG NGÀNH GIÁO DỤC:
+- Đổi mới, nâng cao chất lượng giảng dạy và học tập tư tưởng, đạo đức, phong cách Hồ Chí Minh trong hệ thống giáo dục quốc dân, phù hợp với từng cấp học và lứa tuổi học sinh THCS.
+- Xây dựng đạo đức nhà giáo: Mỗi thầy giáo, cô giáo là một tấm gương sáng về đạo đức, tự học và sáng tạo để học sinh noi theo; kiên quyết chống tiêu cực, bệnh thành tích trong thi cử và bệnh hình thức trong thi đua.
+- Giáo dục lý tưởng cách mạng cho thế hệ trẻ: Tăng cường giáo dục truyền thống yêu nước, lòng tự hào dân tộc, bồi dưỡng đạo đức trong sáng, lối sống lành mạnh, tinh thần trách nhiệm với bản thân, gia đình và cộng đồng xã hội.
+
+3. CHƯƠNG TRÌNH HÀNH ĐỘNG CỦA TRƯỜNG THCS NGUYỄN TRUNG TRỰC:
+Chi bộ và Ban Giám hiệu nhà trường cụ thể hóa Chỉ thị 05-CT/TW vào kế hoạch nhiệm vụ năm học:
+- Tích hợp nội dung học tập và làm theo Bác vào các môn học: Lịch sử, Ngữ văn, Giáo dục công dân, Hoạt động trải nghiệm hướng nghiệp.
+- Tổ chức các hội thi trực tuyến tìm hiểu lịch sử, thi kể chuyện tấm gương đạo đức Bác Hồ và bình chọn gương điển hình học sinh chăm ngoan, tiến bộ mỗi tháng.`,
+    metadata: {
+      batch: 'BATCH_C_EXPANSION_01',
+      directiveNumber: '05-CT/TW',
+      issuingBody: 'Bộ Chính trị Ban Chấp hành Trung ương Đảng'
+    }
+  },
+
   // Security Canary test document: PENDING_REVIEW & isAllowedForRag: false
   // Must NEVER be returned by retrieval engine!
   {
