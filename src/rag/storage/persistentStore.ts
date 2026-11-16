@@ -39,6 +39,8 @@ export class PersistenceError extends Error {
 
 export class PersistentRagStore {
   private isSupabaseLive: boolean = false;
+  private isStoreInitialized: boolean = false;
+  private initPromise: Promise<void> | null = null;
   private localChunks: Map<string, DocumentChunk[]> = new Map(); // documentId -> DocumentChunk[]
   private localFeedbacks: RagUserFeedback[] = [];
   private localRetrievalLogs: Array<{
@@ -55,6 +57,20 @@ export class PersistentRagStore {
 
   constructor() {
     this.isSupabaseLive = isSupabaseConfigured;
+  }
+
+  /**
+   * Safe auto-initialization guard (idempotent)
+   */
+  public async ensureInitialized(): Promise<void> {
+    if (this.isStoreInitialized) return;
+    if (!this.initPromise) {
+      this.initPromise = (async () => {
+        await this.initialize();
+        this.isStoreInitialized = true;
+      })();
+    }
+    await this.initPromise;
   }
 
   /**
@@ -88,6 +104,7 @@ export class PersistentRagStore {
         this.isSupabaseLive = false;
       }
     }
+    this.isStoreInitialized = true;
   }
 
   /**
@@ -108,6 +125,7 @@ export class PersistentRagStore {
     statusFilter?: DocumentApprovalStatus,
     publicOnly: boolean = false
   ): Promise<RealKnowledgeDocument[]> {
+    await this.ensureInitialized();
     let rawDocs: RealKnowledgeDocument[] = [];
 
     if (this.isSupabaseLive) {
@@ -147,6 +165,7 @@ export class PersistentRagStore {
     docId: string,
     publicOnly: boolean = false
   ): Promise<RealKnowledgeDocument | undefined> {
+    await this.ensureInitialized();
     let doc: RealKnowledgeDocument | undefined;
 
     if (this.isSupabaseLive) {
@@ -320,6 +339,7 @@ export class PersistentRagStore {
     rejectionReason?: string,
     operatorId?: string
   ): Promise<RealKnowledgeDocument> {
+    await this.ensureInitialized();
     let updatedDoc: RealKnowledgeDocument;
 
     if (newStatus === 'APPROVED') {
@@ -336,33 +356,62 @@ export class PersistentRagStore {
       updatedDoc = doc;
     }
 
-    // Update chunks status locally
+    // Update chunks status locally (or generate if missing)
+    if (!this.localChunks.has(docId)) {
+      const chunks = documentIngestion.reprocessDocument(updatedDoc);
+      this.localChunks.set(docId, chunks);
+    }
     const chunks = this.localChunks.get(docId) || [];
     for (const c of chunks) {
       c.sourceStatus = newStatus;
     }
 
-    // Update Supabase if available
+    // Update Supabase if available (Upsert ensures unseeded database records are securely created)
     if (this.isSupabaseLive) {
       try {
         await supabase
           .from('rag_documents')
-          .update({
+          .upsert({
+            document_id: updatedDoc.documentId,
+            title: updatedDoc.title,
+            description: updatedDoc.description,
+            document_type: updatedDoc.documentType,
+            category: updatedDoc.category,
+            author: updatedDoc.author,
+            publisher: updatedDoc.publisher,
+            source_url: updatedDoc.sourceUrl,
+            original_file_name: updatedDoc.originalFileName,
+            mime_type: updatedDoc.mimeType,
+            checksum: updatedDoc.checksum,
+            file_size: updatedDoc.fileSize,
             approval_status: updatedDoc.approvalStatus,
             is_allowed_for_rag: updatedDoc.isAllowedForRag,
+            version: updatedDoc.version,
             approved_by: updatedDoc.approvedBy,
             approved_at: updatedDoc.approvedAt,
             rejection_reason: updatedDoc.rejectionReason,
+            topics: updatedDoc.topics,
+            content: updatedDoc.content,
+            chunks_count: chunks.length,
+            metadata: updatedDoc.metadata || {},
             updated_at: updatedDoc.updatedAt
-          })
-          .eq('document_id', docId);
+          });
 
-        await supabase
-          .from('rag_document_chunks')
-          .update({
-            source_status: updatedDoc.approvalStatus
-          })
-          .eq('document_id', docId);
+        if (chunks.length > 0) {
+          const dbChunks = chunks.map(c => ({
+            chunk_id: c.id,
+            document_id: c.documentId,
+            document_title: c.documentTitle,
+            content: c.content,
+            section_or_page: c.sectionOrPage,
+            topic: c.topic,
+            source_status: updatedDoc.approvalStatus,
+            provenance_locator: c.provenanceLocator,
+            token_estimate: c.tokenEstimate || 0,
+            metadata: c.metadata || {}
+          }));
+          await supabase.from('rag_document_chunks').upsert(dbChunks);
+        }
       } catch (err) {
         console.warn('[PersistentRagStore] Supabase status update error:', err);
       }
@@ -394,6 +443,13 @@ export class PersistentRagStore {
    * Get chunks for a specific document
    */
   public getChunksByDocumentId(docId: string): DocumentChunk[] {
+    if (!this.localChunks.has(docId)) {
+      const doc = documentRegistry.getDocumentById(docId);
+      if (doc) {
+        const chunks = documentIngestion.reprocessDocument(doc);
+        this.localChunks.set(docId, chunks);
+      }
+    }
     return this.localChunks.get(docId) || [];
   }
 

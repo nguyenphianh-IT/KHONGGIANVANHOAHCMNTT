@@ -26,6 +26,13 @@ export async function computeSha256(text: string): Promise<string> {
   }
 
   // Deterministic 64-character hash fallback
+  return computeSha256Sync(text);
+}
+
+/**
+ * Synchronous deterministic 64-character hash helper
+ */
+export function computeSha256Sync(text: string): string {
   let h1 = 0xdeadbeef, h2 = 0x41c6ce57;
   for (let i = 0; i < text.length; i++) {
     const ch = text.charCodeAt(i);
@@ -42,7 +49,53 @@ export async function computeSha256(text: string): Promise<string> {
 }
 
 /**
- * Seed initial historical corpus into RealKnowledgeDocument format
+ * Seed initial historical corpus synchronously to guarantee immediate availability
+ */
+export function seedInitialDocumentsSync(): RealKnowledgeDocument[] {
+  const initialDocs: RealKnowledgeDocument[] = [];
+
+  for (const doc of SAMPLE_HCM_DOCUMENTS) {
+    const checksum = computeSha256Sync(doc.content);
+    let docType: DocumentType = 'article';
+    if (doc.id === 'DOC-HCM-001' || doc.id === 'DOC-HCM-008') docType = 'speech';
+    else if (doc.id === 'DOC-HCM-003') docType = 'letter';
+    else if (doc.id === 'DOC-HCM-002' || doc.id === 'DOC-HCM-006' || doc.id === 'DOC-HCM-007') docType = 'book';
+    else if (doc.id === 'DOC-HCM-004') docType = 'instruction';
+    else if (doc.id === 'DOC-HCM-013' || doc.id === 'DOC-HCM-015') docType = 'official_dispatch';
+    else if (doc.id === 'DOC-HCM-011' || doc.id === 'DOC-HCM-012') docType = 'archive';
+
+    initialDocs.push({
+      documentId: doc.id,
+      title: doc.title,
+      description: (doc.metadata?.historicalSignificance as string) || doc.title,
+      documentType: docType,
+      category: doc.category,
+      author: doc.authorOrSource,
+      publisher: (doc.metadata?.volume as string) || 'Hội đồng Khoa học Bảo tàng Hồ Chí Minh',
+      sourceUrl: doc.sourceUrl || '',
+      originalFileName: `${doc.id.toLowerCase()}.md`,
+      mimeType: 'text/markdown',
+      checksum,
+      fileSize: doc.content.length,
+      createdAt: '2026-11-14T00:00:00.000Z',
+      updatedAt: '2026-11-14T00:00:00.000Z',
+      approvalStatus: doc.status,
+      isAllowedForRag: doc.isAllowedForRag,
+      version: 1,
+      approvedBy: doc.status === 'APPROVED' ? 'Hội đồng Thẩm định THCS Nguyễn Trung Trực' : undefined,
+      approvedAt: doc.status === 'APPROVED' ? '2026-11-14T00:00:00.000Z' : undefined,
+      topics: doc.topics,
+      content: doc.content,
+      chunksCount: 0,
+      metadata: doc.metadata
+    });
+  }
+
+  return initialDocs;
+}
+
+/**
+ * Seed initial historical corpus into RealKnowledgeDocument format (Async)
  */
 export async function seedInitialDocuments(): Promise<RealKnowledgeDocument[]> {
   const initialDocs: RealKnowledgeDocument[] = [];
@@ -93,11 +146,28 @@ export class DocumentRegistry {
   private categories: DocumentCategoryDefinition[] = [...HCM_STANDARD_CATEGORIES];
   private isInitialized = false;
 
+  constructor() {
+    this.seedSync();
+  }
+
   /**
-   * Initialize registry with seeds
+   * Synchronously seed initial corpus so that documents are immediately available upon instantiation
+   */
+  private seedSync(): void {
+    if (this.documents.size > 0) return;
+    const initialDocs = seedInitialDocumentsSync();
+    for (const doc of initialDocs) {
+      this.documents.set(doc.documentId, doc);
+      this.checksumIndex.set(doc.checksum, doc.documentId);
+    }
+  }
+
+  /**
+   * Initialize registry with seeds (Async with SubtleCrypto if available)
    */
   public async initialize(): Promise<void> {
     if (this.isInitialized) return;
+    this.seedSync();
     const seeds = await seedInitialDocuments();
     for (const doc of seeds) {
       this.documents.set(doc.documentId, doc);
@@ -110,6 +180,9 @@ export class DocumentRegistry {
    * Get all registered documents
    */
   public getAllDocuments(statusFilter?: DocumentApprovalStatus): RealKnowledgeDocument[] {
+    if (this.documents.size === 0) {
+      this.seedSync();
+    }
     const all = Array.from(this.documents.values());
     if (statusFilter) {
       return all.filter(d => d.approvalStatus === statusFilter);
@@ -121,6 +194,9 @@ export class DocumentRegistry {
    * Get approved documents allowed for RAG retrieval
    */
   public getApprovedRagDocuments(): RealKnowledgeDocument[] {
+    if (this.documents.size === 0) {
+      this.seedSync();
+    }
     return Array.from(this.documents.values()).filter(
       d => d.approvalStatus === 'APPROVED' && d.isAllowedForRag === true
     );
@@ -150,6 +226,9 @@ export class DocumentRegistry {
    * Find document by ID
    */
   public getDocumentById(docId: string): RealKnowledgeDocument | undefined {
+    if (this.documents.size === 0) {
+      this.seedSync();
+    }
     return this.documents.get(docId);
   }
 

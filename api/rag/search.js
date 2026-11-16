@@ -1194,16 +1194,16 @@ Ng\xE0y 5 th\xE1ng 6 n\u0103m 1911, t\u1EEB B\u1EBFn C\u1EA3ng Nh\xE0 R\u1ED3ng 
   },
   {
     id: "DOC-HCM-011",
-    title: "Truy\u1EC1n th\u1ED1ng L\u1ECBch s\u1EED Anh h\xF9ng D\xE2n t\u1ED9c Nguy\u1EC5n Trung Tr\u1EF1c v\xE0 V\xF9ng \u0111\u1EA5t Th\u1EDBi An - Qu\u1EADn 12",
+    title: "Truy\u1EC1n th\u1ED1ng L\u1ECBch s\u1EED Anh h\xF9ng D\xE2n t\u1ED9c Nguy\u1EC5n Trung Tr\u1EF1c v\xE0 V\xF9ng \u0111\u1EA5t Th\u1EDBi An",
     category: "hcmc-history",
     categoryLabel: "L\u1ECBch s\u1EED Th\xE0nh ph\u1ED1 H\u1ED3 Ch\xED Minh",
     authorOrSource: "Ban Gi\xE1m hi\u1EC7u & T\u1ED5 L\u1ECBch s\u1EED Tr\u01B0\u1EDDng THCS Nguy\u1EC5n Trung Tr\u1EF1c",
     dateOrEra: "1838 - 1868 & Hi\u1EC7n nay",
     status: "APPROVED",
     isAllowedForRag: true,
-    topics: ["Nguy\u1EC5n Trung Tr\u1EF1c", "Tr\u01B0\u1EDDng THCS Nguy\u1EC5n Trung Tr\u1EF1c", "B\u1EA3o b\u1ED1i tinh th\u1EA7n", "Kh\u1EDFi ngh\u0129a kh\xE1ng Ph\xE1p", "Th\u1EDBi An", "Qu\u1EADn 12"],
+    topics: ["Nguy\u1EC5n Trung Tr\u1EF1c", "Tr\u01B0\u1EDDng THCS Nguy\u1EC5n Trung Tr\u1EF1c", "B\u1EA3o b\u1ED1i tinh th\u1EA7n", "Kh\u1EDFi ngh\u0129a kh\xE1ng Ph\xE1p", "Th\u1EDBi An", "Th\xE0nh ph\u1ED1 H\u1ED3 Ch\xED Minh"],
     sourceUrl: "https://thcsnguyentrungtruc.hcm.edu.vn",
-    content: `Tr\u01B0\u1EDDng THCS Nguy\u1EC5n Trung Tr\u1EF1c t\u1ECDa l\u1EA1c t\u1EA1i ph\u01B0\u1EDDng Th\u1EDBi An, Qu\u1EADn 12, TP. H\u1ED3 Ch\xED Minh - v\xF9ng \u0111\u1EA5t gi\xE0u truy\u1EC1n th\u1ED1ng c\xE1ch m\u1EA1ng Chi\u1EBFn khu An Ph\xFA \u0110\xF4ng oanh li\u1EC7t.
+    content: `Tr\u01B0\u1EDDng THCS Nguy\u1EC5n Trung Tr\u1EF1c t\u1ECDa l\u1EA1c t\u1EA1i ph\u01B0\u1EDDng Th\u1EDBi An, TP. H\u1ED3 Ch\xED Minh - v\xF9ng \u0111\u1EA5t gi\xE0u truy\u1EC1n th\u1ED1ng c\xE1ch m\u1EA1ng ki\xEAn c\u01B0\u1EDDng c\u1EE7a Chi\u1EBFn khu An Ph\xFA \u0110\xF4ng oanh li\u1EC7t.
 
 Ng\xF4i tr\u01B0\u1EDDng t\u1EF1 h\xE0o mang t\xEAn ng\u01B0\u1EDDi anh h\xF9ng ngh\u0129a qu\xE2n Nam B\u1ED9 ki\xEAn c\u01B0\u1EDDng b\u1EA5t khu\u1EA5t trong cu\u1ED9c kh\xE1ng chi\u1EBFn ch\u1ED1ng th\u1EF1c d\xE2n Ph\xE1p:
 Anh h\xF9ng Nguy\u1EC5n Trung Tr\u1EF1c (1838 - 1868) n\u1ED5i ti\u1EBFng v\u1EDBi hai chi\u1EBFn c\xF4ng vang d\u1ED9i:
@@ -1217,7 +1217,7 @@ Noi g\u01B0\u01A1ng tinh th\u1EA7n y\xEAu n\u01B0\u1EDBc qu\u1EADt c\u01B0\u1EDD
     metadata: {
       heroBirthYear: 1838,
       heroDeathYear: 1868,
-      schoolLocation: "Ph\u01B0\u1EDDng Th\u1EDBi An, Qu\u1EADn 12, TP.HCM"
+      schoolLocation: "Ph\u01B0\u1EDDng Th\u1EDBi An, TP.HCM"
     }
   },
   {
@@ -1604,8 +1604,9 @@ C\xE2u n\xF3i ch\xE2n th\xE0nh, m\u1ED9c m\u1EA1c c\u1EE7a Ng\u01B0\u1EDDi l\xE0
       witnessDoctor: "B\xE1c s\u0129 L\xEA Ng\u1ECDc M\u1EABn"
     }
   },
-  // Security Canary test document: PENDING_REVIEW & isAllowedForRag: false
-  // Must NEVER be returned by retrieval engine!
+  // ============================================================================
+  // BATCH B: BỔ SUNG TRI THỨC ĐỊA PHƯƠNG & KHÔNG GIAN VĂN HÓA (DOC-HCM-026 ĐẾN DOC-HCM-028)
+  // ============================================================================
   {
     id: "DOC-HCM-026",
     title: "\u0110\u1ECBa gi\u1EDBi h\xE0nh ch\xEDnh ph\u01B0\u1EDDng Th\u1EDBi An qua c\xE1c th\u1EDDi k\u1EF3 (1997\u20132025 v\xE0 hi\u1EC7n h\xE0nh)",
@@ -1716,6 +1717,660 @@ T\xE1c ph\u1EA9m "Gia \u0110\u1ECBnh th\xE0nh th\xF4ng ch\xED" c\u1EE7a Tr\u1ECB
       batch: "BATCH_B_SELECTIVE_01"
     }
   },
+  // ============================================================================
+  // KNOWLEDGE EXPANSION BATCH C (DOC-HCM-029 ĐẾN DOC-HCM-040)
+  // Bổ sung chuyên sâu 12 hồ sơ tri thức toàn diện 8 danh mục chuẩn mực
+  // ============================================================================
+  {
+    id: "DOC-HCM-029",
+    title: "Th\u01B0 B\xE1c H\u1ED3 g\u1EEDi thi\u1EBFu ni\xEAn, nhi \u0111\u1ED3ng nh\xE2n d\u1ECBp T\u1EBFt Trung thu qua c\xE1c th\u1EDDi k\u1EF3",
+    category: "teachings-children",
+    categoryLabel: "Nh\u1EEFng l\u1EDDi d\u1EA1y c\u1EE7a B\xE1c \u0111\u1ED1i v\u1EDBi thi\u1EBFu nhi",
+    authorOrSource: "Ch\u1EE7 t\u1ECBch H\u1ED3 Ch\xED Minh - Tr\xEDch H\u1ED3 Ch\xED Minh To\xE0n t\u1EADp (NXB Ch\xEDnh tr\u1ECB Qu\u1ED1c gia S\u1EF1 th\u1EADt)",
+    dateOrEra: "1951 - 1960",
+    status: "APPROVED",
+    isAllowedForRag: true,
+    topics: ["T\u1EBFt Trung thu", "Thi\u1EBFu nhi", "L\u1EDDi d\u1EA1y c\u1EE7a B\xE1c", "Kh\xE1ng chi\u1EBFn", "Y\xEAu n\u01B0\u1EDBc", "Thi \u0111ua h\u1ECDc h\xE0nh"],
+    sourceUrl: "https://baotanghochiminh.vn",
+    content: `Sinh th\u1EDDi, Ch\u1EE7 t\u1ECBch H\u1ED3 Ch\xED Minh lu\xF4n d\xE0nh cho thi\u1EBFu ni\xEAn, nhi \u0111\u1ED3ng t\xECnh y\xEAu th\u01B0\u01A1ng bao la v\xE0 s\u1EF1 quan t\xE2m \u0111\u1EB7c bi\u1EC7t nh\u1EA5t. C\u1EE9 m\u1ED7i d\u1ECBp T\u1EBFt Trung thu \u0111\u1EBFn, d\xF9 b\u1EADn tr\u0103m c\xF4ng ngh\xECn vi\u1EC7c qu\u1ED1c gia \u0111\u1EA1i s\u1EF1, B\xE1c lu\xF4n d\xE0nh th\u1EDDi gian vi\u1EBFt th\u01B0, l\xE0m th\u01A1 g\u1EEDi t\u1EB7ng c\xE1c ch\xE1u thi\u1EBFu nhi c\u1EA3 n\u01B0\u1EDBc v\xE0 ki\u1EC1u b\xE0o \u1EDF n\u01B0\u1EDBc ngo\xE0i.
+
+1. B\xC0I TH\u01A0 TRUNG THU N\u0102M 1951 - T\xCCNH Y\xCAU TH\u01AF\u01A0NG BAO LA C\u1EE6A B\xC1C:
+Gi\u1EEFa kh\xF3i l\u1EEDa c\u1EE7a cu\u1ED9c kh\xE1ng chi\u1EBFn ch\u1ED1ng th\u1EF1c d\xE2n Ph\xE1p gian lao, B\xE1c vi\u1EBFt b\u1EE9c th\u01B0 g\u1EEDi c\xE1c ch\xE1u b\u1EB1ng nh\u1EEFng v\u1EA7n th\u01A1 m\u1ED9c m\u1EA1c, tha thi\u1EBFt:
+"Ai y\xEAu c\xE1c nhi \u0111\u1ED3ng
+B\u1EB1ng B\xE1c H\u1ED3 Ch\xED Minh?
+T\xEDnh c\xE1c ch\xE1u ngoan ngo\xE3n,
+M\u1EB7t c\xE1c ch\xE1u xinh xinh.
+Mong c\xE1c ch\xE1u c\u1ED1 g\u1EAFng,
+Thi \u0111ua h\u1ECDc v\xE0 h\xE0nh.
+Tu\u1ED5i nh\u1ECF l\xE0m vi\u1EC7c nh\u1ECF,
+T\xF9y theo s\u1EE9c c\u1EE7a m\xECnh:
+\u0110\u1EC3 tham gia kh\xE1ng chi\u1EBFn,
+\u0110\u1EC3 g\xECn gi\u1EEF h\xF2a b\xECnh.
+C\xE1c ch\xE1u h\xE3y x\u1EE9ng \u0111\xE1ng:
+Ch\xE1u B\xE1c H\u1ED3 Ch\xED Minh!".
+L\u1EDDi d\u1EA1y "Tu\u1ED5i nh\u1ECF l\xE0m vi\u1EC7c nh\u1ECF, t\xF9y theo s\u1EE9c c\u1EE7a m\xECnh" \u0111\xE3 tr\u1EDF th\xE0nh ph\u01B0\u01A1ng ch\xE2m s\u1ED1ng, kim ch\u1EC9 nam r\xE8n luy\u1EC7n c\u1EE7a l\u1EDBp l\u1EDBp th\u1EBF h\u1EC7 m\u0103ng non Vi\u1EC7t Nam trong su\u1ED1t h\u01A1n n\u1EEDa th\u1EBF k\u1EF7 qua.
+
+2. TH\u01AF TRUNG THU N\u0102M 1952 V\xC0 N\u0102M 1960 - NI\u1EC0M TIN V\xC0O T\u01AF\u01A0NG LAI N\u01AF\u1EDAC NH\xC0:
+Trong th\u01B0 Trung thu n\u0103m 1952, B\xE1c c\u0103n d\u1EB7n c\xE1c ch\xE1u: "B\xE1c mong c\xE1c ch\xE1u: Ngoan ngo\xE3n, \u0111o\xE0n k\u1EBFt, thi \u0111ua h\u1ECDc t\u1EADp, thi \u0111ua t\u0103ng gia. Mong c\xE1c ch\xE1u ti\u1EBFn b\u1ED9 nhi\u1EC1u. Mai sau c\xE1c ch\xE1u th\xE0nh ng\u01B0\u1EDDi ch\u1EE7 c\u1EE7a n\u01B0\u1EDBc nh\xE0".
+\u0110\u1EBFn T\u1EBFt Trung thu n\u0103m 1960, B\xE1c chia s\u1EBB ni\u1EC1m vui \u0111\xF3n tr\u0103ng c\xF9ng c\xE1c ch\xE1u thi\u1EBFu nhi mi\u1EC1n B\u1EAFc v\xE0 g\u1EEDi tr\u1ECDn n\u1ED7i nh\u1EDB th\u01B0\u01A1ng da di\u1EBFt t\u1EDBi c\xE1c ch\xE1u thi\u1EBFu nhi mi\u1EC1n Nam ru\u1ED9t th\u1ECBt \u0111ang s\u1ED1ng d\u01B0\u1EDBi \xE1ch k\xECm k\u1EB9p c\u1EE7a qu\xE2n x\xE2m l\u01B0\u1EE3c, h\u1EB9n ng\xE0y non s\xF4ng li\u1EC1n m\u1ED9t d\u1EA3i \u0111\u1EC3 B\xE1c ch\xE1u sum h\u1ECDp m\u1ED9t nh\xE0.
+
+3. \xDD NGH\u0128A S\u01AF PH\u1EA0M V\xC0 H\xC0NH \u0110\u1ED8NG C\u1EE6A H\u1ECCC SINH THCS:
+Nh\u1EEFng b\u1EE9c th\u01B0 Trung thu c\u1EE7a B\xE1c H\u1ED3 kh\xF4ng ch\u1EC9 l\xE0 m\xF3n qu\xE0 tinh th\u1EA7n v\xF4 gi\xE1 m\xE0 c\xF2n l\xE0 b\xE0i h\u1ECDc l\u1EDBn v\u1EC1 l\xF2ng y\xEAu n\u01B0\u1EDBc, \xFD th\u1EE9c tr\xE1ch nhi\u1EC7m c\u1ED9ng \u0111\u1ED3ng v\xE0 tinh th\u1EA7n t\u1EF1 l\u1EADp. H\u1ECDc sinh Tr\u01B0\u1EDDng THCS Nguy\u1EC5n Trung Tr\u1EF1c noi g\u01B0\u01A1ng B\xE1c b\u1EB1ng vi\u1EC7c t\xEDch c\u1EF1c tham gia phong tr\xE0o "Ngh\xECn vi\u1EC7c t\u1ED1t", gi\xFAp \u0111\u1EE1 b\u1EA1n b\xE8 c\xF3 ho\xE0n c\u1EA3nh kh\xF3 kh\u0103n, ch\u0103m ngoan h\u1ECDc gi\u1ECFi \u0111\u1EC3 x\u1EE9ng \u0111\xE1ng v\u1EDBi s\u1EF1 k\u1EF3 v\u1ECDng c\u1EE7a Ng\u01B0\u1EDDi.`,
+    metadata: {
+      batch: "BATCH_C_EXPANSION_01",
+      educationalLevel: "THCS",
+      primaryTarget: "\u0110\u1ED9i vi\xEAn & Thi\u1EBFu nhi to\xE0n tr\u01B0\u1EDDng"
+    }
+  },
+  {
+    id: "DOC-HCM-030",
+    title: "Tuy\u1EC3n t\u1EADp nh\u1EEFng m\u1EA9u chuy\u1EC7n c\u1EA3m \u0111\u1ED9ng v\u1EC1 B\xE1c H\u1ED3 v\u1EDBi thi\u1EBFu ni\xEAn, nhi \u0111\u1ED3ng",
+    category: "teachings-children",
+    categoryLabel: "Nh\u1EEFng l\u1EDDi d\u1EA1y c\u1EE7a B\xE1c \u0111\u1ED1i v\u1EDBi thi\u1EBFu nhi",
+    authorOrSource: "B\u1EA3o t\xE0ng H\u1ED3 Ch\xED Minh & Nh\xE0 xu\u1EA5t b\u1EA3n Kim \u0110\u1ED3ng",
+    dateOrEra: "Tuy\u1EC3n t\u1EADp truy\u1EC1n th\u1ED1ng",
+    status: "APPROVED",
+    isAllowedForRag: true,
+    topics: ["Chi\u1EBFc v\xF2ng b\u1EA1c", "Qu\u1EA3 t\xE1o c\u1EE7a B\xE1c", "Ai ngoan s\u1EBD \u0111\u01B0\u1EE3c th\u01B0\u1EDFng", "Gi\u1EEF l\u1EDDi h\u1EE9a", "Th\u1EADt th\xE0", "L\xF2ng nh\xE2n \xE1i"],
+    sourceUrl: "https://nxbkimdong.com.vn",
+    content: `Nh\u1EEFng m\u1EA9u chuy\u1EC7n \u0111\u1EDDi th\u01B0\u1EDDng gi\u1EA3n d\u1ECB v\u1EC1 Ch\u1EE7 t\u1ECBch H\u1ED3 Ch\xED Minh l\xE0 kho t\xE0ng b\xE0i h\u1ECDc \u0111\u1EA1o \u0111\u1EE9c s\u1ED1ng \u0111\u1ED9ng, g\u1EA7n g\u0169i v\xE0 s\xE2u s\u1EAFc nh\u1EA5t \u0111\u1ED1i v\u1EDBi l\u1EE9a tu\u1ED5i h\u1ECDc sinh THCS.
+
+1. CHUY\u1EC6N "CHI\u1EBEC V\xD2NG B\u1EA0C" - B\xC0I H\u1ECCC V\u1EC0 GI\u1EEE CH\u1EEE T\xCDN V\xC0 T\xD4N TR\u1ECCNG L\u1EDCI H\u1EE8A:
+H\u01A1n hai n\u0103m sau khi B\xE1c \u0111i c\xF4ng t\xE1c v\u1EC1 v\xF9ng cao, l\xFAc tr\u1EDF l\u1EA1i, \u0111\u1ED3ng b\xE0o v\xE0 c\xE1c ch\xE1u thi\u1EBFu nhi \xF9a ra \u0111\xF3n B\xE1c r\u1ED9n r\xE3. B\xE1c m\u1EDF t\xFAi l\u1EA5y ra m\u1ED9t chi\u1EBFc v\xF2ng b\u1EA1c nh\u1ECF s\xE1ng l\xF3a trao t\u1EADn tay m\u1ED9t em b\xE9 g\xE1i. M\u1ECDi ng\u01B0\u1EDDi \u0111\u1EC1u ng\u1EA1c nhi\xEAn. B\xE1c gi\u1EA3i th\xEDch: "Tr\u01B0\u1EDBc \u0111\xE2y hai n\u0103m, khi chia tay, ch\xE1u b\xE9 n\xE0y c\xF3 n\xF3i B\xE1c \u0111i \u0111\xE2u v\u1EC1 nh\u1EDB mua cho ch\xE1u m\u1ED9t chi\u1EBFc v\xF2ng b\u1EA1c. Nay B\xE1c v\u1EC1, B\xE1c gi\u1EEF \u0111\xFAng l\u1EDDi h\u1EE9a".
+-> B\xE0i h\u1ECDc: \u0110\xE3 h\u1EE9a \u0111i\u1EC1u g\xEC th\xEC ph\u1EA3i c\u1ED1 g\u1EAFng th\u1EF1c hi\u1EC7n cho b\u1EB1ng \u0111\u01B0\u1EE3c, d\xF9 l\xE0 v\u1EDBi m\u1ED9t \u0111\u1EE9a tr\u1EBB nh\u1ECF. Gi\u1EEF ch\u1EEF t\xEDn l\xE0 n\u1EC1n t\u1EA3ng cao qu\xFD nh\u1EA5t c\u1EE7a \u0111\u1EA1o \u0111\u1EE9c l\xE0m ng\u01B0\u1EDDi.
+
+2. CHUY\u1EC6N "QU\u1EA2 T\xC1O C\u1EE6A B\xC1C H\u1ED2" - T\xCCNH Y\xCAU TH\u01AF\u01A0NG TR\u1EBA TH\u01A0 KH\xD4NG BI\xCAN GI\u1EDAI:
+N\u0103m 1946, khi sang th\u0103m n\u01B0\u1EDBc Ph\xE1p v\u1EDBi t\u01B0 c\xE1ch l\xE0 th\u01B0\u1EE3ng kh\xE1ch c\u1EE7a Ch\xEDnh ph\u1EE7 Ph\xE1p, trong m\u1ED9t b\u1EEFa ti\u1EC7c ngo\u1EA1i giao sang tr\u1ECDng, B\xE1c H\u1ED3 \u0111\xE3 c\u1EA7m theo m\u1ED9t qu\u1EA3 t\xE1o ngon khi r\u1EDDi b\xE0n ti\u1EC7c. Ra \u0111\u1EBFn c\u1EEDa \u0111i\u1EC7n, th\u1EA5y m\u1ED9t ph\u1EE5 n\u1EEF ngh\xE8o b\u1EBF em b\xE9 \u0111\u1EE9ng nh\xECn, B\xE1c \u0111\xE3 ti\u1EBFn l\u1EA1i m\u1EC9m c\u01B0\u1EDDi \xE2n c\u1EA7n trao qu\u1EA3 t\xE1o cho ch\xE1u b\xE9. C\u1EED ch\u1EC9 \u0111\u1EA7y t\xECnh nh\xE2n \xE1i c\u1EE7a B\xE1c \u0111\xE3 l\xE0m x\xFAc \u0111\u1ED9ng h\xE0ng tri\u1EC7u tr\xE1i tim nh\xE2n d\xE2n Ph\xE1p v\xE0 truy\u1EC1n th\xF4ng qu\u1ED1c t\u1EBF th\u1EDDi b\u1EA5y gi\u1EDD.
+-> B\xE0i h\u1ECDc: L\xF2ng nh\xE2n \xE1i, s\u1EF1 s\u1EBB chia v\xE0 t\xECnh th\u01B0\u01A1ng y\xEAu tr\u1EBB em ch\xE2n th\xE0nh, v\u01B0\u1EE3t qua m\u1ECDi ranh gi\u1EDBi d\xE2n t\u1ED9c, m\xE0u da hay \u0111\u1EB3ng c\u1EA5p.
+
+3. CHUY\u1EC6N "AI NGOAN S\u1EBC \u0110\u01AF\u1EE2C TH\u01AF\u1EDENG" - B\xC0I H\u1ECCC V\u1EC0 T\xCDNH TH\u1EACT TH\xC0 V\xC0 D\u0168NG C\u1EA2M:
+Khi B\xE1c \u0111\u1EBFn th\u0103m m\u1ED9t tr\u1EA1i nhi \u0111\u1ED3ng, B\xE1c chia k\u1EB9o cho c\xE1c ch\xE1u. C\u1EADu b\xE9 T\u1ED9 \u0111\u1EE9ng n\xE9p v\xE0o g\xF3c l\u1EDBp kh\xF4ng d\xE1m nh\u1EADn k\u1EB9o. Khi B\xE1c h\u1ECFi l\xFD do, T\u1ED9 l\xED nh\xED: "Th\u01B0a B\xE1c, h\xF4m nay ch\xE1u ch\u01B0a v\xE2ng l\u1EDDi c\xF4 gi\xE1o, ch\xE1u ch\u01B0a ngoan n\xEAn kh\xF4ng d\xE1m nh\u1EADn k\u1EB9o c\u1EE7a B\xE1c \u1EA1". B\xE1c c\u01B0\u1EDDi hi\u1EC1n t\u1EEB, xoa \u0111\u1EA7u T\u1ED9 v\xE0 n\xF3i: "Ch\xE1u bi\u1EBFt nh\u1EADn l\u1ED7i, th\u1EBF l\xE0 d\u0169ng c\u1EA3m v\xE0 th\u1EADt th\xE0, ch\xE1u v\u1EABn l\xE0 \u0111\u1EE9a tr\u1EBB ngoan!". B\xE1c v\u1EABn chia ph\u1EA7n k\u1EB9o cho T\u1ED9 v\xE0 em h\u1EE9a t\u1EEB nay s\u1EBD ngoan ngo\xE3n h\u01A1n.
+-> B\xE0i h\u1ECDc: "Khi\xEAm t\u1ED1n, th\u1EADt th\xE0, d\u0169ng c\u1EA3m" theo \u0110i\u1EC1u 5 B\xE1c H\u1ED3 d\u1EA1y. Bi\u1EBFt nh\u1EADn l\u1ED7i v\xE0 d\u0169ng c\u1EA3m s\u1EEDa \u0111\u1ED5i l\xE0 ph\u1EA9m ch\u1EA5t \u0111\xE1ng qu\xFD nh\u1EA5t c\u1EE7a ng\u01B0\u1EDDi h\u1ECDc sinh.`,
+    metadata: {
+      batch: "BATCH_C_EXPANSION_01",
+      educationalLevel: "THCS",
+      valuesHighlighted: ["Ch\u1EEF t\xEDn", "L\xF2ng nh\xE2n \xE1i", "S\u1EF1 trung th\u1EF1c"]
+    }
+  },
+  {
+    id: "DOC-HCM-031",
+    title: "C\u1EA9m nang th\u1EF1c h\xE0nh 5 \u0110i\u1EC1u B\xE1c H\u1ED3 d\u1EA1y d\xE0nh cho \u0110\u1ED9i vi\xEAn thi\u1EBFu ni\xEAn ti\u1EC1n phong THCS",
+    category: "teachings-children",
+    categoryLabel: "Nh\u1EEFng l\u1EDDi d\u1EA1y c\u1EE7a B\xE1c \u0111\u1ED1i v\u1EDBi thi\u1EBFu nhi",
+    authorOrSource: "H\u1ED9i \u0111\u1ED3ng \u0110\u1ED9i Trung \u01B0\u01A1ng & Li\xEAn \u0111\u1ED9i Tr\u01B0\u1EDDng THCS Nguy\u1EC5n Trung Tr\u1EF1c",
+    dateOrEra: "1961 - Hi\u1EC7n h\xE0nh",
+    status: "APPROVED",
+    isAllowedForRag: true,
+    topics: ["5 \u0110i\u1EC1u B\xE1c H\u1ED3 d\u1EA1y", "\u0110\u1ED9i TNTP H\u1ED3 Ch\xED Minh", "R\xE8n \u0111\u1EE9c luy\u1EC7n t\xE0i", "V\u1EC7 sinh th\u1EADt t\u1ED1t", "Khi\xEAm t\u1ED1n th\u1EADt th\xE0 d\u0169ng c\u1EA3m"],
+    sourceUrl: "https://thieunhitphcm.vn",
+    content: `1. HO\xC0N C\u1EA2NH RA \u0110\u1EDCI 5 \u0110I\u1EC0U B\xC1C H\u1ED2 D\u1EA0Y THI\u1EBEU NI\xCAN NHI \u0110\u1ED2NG:
+N\u0103m 1961, nh\xE2n d\u1ECBp k\u1EF7 ni\u1EC7m 20 n\u0103m ng\xE0y th\xE0nh l\u1EADp \u0110\u1ED9i Thi\u1EBFu ni\xEAn Ti\u1EC1n phong (15/5/1941 - 15/5/1961), Ch\u1EE7 t\u1ECBch H\u1ED3 Ch\xED Minh \u0111\xE3 g\u1EEDi th\u01B0 c\u0103n d\u1EB7n thi\u1EBFu ni\xEAn, nhi \u0111\u1ED3ng c\u1EA3 n\u01B0\u1EDBc 5 \u0111i\u1EC1u ng\u1EAFn g\u1ECDn, s\xFAc t\xEDch.
+\u0110\u1EBFn n\u0103m 1965, khi chu\u1EA9n b\u1ECB in l\u1EA1i th\u01B0 khen ng\u1EE3i c\xE1c ch\xE1u thi\u1EBFu nhi c\xF3 th\xE0nh t\xEDch h\u1ECDc t\u1EADp v\xE0 ch\u1ED1ng M\u1EF9 c\u1EE9u n\u01B0\u1EDBc, B\xE1c \u0111\xE3 t\u1EF1 tay b\u1ED5 sung ch\u1EEF "th\u1EADt" v\xE0o \u0111i\u1EC1u th\u1EE9 t\u01B0: t\u1EEB "Gi\u1EEF g\xECn v\u1EC7 sinh t\u1ED1t" th\xE0nh "Gi\u1EEF g\xECn v\u1EC7 sinh TH\u1EACT t\u1ED1t", th\u1EC3 hi\u1EC7n s\u1EF1 quan t\xE2m t\u1EC9 m\u1EC9, thi\u1EBFt th\u1EF1c c\u1EE7a B\xE1c \u0111\u1ED1i v\u1EDBi n\u1EBFp s\u1ED1ng s\u1EA1ch s\u1EBD, s\u1EE9c kh\u1ECFe v\xE0 th\u1EC3 ch\u1EA5t c\u1EE7a th\u1EBF h\u1EC7 t\u01B0\u01A1ng lai.
+
+2. N\u1ED8I DUNG V\xC0 H\u01AF\u1EDANG D\u1EAAN TH\u1EF0C H\xC0NH C\u1EE4 TH\u1EC2 CHO H\u1ECCC SINH THCS NGUY\u1EC4N TRUNG TR\u1EF0C:
+
+- \u0110i\u1EC1u 1: Y\xEAu T\u1ED5 qu\u1ED1c, y\xEAu \u0111\u1ED3ng b\xE0o
+  + Th\u1EF1c h\xE0nh: \u0110\u1EE9ng nghi\xEAm trang, h\xE1t to, \u0111\xFAng nh\u1EA1c b\xE0i Qu\u1ED1c ca - \u0110\u1ED9i ca trong c\xE1c l\u1EC5 ch\xE0o c\u1EDD \u0111\u1EA7u tu\u1EA7n; t\xEDch c\u1EF1c h\u1ECDc t\u1EADp l\u1ECBch s\u1EED d\u1EF1ng n\u01B0\u1EDBc v\xE0 gi\u1EEF n\u01B0\u1EDBc; y\xEAu th\u01B0\u01A1ng, gi\xFAp \u0111\u1EE1 b\u1EA1n b\xE8 trong l\u1EDBp, kh\xF4ng ph\xE2n bi\u1EC7t ho\xE0n c\u1EA3nh; k\xEDnh tr\u1ECDng \xF4ng b\xE0, cha m\u1EB9, th\u1EA7y c\xF4 gi\xE1o.
+
+- \u0110i\u1EC1u 2: H\u1ECDc t\u1EADp t\u1ED1t, lao \u0111\u1ED9ng t\u1ED1t
+  + Th\u1EF1c h\xE0nh: L\u1EAFng nghe th\u1EA7y c\xF4 gi\u1EA3ng b\xE0i, l\xE0m b\xE0i t\u1EADp \u0111\u1EA7y \u0111\u1EE7, t\u1EF1 gi\xE1c \u0111\u1ECDc s\xE1ch m\u1EDF r\u1ED9ng tri th\u1EE9c; ch\u1EE7 \u0111\u1ED9ng tham gia lao \u0111\u1ED9ng v\u1EC7 sinh ph\xF2ng h\u1ECDc, gi\u1EEF g\xECn t\xE0i s\u1EA3n chung c\u1EE7a nh\xE0 tr\u01B0\u1EDDng, ph\u1EE5 gi\xFAp gia \u0111\xECnh c\xF4ng vi\u1EC7c nh\xE0 v\u1EEBa s\u1EE9c.
+
+- \u0110i\u1EC1u 3: \u0110o\xE0n k\u1EBFt t\u1ED1t, k\u1EF7 lu\u1EADt t\u1ED1t
+  + Th\u1EF1c h\xE0nh: Lu\xF4n h\xF2a \u0111\u1ED3ng, x\xE2y d\u1EF1ng t\xECnh b\u1EA1n trong s\xE1ng, tuy\u1EC7t \u0111\u1ED1i n\xF3i kh\xF4ng v\u1EDBi b\u1EA1o l\u1EF1c h\u1ECDc \u0111\u01B0\u1EDDng; ch\u1EA5p h\xE0nh nghi\xEAm t\xFAc N\u1ED9i quy h\u1ECDc sinh Tr\u01B0\u1EDDng THCS Nguy\u1EC5n Trung Tr\u1EF1c, ch\u1EA5p h\xE0nh lu\u1EADt an to\xE0n giao th\xF4ng khi \u0111\u1EBFn tr\u01B0\u1EDDng.
+
+- \u0110i\u1EC1u 4: Gi\u1EEF g\xECn v\u1EC7 sinh th\u1EADt t\u1ED1t
+  + Th\u1EF1c h\xE0nh: Gi\u1EEF g\xECn v\u1EC7 sinh c\xE1 nh\xE2n, trang ph\u1EE5c s\u1EA1ch s\u1EBD, \u0111eo kh\u0103n qu\xE0ng \u0111\u1ECF ch\u1EC9nh t\u1EC1; ph\xE2n lo\u1EA1i r\xE1c th\u1EA3i t\u1EA1i l\u1EDBp h\u1ECDc, b\u1ECF r\xE1c \u0111\xFAng n\u01A1i quy \u0111\u1ECBnh, b\u1EA3o v\u1EC7 c\xE2y xanh v\xE0 kh\xF4ng gian xanh c\u1EE7a nh\xE0 tr\u01B0\u1EDDng v\xE0 \u0111\u1ECBa b\xE0n Ph\u01B0\u1EDDng Th\u1EDBi An.
+
+- \u0110i\u1EC1u 5: Khi\xEAm t\u1ED1n, th\u1EADt th\xE0, d\u0169ng c\u1EA3m
+  + Th\u1EF1c h\xE0nh: Lu\xF4n l\u1EC5 ph\xE9p v\u1EDBi ng\u01B0\u1EDDi l\u1EDBn, khi\xEAm t\u1ED1n h\u1ECDc h\u1ECFi b\u1EA1n b\xE8 xung quanh; kh\xF4ng gian l\u1EADn trong gi\u1EDD ki\u1EC3m tra v\xE0 thi c\u1EED; d\u0169ng c\u1EA3m nh\u1EADn khuy\u1EBFt \u0111i\u1EC3m khi l\xE0m sai v\xE0 c\xF3 tinh th\u1EA7n \u0111\u1EA5u tranh b\u1EA3o v\u1EC7 l\u1EBD ph\u1EA3i.`,
+    metadata: {
+      batch: "BATCH_C_EXPANSION_01",
+      organizationUnit: "Li\xEAn \u0111\u1ED9i THCS Nguy\u1EC5n Trung Tr\u1EF1c",
+      practicalChecklist: true
+    }
+  },
+  {
+    id: "DOC-HCM-032",
+    title: "L\u1EDDi k\xEAu g\u1ECDi To\xE0n qu\u1ED1c kh\xE1ng chi\u1EBFn c\u1EE7a Ch\u1EE7 t\u1ECBch H\u1ED3 Ch\xED Minh (19/12/1946)",
+    category: "cultural-heritage",
+    categoryLabel: "Di s\u1EA3n v\u0103n h\xF3a H\u1ED3 Ch\xED Minh",
+    authorOrSource: "Ch\u1EE7 t\u1ECBch H\u1ED3 Ch\xED Minh - B\u1EA3o v\u1EADt Qu\u1ED1c gia & Vi\u1EC7n L\u1ECBch s\u1EED \u0110\u1EA3ng",
+    dateOrEra: "19/12/1946",
+    status: "APPROVED",
+    isAllowedForRag: true,
+    topics: ["To\xE0n qu\u1ED1c kh\xE1ng chi\u1EBFn", "1946", "V\u1EA1n Ph\xFAc H\xE0 \u0110\xF4ng", "\u0110\u1ED9c l\u1EADp t\u1EF1 do", "Kh\xE1ng chi\u1EBFn ki\u1EBFn qu\u1ED1c"],
+    sourceUrl: "https://tulieuvankien.dangcongsan.vn",
+    content: `1. HO\xC0N C\u1EA2NH L\u1ECACH S\u1EEC RA \u0110\u1EDCI B\u1EA2N HI\u1EC6U TRI\u1EC6U:
+Sau ng\xE0y C\xE1ch m\u1EA1ng Th\xE1ng T\xE1m n\u0103m 1945 th\xE0nh c\xF4ng, th\u1EF1c d\xE2n Ph\xE1p quy\u1EBFt t\xE2m d\xF9ng v\u0169 l\u1EF1c \u0111\u1EC3 x\xE2m l\u01B0\u1EE3c n\u01B0\u1EDBc ta m\u1ED9t l\u1EA7n n\u1EEFa. V\u1EDBi thi\u1EC7n ch\xED h\xF2a b\xECnh, Ch\u1EE7 t\u1ECBch H\u1ED3 Ch\xED Minh v\xE0 Ch\xEDnh ph\u1EE7 Vi\u1EC7t Nam D\xE2n ch\u1EE7 C\u1ED9ng h\xF2a \u0111\xE3 h\u1EBFt s\u1EE9c nh\xE2n nh\u01B0\u1EE3ng, k\xFD Hi\u1EC7p \u0111\u1ECBnh S\u01A1 b\u1ED9 ng\xE0y 6/3/1946 v\xE0 T\u1EA1m \u01B0\u1EDBc ng\xE0y 14/9/1946. Nh\u01B0ng th\u1EF1c d\xE2n Ph\xE1p li\xEAn ti\u1EBFp b\u1ED9i \u01B0\u1EDBc, g\xE2y h\u1EA5n \u1EDF H\u1EA3i Ph\xF2ng, L\u1EA1ng S\u01A1n v\xE0 g\u1EEDi t\u1ED1i h\u1EADu th\u01B0 \u0111\xF2i t\u01B0\u1EDBc v\u0169 kh\xED c\u1EE7a l\u1EF1c l\u01B0\u1EE3ng t\u1EF1 v\u1EC7 Th\u1EE7 \u0111\xF4 H\xE0 N\u1ED9i.
+Tr\u01B0\u1EDBc t\xECnh th\u1EBF "ng\xE0n c\xE2n treo s\u1EE3i t\xF3c", t\u1ED1i ng\xE0y 19 th\xE1ng 12 n\u0103m 1946, t\u1EA1i l\xE0ng V\u1EA1n Ph\xFAc (H\xE0 \u0110\xF4ng, nay thu\u1ED9c H\xE0 N\u1ED9i), Ch\u1EE7 t\u1ECBch H\u1ED3 Ch\xED Minh \u0111\xE3 vi\u1EBFt b\u1EA3n "L\u1EDDi k\xEAu g\u1ECDi To\xE0n qu\u1ED1c kh\xE1ng chi\u1EBFn". Ti\u1EBFng s\xFAng kh\xE1ng chi\u1EBFn to\xE0n qu\u1ED1c ch\xEDnh th\u1EE9c b\xF9ng n\u1ED5 \u0111\xEAm 19/12/1946.
+
+2. TO\xC0N V\u0102N L\u1EDCI K\xCAU G\u1ECCI B\u1EA4T H\u1EE6:
+"H\u1EE1i \u0111\u1ED3ng b\xE0o to\xE0n qu\u1ED1c!
+Ch\xFAng ta mu\u1ED1n h\xF2a b\xECnh, ch\xFAng ta ph\u1EA3i nh\xE2n nh\u01B0\u1EE3ng. Nh\u01B0ng ch\xFAng ta c\xE0ng nh\xE2n nh\u01B0\u1EE3ng, th\u1EF1c d\xE2n Ph\xE1p c\xE0ng l\u1EA5n t\u1EDBi, v\xEC ch\xFAng quy\u1EBFt t\xE2m c\u01B0\u1EDBp n\u01B0\u1EDBc ta l\u1EA7n n\u1EEFa!
+Kh\xF4ng! Ch\xFAng ta th\xE0 hy sinh t\u1EA5t c\u1EA3, ch\u1EE9 nh\u1EA5t \u0111\u1ECBnh kh\xF4ng ch\u1ECBu m\u1EA5t n\u01B0\u1EDBc, nh\u1EA5t \u0111\u1ECBnh kh\xF4ng ch\u1ECBu l\xE0m n\xF4 l\u1EC7.
+H\u1EE1i \u0111\u1ED3ng b\xE0o!
+Ch\xFAng ta ph\u1EA3i \u0111\u1EE9ng l\xEAn!
+B\u1EA5t k\u1EF3 \u0111\xE0n \xF4ng, \u0111\xE0n b\xE0, b\u1EA5t k\u1EF3 ng\u01B0\u1EDDi gi\xE0, ng\u01B0\u1EDDi tr\u1EBB, kh\xF4ng chia t\xF4n gi\xE1o, \u0111\u1EA3ng ph\xE1i, d\xE2n t\u1ED9c. H\u1EC5 l\xE0 ng\u01B0\u1EDDi Vi\u1EC7t Nam th\xEC ph\u1EA3i \u0111\u1EE9ng l\xEAn \u0111\xE1nh th\u1EF1c d\xE2n Ph\xE1p \u0111\u1EC3 c\u1EE9u T\u1ED5 qu\u1ED1c. Ai c\xF3 s\xFAng d\xF9ng s\xFAng. Ai c\xF3 g\u01B0\u01A1m d\xF9ng g\u01B0\u01A1m, kh\xF4ng c\xF3 g\u01B0\u01A1m th\xEC d\xF9ng cu\u1ED1c, thu\u1ED5ng, g\u1EADy g\u1ED9c. Ai c\u0169ng ph\u1EA3i ra s\u1EE9c ch\u1ED1ng th\u1EF1c d\xE2n Ph\xE1p c\u1EE9u n\u01B0\u1EDBc.
+H\u1EE1i anh em binh s\u0129, t\u1EF1 v\u1EC7, d\xE2n qu\xE2n!
+Gi\u1EDD c\u1EE9u qu\u1ED1c \u0111\xE3 \u0111\u1EBFn. Ta ph\u1EA3i hy sinh \u0111\u1EBFn gi\u1ECDt m\xE1u cu\u1ED1i c\xF9ng, \u0111\u1EC3 gi\u1EEF g\xECn \u0111\u1EA5t n\u01B0\u1EDBc.
+D\xF9 ph\u1EA3i gian lao kh\xE1ng chi\u1EBFn, nh\u01B0ng v\u1EDBi m\u1ED9t l\xF2ng ki\xEAn quy\u1EBFt hy sinh, th\u1EAFng l\u1EE3i nh\u1EA5t \u0111\u1ECBnh v\u1EC1 d\xE2n t\u1ED9c ta!
+Vi\u1EC7t Nam \u0111\u1ED9c l\u1EADp v\xE0 th\u1ED1ng nh\u1EA5t mu\xF4n n\u0103m!
+Kh\xE1ng chi\u1EBFn th\u1EAFng l\u1EE3i mu\xF4n n\u0103m!".
+
+3. \xDD NGH\u0128A TH\u1EDCI \u0110\u1EA0I V\xC0 B\xC0I H\u1ECCC \xDD CH\xCD:
+"L\u1EDDi k\xEAu g\u1ECDi To\xE0n qu\u1ED1c kh\xE1ng chi\u1EBFn" l\xE0 \xE1ng h\xF9ng v\u0103n c\u1EE9u qu\u1ED1c, k\u1EBFt tinh \xFD ch\xED qu\u1EADt c\u01B0\u1EDDng c\u1EE7a h\xE0ng tri\u1EC7u con tim Vi\u1EC7t Nam. Tinh th\u1EA7n "Th\xE0 hy sinh t\u1EA5t c\u1EA3, ch\u1EE9 nh\u1EA5t \u0111\u1ECBnh kh\xF4ng ch\u1ECBu m\u1EA5t n\u01B0\u1EDBc, nh\u1EA5t \u0111\u1ECBnh kh\xF4ng ch\u1ECBu l\xE0m n\xF4 l\u1EC7" l\xE0 ng\u1ECDn \u0111u\u1ED1c soi \u0111\u01B0\u1EDDng b\u1ED3i d\u01B0\u1EE1ng l\xF2ng y\xEAu n\u01B0\u1EDBc n\u1ED3ng n\xE0n v\xE0 \xFD th\u1EE9c t\u1EF1 t\xF4n d\xE2n t\u1ED9c cho c\xE1c th\u1EBF h\u1EC7 h\u1ECDc sinh tr\u01B0\u1EDDng Nguy\u1EC5n Trung Tr\u1EF1c h\xF4m nay.`,
+    metadata: {
+      batch: "BATCH_C_EXPANSION_01",
+      legalStatus: "B\u1EA3o v\u1EADt Qu\u1ED1c gia",
+      speechLocation: "L\xE0ng V\u1EA1n Ph\xFAc, H\xE0 \u0110\xF4ng"
+    }
+  },
+  {
+    id: "DOC-HCM-033",
+    title: 'T\xE1c ph\u1EA9m "Nh\u1EADt k\xFD trong t\xF9" \u2013 Gi\xE1 tr\u1ECB nh\xE2n v\u0103n v\xE0 c\xE1c b\xE0i th\u01A1 r\xE8n luy\u1EC7n \xFD ch\xED cho th\u1EBF h\u1EC7 tr\u1EBB',
+    category: "cultural-heritage",
+    categoryLabel: "Di s\u1EA3n v\u0103n h\xF3a H\u1ED3 Ch\xED Minh",
+    authorOrSource: "Ch\u1EE7 t\u1ECBch H\u1ED3 Ch\xED Minh - B\u1EA3o v\u1EADt Qu\u1ED1c gia (Vi\u1EC7n V\u0103n h\u1ECDc & NXB V\u0103n h\u1ECDc)",
+    dateOrEra: "1942 - 1943",
+    status: "APPROVED",
+    isAllowedForRag: true,
+    topics: ["Nh\u1EADt k\xFD trong t\xF9", "Ng\u1EE5c trung nh\u1EADt k\xFD", "H\u1ECDc d\u1ECBch kinh", "Nghe ti\u1EBFng gi\xE3 g\u1EA1o", "T\u1EF1 khuy\xEAn m\xECnh", "\xDD ch\xED r\xE8n luy\u1EC7n"],
+    sourceUrl: "https://baotanghochiminh.vn",
+    content: `1. HO\xC0N C\u1EA2NH S\xC1NG T\xC1C T\u1EACP TH\u01A0 B\u1EA2O V\u1EACT QU\u1ED0C GIA:
+T\u1EEB th\xE1ng 8/1942 \u0111\u1EBFn th\xE1ng 9/1943, l\xE3nh t\u1EE5 Nguy\u1EC5n \xC1i Qu\u1ED1c l\u1EA5y t\xEAn l\xE0 H\u1ED3 Ch\xED Minh l\xEAn \u0111\u01B0\u1EDDng sang Trung Qu\u1ED1c \u0111\u1EC3 li\xEAn l\u1EA1c v\u1EDBi c\xE1c l\u1EF1c l\u01B0\u1EE3ng d\xE2n ch\u1EE7 qu\u1ED1c t\u1EBF. V\u1EEBa \u0111\u1EBFn th\u1ECB tr\u1EA5n T\xFAc Vinh (t\u1EC9nh Qu\u1EA3ng T\xE2y), Ng\u01B0\u1EDDi b\u1ECB ch\xEDnh quy\u1EC1n T\u01B0\u1EDFng Gi\u1EDBi Th\u1EA1ch b\u1EAFt gi\u1EEF v\xF4 c\u1EDB. Su\u1ED1t 14 th\xE1ng b\u1ECB giam c\u1EA7m \u0111\xE0y \u1EA3i, b\u1ECB gi\u1EA3i qua g\u1EA7n 30 nh\xE0 giam c\u1EE7a 13 huy\u1EC7n thu\u1ED9c t\u1EC9nh Qu\u1EA3ng T\xE2y, Ng\u01B0\u1EDDi \u0111\xE3 vi\u1EBFt t\u1EADp th\u01A1 "Ng\u1EE5c trung nh\u1EADt k\xFD" (Nh\u1EADt k\xFD trong t\xF9) g\u1ED3m 133 b\xE0i th\u01A1 b\u1EB1ng ch\u1EEF H\xE1n trong m\u1ED9t cu\u1ED1n s\u1ED5 tay nh\u1ECF.
+
+2. NH\u1EEENG B\xC0I TH\u01A0 TI\xCAU BI\u1EC2U V\u1EC0 R\xC8N LUY\u1EC6N \xDD CH\xCD V\xC0 NH\xC2N C\xC1CH H\u1ECCC SINH:
+
+- B\xE0i 1: "T\u1EF1 khuy\xEAn m\xECnh" (T\u1EF1 mi\u1EC5n)
+  "V\xED kh\xF4ng c\xF3 c\u1EA3nh \u0111\xF4ng t\xE0n,
+  Th\xEC \u0111\xE2u c\xF3 c\u1EA3nh huy ho\xE0ng ng\xE0y xu\xE2n;
+  Ngh\u0129 m\xECnh trong b\u01B0\u1EDBc gian tru\xE2n,
+  Tai \u01B0\u01A1ng r\xE8n luy\u1EC7n tinh th\u1EA7n th\xEAm h\u0103ng."
+  -> \xDD ngh\u0129a: Kh\xF3 kh\u0103n, th\u1EED th\xE1ch ch\u1EC9 l\xE0 m\xF4i tr\u01B0\u1EDDng t\xF4i luy\u1EC7n b\u1EA3n l\u0129nh con ng\u01B0\u1EDDi. Nh\u01B0 sau m\xF9a \u0111\xF4ng gi\xE1 r\xE9t s\u1EBD l\xE0 m\xF9a xu\xE2n n\u1EDF hoa, con ng\u01B0\u1EDDi v\u01B0\u1EE3t qua gian nan s\u1EBD \u0111\u1EA1t t\u1EDBi th\xE0nh c\xF4ng r\u1EF1c r\u1EE1.
+
+- B\xE0i 2: "Nghe ti\u1EBFng gi\xE3 g\u1EA1o" (V\u0103n th\u1ED1i m\u1EC5 thanh)
+  "G\u1EA1o \u0111em v\xE0o gi\xE3 bao \u0111au \u0111\u1EDBn,
+  G\u1EA1o gi\xE3 xong r\u1ED3i tr\u1EAFng t\u1EF1a b\xF4ng;
+  S\u1ED1ng \u1EDF tr\xEAn \u0111\u1EDDi ng\u01B0\u1EDDi c\u0169ng v\u1EADy,
+  Gian nan r\xE8n luy\u1EC7n m\u1EDBi th\xE0nh c\xF4ng."
+  -> \xDD ngh\u0129a: Tri\u1EBFt l\xFD s\xE2u s\u1EAFc v\u1EC1 s\u1EF1 tu d\u01B0\u1EE1ng, r\xE8n luy\u1EC7n nh\xE2n c\xE1ch v\xE0 h\u1ECDc t\u1EADp. Kh\xF4ng c\xF3 vinh quang n\xE0o t\u1EF1 nhi\xEAn \u0111\u1EBFn n\u1EBFu kh\xF4ng tr\u1EA3i qua qu\xE1 tr\xECnh kh\u1ED5 luy\u1EC7n ki\xEAn tr\xEC m\u1ED7i ng\xE0y.
+
+- B\xE0i 3: "H\u1ECDc d\u1ECBch kinh" (\u0110\u1ED9c D\u1ECBch kinh)
+  "H\u1EBFt m\u01B0a l\xE0 n\u1EAFng h\u1EEDng l\xEAn th\xF4i,
+  H\u1EBFt kh\u1ED5 l\xE0 vui v\u1ED1n l\u1EBD \u0111\u1EDDi;
+  M\xE2y t\u1EA1nh m\xF9 tan bay h\u1EBFt s\u1EA1ch,
+  Th\xEAnh thang non n\u01B0\u1EDBc m\u1ED9t ph\u01B0\u01A1ng tr\u1EDDi."
+  -> \xDD ngh\u0129a: Tinh th\u1EA7n l\u1EA1c quan c\xE1ch m\u1EA1ng phi th\u01B0\u1EDDng, l\xE0m ch\u1EE7 ho\xE0n c\u1EA3nh, lu\xF4n h\u01B0\u1EDBng v\u1EC1 \xE1nh s\xE1ng v\xE0 t\u01B0\u01A1ng lai t\u01B0\u01A1i s\xE1ng.
+
+3. B\xC0I H\u1ECCC GI\xC1O D\u1EE4C CHO H\u1ECCC SINH THCS:
+T\u1EADp th\u01A1 l\xE0 t\u1EA5m g\u01B0\u01A1ng s\xE1ng v\u1EC1 tinh th\u1EA7n th\xE9p, phong th\xE1i ung dung t\u1EF1 t\u1EA1i v\xE0 t\xECnh y\xEAu thi\xEAn nhi\xEAn, con ng\u01B0\u1EDDi bao la. \u0110\u1ED1i v\u1EDBi h\u1ECDc sinh, \u0111\xE2y l\xE0 ngu\u1ED3n c\u1EA3m h\u1EE9ng m\u1EA1nh m\u1EBD \u0111\u1EC3 c\xE1c em kh\xF4ng ch\xF9n b\u01B0\u1EDBc tr\u01B0\u1EDBc c\xE1c m\xF4n h\u1ECDc kh\xF3, v\u01B0\u1EE3t qua \xE1p l\u1EF1c h\u1ECDc t\u1EADp v\xE0 r\xE8n luy\u1EC7n \xFD ch\xED v\u01B0\u01A1n l\xEAn th\xE0nh t\xE0i.`,
+    metadata: {
+      batch: "BATCH_C_EXPANSION_01",
+      legalStatus: "B\u1EA3o v\u1EADt Qu\u1ED1c gia s\u1ED1 02",
+      originalLanguage: "Ch\u1EEF H\xE1n"
+    }
+  },
+  {
+    id: "DOC-HCM-034",
+    title: "Th\u01A1 ch\xFAc T\u1EBFt c\u1EE7a Ch\u1EE7 t\u1ECBch H\u1ED3 Ch\xED Minh qua c\xE1c th\u1EDDi k\u1EF3 l\u1ECBch s\u1EED (1947\u20131969)",
+    category: "cultural-heritage",
+    categoryLabel: "Di s\u1EA3n v\u0103n h\xF3a H\u1ED3 Ch\xED Minh",
+    authorOrSource: "Ch\u1EE7 t\u1ECBch H\u1ED3 Ch\xED Minh - B\xE1o Nh\xE2n D\xE2n & NXB Ch\xEDnh tr\u1ECB Qu\u1ED1c gia S\u1EF1 th\u1EADt",
+    dateOrEra: "1947 - 1969",
+    status: "APPROVED",
+    isAllowedForRag: true,
+    topics: ["Th\u01A1 ch\xFAc T\u1EBFt", "M\u1EEBng Xu\xE2n", "Xu\xE2n M\u1EADu Th\xE2n 1968", "Xu\xE2n K\u1EF7 D\u1EADu 1969", "\u0110\xE1nh cho M\u1EF9 c\xFAt \u0111\xE1nh cho Ng\u1EE5y nh\xE0o"],
+    sourceUrl: "https://nhandan.vn",
+    content: `C\u1EE9 m\u1ED7i \u0111\u1ED9 Giao th\u1EEBa thi\xEAng li\xEAng, ng\u01B0\u1EDDi d\xE2n Vi\u1EC7t Nam tr\xEAn kh\u1EAFp m\u1ECDi mi\u1EC1n T\u1ED5 qu\u1ED1c v\xE0 ki\u1EC1u b\xE0o \u1EDF n\u01B0\u1EDBc ngo\xE0i l\u1EA1i qu\xE2y qu\u1EA7n b\xEAn chi\u1EBFc m\xE1y thu thanh \u0111\u1EC3 h\u1ED3i h\u1ED9p l\u1EAFng nghe gi\u1ECDng \u0111\u1ECDc th\u01A1 ch\xFAc T\u1EBFt \u1EA5m \xE1p, h\xE0o s\u1EA3ng c\u1EE7a B\xE1c H\u1ED3. Th\u01A1 ch\xFAc T\u1EBFt c\u1EE7a B\xE1c v\u1EEBa l\xE0 thi ph\u1EA9m xu\xE2n th\u1EAFm \u0111\u01B0\u1EE3m t\xECnh c\u1EA3m non s\xF4ng, v\u1EEBa l\xE0 l\u1EDDi hi\u1EC7u tri\u1EC7u hi\u1EC7u l\u1EC7nh ti\u1EBFn c\xF4ng l\u1ECBch s\u1EED.
+
+1. XU\xC2N \u0110INH H\u1EE2I 1947 - B\xC0I TH\u01A0 CH\xDAC T\u1EBET KH\xC1NG CHI\u1EBEN \u0110\u1EA6U TI\xCAN:
+Gi\u1EEFa n\xFAi r\u1EEBng Vi\u1EC7t B\u1EAFc nh\u1EEFng ng\xE0y \u0111\u1EA7u to\xE0n qu\u1ED1c kh\xE1ng chi\u1EBFn, B\xE1c ch\xFAc T\u1EBFt \u0111\u1ED3ng b\xE0o:
+"C\u1EDD \u0111\u1ECF sao v\xE0ng tung bay tr\u01B0\u1EDBc gi\xF3,
+Ti\u1EBFng k\xE8n kh\xE1ng chi\u1EBFn vang d\u1EADy non s\xF4ng.
+To\xE0n d\xE2n kh\xE1ng chi\u1EBFn, to\xE0n di\u1EC7n kh\xE1ng chi\u1EBFn,
+Ch\xED ta \u0111\xE3 quy\u1EBFt, l\xF2ng ta \u0111\xE3 \u0111\u1ED3ng.
+Ti\u1EBFn l\xEAn chi\u1EBFn s\u0129! Ti\u1EBFn l\xEAn \u0111\u1ED3ng b\xE0o!
+S\u1EE9c ta \u0111\xE3 m\u1EA1nh, ng\u01B0\u1EDDi ta \u0111\xE3 \u0111\xF4ng.
+Tr\u01B0\u1EDDng k\u1EF3 kh\xE1ng chi\u1EBFn, nh\u1EA5t \u0111\u1ECBnh th\u1EAFng l\u1EE3i!
+Th\u1ED1ng nh\u1EA5t \u0111\u1ED9c l\u1EADp, nh\u1EA5t \u0111\u1ECBnh th\xE0nh c\xF4ng!".
+
+2. XU\xC2N M\u1EACU TH\xC2N 1968 - HI\u1EC6U L\u1EC6NH T\u1ED4NG TI\u1EBEN C\xD4NG V\xC0 N\u1ED4I D\u1EACY:
+Giao th\u1EEBa T\u1EBFt M\u1EADu Th\xE2n 1968, l\u1EDDi th\u01A1 c\u1EE7a B\xE1c vang l\xEAn nh\u01B0 s\u1EA5m r\u1EC1n th\xF4i th\xFAc qu\xE2n d\xE2n mi\u1EC1n Nam \u0111\u1ED3ng lo\u1EA1t n\u1ED5i d\u1EADy:
+"Xu\xE2n n\xE0y h\u01A1n h\u1EB3n m\u1EA5y xu\xE2n qua,
+Th\u1EAFng tr\u1EADn tin vui kh\u1EAFp n\u01B0\u1EDBc nh\xE0.
+Nam B\u1EAFc thi \u0111ua \u0111\xE1nh gi\u1EB7c M\u1EF9.
+Ti\u1EBFn l\xEAn!
+To\xE0n th\u1EAFng \u1EAFt v\u1EC1 ta!".
+
+3. XU\xC2N K\u1EF6 D\u1EACU 1969 - B\xC0I TH\u01A0 CH\xDAC T\u1EBET CU\u1ED0I C\xD9NG C\u1EE6A B\xC1C:
+M\xF9a xu\xE2n cu\u1ED1i c\xF9ng tr\u01B0\u1EDBc l\xFAc Ng\u01B0\u1EDDi \u0111i xa, B\xE1c \u0111\xE3 \u0111\xFAc k\u1EBFt ph\u01B0\u01A1ng ch\xE2m chi\u1EBFn l\u01B0\u1EE3c \u0111\xE1nh \u0111u\u1ED5i \u0111\u1EBF qu\u1ED1c M\u1EF9 x\xE2m l\u01B0\u1EE3c, gi\u1EA3i ph\xF3ng ho\xE0n to\xE0n mi\u1EC1n Nam:
+"N\u0103m qua th\u1EAFng l\u1EE3i v\u1EBB vang,
+N\u0103m nay ti\u1EC1n tuy\u1EBFn ch\u1EAFc c\xE0ng th\u1EAFng to.
+V\xEC \u0111\u1ED9c l\u1EADp, v\xEC t\u1EF1 do,
+\u0110\xE1nh cho M\u1EF9 c\xFAt, \u0111\xE1nh cho Ng\u1EE5y nh\xE0o.
+Ti\u1EBFn l\xEAn! Chi\u1EBFn s\u0129, \u0111\u1ED3ng b\xE0o,
+B\u1EAFc - Nam sum h\u1ECDp, xu\xE2n n\xE0o vui h\u01A1n!".
+
+4. GI\xC1 TR\u1ECA V\u0102N H\xD3A V\xC0 TINH TH\u1EA6N B\u1EA4T DI\u1EC6T:
+Th\u01A1 ch\xFAc T\u1EBFt c\u1EE7a B\xE1c H\u1ED3 l\xE0 di s\u1EA3n v\u0103n h\xF3a tinh th\u1EA7n v\xF4 gi\xE1 c\u1EE7a d\xE2n t\u1ED9c Vi\u1EC7t Nam. M\u1ED7i c\xE2u th\u01A1 l\xE0 ni\u1EC1m tin m\xE3nh li\u1EC7t v\xE0o ch\xEDnh ngh\u0129a, l\xE0 l\u1EDDi nh\u1EAFc nh\u1EDF th\u1EBF h\u1EC7 tr\u1EBB kh\xF4ng ng\u1EEBng thi \u0111ua r\xE8n \u0111\u1EE9c, luy\u1EC7n t\xE0i \u0111\u1EC3 gi\u1EEF v\u1EEFng \u0111\u1ED9c l\u1EADp, ch\u1EE7 quy\u1EC1n v\xE0 x\xE2y d\u1EF1ng qu\xEA h\u01B0\u01A1ng ph\u1ED3n vinh.`,
+    metadata: {
+      batch: "BATCH_C_EXPANSION_01",
+      genre: "Th\u01A1 m\u1EEBng Xu\xE2n & V\u0103n ki\u1EC7n l\xE3nh \u0111\u1EA1o",
+      historicalSpan: "1947 - 1969"
+    }
+  },
+  {
+    id: "DOC-HCM-035",
+    title: "Anh h\xF9ng d\xE2n t\u1ED9c Nguy\u1EC5n Trung Tr\u1EF1c \u2013 Th\xE2n th\u1EBF, kh\xED ti\u1EBFt v\xE0 t\u1EA5m g\u01B0\u01A1ng trung d\u0169ng",
+    category: "hcmc-history",
+    categoryLabel: "L\u1ECBch s\u1EED Th\xE0nh ph\u1ED1 H\u1ED3 Ch\xED Minh",
+    authorOrSource: "H\u1ED9i Khoa h\u1ECDc L\u1ECBch s\u1EED Vi\u1EC7t Nam & Ban Tuy\xEAn gi\xE1o \u0111\u1ECBa ph\u01B0\u01A1ng",
+    dateOrEra: "1838 - 1868",
+    status: "APPROVED",
+    isAllowedForRag: true,
+    topics: ["Nguy\u1EC5n Trung Tr\u1EF1c", "Tr\u01B0\u1EDDng THCS Nguy\u1EC5n Trung Tr\u1EF1c", "H\u1ECFa h\u1ED3ng Nh\u1EADt T\u1EA3o", "\u0110\u1ED1t t\xE0u Hy V\u1ECDng", "\u0110\u1ED3n R\u1EA1ch Gi\xE1", "Bao gi\u1EDD ng\u01B0\u1EDDi T\xE2y nh\u1ED5 h\u1EBFt c\u1ECF n\u01B0\u1EDBc Nam"],
+    sourceUrl: "https://hcmcpv.org.vn",
+    content: `1. TH\xC2N TH\u1EBE V\xC0 T\u01AF CH\u1EA4T NG\u01AF\u1EDCI ANH H\xD9NG D\xC2N T\u1ED8C:
+Nguy\u1EC5n Trung Tr\u1EF1c (1838 - 1868), t\xEAn thu\u1EDF nh\u1ECF l\xE0 Nguy\u1EC5n V\u0103n L\u1ECBch, sinh ra trong m\u1ED9t gia \u0111\xECnh l\xE0m ngh\u1EC1 ch\xE0i l\u01B0\u1EDBi b\xEAn b\u1EDD s\xF4ng V\xE0m C\u1ECF, thu\u1ED9c l\xE0ng B\xECnh \u0110\u1EE9c, ph\u1EE7 T\xE2n An (nay thu\u1ED9c x\xE3 B\xECnh \u0110\u1EE9c, huy\u1EC7n B\u1EBFn L\u1EE9c, t\u1EC9nh Long An). T\u1EEB nh\u1ECF, \xF4ng \u0111\xE3 c\xF3 t\u01B0 ch\u1EA5t th\xF4ng minh, s\u1EE9c kh\u1ECFe phi th\u01B0\u1EDDng, tinh th\u1EA7n tr\u01B0\u1EE3ng ngh\u0129a v\xE0 l\xF2ng c\u0103m th\xF9 gi\u1EB7c s\xE2u s\u1EAFc khi ch\u1EE9ng ki\u1EBFn c\u1EA3nh th\u1EF1c d\xE2n Ph\xE1p x\xE2m chi\u1EBFm n\u01B0\u1EDBc ta.
+
+2. HAI CHI\u1EBEN C\xD4NG HI\u1EC2N H\xC1CH L\u1EEANG L\u1EAAY NON S\xD4NG:
+- Chi\u1EBFn c\xF4ng th\u1EE9 nh\u1EA5t: H\u1ECFa c\xF4ng \u0111\u1ED1t ch\xE1y t\xE0u chi\u1EBFn L'Esp\xE9rance (Hy V\u1ECDng) c\u1EE7a Ph\xE1p ng\xE0y 10/12/1861 tr\xEAn s\xF4ng Nh\u1EADt T\u1EA3o.
+  D\u01B0\u1EDBi s\u1EF1 ch\u1EC9 huy m\u01B0u tr\xED c\u1EE7a \xF4ng, ngh\u0129a qu\xE2n \u0111\xE3 ng\u1EE5y trang \xE1p s\xE1t t\xE0u tu\u1EA7n tra t\u1ED1i t\xE2n b\u1EADc nh\u1EA5t c\u1EE7a gi\u1EB7c Ph\xE1p, \u0111\u1ED3ng lo\u1EA1t t\u1EA5n c\xF4ng v\xE0 ch\xE2m ng\xF2i h\u1ECFa c\xF4ng thi\xEAu r\u1EE5i to\xE0n b\u1ED9 t\xE0u chi\u1EBFn c\xF9ng qu\xE2n l\xEDnh Ph\xE1p, l\xE0m n\u1EE9c l\xF2ng \u0111\u1ED3ng b\xE0o c\u1EA3 n\u01B0\u1EDBc. Danh s\u0129 Hu\u1EF3nh M\u1EABn \u0110\u1EA1t \u0111\xE3 ca ng\u1EE3i: "H\u1ECFa h\u1ED3ng Nh\u1EADt T\u1EA3o oanh thi\xEAn \u0111\u1ECBa" (L\u1EEDa \u0111\u1ECF Nh\u1EADt T\u1EA3o r\u1EF1c tr\u1EDDi \u0111\u1EA5t).
+- Chi\u1EBFn c\xF4ng th\u1EE9 hai: T\u1EADp k\xEDch ti\xEAu di\u1EC7t \u0111\u1ED3n R\u1EA1ch Gi\xE1 \u0111\xEAm ng\xE0y 16/6/1968.
+  Ngh\u0129a qu\xE2n b\u1EA5t ng\u1EDD t\u1EA5n c\xF4ng \u0111\xE1nh chi\u1EBFm t\xF2a th\xE0nh \u0111\u1EA7u n\xE3o c\u1EE7a gi\u1EB7c Ph\xE1p t\u1EA1i R\u1EA1ch Gi\xE1, ti\xEAu di\u1EC7t t\xEAn ch\u1EE7 t\u1EC9nh v\xE0 to\xE0n b\u1ED9 qu\xE2n \u0111\u1ED3n tr\xFA, l\xE0m rung chuy\u1EC3n c\u1EA3 h\u1EC7 th\u1ED1ng cai tr\u1ECB c\u1EE7a th\u1EF1c d\xE2n Ph\xE1p \u1EDF Nam B\u1ED9. Danh s\u0129 Hu\u1EF3nh M\u1EABn \u0110\u1EA1t ti\u1EBFp t\u1EE5c \u0111\u1EC1 t\u1EB7ng: "Ki\u1EBFm b\u1EA1t Ki\xEAn Giang kh\u1EA5p qu\u1EF7 th\u1EA7n" (Ki\u1EBFm tu\u1ED1t Ki\xEAn Giang qu\u1EF7 th\u1EA7n kh\xF3c).
+
+3. KH\xCD TI\u1EBET HI\xCAN NGANG V\xC0 C\xC2U N\xD3I B\u1EA4T H\u1EE6 TR\u01AF\u1EDAC PH\xC1P TR\u01AF\u1EDCNG:
+Sau \u0111\xF3, gi\u1EB7c Ph\xE1p t\u1EADp trung binh l\u1EF1c \u0111\xE0n \xE1p kh\u1ED1c li\u1EC7t v\xE0 b\u1EAFt gi\u1EEF m\u1EB9 gi\xE0 c\xF9ng \u0111\u1ED3ng b\xE0o \u0111\u1EC3 \xE9p \xF4ng ra n\u1ED9p m\xECnh. \u0110\u1EC3 c\u1EE9u t\xEDnh m\u1EA1ng c\u1EE7a m\u1EB9 v\xE0 nh\xE2n d\xE2n, \xF4ng \u0111\xE3 ch\u1EA5p nh\u1EADn hy sinh. Gi\u1EB7c Ph\xE1p d\xF9ng nhi\u1EC1u b\u1ED5ng l\u1ED9c, ch\u1EE9c t\u01B0\u1EDBc \u0111\u1EC3 mua chu\u1ED9c d\u1EE5 d\u1ED7 \xF4ng quy h\xE0ng. Tr\u01B0\u1EDBc m\u1EB7t b\u1ECDn x\xE2m l\u01B0\u1EE3c, \xF4ng \u0111\xE3 kh\u1EA3ng kh\xE1i tuy\xEAn b\u1ED1 c\xE2u n\xF3i b\u1EA5t h\u1EE7 kh\u1EAFc s\xE2u v\xE0o l\u1ECBch s\u1EED ng\xE0n \u0111\u1EDDi:
+"BAO GI\u1EDC NG\u01AF\u1EDCI T\xC2Y NH\u1ED4 H\u1EBET C\u1ECE N\u01AF\u1EDAC NAM TH\xCC M\u1EDAI H\u1EBET NG\u01AF\u1EDCI NAM \u0110\xC1NH T\xC2Y!".
+Ng\xE0y 27 th\xE1ng 10 n\u0103m 1868, ng\u01B0\u1EDDi anh h\xF9ng Nguy\u1EC5n Trung Tr\u1EF1c \u0111\xE3 hi\xEAn ngang \u0111\xF3n nh\u1EADn c\xE1i ch\u1EBFt t\u1EA1i ch\u1EE3 R\u1EA1ch Gi\xE1 khi m\u1EDBi tr\xF2n 30 tu\u1ED5i.
+
+4. NI\u1EC0M T\u1EF0 H\xC0O C\u1EE6A TR\u01AF\u1EDCNG THCS NGUY\u1EC4N TRUNG TR\u1EF0C:
+\u0110\u01B0\u1EE3c h\u1ECDc t\u1EADp v\xE0 r\xE8n luy\u1EC7n d\u01B0\u1EDBi m\xE1i tr\u01B0\u1EDDng vinh d\u1EF1 mang t\xEAn Anh h\xF9ng d\xE2n t\u1ED9c Nguy\u1EC5n Trung Tr\u1EF1c t\u1EA1i Ph\u01B0\u1EDDng Th\u1EDBi An, Th\xE0nh ph\u1ED1 H\u1ED3 Ch\xED Minh, m\u1ED7i h\u1ECDc sinh lu\xF4n kh\u1EAFc ghi truy\u1EC1n th\u1ED1ng b\u1EA5t khu\u1EA5t c\u1EE7a Ng\u01B0\u1EDDi anh h\xF9ng \xE1o v\u1EA3i, kh\xF4ng ng\u1EEBng trau d\u1ED3i tri th\u1EE9c, r\xE8n luy\u1EC7n ph\u1EA9m ch\u1EA5t \u0111\u1EC3 tr\u1EDF th\xE0nh nh\u1EEFng c\xF4ng d\xE2n c\xF3 \xEDch, x\u1EE9ng \u0111\xE1ng v\u1EDBi truy\u1EC1n th\u1ED1ng v\u1EBB vang c\u1EE7a d\xE2n t\u1ED9c.`,
+    metadata: {
+      batch: "BATCH_C_EXPANSION_01",
+      schoolPatron: "Anh h\xF9ng d\xE2n t\u1ED9c b\u1EA3o tr\u1EE3 danh hi\u1EC7u nh\xE0 tr\u01B0\u1EDDng",
+      monumentLocations: ["R\u1EA1ch Gi\xE1, Ki\xEAn Giang", "Nh\u1EADt T\u1EA3o, Long An"]
+    }
+  },
+  {
+    id: "DOC-HCM-036",
+    title: "V\u01B0\u1EDDn Cau \u0110\u1ECF \u2013 Di t\xEDch l\u1ECBch s\u1EED c\u0103n c\u1EE9 c\xE1ch m\u1EA1ng ki\xEAn c\u01B0\u1EDDng",
+    category: "hcmc-history",
+    categoryLabel: "L\u1ECBch s\u1EED Th\xE0nh ph\u1ED1 H\u1ED3 Ch\xED Minh",
+    authorOrSource: "T\u01B0 li\u1EC7u L\u1ECBch s\u1EED \u0110\u1EA3ng b\u1ED9 & Ban Qu\u1EA3n l\xFD Di t\xEDch Th\xE0nh ph\u1ED1 H\u1ED3 Ch\xED Minh",
+    dateOrEra: "1945 - Hi\u1EC7n h\xE0nh",
+    status: "APPROVED",
+    isAllowedForRag: true,
+    topics: ["V\u01B0\u1EDDn Cau \u0110\u1ECF", "C\u0103n c\u1EE9 l\xF5m", "Chi\u1EBFn khu An Ph\xFA \u0110\xF4ng", "Th\u1EDBi An", "Th\u1EA1nh Xu\xE2n", "\u0110\u1ECBa ch\u1EC9 \u0111\u1ECF", "S\xE0i G\xF2n - Gia \u0110\u1ECBnh"],
+    sourceUrl: "https://hcmcpv.org.vn",
+    content: `1. V\u1ECA TR\xCD \u0110\u1ECAA L\xDD V\xC0 \u0110\u1EB6C \u0110I\u1EC2M T\u1EF0 NHI\xCAN:
+Khu di t\xEDch l\u1ECBch s\u1EED - Khu t\u01B0\u1EDFng ni\u1EC7m V\u01B0\u1EDDn Cau \u0110\u1ECF t\u1ECDa l\u1EA1c t\u1EA1i s\u1ED1 12 \u0111\u01B0\u1EDDng Th\u1EA1nh Xu\xE2n 52, Th\xE0nh ph\u1ED1 H\u1ED3 Ch\xED Minh, n\u1EB1m \u1EDF v\u1ECB tr\xED giao thoa truy\u1EC1n th\u1ED1ng gi\u1EEFa c\xE1c v\xF9ng \u0111\u1EA5t Th\u1EDBi An, Th\u1EA1nh Xu\xE2n v\xE0 Th\u1EA1nh L\u1ED9c.
+V\xF9ng \u0111\u1EA5t n\xE0y tr\u01B0\u1EDBc \u0111\xE2y l\xE0 v\xF9ng b\xE1n \u0111\u1EA3o tr\u0169ng th\u1EA5p ven s\xF4ng S\xE0i G\xF2n, k\xEAnh r\u1EA1ch ch\u1EB1ng ch\u1ECBt, s\xECnh l\u1EA7y hi\u1EC3m tr\u1EDF, n\u1ED5i b\u1EADt v\u1EDBi nh\u1EEFng c\xE1nh r\u1EEBng cau b\u1EA1t ng\xE0n xen l\u1EABn nh\u1EEFng v\u01B0\u1EDDn tr\u1EA7u xanh ng\xE1t c\u1EE7a ng\u01B0\u1EDDi d\xE2n lao \u0111\u1ED9ng hi\u1EC1n h\xF2a, ch\u1EA5t ph\xE1c.
+
+2. NGU\u1ED2N G\u1ED0C T\xCAN G\u1ECCI V\xC0 \xDD NGH\u0128A THI\xCANG LI\xCANG C\u1EE6A CH\u1EEE "\u0110\u1ECE":
+- T\xEAn g\u1ECDi V\u01B0\u1EDDn Cau \u0110\u1ECF b\u1EAFt ngu\u1ED3n t\u1EEB th\u1EF1c t\u1EBF \u0111\u1ECBa h\xECnh tr\u1ED3ng cau b\u1EA1t ng\xE0n. Nh\u01B0ng trong hai cu\u1ED9c kh\xE1ng chi\u1EBFn ch\u1ED1ng th\u1EF1c d\xE2n Ph\xE1p v\xE0 \u0111\u1EBF qu\u1ED1c M\u1EF9 x\xE2m l\u01B0\u1EE3c, do v\u1ECB tr\xED chi\u1EBFn l\u01B0\u1EE3c s\xE1t n\xE1ch S\xE0i G\xF2n, qu\xE2n gi\u1EB7c \u0111\xE3 \u0111i\xEAn cu\u1ED3ng d\u1ED9i bom \u0111\u1EA1n, ph\xE1o k\xEDch v\xE0 r\u1EA3i ch\u1EA5t \u0111\u1ED9c h\xF3a h\u1ECDc xu\u1ED1ng khu v\u1EF1c n\xE0y. Th\xE2n cau v\xE0 ng\u1ECDn cau b\u1ECB bom \u0111\u1EA1n ch\xE1y x\xE9m, ng\u1EA3 sang m\xE0u \xFAa \u0111\u1ECF r\u1EF1c.
+- \u0110\u1EB7c bi\u1EC7t, ch\u1EEF "\u0110\u1ECE" mang t\u1EA7ng \xFD ngh\u0129a s\xE2u xa v\xE0 thi\xEAng li\xEAng nh\u1EA5t: \u0110\xF3 l\xE0 m\xE0u c\u1EDD \u0111\u1ECF sao v\xE0ng c\xE1ch m\u1EA1ng m\xE0 nh\xE2n d\xE2n m\u1ED9t l\xF2ng b\u1EA3o v\u1EC7; l\xE0 m\xE0u m\xE1u \u0111\u1ECF c\u1EE7a bi\u1EBFt bao anh h\xF9ng li\u1EC7t s\u0129, c\xE1n b\u1ED9 ki\xEAn trung v\xE0 \u0111\u1ED3ng b\xE0o y\xEAu n\u01B0\u1EDBc \u0111\xE3 d\u0169ng c\u1EA3m ng\xE3 xu\u1ED1ng \u0111\u1EC3 che ch\u1EDF c\xE1n b\u1ED9, gi\u1EEF v\u1EEFng ng\u1ECDn l\u1EEDa kh\xE1ng chi\u1EBFn cho t\u1EDBi ng\xE0y to\xE0n th\u1EAFng.
+
+3. VAI TR\xD2 C\u0102N C\u1EE8 \u0110\u1ECAA C\xC1CH M\u1EA0NG CHI\u1EBEN L\u01AF\u1EE2C:
+- Ng\xE0y 25/12/1945, ngay t\u1EA1i V\u01B0\u1EDDn Cau \u0110\u1ECF, H\u1ED9i ngh\u1ECB c\xE1n b\u1ED9 ch\u1EE7 ch\u1ED1t t\u1EC9nh Gia \u0110\u1ECBnh \u0111\xE3 h\u1ECDp v\xE0 ra quy\u1EBFt \u0111\u1ECBnh l\u1ECBch s\u1EED th\xE0nh l\u1EADp Chi\u1EBFn khu An Ph\xFA \u0110\xF4ng (bao g\u1ED3m c\xE1c x\xE3 An Ph\xFA \u0110\xF4ng, Th\u1EA1nh L\u1ED9c, Qu\u1EDBi Xu\xE2n). N\u01A1i \u0111\xE2y tr\u1EDF th\xE0nh ph\xE1o \u0111\xE0i th\xE9p ki\xEAn c\u01B0\u1EDDng, trung t\xE2m l\xE3nh \u0111\u1EA1o kh\xE1ng chi\u1EBFn \u1EDF c\u1EEDa ng\xF5 T\xE2y B\u1EAFc S\xE0i G\xF2n.
+- Trong th\u1EDDi k\u1EF3 ch\u1ED1ng M\u1EF9, V\u01B0\u1EDDn Cau \u0110\u1ECF \u0111\u01B0\u1EE3c x\xE2y d\u1EF1ng th\xE0nh m\u1ED9t "c\u0103n c\u1EE9 l\xF5m" \u0111\u1ED9c \u0111\xE1o: \u0111\xF3ng ngay trong l\xF2ng \u0111\u1ECBch, gi\u1EEFa v\xF2ng v\xE2y \u0111\u1ED3n b\u1ED1t k\xECm k\u1EB9p nh\u01B0ng nh\u1EDD l\xF2ng d\xE2n che ch\u1EDF, c\xE1c c\u01A1 quan \u0111\u1EA7u n\xE3o c\u1EE7a X\u1EE9 \u1EE7y, Khu \u1EE7y S\xE0i G\xF2n - Gia \u0110\u1ECBnh v\u1EABn b\xE1m tr\u1EE5 an to\xE0n.
+- N\u01A1i \u0111\xE2y l\xE0 tr\u1EA1m d\u1EEBng ch\xE2n, t\u1EADp k\u1EBFt l\u1EF1c l\u01B0\u1EE3ng c\u1EE7a Trung \u0111o\xE0n Gia \u0110\u1ECBnh, b\u1ED9 \u0111\u1ED9i G\xF2 M\xF4n, E115 chu\u1EA9n b\u1ECB b\xE0n \u0111\u1EA1p xu\u1EA5t k\xEDch ti\u1EBFn c\xF4ng v\xE0o c\xE1c c\u01A1 quan \u0111\u1EA7u n\xE3o c\u1EE7a gi\u1EB7c trong cu\u1ED9c T\u1ED5ng ti\u1EBFn c\xF4ng v\xE0 n\u1ED5i d\u1EADy Xu\xE2n M\u1EADu Th\xE2n 1968 v\xE0 Chi\u1EBFn d\u1ECBch H\u1ED3 Ch\xED Minh l\u1ECBch s\u1EED m\xF9a Xu\xE2n n\u0103m 1975.
+
+4. KHU T\u01AF\u1EDENG NI\u1EC6M V\u01AF\u1EDCN CAU \u0110\u1ECE NG\xC0Y NAY:
+N\u0103m 2010, \u0110\u1EA3ng b\u1ED9 v\xE0 nh\xE2n d\xE2n \u0111\u1ECBa ph\u01B0\u01A1ng \u0111\xE3 x\xE2y d\u1EF1ng Khu t\u01B0\u1EDFng ni\u1EC7m V\u01B0\u1EDDn Cau \u0110\u1ECF trang nghi\xEAm v\u1EDBi di\u1EC7n t\xEDch h\u01A1n 4.000 m\xB2. T\u01B0\u1EE3ng \u0111\xE0i trung t\xE2m l\xE0 h\xECnh \u1EA3nh bi\u1EC3u t\u01B0\u1EE3ng hai h\xE0ng cau cao v\xFAt \u0111an l\xE1 v\xE0o nhau th\u1EC3 hi\u1EC7n t\xECnh qu\xE2n d\xE2n g\u1EAFn b\xF3 keo s\u01A1n m\xE1u th\u1ECBt. Di t\xEDch l\xE0 \u0111\u1ECBa ch\u1EC9 \u0111\u1ECF truy\u1EC1n th\u1ED1ng, n\u01A1i th\u1EA7y tr\xF2 Tr\u01B0\u1EDDng THCS Nguy\u1EC5n Trung Tr\u1EF1c th\u01B0\u1EDDng xuy\xEAn t\u1ED5 ch\u1EE9c c\xE1c ho\u1EA1t \u0111\u1ED9ng v\u1EC1 ngu\u1ED3n, b\xE1o c\xF4ng d\xE2ng B\xE1c v\xE0 k\u1EBFt n\u1EA1p \u0110\u1ED9i vi\xEAn, \u0110o\xE0n vi\xEAn m\u1EDBi.`,
+    metadata: {
+      batch: "BATCH_C_EXPANSION_01",
+      siteArea: "H\u01A1n 4.000 m2",
+      memorialYear: 2010,
+      classification: "\u0110\u1ECBa ch\u1EC9 \u0111\u1ECF di t\xEDch l\u1ECBch s\u1EED c\u1EA5p \u0111\u1ECBa ph\u01B0\u01A1ng"
+    }
+  },
+  {
+    id: "DOC-HCM-037",
+    title: "B\u1EBFn Nh\xE0 R\u1ED3ng \u2013 N\u01A1i ng\u01B0\u1EDDi thanh ni\xEAn Nguy\u1EC5n T\u1EA5t Th\xE0nh ra \u0111i t\xECm \u0111\u01B0\u1EDDng c\u1EE9u n\u01B0\u1EDBc (05/06/1911)",
+    category: "bio-career",
+    categoryLabel: "Ch\u1EE7 t\u1ECBch H\u1ED3 Ch\xED Minh \u2013 Ti\u1EC3u s\u1EED v\xE0 s\u1EF1 nghi\u1EC7p",
+    authorOrSource: "B\u1EA3o t\xE0ng H\u1ED3 Ch\xED Minh - Chi nh\xE1nh Th\xE0nh ph\u1ED1 H\u1ED3 Ch\xED Minh",
+    dateOrEra: "05/06/1911 - Hi\u1EC7n h\xE0nh",
+    status: "APPROVED",
+    isAllowedForRag: true,
+    topics: ["B\u1EBFn Nh\xE0 R\u1ED3ng", "Nguy\u1EC5n T\u1EA5t Th\xE0nh", "V\u0103n Ba", "T\xE0u Amiral Latouche-Tr\xE9ville", "T\xECm \u0111\u01B0\u1EDDng c\u1EE9u n\u01B0\u1EDBc", "05/06/1911"],
+    sourceUrl: "https://baotanghochiminh.vn",
+    content: `1. B\u1ED0I C\u1EA2NH L\u1ECACH S\u1EEC V\xC0 \xDD CH\xCD C\u1EE8U N\u01AF\u1EDAC C\u1EE6A NG\u01AF\u1EDCI THANH NI\xCAN Y\xCAU N\u01AF\u1EDAC:
+\u0110\u1EA7u th\u1EBF k\u1EF7 XX, \u0111\u1EA5t n\u01B0\u1EDBc ta ch\xECm trong \u0111\xEAm d\xE0i n\xF4 l\u1EC7 d\u01B0\u1EDBi \xE1ch th\u1ED1ng tr\u1ECB t\xE0n b\u1EA1o c\u1EE7a th\u1EF1c d\xE2n Ph\xE1p. C\xE1c phong tr\xE0o y\xEAu n\u01B0\u1EDBc theo khuynh h\u01B0\u1EDBng phong ki\u1EBFn (C\u1EA7n V\u01B0\u01A1ng) hay d\xE2n ch\u1EE7 t\u01B0 s\u1EA3n (\u0110\xF4ng Du c\u1EE7a Phan B\u1ED9i Ch\xE2u, Duy T\xE2n c\u1EE7a Phan Ch\xE2u Trinh) \u0111\u1EC1u l\u1EA7n l\u01B0\u1EE3t th\u1EA5t b\u1EA1i.
+Ng\u01B0\u1EDDi thanh ni\xEAn y\xEAu n\u01B0\u1EDBc Nguy\u1EC5n T\u1EA5t Th\xE0nh (khi \u0111\xF3 m\u1EDBi 21 tu\u1ED5i), v\u1EDBi t\u1EA7m nh\xECn chi\u1EBFn l\u01B0\u1EE3c v\u01B0\u1EE3t th\u1EDDi \u0111\u1EA1i, \u0111\xE3 kh\xF4ng \u0111i theo con \u0111\u01B0\u1EDDng m\xF2n c\u1EE7a c\xE1c b\u1EADc ti\u1EC1n b\u1ED1i. Ng\u01B0\u1EDDi nung n\u1EA5u m\u1ED9t quy\u1EBFt \u0111\u1ECBnh t\xE1o b\u1EA1o: \u0110i sang ph\u01B0\u01A1ng T\xE2y - n\u01A1i kh\u1EDFi ngu\u1ED3n c\u1EE7a kh\u1EA9u hi\u1EC7u "T\u1EF1 do - B\xECnh \u0111\u1EB3ng - B\xE1c \xE1i", \u0111\u1EC3 xem n\u01B0\u1EDBc Ph\xE1p v\xE0 c\xE1c n\u01B0\u1EDBc kh\xE1c l\xE0m nh\u01B0 th\u1EBF n\xE0o, r\u1ED3i tr\u1EDF v\u1EC1 gi\xFAp \u0111\u1EE1 \u0111\u1ED3ng b\xE0o m\xECnh.
+
+2. D\u1EA4U M\u1ED0C L\u1ECACH S\u1EEC NG\xC0Y 05/06/1911 T\u1EA0I B\u1EBEN C\u1EA2NG S\xC0I G\xD2N:
+Ng\xE0y 5 th\xE1ng 6 n\u0103m 1911, t\u1EEB B\u1EBFn c\u1EA3ng Nh\xE0 R\u1ED3ng (S\xE0i G\xF2n), v\u1EDBi t\xEAn g\u1ECDi "V\u0103n Ba", Ng\u01B0\u1EDDi b\u01B0\u1EDBc ch\xE2n l\xEAn con t\xE0u bu\xF4n Amiral Latouche-Tr\xE9ville c\u1EE7a h\xE3ng v\u1EADn t\u1EA3i N\u0103m Sao (Ph\xE1p), nh\u1EADn l\xE0m c\xF4ng vi\u1EC7c ph\u1EE5 b\u1EBFp n\u1EB7ng nh\u1ECDc nh\u1EA5t \u0111\u1EC3 b\u1EAFt \u0111\u1EA7u cu\u1ED9c h\xE0nh tr\xECnh v\u0129 \u0111\u1EA1i k\xE9o d\xE0i su\u1ED1t 30 n\u0103m b\xF4n ba qua 3 \u0111\u1EA1i d\u01B0\u01A1ng, 4 ch\xE2u l\u1EE5c v\xE0 g\u1EA7n 30 qu\u1ED1c gia tr\xEAn th\u1EBF gi\u1EDBi.
+H\xE0nh trang mang theo c\u1EE7a Ng\u01B0\u1EDDi ch\u1EC9 c\xF3 l\xF2ng y\xEAu n\u01B0\u1EDBc n\u1ED3ng n\xE0n, b\u1EA7u nhi\u1EC7t huy\u1EBFt c\u1EE7a tu\u1ED5i tr\u1EBB v\xE0 hai b\xE0n tay lao \u0111\u1ED9ng c\u1EA7n c\xF9.
+
+3. T\u1EA6M V\xD3C TH\u1EDCI \u0110\u1EA0I C\u1EE6A S\u1EF0 KI\u1EC6N:
+S\u1EF1 ki\u1EC7n ng\xE0y 5/6/1911 \u0111\xE3 m\u1EDF ra b\u01B0\u1EDBc ngo\u1EB7t quy\u1EBFt \u0111\u1ECBnh cho v\u1EADn m\u1EC7nh d\xE2n t\u1ED9c Vi\u1EC7t Nam. Ch\xEDnh t\u1EEB cu\u1ED9c b\xF4n ba kh\u1EA3o s\xE1t th\u1EF1c ti\u1EC5n \u1EA5y, Ng\u01B0\u1EDDi \u0111\xE3 t\xECm th\u1EA5y \xE1nh s\xE1ng c\u1EE7a Ch\u1EE7 ngh\u0129a M\xE1c - L\xEAnin, kh\u1EB3ng \u0111\u1ECBnh con \u0111\u01B0\u1EDDng c\u1EE9u n\u01B0\u1EDBc duy nh\u1EA5t \u0111\xFAng \u0111\u1EAFn: Con \u0111\u01B0\u1EDDng c\xE1ch m\u1EA1ng v\xF4 s\u1EA3n, \u0111\u1ED9c l\u1EADp d\xE2n t\u1ED9c g\u1EAFn li\u1EC1n v\u1EDBi ch\u1EE7 ngh\u0129a x\xE3 h\u1ED9i.
+
+4. B\u1EBEN NH\xC0 R\u1ED2NG TRONG TR\xC1I TIM NG\u01AF\u1EDCI D\xC2N TH\xC0NH PH\u1ED0:
+T\xF2a nh\xE0 B\u1EBFn Nh\xE0 R\u1ED3ng ng\xE0y nay l\xE0 B\u1EA3o t\xE0ng H\u1ED3 Ch\xED Minh - Chi nh\xE1nh TP.HCM, t\u1ECDa l\u1EA1c t\u1EA1i s\u1ED1 01 \u0111\u01B0\u1EDDng Nguy\u1EC5n T\u1EA5t Th\xE0nh, Qu\u1EADn 4. N\u01A1i \u0111\xE2y l\u01B0u gi\u1EEF h\xE0ng ngh\xECn hi\u1EC7n v\u1EADt qu\xFD gi\xE1 v\u1EC1 cu\u1ED9c \u0111\u1EDDi ho\u1EA1t \u0111\u1ED9ng c\xE1ch m\u1EA1ng c\u1EE7a B\xE1c v\xE0 l\xE0 bi\u1EC3u t\u01B0\u1EE3ng thi\xEAng li\xEAng th\u1EC3 hi\u1EC7n t\u1EA5m l\xF2ng son s\u1EAFt th\u1EE7y chung c\u1EE7a \u0111\u1ED3ng b\xE0o mi\u1EC1n Nam, nh\xE2n d\xE2n TP.HCM \u0111\u1ED1i v\u1EDBi Ch\u1EE7 t\u1ECBch H\u1ED3 Ch\xED Minh v\u0129 \u0111\u1EA1i.`,
+    metadata: {
+      batch: "BATCH_C_EXPANSION_01",
+      monumentName: "B\u1EA3o t\xE0ng H\u1ED3 Ch\xED Minh - Chi nh\xE1nh TP.HCM",
+      departureDate: "05/06/1911"
+    }
+  },
+  {
+    id: "DOC-HCM-038",
+    title: "Ngh\u1ECB quy\u1EBFt \u0110\u1EA1i h\u1ED9i \u0110\u1EA3ng b\u1ED9 TP.HCM l\u1EA7n th\u1EE9 XI v\u1EC1 x\xE2y d\u1EF1ng Kh\xF4ng gian v\u0103n h\xF3a H\u1ED3 Ch\xED Minh",
+    category: "hcm-cultural-space",
+    categoryLabel: "Kh\xF4ng gian v\u0103n h\xF3a H\u1ED3 Ch\xED Minh TP.HCM",
+    authorOrSource: "\u0110\u1EA3ng b\u1ED9 Th\xE0nh ph\u1ED1 H\u1ED3 Ch\xED Minh (V\u0103n ki\u1EC7n \u0110\u1EA1i h\u1ED9i XI nhi\u1EC7m k\u1EF3 2020-2025)",
+    dateOrEra: "2020 - 2025",
+    status: "APPROVED",
+    isAllowedForRag: true,
+    topics: ["Kh\xF4ng gian v\u0103n h\xF3a H\u1ED3 Ch\xED Minh", "\u0110\u1EA1i h\u1ED9i XI \u0110\u1EA3ng b\u1ED9 TP.HCM", "Gi\xE1 tr\u1ECB v\u0103n h\xF3a", "Con ng\u01B0\u1EDDi th\xE0nh ph\u1ED1", "Th\xE0nh ph\u1ED1 mang t\xEAn B\xE1c"],
+    sourceUrl: "https://hcmcpv.org.vn",
+    content: `1. M\u1EE4C TI\xCAU V\xC0 T\u1EA6M NH\xCCN CHI\u1EBEN L\u01AF\u1EE2C:
+\u0110\u1EA1i h\u1ED9i \u0111\u1EA1i bi\u1EC3u \u0110\u1EA3ng b\u1ED9 Th\xE0nh ph\u1ED1 H\u1ED3 Ch\xED Minh l\u1EA7n th\u1EE9 XI (nhi\u1EC7m k\u1EF3 2020 - 2025) \u0111\xE3 \u0111\u1EC1 ra ch\u1EE7 tr\u01B0\u01A1ng mang t\xEDnh \u0111\u1ED9t ph\xE1 v\xE0 nh\xE2n v\u0103n s\xE2u s\u1EAFc: "X\xE2y d\u1EF1ng Th\xE0nh ph\u1ED1 H\u1ED3 Ch\xED Minh tr\u1EDF th\xE0nh Kh\xF4ng gian v\u0103n h\xF3a H\u1ED3 Ch\xED Minh".
+M\u1EE5c ti\xEAu l\xE0 l\xE0m cho t\u01B0 t\u01B0\u1EDFng, \u0111\u1EA1o \u0111\u1EE9c, phong c\xE1ch v\xE0 s\u1EF1 nghi\u1EC7p c\u1EE7a Ch\u1EE7 t\u1ECBch H\u1ED3 Ch\xED Minh th\u1EA5m s\xE2u v\xE0o \u0111\u1EDDi s\u1ED1ng x\xE3 h\u1ED9i, tr\u1EDF th\xE0nh n\u1EC1n t\u1EA3ng tinh th\u1EA7n v\u1EEFng ch\u1EAFc, n\xE9t v\u0103n h\xF3a \u0111\u1EB7c tr\u01B0ng, n\u1EBFp s\u1ED1ng ngh\u0129a t\xECnh ti\xEAu bi\u1EC3u c\u1EE7a c\xE1n b\u1ED9, \u0111\u1EA3ng vi\xEAn v\xE0 nh\xE2n d\xE2n th\xE0nh ph\u1ED1 mang t\xEAn B\xE1c.
+
+2. BA TR\u1EE4 C\u1ED8T C\u1EE6A KH\xD4NG GIAN V\u0102N H\xD3A H\u1ED2 CH\xCD MINH:
+- Tr\u1EE5 c\u1ED9t 1: Kh\xF4ng gian v\u0103n h\xF3a v\u1EADt th\u1EC3
+  Quy ho\u1EA1ch, tr\xF9ng tu, n\xE2ng c\u1EA5p c\xE1c di t\xEDch l\u1ECBch s\u1EED, b\u1EA3o t\xE0ng, nh\xE0 l\u01B0u ni\u1EC7m, t\u01B0\u1EE3ng \u0111\xE0i B\xE1c H\u1ED3 v\xE0 c\xE1c c\xF4ng tr\xECnh v\u0103n h\xF3a c\xF4ng c\u1ED9ng mang d\u1EA5u \u1EA5n l\u1ECBch s\u1EED tr\xEAn \u0111\u1ECBa b\xE0n th\xE0nh ph\u1ED1, t\u1EA1o th\xE0nh m\u1EA1ng l\u01B0\u1EDBi \u0111\u1ECBa ch\u1EC9 \u0111\u1ECF gi\xE1o d\u1EE5c truy\u1EC1n th\u1ED1ng cho nh\xE2n d\xE2n.
+- Tr\u1EE5 c\u1ED9t 2: Kh\xF4ng gian v\u0103n h\xF3a phi v\u1EADt th\u1EC3
+  B\u1ED3i \u0111\u1EAFp c\xE1c gi\xE1 tr\u1ECB v\u0103n h\xF3a tinh th\u1EA7n, l\u1ED1i s\u1ED1ng ngh\u0129a t\xECnh, tinh th\u1EA7n t\u01B0\u01A1ng th\xE2n t\u01B0\u01A1ng \xE1i, "m\xECnh v\xEC m\u1ECDi ng\u01B0\u1EDDi", x\xE2y d\u1EF1ng chu\u1EA9n m\u1EF1c con ng\u01B0\u1EDDi Th\xE0nh ph\u1ED1 H\u1ED3 Ch\xED Minh: v\u0103n minh, hi\u1EC7n \u0111\u1EA1i, ngh\u0129a t\xECnh, trung th\u1EF1c, tr\xE1ch nhi\u1EC7m v\xE0 n\u0103ng \u0111\u1ED9ng s\xE1ng t\u1EA1o.
+- Tr\u1EE5 c\u1ED9t 3: Kh\xF4ng gian v\u0103n h\xF3a s\u1ED1 tr\xEAn kh\xF4ng gian m\u1EA1ng
+  \u1EE8ng d\u1EE5ng m\u1EA1nh m\u1EBD chuy\u1EC3n \u0111\u1ED5i s\u1ED1 \u0111\u1EC3 x\xE2y d\u1EF1ng c\xE1c n\u1EC1n t\u1EA3ng tr\u1EF1c tuy\u1EBFn: th\u01B0 vi\u1EC7n s\u1ED1, kh\xF4ng gian th\u1EF1c t\u1EBF \u1EA3o 3D, h\u1EC7 th\u1ED1ng tr\u1EE3 l\xFD AI h\u1ECDc \u0111\u01B0\u1EDDng nh\u1EB1m \u0111\u01B0a kho t\u01B0 li\u1EC7u qu\xFD gi\xE1 v\u1EC1 B\xE1c H\u1ED3 \u0111\u1EBFn g\u1EA7n h\u01A1n v\u1EDBi th\u1EBF h\u1EC7 tr\u1EBB m\u1ECDi l\xFAc, m\u1ECDi n\u01A1i.
+
+3. TR\xC1CH NHI\u1EC6M C\u1EE6A NG\xC0NH GI\xC1O D\u1EE4C V\xC0 NH\xC0 TR\u01AF\u1EDCNG:
+M\u1ED7i tr\u01B0\u1EDDng h\u1ECDc tr\xEAn \u0111\u1ECBa b\xE0n th\xE0nh ph\u1ED1, trong \u0111\xF3 c\xF3 Tr\u01B0\u1EDDng THCS Nguy\u1EC5n Trung Tr\u1EF1c t\u1EA1i Ph\u01B0\u1EDDng Th\u1EDBi An, Th\xE0nh ph\u1ED1 H\u1ED3 Ch\xED Minh, ph\u1EA3i l\xE0 m\u1ED9t "Kh\xF4ng gian v\u0103n h\xF3a H\u1ED3 Ch\xED Minh thu nh\u1ECF" sinh \u0111\u1ED9ng, n\u01A1i th\u1EA7y c\xF4 m\u1EABu m\u1EF1c, h\u1ECDc tr\xF2 ch\u0103m ngoan, m\xF4i tr\u01B0\u1EDDng h\u1ECDc \u0111\u01B0\u1EDDng tr\xE0n \u0111\u1EA7y t\xECnh y\xEAu th\u01B0\u01A1ng, k\u1EF7 c\u01B0\u01A1ng v\xE0 h\u1EA1nh ph\xFAc.`,
+    metadata: {
+      batch: "BATCH_C_EXPANSION_01",
+      congressSession: "\u0110\u1EA1i h\u1ED9i \u0110\u1EA3ng b\u1ED9 TP.HCM l\u1EA7n th\u1EE9 XI",
+      period: "2020 - 2025"
+    }
+  },
+  {
+    id: "DOC-HCM-039",
+    title: "M\xF4 h\xECnh Tr\u01B0\u1EDDng h\u1ECDc h\u1EA1nh ph\xFAc g\u1EAFn li\u1EC1n v\u1EDBi Kh\xF4ng gian v\u0103n h\xF3a H\u1ED3 Ch\xED Minh t\u1EA1i tr\u01B0\u1EDDng THCS",
+    category: "hcm-cultural-space",
+    categoryLabel: "Kh\xF4ng gian v\u0103n h\xF3a H\u1ED3 Ch\xED Minh TP.HCM",
+    authorOrSource: "S\u1EDF Gi\xE1o d\u1EE5c v\xE0 \u0110\xE0o t\u1EA1o Th\xE0nh ph\u1ED1 H\u1ED3 Ch\xED Minh",
+    dateOrEra: "2023 - 2026",
+    status: "APPROVED",
+    isAllowedForRag: true,
+    topics: ["Tr\u01B0\u1EDDng h\u1ECDc h\u1EA1nh ph\xFAc", "Kh\xF4ng gian v\u0103n h\xF3a s\u1ED1", "THCS Nguy\u1EC5n Trung Tr\u1EF1c", "Th\u1EA7y c\xF4 h\u1EA1nh ph\xFAc", "H\u1ECDc sinh t\xEDch c\u1EF1c"],
+    sourceUrl: "https://hcm.edu.vn",
+    content: `1. KH\xC1I NI\u1EC6M TR\u01AF\u1EDCNG H\u1ECCC H\u1EA0NH PH\xDAC:
+Theo \u0111\u1ECBnh h\u01B0\u1EDBng c\u1EE7a S\u1EDF GD&\u0110T Th\xE0nh ph\u1ED1 H\u1ED3 Ch\xED Minh, "Tr\u01B0\u1EDDng h\u1ECDc h\u1EA1nh ph\xFAc" l\xE0 m\xF4i tr\u01B0\u1EDDng gi\xE1o d\u1EE5c \u0111\u01B0\u1EE3c x\xE2y d\u1EF1ng d\u1EF1a tr\xEAn ba gi\xE1 tr\u1ECB c\u1ED1t l\xF5i: Y\xCAU TH\u01AF\u01A0NG - AN TO\xC0N - T\xD4N TR\u1ECCNG. \u0110\xF3 l\xE0 n\u01A1i m\u1ED7i ng\xE0y \u0111\u1EBFn tr\u01B0\u1EDDng c\u1EE7a h\u1ECDc sinh th\u1EF1c s\u1EF1 l\xE0 m\u1ED9t ng\xE0y vui; n\u01A1i th\u1EA7y c\xF4 gi\xE1o t\xECm th\u1EA5y ngu\u1ED3n c\u1EA3m h\u1EE9ng s\xE1ng t\u1EA1o v\xE0 \u0111\u01B0\u1EE3c th\u1EA5u hi\u1EC3u; n\u01A1i kh\xF4ng c\xF3 \xE1p l\u1EF1c ti\xEAu c\u1EF1c hay b\u1EA1o l\u1EF1c h\u1ECDc \u0111\u01B0\u1EDDng.
+
+2. M\u1ED0I QUAN H\u1EC6 H\u1EEEU C\u01A0 V\u1EDAI KH\xD4NG GIAN V\u0102N H\xD3A H\u1ED2 CH\xCD MINH:
+X\xE2y d\u1EF1ng Kh\xF4ng gian v\u0103n h\xF3a H\u1ED3 Ch\xED Minh trong tr\u01B0\u1EDDng h\u1ECDc ch\xEDnh l\xE0 gi\u1EA3i ph\xE1p n\u1EC1n t\u1EA3ng v\u1EEFng ch\u1EAFc nh\u1EA5t \u0111\u1EC3 ki\u1EBFn t\u1EA1o Tr\u01B0\u1EDDng h\u1ECDc h\u1EA1nh ph\xFAc:
+- L\u1EA5y t\u01B0 t\u01B0\u1EDFng gi\xE1o d\u1EE5c c\u1EE7a B\xE1c "D\u1EA1y t\u1ED1t, h\u1ECDc t\u1ED1t", "V\xEC l\u1EE3i \xEDch m\u01B0\u1EDDi n\u0103m th\xEC ph\u1EA3i tr\u1ED3ng c\xE2y, v\xEC l\u1EE3i \xEDch tr\u0103m n\u0103m th\xEC ph\u1EA3i tr\u1ED3ng ng\u01B0\u1EDDi" l\xE0m kim ch\u1EC9 nam cho m\u1ECDi ho\u1EA1t \u0111\u1ED9ng s\u01B0 ph\u1EA1m.
+- Tri\u1EC3n khai phong tr\xE0o "M\u1ED7i ng\xE0y m\u1ED9t vi\u1EC7c t\u1ED1t theo l\u1EDDi B\xE1c d\u1EA1y": Khuy\u1EBFn kh\xEDch h\u1ECDc sinh bi\u1EBFt n\xF3i l\u1EDDi c\u1EA3m \u01A1n, xin l\u1ED7i, chia s\u1EBB \u0111\u1ED3 d\xF9ng h\u1ECDc t\u1EADp v\u1EDBi b\u1EA1n ngh\xE8o, nh\u1EB7t \u0111\u01B0\u1EE3c c\u1EE7a r\u01A1i tr\u1EA3 ng\u01B0\u1EDDi \u0111\xE1nh m\u1EA5t.
+- X\xE2y d\u1EF1ng g\xF3c th\u01B0 vi\u1EC7n B\xE1c H\u1ED3 v\xE0 ph\xF2ng truy\u1EC1n th\u1ED1ng s\u1ED1: Gi\xFAp c\xE1c em h\u1ECDc sinh t\u1EF1 do kh\xE1m ph\xE1, \u0111\u1ECDc s\xE1ch, nghi\xEAn c\u1EE9u l\u1ECBch s\u1EED v\xE0 t\u01B0\u01A1ng t\xE1c v\u1EDBi tr\u1EE3 l\xFD \u1EA3o trong kh\xF4ng gian h\u1ECDc t\u1EADp c\u1EDFi m\u1EDF, th\xE2n thi\u1EC7n.
+
+3. B\u1ED8 TI\xCAU CH\xCD \u0110\xC1NH GI\xC1 T\u1EA0I TR\u01AF\u1EDCNG THCS NGUY\u1EC4N TRUNG TR\u1EF0C:
+- Ti\xEAu ch\xED 1 v\u1EC1 M\xF4i tr\u01B0\u1EDDng nh\xE0 tr\u01B0\u1EDDng: C\u1EA3nh quan xanh, s\u1EA1ch, \u0111\u1EB9p, an to\xE0n, c\xF3 c\xE1c bi\u1EC3n b\u1EA3ng tr\xEDch d\u1EABn l\u1EDDi B\xE1c d\u1EA1y ph\xF9 h\u1EE3p t\xE2m l\xFD l\u1EE9a tu\u1ED5i.
+- Ti\xEAu ch\xED 2 v\u1EC1 Ho\u1EA1t \u0111\u1ED9ng d\u1EA1y v\xE0 h\u1ECDc: Th\u1EA7y c\xF4 \u0111\u1ED5i m\u1EDBi ph\u01B0\u01A1ng ph\xE1p gi\u1EA3ng d\u1EA1y, kh\xEDch l\u1EC7 s\u1EF1 t\u1EF1 tin s\xE1ng t\u1EA1o c\u1EE7a h\u1ECDc sinh, kh\xF4ng d\xF9ng h\xECnh ph\u1EA1t x\xFAc ph\u1EA1m danh d\u1EF1.
+- Ti\xEAu ch\xED 3 v\u1EC1 M\u1ED1i quan h\u1EC7 \u1EE9ng x\u1EED: X\xE2y d\u1EF1ng v\u0103n h\xF3a giao ti\u1EBFp thanh l\u1ECBch, l\u1EC5 ph\xE9p, \u0111o\xE0n k\u1EBFt, chan h\xF2a t\xECnh th\u1EA7y tr\xF2 v\xE0 b\u1EA1n b\xE8.`,
+    metadata: {
+      batch: "BATCH_C_EXPANSION_01",
+      governingBody: "S\u1EDF GD&\u0110T TP.HCM",
+      schoolApplication: "Tr\u01B0\u1EDDng THCS Nguy\u1EC5n Trung Tr\u1EF1c"
+    }
+  },
+  {
+    id: "DOC-HCM-040",
+    title: "Ch\u1EC9 th\u1ECB s\u1ED1 05-CT/TW c\u1EE7a B\u1ED9 Ch\xEDnh tr\u1ECB v\u1EC1 \u0111\u1EA9y m\u1EA1nh h\u1ECDc t\u1EADp v\xE0 l\xE0m theo t\u01B0 t\u01B0\u1EDFng, \u0111\u1EA1o \u0111\u1EE9c, phong c\xE1ch H\u1ED3 Ch\xED Minh",
+    category: "official-dispatches",
+    categoryLabel: "T\xE0i li\u1EC7u ch\xEDnh th\u1EE9c c\u1EE7a c\u01A1 quan qu\u1EA3n l\xFD",
+    authorOrSource: "B\u1ED9 Ch\xEDnh tr\u1ECB Ban Ch\u1EA5p h\xE0nh Trung \u01B0\u01A1ng \u0110\u1EA3ng kh\xF3a XII",
+    dateOrEra: "15/05/2016",
+    status: "APPROVED",
+    isAllowedForRag: true,
+    topics: ["Ch\u1EC9 th\u1ECB 05-CT/TW", "B\u1ED9 Ch\xEDnh tr\u1ECB", "\u0110\u1EA1o \u0111\u1EE9c phong c\xE1ch H\u1ED3 Ch\xED Minh", "Gi\xE1o d\u1EE5c h\u1ECDc \u0111\u01B0\u1EDDng", "Chi b\u1ED9 nh\xE0 tr\u01B0\u1EDDng"],
+    sourceUrl: "https://tulieuvankien.dangcongsan.vn",
+    content: `1. M\u1EE4C TI\xCAU V\xC0 \xDD NGH\u0128A C\u1EE6A CH\u1EC8 TH\u1ECA S\u1ED0 05-CT/TW:
+Ng\xE0y 15 th\xE1ng 5 n\u0103m 2016, B\u1ED9 Ch\xEDnh tr\u1ECB kh\xF3a XII \u0111\xE3 ban h\xE0nh Ch\u1EC9 th\u1ECB s\u1ED1 05-CT/TW v\u1EC1 "\u0110\u1EA9y m\u1EA1nh h\u1ECDc t\u1EADp v\xE0 l\xE0m theo t\u01B0 t\u01B0\u1EDFng, \u0111\u1EA1o \u0111\u1EE9c, phong c\xE1ch H\u1ED3 Ch\xED Minh".
+Ch\u1EC9 th\u1ECB nh\u1EA5n m\u1EA1nh: Vi\u1EC7c h\u1ECDc t\u1EADp v\xE0 l\xE0m theo B\xE1c l\xE0 m\u1ED9t n\u1ED9i dung quan tr\u1ECDng c\u1EE7a c\xF4ng t\xE1c x\xE2y d\u1EF1ng, ch\u1EC9nh \u0111\u1ED1n \u0110\u1EA3ng; g\xF3p ph\u1EA7n x\xE2y d\u1EF1ng \u0110\u1EA3ng trong s\u1EA1ch, v\u1EEFng m\u1EA1nh v\u1EC1 ch\xEDnh tr\u1ECB, t\u01B0 t\u01B0\u1EDFng, t\u1ED5 ch\u1EE9c v\xE0 \u0111\u1EA1o \u0111\u1EE9c; x\xE2y d\u1EF1ng \u0111\u1ED9i ng\u0169 c\xE1n b\u1ED9, c\xF4ng ch\u1EE9c \u0111\u1EE7 n\u0103ng l\u1EF1c, ph\u1EA9m ch\u1EA5t, ngang t\u1EA7m nhi\u1EC7m v\u1EE5; ng\u0103n ch\u1EB7n, \u0111\u1EA9y l\xF9i s\u1EF1 suy tho\xE1i v\u1EC1 t\u01B0 t\u01B0\u1EDFng ch\xEDnh tr\u1ECB, \u0111\u1EA1o \u0111\u1EE9c, l\u1ED1i s\u1ED1ng.
+
+2. C\xC1C N\u1ED8I DUNG TR\u1ECCNG T\xC2M TRONG NG\xC0NH GI\xC1O D\u1EE4C:
+- \u0110\u1ED5i m\u1EDBi, n\xE2ng cao ch\u1EA5t l\u01B0\u1EE3ng gi\u1EA3ng d\u1EA1y v\xE0 h\u1ECDc t\u1EADp t\u01B0 t\u01B0\u1EDFng, \u0111\u1EA1o \u0111\u1EE9c, phong c\xE1ch H\u1ED3 Ch\xED Minh trong h\u1EC7 th\u1ED1ng gi\xE1o d\u1EE5c qu\u1ED1c d\xE2n, ph\xF9 h\u1EE3p v\u1EDBi t\u1EEBng c\u1EA5p h\u1ECDc v\xE0 l\u1EE9a tu\u1ED5i h\u1ECDc sinh THCS.
+- X\xE2y d\u1EF1ng \u0111\u1EA1o \u0111\u1EE9c nh\xE0 gi\xE1o: M\u1ED7i th\u1EA7y gi\xE1o, c\xF4 gi\xE1o l\xE0 m\u1ED9t t\u1EA5m g\u01B0\u01A1ng s\xE1ng v\u1EC1 \u0111\u1EA1o \u0111\u1EE9c, t\u1EF1 h\u1ECDc v\xE0 s\xE1ng t\u1EA1o \u0111\u1EC3 h\u1ECDc sinh noi theo; ki\xEAn quy\u1EBFt ch\u1ED1ng ti\xEAu c\u1EF1c, b\u1EC7nh th\xE0nh t\xEDch trong thi c\u1EED v\xE0 b\u1EC7nh h\xECnh th\u1EE9c trong thi \u0111ua.
+- Gi\xE1o d\u1EE5c l\xFD t\u01B0\u1EDFng c\xE1ch m\u1EA1ng cho th\u1EBF h\u1EC7 tr\u1EBB: T\u0103ng c\u01B0\u1EDDng gi\xE1o d\u1EE5c truy\u1EC1n th\u1ED1ng y\xEAu n\u01B0\u1EDBc, l\xF2ng t\u1EF1 h\xE0o d\xE2n t\u1ED9c, b\u1ED3i d\u01B0\u1EE1ng \u0111\u1EA1o \u0111\u1EE9c trong s\xE1ng, l\u1ED1i s\u1ED1ng l\xE0nh m\u1EA1nh, tinh th\u1EA7n tr\xE1ch nhi\u1EC7m v\u1EDBi b\u1EA3n th\xE2n, gia \u0111\xECnh v\xE0 c\u1ED9ng \u0111\u1ED3ng x\xE3 h\u1ED9i.
+
+3. CH\u01AF\u01A0NG TR\xCCNH H\xC0NH \u0110\u1ED8NG C\u1EE6A TR\u01AF\u1EDCNG THCS NGUY\u1EC4N TRUNG TR\u1EF0C:
+Chi b\u1ED9 v\xE0 Ban Gi\xE1m hi\u1EC7u nh\xE0 tr\u01B0\u1EDDng c\u1EE5 th\u1EC3 h\xF3a Ch\u1EC9 th\u1ECB 05-CT/TW v\xE0o k\u1EBF ho\u1EA1ch nhi\u1EC7m v\u1EE5 n\u0103m h\u1ECDc:
+- T\xEDch h\u1EE3p n\u1ED9i dung h\u1ECDc t\u1EADp v\xE0 l\xE0m theo B\xE1c v\xE0o c\xE1c m\xF4n h\u1ECDc: L\u1ECBch s\u1EED, Ng\u1EEF v\u0103n, Gi\xE1o d\u1EE5c c\xF4ng d\xE2n, Ho\u1EA1t \u0111\u1ED9ng tr\u1EA3i nghi\u1EC7m h\u01B0\u1EDBng nghi\u1EC7p.
+- T\u1ED5 ch\u1EE9c c\xE1c h\u1ED9i thi tr\u1EF1c tuy\u1EBFn t\xECm hi\u1EC3u l\u1ECBch s\u1EED, thi k\u1EC3 chuy\u1EC7n t\u1EA5m g\u01B0\u01A1ng \u0111\u1EA1o \u0111\u1EE9c B\xE1c H\u1ED3 v\xE0 b\xECnh ch\u1ECDn g\u01B0\u01A1ng \u0111i\u1EC3n h\xECnh h\u1ECDc sinh ch\u0103m ngoan, ti\u1EBFn b\u1ED9 m\u1ED7i th\xE1ng.`,
+    metadata: {
+      batch: "BATCH_C_EXPANSION_01",
+      directiveNumber: "05-CT/TW",
+      issuingBody: "B\u1ED9 Ch\xEDnh tr\u1ECB Ban Ch\u1EA5p h\xE0nh Trung \u01B0\u01A1ng \u0110\u1EA3ng"
+    }
+  },
+  // ============================================================================
+  // BATCH D: BỔ SUNG TRI THỨC TỪ TỦ SÁCH ĐIỆN TỬ HỒ CHÍ MINH (HOCHIMINH.VN)
+  // (DOC-HCM-041 đến DOC-HCM-046) - Nguồn kiểm chứng: hochiminh.vn (categoryId=3000402)
+  // ============================================================================
+  {
+    id: "DOC-HCM-041",
+    title: "H\u1ECDc \u1EDF tr\u01B0\u1EDDng, h\u1ECDc \u1EDF s\xE1ch v\u1EDF, h\u1ECDc l\u1EABn nhau v\xE0 h\u1ECDc nh\xE2n d\xE2n \u2013 Ph\u01B0\u01A1ng ph\xE1p h\u1ECDc t\u1EADp su\u1ED1t \u0111\u1EDDi c\u1EE7a Ch\u1EE7 t\u1ECBch H\u1ED3 Ch\xED Minh",
+    category: "teachings-children",
+    categoryLabel: "Nh\u1EEFng l\u1EDDi d\u1EA1y c\u1EE7a B\xE1c \u0111\u1ED1i v\u1EDBi thi\u1EBFu nhi",
+    authorOrSource: "Ch\u1EE7 t\u1ECBch H\u1ED3 Ch\xED Minh - T\u1EE7 s\xE1ch \u0111i\u1EC7n t\u1EED H\u1ED3 Ch\xED Minh (hochiminh.vn) & NXB Tr\u1EBB",
+    dateOrEra: "1945 - 1969",
+    status: "APPROVED",
+    isAllowedForRag: true,
+    topics: ["T\u1EF1 h\u1ECDc", "Ph\u01B0\u01A1ng ph\xE1p h\u1ECDc t\u1EADp", "H\u1ECDc su\u1ED1t \u0111\u1EDDi", "H\u1ECDc \u1EDF nh\xE2n d\xE2n", "H\u1ECDc sinh THCS", "T\u1EE7 s\xE1ch \u0111i\u1EC7n t\u1EED H\u1ED3 Ch\xED Minh"],
+    sourceUrl: "https://hochiminh.vn/book/tac-pham-ve-ho-chi-minh/tac-pham-trong-nuoc/hoc-o-truong-hoc-o-sach-vo-hoc-lan-nhau-va-hoc-nhan-dan-484",
+    content: `1. L\u1EDCI HU\u1EA4N TH\u1ECA C\u1ED0T L\xD5I C\u1EE6A CH\u1EE6 T\u1ECACH H\u1ED2 CH\xCD MINH V\u1EC0 VI\u1EC6C H\u1ECCC:
+Sinh th\u1EDDi, Ch\u1EE7 t\u1ECBch H\u1ED3 Ch\xED Minh lu\xF4n c\u0103n d\u1EB7n c\xE1n b\u1ED9, gi\xE1o vi\xEAn v\xE0 h\u1ECDc sinh:
+"H\u1ECDc \u1EDF tr\u01B0\u1EDDng, h\u1ECDc \u1EDF s\xE1ch v\u1EDF, h\u1ECDc l\u1EABn nhau v\xE0 h\u1ECDc nh\xE2n d\xE2n, kh\xF4ng h\u1ECDc nh\xE2n d\xE2n l\xE0 m\u1ED9t thi\u1EBFu s\xF3t r\u1EA5t l\u1EDBn".
+Theo B\xE1c, tri th\u1EE9c kh\xF4ng bao gi\u1EDD \u0111\xF3ng khung trong b\u1ED1n b\u1EE9c t\u01B0\u1EDDng l\u1EDBp h\u1ECDc. Tr\u01B0\u1EDDng h\u1ECDc cung c\u1EA5p n\u1EC1n t\u1EA3ng ki\u1EBFn th\u1EE9c c\u0103n b\u1EA3n, nh\u01B0ng ng\u01B0\u1EDDi h\u1ECDc mu\u1ED1n th\u1EF1c s\u1EF1 tr\u01B0\u1EDFng th\xE0nh v\xE0 \u0111\xF3ng g\xF3p cho \u0111\u1EA5t n\u01B0\u1EDBc th\xEC ph\u1EA3i m\u1EDF r\u1ED9ng kh\xF4ng gian h\u1ECDc t\u1EADp ra to\xE0n b\u1ED9 \u0111\u1EDDi s\u1ED1ng x\xE3 h\u1ED9i.
+
+2. NGUY\xCAN L\xDD T\u1EF0 H\u1ECCC V\xC0 H\u1ECCC T\u1EACP SU\u1ED0T \u0110\u1EDCI:
+- H\u1ECDc \u0111i \u0111\xF4i v\u1EDBi h\xE0nh: "H\u1ECDc \u0111\u1EC3 h\xE0nh: H\u1ECDc v\u1EDBi h\xE0nh ph\u1EA3i \u0111i \u0111\xF4i. H\u1ECDc m\xE0 kh\xF4ng h\xE0nh th\xEC v\xF4 \xEDch. H\xE0nh m\xE0 kh\xF4ng h\u1ECDc th\xEC h\xE0nh kh\xF4ng tr\xF4i ch\u1EA3y".
+- H\u1ECDc su\u1ED1t \u0111\u1EDDi: "C\xF2n s\u1ED1ng th\xEC c\xF2n ph\u1EA3i h\u1ECDc", "\u0110\u01B0\u1EDDng \u0111\u1EDDi l\xE0 m\u1ED9t chi\u1EBFc thang kh\xF4ng c\xF3 n\u1EA5c ch\xF3t; vi\u1EC7c h\u1ECDc l\xE0 m\u1ED9t quy\u1EC3n s\xE1ch kh\xF4ng c\xF3 trang cu\u1ED1i c\xF9ng".
+- R\xE8n luy\u1EC7n \xF3c suy ngh\u0129 \u0111\u1ED9c l\u1EADp: B\xE1c ph\xEA ph\xE1n gay g\u1EAFt l\u1ED1i h\u1ECDc v\u1EB9t, h\u1ECDc t\u1EE7, h\u1ECDc ch\u1EC9 \u0111\u1EC3 l\u1EA5y b\u1EB1ng c\u1EA5p \u0111\u1ED1i ph\xF3. Ng\u01B0\u1EDDi y\xEAu c\u1EA7u h\u1ECDc tr\xF2 ph\u1EA3i c\xF3 tinh th\u1EA7n t\u1EF1 l\u1EF1c c\xE1nh sinh, \u0111\xE0o s\xE2u suy ngh\u0129, d\xE1m th\u1EAFc m\u1EAFc v\xE0 t\xECm t\xF2i ch\xE2n l\xFD.
+
+3. T\u1EA4M G\u01AF\u01A0NG T\u1EF0 H\u1ECCC S\xC1NG NG\u1EDCI C\u1EE6A B\xC1C H\u1ED2:
+- Trong h\u01A1n 30 n\u0103m b\xF4n ba qua g\u1EA7n 30 qu\u1ED1c gia tr\xEAn th\u1EBF gi\u1EDBi, Ng\u01B0\u1EDDi v\u1EEBa lao \u0111\u1ED9ng n\u1EB7ng nh\u1ECDc (ph\u1EE5 b\u1EBFp, c\xE0o tuy\u1EBFt, th\u1EE3 \u1EA3nh, vi\u1EBFt b\xE1o) v\u1EEBa ki\xEAn tr\xEC t\u1EF1 h\u1ECDc ngo\u1EA1i ng\u1EEF v\xE0 c\xE1c m\xF4n khoa h\u1ECDc x\xE3 h\u1ED9i.
+- M\u1ED7i ng\xE0y Ng\u01B0\u1EDDi quy \u0111\u1ECBnh ph\u1EA3i h\u1ECDc v\xE0 ghi nh\u1EDB m\u1ED9t s\u1ED1 t\u1EEB m\u1EDBi, vi\u1EBFt ch\u1EEF l\xEAn c\xE1nh tay \u0111\u1EC3 v\u1EEBa l\xE0m vi\u1EC7c v\u1EEBa nh\u1EA9m thu\u1ED9c l\xF2ng. Nh\u1EDD tinh th\u1EA7n t\u1EF1 h\u1ECDc phi th\u01B0\u1EDDng, Ng\u01B0\u1EDDi \u0111\xE3 s\u1EED d\u1EE5ng th\xF4ng th\u1EA1o nhi\u1EC1u ngo\u1EA1i ng\u1EEF nh\u01B0 ti\u1EBFng Ph\xE1p, Anh, Nga, Trung Qu\u1ED1c, \u0110\u1EE9c, T\xE2y Ban Nha, \xDD...
+
+4. B\xC0I H\u1ECCC V\u1EACN D\u1EE4NG CHO \u0110\u1ED8I VI\xCAN, H\u1ECCC SINH THCS NGUY\u1EC4N TRUNG TR\u1EF0C:
+- X\xE2y d\u1EF1ng th\xF3i quen \u0111\u1ECDc s\xE1ch m\u1ED7i ng\xE0y t\u1EA1i Th\u01B0 vi\u1EC7n th\xF4ng minh v\xE0 Kh\xF4ng gian v\u0103n h\xF3a H\u1ED3 Ch\xED Minh c\u1EE7a tr\u01B0\u1EDDng.
+- Tinh th\u1EA7n "h\u1ECDc l\u1EABn nhau": T\xEDch c\u1EF1c tham gia m\xF4 h\xECnh "\u0110\xF4i b\u1EA1n c\xF9ng ti\u1EBFn", h\u1ECDc nh\xF3m, gi\xFAp \u0111\u1EE1 b\u1EA1n b\xE8 h\u1ECDc y\u1EBFu c\xF9ng v\u01B0\u01A1n l\xEAn.
+- Tinh th\u1EA7n "h\u1ECDc nh\xE2n d\xE2n": Bi\u1EBFt l\u1EC5 ph\xE9p, l\u1EAFng nghe, h\u1ECDc h\u1ECFi nh\u1EEFng \u0111\u1EE9c t\xEDnh c\u1EA7n c\xF9, th\u1EADt th\xE0, y\xEAu lao \u0111\u1ED9ng t\u1EEB \xF4ng b\xE0, cha m\u1EB9 v\xE0 ng\u01B0\u1EDDi lao \u0111\u1ED9ng xung quanh.`,
+    metadata: {
+      batch: "BATCH_D_HOCHIMINH_VN_EXPANSION",
+      bookId: 484,
+      pdfUrl: "https://hochiminh.vn/upload/3000001/20251024/06027212f502726cbace66eb3f4cfb2bHoc-o-truong--HCM.pdf",
+      publisher: "NXB Tr\u1EBB & hochiminh.vn"
+    }
+  },
+  {
+    id: "DOC-HCM-042",
+    title: 'T\xE1c ph\u1EA9m "V\u0103n h\xF3a soi \u0111\u01B0\u1EDDng cho qu\u1ED1c d\xE2n \u0111i" \u2013 T\u01B0 t\u01B0\u1EDFng H\u1ED3 Ch\xED Minh v\u1EC1 x\xE2y d\u1EF1ng n\u1EC1n v\u0103n h\xF3a Vi\u1EC7t Nam ti\xEAn ti\u1EBFn',
+    category: "ideology-ethics",
+    categoryLabel: "T\u01B0 t\u01B0\u1EDFng, \u0111\u1EA1o \u0111\u1EE9c, phong c\xE1ch H\u1ED3 Ch\xED Minh",
+    authorOrSource: "Ch\u1EE7 t\u1ECBch H\u1ED3 Ch\xED Minh - Vang v\u1ECDng l\u1EDDi n\u01B0\u1EDBc non (T\u1EADp 8), NXB Ch\xEDnh tr\u1ECB qu\u1ED1c gia S\u1EF1 th\u1EADt & hochiminh.vn",
+    dateOrEra: "24/11/1946",
+    status: "APPROVED",
+    isAllowedForRag: true,
+    topics: ["V\u0103n h\xF3a soi \u0111\u01B0\u1EDDng cho qu\u1ED1c d\xE2n \u0111i", "H\u1ED9i ngh\u1ECB V\u0103n h\xF3a to\xE0n qu\u1ED1c 1946", "N\u1EC1n v\u0103n h\xF3a m\u1EDBi", "\u0110\u1EA1o \u0111\u1EE9c v\u0103n h\xF3a", "Kh\xF4ng gian v\u0103n h\xF3a H\u1ED3 Ch\xED Minh"],
+    sourceUrl: "https://hochiminh.vn/book/tac-pham-ve-ho-chi-minh/tac-pham-trong-nuoc/vang-vong-loi-nuoc-non-tap-8-van-hoa-soi-duong-cho-quoc-dan-di-463",
+    content: `1. B\u1ED0I C\u1EA2NH V\xC0 LU\u1EACN \u0110I\u1EC2M L\u1ECACH S\u1EEC T\u1EA0I H\u1ED8I NGH\u1ECA V\u0102N H\xD3A TO\xC0N QU\u1ED0C 1946:
+Ng\xE0y 24 th\xE1ng 11 n\u0103m 1946, t\u1EA1i Nh\xE0 h\xE1t L\u1EDBn H\xE0 N\u1ED9i, H\u1ED9i ngh\u1ECB V\u0103n h\xF3a to\xE0n qu\u1ED1c l\u1EA7n th\u1EE9 nh\u1EA5t \u0111\xE3 long tr\u1ECDng khai m\u1EA1c.
+T\u1EA1i di\u1EC5n \u0111\xE0n n\xE0y, Ch\u1EE7 t\u1ECBch H\u1ED3 Ch\xED Minh \u0111\xE3 kh\u1EB3ng \u0111\u1ECBnh lu\u1EADn \u0111i\u1EC3m b\u1EA5t h\u1EE7 mang t\xEDnh \u0111\u1ECBnh h\u01B0\u1EDBng chi\u1EBFn l\u01B0\u1EE3c:
+"V\u0103n h\xF3a soi \u0111\u01B0\u1EDDng cho qu\u1ED1c d\xE2n \u0111i".
+Ng\u01B0\u1EDDi nh\u1EA5n m\u1EA1nh: V\u0103n h\xF3a kh\xF4ng ph\u1EA3i l\xE0 th\u1EE9 trang s\u1EE9c b\xEAn ngo\xE0i x\xE3 h\u1ED9i, m\xE0 v\u0103n h\xF3a ch\xEDnh l\xE0 ng\u1ECDn \u0111u\u1ED1c d\u1EABn \u0111\u01B0\u1EDDng, b\u1ED3i \u0111\u1EAFp t\xE2m h\u1ED3n, khai s\xE1ng d\xE2n tr\xED v\xE0 kh\u01A1i d\u1EADy kh\xE1t v\u1ECDng \u0111\u1ED9c l\u1EADp, t\u1EF1 do, t\u1EF1 c\u01B0\u1EDDng c\u1EE7a to\xE0n th\u1EC3 d\xE2n t\u1ED9c.
+
+2. \u0110\u1ECANH NGH\u0128A KHOA H\u1ECCC V\xC0 TO\xC0N DI\u1EC6N C\u1EE6A H\u1ED2 CH\xCD MINH V\u1EC0 V\u0102N H\xD3A:
+Th\xE1ng 8 n\u0103m 1943, trong trang s\u1ED5 tay "Nh\u1EADt k\xFD trong t\xF9", B\xE1c H\u1ED3 \u0111\xE3 ghi l\u1EA1i \u0111\u1ECBnh ngh\u0129a s\xE2u s\u1EAFc v\u1EC1 v\u0103n h\xF3a:
+"V\xEC l\u1EBD sinh t\u1ED3n c\u0169ng nh\u01B0 m\u1EE5c \u0111\xEDch c\u1EE7a cu\u1ED9c s\u1ED1ng, lo\xE0i ng\u01B0\u1EDDi m\u1EDBi s\xE1ng t\u1EA1o v\xE0 ph\xE1t minh ra ng\xF4n ng\u1EEF, ch\u1EEF vi\u1EBFt, \u0111\u1EA1o \u0111\u1EE9c, ph\xE1p lu\u1EADt, khoa h\u1ECDc, t\xF4n gi\xE1o, v\u0103n h\u1ECDc, ngh\u1EC7 thu\u1EADt, nh\u1EEFng c\xF4ng c\u1EE5 cho sinh ho\u1EA1t h\u1EB1ng ng\xE0y v\u1EC1 m\u1EB7c, \u0103n, \u1EDF v\xE0 c\xE1c ph\u01B0\u01A1ng th\u1EE9c s\u1EED d\u1EE5ng. To\xE0n b\u1ED9 nh\u1EEFng s\xE1ng t\u1EA1o v\xE0 ph\xE1t minh \u0111\xF3 t\u1EE9c l\xE0 v\u0103n h\xF3a".
+
+3. M\u1ED0I QUAN H\u1EC6 GI\u1EEEA V\u0102N H\xD3A V\u1EDAI CH\xCDNH TR\u1ECA V\xC0 KINH T\u1EBE:
+- B\xE1c ch\u1EC9 r\xF5: V\u0103n h\xF3a kh\xF4ng th\u1EC3 \u0111\u1EE9ng ngo\xE0i m\xE0 ph\u1EA3i \u1EDF trong kinh t\u1EBF v\xE0 ch\xEDnh tr\u1ECB.
+- Kinh t\u1EBF ph\xE1t tri\u1EC3n s\u1EBD t\u1EA1o ti\u1EC1n \u0111\u1EC1 v\u1EADt ch\u1EA5t cho v\u0103n h\xF3a n\u1EA3y n\u1EDF; nh\u01B0ng v\u0103n h\xF3a l\u1EA1i l\xE0 \u0111\u1ED9ng l\u1EF1c n\u1ED9i sinh, n\xE2ng \u0111\u1EE1 \u0111\u1EA1o \u0111\u1EE9c x\xE3 h\u1ED9i, ng\u0103n ng\u1EEBa s\u1EF1 tha h\xF3a, suy \u0111\u1ED3i nh\xE2n c\xE1ch.
+- N\u1EC1n v\u0103n h\xF3a m\u1EDBi Vi\u1EC7t Nam ph\u1EA3i th\u1EA5m nhu\u1EA7n 3 t\xEDnh ch\u1EA5t c\u0103n b\u1EA3n: D\xE2n t\u1ED9c, Khoa h\u1ECDc v\xE0 \u0110\u1EA1i ch\xFAng.
+
+4. \xDD NGH\u0128A \u0110\u1ED0I V\u1EDAI KH\xD4NG GIAN V\u0102N H\xD3A H\u1ED2 CH\xCD MINH H\u1ECCC \u0110\u01AF\u1EDCNG:
+- Lu\u1EADn \u0111i\u1EC3m "V\u0103n h\xF3a soi \u0111\u01B0\u1EDDng cho qu\u1ED1c d\xE2n \u0111i" ch\xEDnh l\xE0 kim ch\u1EC9 nam cho vi\u1EC7c x\xE2y d\u1EF1ng Kh\xF4ng gian v\u0103n h\xF3a H\u1ED3 Ch\xED Minh t\u1EA1i Tr\u01B0\u1EDDng THCS Nguy\u1EC5n Trung Tr\u1EF1c (Ph\u01B0\u1EDDng Th\u1EDBi An, TP.HCM).
+- Kh\xF4ng gian v\u0103n h\xF3a H\u1ED3 Ch\xED Minh h\u1ECDc \u0111\u01B0\u1EDDng kh\xF4ng d\u1EEBng l\u1EA1i \u1EDF c\xE1c pano, tri\u1EC3n l\xE3m t\u0129nh, m\xE0 ph\u1EA3i th\u1EA9m th\u1EA5u v\xE0o v\u0103n h\xF3a \u1EE9ng x\u1EED h\u1EB1ng ng\xE0y: n\u1EBFp s\u1ED1ng v\u0103n minh, th\u1EA7y m\u1EABu m\u1EF1c, tr\xF2 ch\u0103m ngoan, trung th\u1EF1c trong thi c\u1EED v\xE0 t\u01B0\u01A1ng th\xE2n t\u01B0\u01A1ng \xE1i gi\u1EEFa c\xE1c h\u1ECDc sinh.`,
+    metadata: {
+      batch: "BATCH_D_HOCHIMINH_VN_EXPANSION",
+      bookId: 463,
+      pdfUrl: "https://hochiminh.vn/upload/3000001/20251024/43ff43ed3f86cd37ac3683f7aea3813avang-vong-loi-nuoc-non-tap-8.pdf",
+      publisher: "NXB Ch\xEDnh tr\u1ECB qu\u1ED1c gia S\u1EF1 th\u1EADt & hochiminh.vn"
+    }
+  },
+  {
+    id: "DOC-HCM-043",
+    title: 'T\xE1c ph\u1EA9m "\u0110\u1EA1i \u0111o\xE0n k\u1EBFt l\xE0 m\u1ED9t l\u1EF1c l\u01B0\u1EE3ng t\u1EA5t th\u1EAFng" \u2013 C\u1ED9i ngu\u1ED3n s\u1EE9c m\u1EA1nh d\xE2n t\u1ED9c theo t\u01B0 t\u01B0\u1EDFng H\u1ED3 Ch\xED Minh',
+    category: "ideology-ethics",
+    categoryLabel: "T\u01B0 t\u01B0\u1EDFng, \u0111\u1EA1o \u0111\u1EE9c, phong c\xE1ch H\u1ED3 Ch\xED Minh",
+    authorOrSource: "Ch\u1EE7 t\u1ECBch H\u1ED3 Ch\xED Minh - Vang v\u1ECDng l\u1EDDi n\u01B0\u1EDBc non (T\u1EADp 9), NXB Ch\xEDnh tr\u1ECB qu\u1ED1c gia S\u1EF1 th\u1EADt & hochiminh.vn",
+    dateOrEra: "1930 - 1969",
+    status: "APPROVED",
+    isAllowedForRag: true,
+    topics: ["\u0110\u1EA1i \u0111o\xE0n k\u1EBFt to\xE0n d\xE2n t\u1ED9c", "\u0110o\xE0n k\u1EBFt \u0111o\xE0n k\u1EBFt \u0111\u1EA1i \u0111o\xE0n k\u1EBFt", "S\u1EE9c m\u1EA1nh d\xE2n t\u1ED9c", "Y\xEAu th\u01B0\u01A1ng \u0111\u1ED3ng b\xE0o", "\u0110o\xE0n k\u1EBFt h\u1ECDc \u0111\u01B0\u1EDDng"],
+    sourceUrl: "https://hochiminh.vn/book/tac-pham-ve-ho-chi-minh/tac-pham-trong-nuoc/vang-vong-loi-nuoc-non-tap-9-dai-doan-ket-la-mot-luc-luong-tat-thang-464",
+    content: `1. CH\xC2N L\xDD B\u1EA4T H\u1EE6 V\u1EC0 \u0110\u1EA0I \u0110O\xC0N K\u1EBET:
+Trong su\u1ED1t cu\u1ED9c \u0111\u1EDDi ho\u1EA1t \u0111\u1ED9ng c\xE1ch m\u1EA1ng c\u1EE7a m\xECnh, Ch\u1EE7 t\u1ECBch H\u1ED3 Ch\xED Minh \u0111\xE3 \u0111\xFAc k\u1EBFt ch\xE2n l\xFD l\u1ECBch s\u1EED v\u0129 \u0111\u1EA1i:
+"\u0110o\xE0n k\u1EBFt, \u0111o\xE0n k\u1EBFt, \u0111\u1EA1i \u0111o\xE0n k\u1EBFt,
+Th\xE0nh c\xF4ng, th\xE0nh c\xF4ng, \u0111\u1EA1i th\xE0nh c\xF4ng!".
+\u0110o\xE0n k\u1EBFt kh\xF4ng ch\u1EC9 l\xE0 m\u1ED9t s\xE1ch l\u01B0\u1EE3c ch\xEDnh tr\u1ECB nh\u1EA5t th\u1EDDi, m\xE0 l\xE0 \u0111\u01B0\u1EDDng l\u1ED1i chi\u1EBFn l\u01B0\u1EE3c s\u1ED1ng c\xF2n, xuy\xEAn su\u1ED1t c\u1EE7a c\xE1ch m\u1EA1ng Vi\u1EC7t Nam, l\xE0 c\u1ED9i ngu\u1ED3n t\u1EA1o n\xEAn s\u1EE9c m\u1EA1nh v\xF4 \u0111\u1ECBch gi\xFAp d\xE2n t\u1ED9c ta chi\u1EBFn th\u1EAFng m\u1ECDi k\u1EBB th\xF9 x\xE2m l\u01B0\u1EE3c v\xE0 v\u01B0\u1EE3t qua m\u1ECDi b\xE3o gi\xF4ng th\u1EED th\xE1ch.
+
+2. NGUY\xCAN T\u1EAEC V\xC0 L\u1EF0C L\u01AF\u1EE2NG C\u1EE6A KH\u1ED0I \u0110\u1EA0I \u0110O\xC0N K\u1EBET:
+- \u0110\u1EA1i \u0111o\xE0n k\u1EBFt to\xE0n d\xE2n t\u1ED9c: T\u1EADp h\u1EE3p kh\xF4ng ph\xE2n bi\u1EC7t t\xF4n gi\xE1o (l\u01B0\u01A1ng hay gi\xE1o), kh\xF4ng ph\xE2n bi\u1EC7t giai c\u1EA5p, g\xE1i trai, gi\xE0 tr\u1EBB, 54 d\xE2n t\u1ED9c anh em c\xF9ng chung m\u1ED9t d\u1EA3i non s\xF4ng \u0111\u1EA5t n\u01B0\u1EDBc.
+- L\u1EA5y li\xEAn minh c\xF4ng - n\xF4ng - tr\xED th\u1EE9c l\xE0m n\u1EC1n t\u1EA3ng, d\u01B0\u1EDBi s\u1EF1 l\xE3nh \u0111\u1EA1o c\u1EE7a \u0110\u1EA3ng C\u1ED9ng s\u1EA3n Vi\u1EC7t Nam.
+- K\u1EBFt h\u1EE3p \u0111\u1EA1i \u0111o\xE0n k\u1EBFt to\xE0n d\xE2n t\u1ED9c v\u1EDBi \u0111o\xE0n k\u1EBFt qu\u1ED1c t\u1EBF: Tranh th\u1EE7 s\u1EF1 \u1EE7ng h\u1ED9 c\u1EE7a c\xE1c l\u1EF1c l\u01B0\u1EE3ng ti\u1EBFn b\u1ED9, y\xEAu chu\u1ED9ng h\xF2a b\xECnh tr\xEAn to\xE0n th\u1EBF gi\u1EDBi v\xEC m\u1EE5c ti\xEAu \u0111\u1ED9c l\u1EADp, t\u1EF1 do v\xE0 t\xECnh huynh \u0111\u1EC7 nh\xE2n lo\u1EA1i.
+
+3. L\u1EDCI D\u1EB6N D\xD2 T\xC2M HUY\u1EBET V\u1EC0 \u0110O\xC0N K\u1EBET TRONG DI CH\xDAC (1969):
+Tr\u01B0\u1EDBc l\xFAc \u0111i xa, Ng\u01B0\u1EDDi \u0111\xE3 thi\u1EBFt tha c\u0103n d\u1EB7n:
+"\u0110o\xE0n k\u1EBFt l\xE0 m\u1ED9t truy\u1EC1n th\u1ED1ng c\u1EF1c k\u1EF3 qu\xFD b\xE1u c\u1EE7a \u0110\u1EA3ng v\xE0 c\u1EE7a d\xE2n ta. C\xE1c \u0111\u1ED3ng ch\xED t\u1EEB Trung \u01B0\u01A1ng \u0111\u1EBFn c\xE1c chi b\u1ED9 c\u1EA7n ph\u1EA3i gi\u1EEF g\xECn s\u1EF1 \u0111o\xE0n k\u1EBFt nh\u1EA5t tr\xED c\u1EE7a \u0110\u1EA3ng nh\u01B0 gi\u1EEF g\xECn con ng\u01B0\u01A1i c\u1EE7a m\u1EAFt m\xECnh".
+
+4. B\xC0I H\u1ECCC TH\u1EF0C TI\u1EC4N CHO H\u1ECCC SINH THCS NGUY\u1EC4N TRUNG TR\u1EF0C:
+- R\xE8n luy\u1EC7n \u0110i\u1EC1u 3 trong 5 \u0110i\u1EC1u B\xE1c H\u1ED3 d\u1EA1y: "\u0110o\xE0n k\u1EBFt t\u1ED1t, k\u1EF7 lu\u1EADt t\u1ED1t".
+- Tinh th\u1EA7n \u0111\u1ED3ng \u0111\u1ED9i v\xE0 t\xECnh b\u1EA1n trong s\xE1ng: Bi\u1EBFt bao dung, s\u1EBB chia kh\xF3 kh\u0103n, t\u01B0\u01A1ng tr\u1EE3 b\u1EA1n b\xE8 trong h\u1ECDc t\u1EADp, ki\xEAn quy\u1EBFt b\xE0i tr\u1EEB v\u1EA5n n\u1EA1n b\u1EA1o l\u1EF1c h\u1ECDc \u0111\u01B0\u1EDDng v\xE0 chia r\u1EBD b\xE8 ph\xE1i.
+- Chung tay x\xE2y d\u1EF1ng t\u1EADp th\u1EC3 l\u1EDBp \u0111o\xE0n k\u1EBFt v\u1EEFng m\u1EA1nh, ng\xF4i tr\u01B0\u1EDDng h\u1EA1nh ph\xFAc ngh\u0129a t\xECnh t\u1EA1i Ph\u01B0\u1EDDng Th\u1EDBi An.`,
+    metadata: {
+      batch: "BATCH_D_HOCHIMINH_VN_EXPANSION",
+      bookId: 464,
+      pdfUrl: "https://hochiminh.vn/upload/3000001/20251024/7efb763da178a1e30c1e72126c829714vang-vong-loi-nuoc-non-tap-9-%C4%91%C3%A3-n%C3%A9n.pdf",
+      publisher: "NXB Ch\xEDnh tr\u1ECB qu\u1ED1c gia S\u1EF1 th\u1EADt & hochiminh.vn"
+    }
+  },
+  {
+    id: "DOC-HCM-044",
+    title: 'K\xFD s\u1EF1 "M\u1ED9t gi\u1EDD v\u1EDBi \u0111\u1ED3ng ch\xED H\u1ED3 Ch\xED Minh" \u2013 T\u1EA7m v\xF3c v\u0103n h\xF3a Nguy\u1EC5n \xC1i Qu\u1ED1c qua g\xF3c nh\xECn b\xE1o ch\xED qu\u1ED1c t\u1EBF n\u0103m 1923',
+    category: "bio-career",
+    categoryLabel: "Cu\u1ED9c \u0111\u1EDDi v\xE0 s\u1EF1 nghi\u1EC7p Ch\u1EE7 t\u1ECBch H\u1ED3 Ch\xED Minh",
+    authorOrSource: "Nh\xE0 b\xE1o Osip Mandelstam (T\u1EA1p ch\xED Ogoniok Li\xEAn X\xF4 1923), NXB Ch\xEDnh tr\u1ECB qu\u1ED1c gia S\u1EF1 th\u1EADt & hochiminh.vn",
+    dateOrEra: "23/12/1923",
+    status: "APPROVED",
+    isAllowedForRag: true,
+    topics: ["Nguy\u1EC5n \xC1i Qu\u1ED1c", "Osip Mandelstam", "T\u1EA1p ch\xED Ogoniok", "Moskva 1923", "V\u0103n h\xF3a t\u01B0\u01A1ng lai", "T\xECnh huynh \u0111\u1EC7 qu\u1ED1c t\u1EBF"],
+    sourceUrl: "https://hochiminh.vn/book/tac-pham-ve-ho-chi-minh/tac-pham-trong-nuoc/mot-gio-voi-dong-chi-ho-chi-minh-475",
+    content: `1. HO\xC0N C\u1EA2NH L\u1ECACH S\u1EEC C\u1EE6A B\xC0I K\xDD S\u1EF0 B\xC1O CH\xCD N\u0102M 1923:
+Th\xE1ng 6 n\u0103m 1923, ng\u01B0\u1EDDi thanh ni\xEAn y\xEAu n\u01B0\u1EDBc Nguy\u1EC5n \xC1i Qu\u1ED1c r\u1EDDi Paris sang th\u1EE7 \u0111\xF4 Moskva (Li\xEAn X\xF4) \u0111\u1EC3 d\u1EF1 H\u1ED9i ngh\u1ECB Qu\u1ED1c t\u1EBF N\xF4ng d\xE2n v\xE0 chu\u1EA9n b\u1ECB tham d\u1EF1 \u0110\u1EA1i h\u1ED9i V Qu\u1ED1c t\u1EBF C\u1ED9ng s\u1EA3n.
+V\xE0o th\xE1ng 12 n\u0103m 1923, Osip Mandelstam - nh\xE0 th\u01A1, nh\xE0 b\xE1o danh ti\u1EBFng c\u1EE7a n\u01B0\u1EDBc Nga X\xF4 Vi\u1EBFt \u0111\xE3 c\xF3 m\u1ED9t cu\u1ED9c ti\u1EBFp x\xFAc, ph\u1ECFng v\u1EA5n \u0111\u1EB7c bi\u1EC7t v\u1EDBi Ng\u01B0\u1EDDi. B\xE0i k\xFD s\u1EF1 mang t\u1EF1a \u0111\u1EC1 "Th\u0103m m\u1ED9t chi\u1EBFn s\u0129 Qu\u1ED1c t\u1EBF C\u1ED9ng s\u1EA3n - Nguy\u1EC5n \xC1i Qu\u1ED1c" \u0111\u01B0\u1EE3c \u0111\u0103ng tr\xEAn T\u1EA1p ch\xED Ogoniok (Ng\u1ECDn l\u1EEDa nh\u1ECF) s\u1ED1 39 ng\xE0y 23/12/1923.
+
+2. NH\u1EACN \u0110\u1ECANH B\u1EA4T H\u1EE6 V\u1EC0 V\u0102N H\xD3A C\u1EE6A NGUY\u1EC4N \xC1I QU\u1ED0C:
+Trong b\xE0i k\xFD s\u1EF1, Osip Mandelstam \u0111\xE3 ghi l\u1EA1i l\u1EDDi b\xECnh lu\u1EADn mang t\u1EA7m ti\xEAn tri v\xE0 d\u1EF1 b\xE1o s\xE2u s\u1EAFc v\u1EC1 v\u0103n h\xF3a:
+"T\u1EEB Nguy\u1EC5n \xC1i Qu\u1ED1c \u0111\xE3 t\u1ECFa ra m\u1ED9t th\u1EE9 v\u0103n h\xF3a, kh\xF4ng ph\u1EA3i v\u0103n h\xF3a \xC2u ch\xE2u, m\xE0 c\xF3 l\u1EBD l\xE0 m\u1ED9t n\u1EC1n v\u0103n h\xF3a c\u1EE7a t\u01B0\u01A1ng lai...
+Qua c\u1EED ch\u1EC9 cao th\u01B0\u1EE3ng, ti\u1EBFng n\xF3i tr\u1EA7m \u1EA5m c\u1EE7a Nguy\u1EC5n \xC1i Qu\u1ED1c, ch\xFAng ta nh\u01B0 nghe th\u1EA5y ng\xE0y mai, nh\u01B0 th\u1EA5y s\u1EF1 y\xEAn t\u0129nh m\xEAnh m\xF4ng c\u1EE7a t\xECnh huynh \u0111\u1EC7 to\xE0n th\u1EBF gi\u1EDBi".
+
+3. KH\u1EAEC H\u1ECCA CH\xC2N DUNG V\xC0 PHONG TH\xC1I C\u1EE6A NG\u01AF\u1EDCI THANH NI\xCAN VI\u1EC6T NAM:
+- T\xE1c gi\u1EA3 mi\xEAu t\u1EA3 Nguy\u1EC5n \xC1i Qu\u1ED1c: M\u1ED9t ch\xE0ng thanh ni\xEAn d\xE1ng ng\u01B0\u1EDDi m\u1EA3nh kh\u1EA3nh, khu\xF4n m\u1EB7t thanh t\xFA, \u0111\xF4i m\u1EAFt s\xE1ng r\u1EF1c to\xE1t l\xEAn s\u1EF1 th\xF4ng tu\u1EC7 v\xE0 l\xF2ng qu\u1EA3 c\u1EA3m phi th\u01B0\u1EDDng.
+- Phong th\xE1i l\u1ECBch thi\u1EC7p, \u0111i\u1EC1m t\u0129nh, khi\xEAm nh\u01B0\u1EDDng nh\u01B0ng \u1EA9n ch\u1EE9a m\u1ED9t \xFD ch\xED th\xE9p v\xE0 kh\xE1t v\u1ECDng t\u1EF1 do ch\xE1y b\u1ECFng cho nh\xE2n d\xE2n b\u1ECB \xE1p b\u1EE9c \u1EDF x\u1EE9 \u0110\xF4ng D\u01B0\u01A1ng v\xE0 kh\u1EAFp c\xE1c thu\u1ED9c \u0111\u1ECBa.
+- S\u1EF1 k\u1EBFt h\u1EE3p nhu\u1EA7n nhuy\u1EC5n gi\u1EEFa chi\u1EC1u s\xE2u v\u0103n h\xF3a truy\u1EC1n th\u1ED1ng ph\u01B0\u01A1ng \u0110\xF4ng v\u1EDBi nh\u1EEFng gi\xE1 tr\u1ECB d\xE2n ch\u1EE7, t\u1EF1 do ti\u1EBFn b\u1ED9 c\u1EE7a v\u0103n h\xF3a ph\u01B0\u01A1ng T\xE2y.
+
+4. GI\xC1 TR\u1ECA GI\xC1O D\u1EE4C L\xDD T\u01AF\u1EDENG CHO H\u1ECCC SINH THCS:
+- T\u1EF1 h\xE0o v\u1EC1 nh\xE2n c\xE1ch v\xE0 t\u1EA7m v\xF3c v\u0103n h\xF3a to\xE0n c\u1EA7u c\u1EE7a B\xE1c H\u1ED3 ngay t\u1EEB nh\u1EEFng n\u0103m th\xE1ng Ng\u01B0\u1EDDi c\xF2n l\xE0 ng\u01B0\u1EDDi thanh ni\xEAn tr\u1EBB tu\u1ED5i b\xF4n ba t\xECm \u0111\u01B0\u1EDDng c\u1EE9u n\u01B0\u1EDBc.
+- H\u1ECDc t\u1EADp \u1EDF B\xE1c phong th\xE1i giao ti\u1EBFp v\u0103n minh, h\xF2a nh\xE3, khi\xEAm t\u1ED1n, bi\u1EBFt l\u1EAFng nghe v\xE0 t\xF4n tr\u1ECDng ng\u01B0\u1EDDi kh\xE1c.
+- Nu\xF4i d\u01B0\u1EE1ng tinh th\u1EA7n c\xF4ng d\xE2n to\xE0n c\u1EA7u: M\u1EDF r\u1ED9ng t\u1EA7m nh\xECn tri th\u1EE9c ra th\u1EBF gi\u1EDBi b\xEAn ngo\xE0i nh\u01B0ng lu\xF4n gi\u1EEF tr\u1ECDn b\u1EA3n s\u1EAFc v\u0103n h\xF3a v\xE0 l\xF2ng y\xEAu n\u01B0\u1EDBc n\u1ED3ng n\xE0n c\u1EE7a d\xE2n t\u1ED9c Vi\u1EC7t Nam.`,
+    metadata: {
+      batch: "BATCH_D_HOCHIMINH_VN_EXPANSION",
+      bookId: 475,
+      pdfUrl: "https://hochiminh.vn/upload/3000001/20251024/416d7d46d9cd711eee69ce36ec5dc253M%E1%BB%99t-gi%E1%BB%9D-v%E1%BB%9Bi-%C4%91%E1%BB%93ng-ch%C3%AD-H%E1%BB%93-ch%C3%AD-Minh.pdf",
+      publisher: "NXB Ch\xEDnh tr\u1ECB qu\u1ED1c gia S\u1EF1 th\u1EADt & hochiminh.vn"
+    }
+  },
+  {
+    id: "DOC-HCM-045",
+    title: 'K\xFD s\u1EF1 l\u1ECBch s\u1EED "Gi\u1EEF y\xEAn gi\u1EA5c ng\u1EE7 c\u1EE7a Ng\u01B0\u1EDDi" \u2013 K\u1EF3 t\xEDch gi\u1EEF g\xECn thi h\xE0i B\xE1c H\u1ED3 v\xE0 c\xF4ng tr\xECnh L\u0103ng Ch\u1EE7 t\u1ECBch H\u1ED3 Ch\xED Minh',
+    category: "cultural-heritage",
+    categoryLabel: "Di s\u1EA3n v\xE0 t\xE1c ph\u1EA9m v\u0103n h\xF3a ngh\u1EC7 thu\u1EADt",
+    authorOrSource: "NXB Qu\xE2n \u0111\u1ED9i Nh\xE2n d\xE2n, NXB Tr\u1EBB & T\u1EE7 s\xE1ch \u0111i\u1EC7n t\u1EED hochiminh.vn",
+    dateOrEra: "1969 - 1975 & Hi\u1EC7n nay",
+    status: "APPROVED",
+    isAllowedForRag: true,
+    topics: ["L\u0103ng Ch\u1EE7 t\u1ECBch H\u1ED3 Ch\xED Minh", "Gi\u1EEF y\xEAn gi\u1EA5c ng\u1EE7 c\u1EE7a Ng\u01B0\u1EDDi", "B\u1ED9 T\u01B0 l\u1EC7nh B\u1EA3o v\u1EC7 L\u0103ng", "Khu K84 \u0110\xE1 Ch\xF4ng", "Qu\u1EA3ng tr\u01B0\u1EDDng Ba \u0110\xECnh", "\u0110\u1ECBa ch\u1EC9 \u0111\u1ECF thi\xEAng li\xEAng"],
+    sourceUrl: "https://hochiminh.vn/book/tac-pham-ve-ho-chi-minh/tac-pham-trong-nuoc/giu-yen-giac-ngu-cua-nguoi-483",
+    content: `1. B\u1ED0I C\u1EA2NH L\u1ECACH S\u1EEC TH\xC1NG 9 N\u0102M 1969 V\xC0 QUY\u1EBET \u0110\u1ECANH L\u1ECACH S\u1EEC C\u1EE6A \u0110\u1EA2NG:
+Ng\xE0y 2 th\xE1ng 9 n\u0103m 1969, Ch\u1EE7 t\u1ECBch H\u1ED3 Ch\xED Minh - v\u1ECB l\xE3nh t\u1EE5 k\xEDnh y\xEAu c\u1EE7a d\xE2n t\u1ED9c Vi\u1EC7t Nam qua \u0111\u1EDDi.
+\u0110\xE1p \u1EE9ng nguy\u1EC7n v\u1ECDng thi\u1EBFt tha, thi\xEAng li\xEAng c\u1EE7a to\xE0n \u0110\u1EA3ng, to\xE0n qu\xE2n, to\xE0n d\xE2n c\u1EA3 n\u01B0\u1EDBc, \u0111\u1EB7c bi\u1EC7t l\xE0 \u0111\u1ED3ng b\xE0o chi\u1EBFn s\u0129 mi\u1EC1n Nam ru\u1ED9t th\u1ECBt \u0111ang trong kh\xF3i l\u1EEDa kh\xE1ng chi\u1EBFn kh\xE1t khao ng\xE0y th\u1ED1ng nh\u1EA5t \u0111\u01B0\u1EE3c g\u1EB7p B\xE1c, B\u1ED9 Ch\xEDnh tr\u1ECB v\xE0 Trung \u01B0\u01A1ng \u0110\u1EA3ng \u0111\xE3 quy\u1EBFt \u0111\u1ECBnh:
+"Ph\u1EA3i gi\u1EEF g\xECn l\xE2u d\xE0i thi h\xE0i B\xE1c H\u1ED3 v\xE0 x\xE2y d\u1EF1ng L\u0103ng c\u1EE7a Ng\u01B0\u1EDDi t\u1EA1i Qu\u1EA3ng tr\u01B0\u1EDDng Ba \u0110\xECnh l\u1ECBch s\u1EED \u0111\u1EC3 nh\xE2n d\xE2n c\u1EA3 n\u01B0\u1EDBc v\xE0 b\u1EA7u b\u1EA1n qu\u1ED1c t\u1EBF m\xE3i m\xE3i \u0111\u01B0\u1EE3c \u0111\u1EBFn vi\u1EBFng Ng\u01B0\u1EDDi".
+
+2. K\u1EF2 T\xCDCH GI\u1EEE G\xCCN B\u1EA2O V\u1EC6 TUY\u1EC6T \u0110\u1ED0I AN TO\xC0N THI H\xC0I B\xC1C TRONG CHI\u1EBEN TRANH:
+- \u0110\u1ED9i ng\u0169 c\xE1n b\u1ED9 y t\u1EBF, chi\u1EBFn s\u0129 c\xF4ng binh \u0110o\xE0n 69 (ti\u1EC1n th\xE2n c\u1EE7a B\u1ED9 T\u01B0 l\u1EC7nh B\u1EA3o v\u1EC7 L\u0103ng) ph\u1ED1i h\u1EE3p ch\u1EB7t ch\u1EBD v\u1EDBi c\xE1c chuy\xEAn gia y h\u1ECDc h\xE0ng \u0111\u1EA7u c\u1EE7a Li\xEAn X\xF4 th\u1EF1c hi\u1EC7n nhi\u1EC7m v\u1EE5 b\u1EA3o qu\u1EA3n y t\u1EBF thi h\xE0i B\xE1c.
+- Trong \u0111i\u1EC1u ki\u1EC7n m\xE1y bay M\u1EF9 leo thang n\xE9m bom ph\xE1 ho\u1EA1i mi\u1EC1n B\u1EAFc d\u1EEF d\u1ED9i, thi h\xE0i B\xE1c \u0111\xE3 \u0111\u01B0\u1EE3c di chuy\u1EC3n tuy\u1EC7t m\u1EADt, v\u01B0\u1EE3t qua hi\u1EC3m nguy qua 6 l\u1EA7n s\u01A1 t\xE1n gi\u1EEFa c\xE1c c\u0103n c\u1EE9:
+  + C\xF4ng tr\xECnh 75A (B\u1EC7nh vi\u1EC7n Trung \u01B0\u01A1ng Qu\xE2n \u0111\u1ED9i 108).
+  + C\u0103n c\u1EE9 K84 (Khu c\u0103n c\u1EE9 \u0110\xE1 Ch\xF4ng, Ba V\xEC, H\xE0 N\u1ED9i).
+  + C\u0103n c\u1EE9 H21 v\xE0 c\xE1c hang \u0111\xE1 an to\xE0n ven r\u1EEBng n\xFAi.
+M\u1ED7i chuy\u1EBFn h\xE0nh qu\xE2n di chuy\u1EC3n thi h\xE0i B\xE1c \u0111\u1EC1u l\xE0 m\u1ED9t chi\u1EBFn c\xF4ng th\u1EA7m l\u1EB7ng, k\u1EF3 c\xF4ng v\xE0 chan ch\u1EE9a n\u01B0\u1EDBc m\u1EAFt c\u1EE7a c\xE1n b\u1ED9, chi\u1EBFn s\u0129.
+
+3. X\xC2Y D\u1EF0NG C\xD4NG TR\xCCNH L\u0102NG CH\u1EE6 T\u1ECACH H\u1ED2 CH\xCD MINH:
+- Kh\u1EDFi c\xF4ng ng\xE0y 2 th\xE1ng 9 n\u0103m 1973 v\xE0 long tr\u1ECDng kh\xE1nh th\xE0nh ng\xE0y 29 th\xE1ng 8 n\u0103m 1975 t\u1EA1i Qu\u1EA3ng tr\u01B0\u1EDDng Ba \u0110\xECnh l\u1ECBch s\u1EED.
+- C\xF4ng tr\xECnh l\xE0 bi\u1EC3u t\u01B0\u1EE3ng h\u1ED9i t\u1EE5 tinh hoa v\xE0 t\xECnh c\u1EA3m c\u1EE7a c\u1EA3 non s\xF4ng: \u0110\xE1 hoa c\u01B0\u01A1ng t\u1EEB Thanh H\xF3a, \u0111\xE1 c\u1EA9m th\u1EA1ch Ng\u0169 H\xE0nh S\u01A1n (\u0110\xE0 N\u1EB5ng), g\u1ED7 qu\xFD T\xE2y Nguy\xEAn, c\xE1t t\u1EEB s\xF4ng H\u1ED3ng v\xE0 ph\xF9 sa \u0111\u1EA5t M\u0169i C\xE0 Mau... c\xF9ng h\xE0ng v\u1EA1n c\xE2y xanh qu\xFD gi\xE1 t\u1EEB kh\u1EAFp c\xE1c mi\u1EC1n qu\xEA \u0111\u01B0\u1EE3c g\u1EEDi v\u1EC1 h\u1ED9i t\u1EE5 b\xEAn L\u0103ng B\xE1c.
+
+4. GI\xC1 TR\u1ECA GI\xC1O D\u1EE4C TRUY\u1EC0N TH\u1ED0NG "U\u1ED0NG N\u01AF\u1EDAC NH\u1EDA NGU\u1ED2N":
+- L\u0103ng B\xE1c v\xE0 Qu\u1EA3ng tr\u01B0\u1EDDng Ba \u0110\xECnh l\xE0 \u0110\u1ECBa ch\u1EC9 \u0111\u1ECF thi\xEAng li\xEAng b\u1EADc nh\u1EA5t c\u1EE7a d\xE2n t\u1ED9c Vi\u1EC7t Nam.
+- Gi\xE1o d\u1EE5c h\u1ECDc sinh l\xF2ng bi\u1EBFt \u01A1n s\xE2u s\u1EAFc \u0111\u1ED1i v\u1EDBi c\xF4ng lao tr\u1EDDi bi\u1EC3n c\u1EE7a B\xE1c H\u1ED3 v\xE0 s\u1EF1 hy sinh to l\u1EDBn c\u1EE7a c\xE1c th\u1EBF h\u1EC7 cha anh \u0111i tr\u01B0\u1EDBc.
+- Kh\u01A1i d\u1EADy \xFD th\u1EE9c ph\u1EA5n \u0111\u1EA5u r\xE8n luy\u1EC7n, s\u1ED1ng x\u1EE9ng \u0111\xE1ng v\u1EDBi ni\u1EC1m tin y\xEAu m\xE0 B\xE1c \u0111\xE3 trao tr\u1ECDn cho th\u1EBF h\u1EC7 t\u01B0\u01A1ng lai.`,
+    metadata: {
+      batch: "BATCH_D_HOCHIMINH_VN_EXPANSION",
+      bookId: 483,
+      pdfUrl: "https://hochiminh.vn/upload/3000001/20251024/a3e23ccabaa80672d9956924ce57dd13Giu-yen-giac-ngu-cua-nguoi.pdf",
+      publisher: "NXB Qu\xE2n \u0111\u1ED9i Nh\xE2n d\xE2n & hochiminh.vn"
+    }
+  },
+  {
+    id: "DOC-HCM-046",
+    title: 'T\xE1c ph\u1EA9m "B\u1EA3n \xE1n ch\u1EBF \u0111\u1ED9 th\u1EF1c d\xE2n Ph\xE1p" (1925) \u2013 \u0110\xF2n s\u1EA5m s\xE9t ch\xEDnh lu\u1EADn v\u1EA1ch tr\u1EA7n t\u1ED9i \xE1c c\u1EE7a ch\u1EE7 ngh\u0129a th\u1EF1c d\xE2n',
+    category: "cultural-heritage",
+    categoryLabel: "Di s\u1EA3n v\xE0 t\xE1c ph\u1EA9m v\u0103n h\xF3a ngh\u1EC7 thu\u1EADt",
+    authorOrSource: "Nguy\u1EC5n \xC1i Qu\u1ED1c - Th\u01B0 qu\xE1n Lao \u0111\u1ED9ng Paris (1925), NXB S\u1EF1 th\u1EADt t\xE1i b\u1EA3n & hochiminh.vn",
+    dateOrEra: "1925",
+    status: "APPROVED",
+    isAllowedForRag: true,
+    topics: ["B\u1EA3n \xE1n ch\u1EBF \u0111\u1ED9 th\u1EF1c d\xE2n Ph\xE1p", "Nguy\u1EC5n \xC1i Qu\u1ED1c", "Paris 1925", "Le Proc\xE8s de la colonisation fran\xE7aise", "Thu\u1EBF m\xE1u", "G\u1EEDi thanh ni\xEAn An Nam"],
+    sourceUrl: "https://hochiminh.vn/tu-sach-dien-tu-ho-chi-minh?categoryId=3000402",
+    content: `1. B\u1ED0I C\u1EA2NH RA \u0110\u1EDCI C\u1EE6A T\xC1C PH\u1EA8M CH\xCDNH LU\u1EACN N\u0102M 1925:
+N\u0103m 1925, t\xE1c ph\u1EA9m "B\u1EA3n \xE1n ch\u1EBF \u0111\u1ED9 th\u1EF1c d\xE2n Ph\xE1p" (nguy\xEAn b\u1EA3n ti\u1EBFng Ph\xE1p: "Le Proc\xE8s de la colonisation fran\xE7aise") c\u1EE7a \u0111\u1ED3ng ch\xED Nguy\u1EC5n \xC1i Qu\u1ED1c \u0111\u01B0\u1EE3c xu\u1EA5t b\u1EA3n l\u1EA7n \u0111\u1EA7u ti\xEAn t\u1EA1i Paris b\u1EDFi Th\u01B0 qu\xE1n Lao \u0111\u1ED9ng (Librairie du Travail).
+T\xE1c ph\u1EA9m g\u1ED3m 12 ch\u01B0\u01A1ng v\xE0 m\u1ED9t ph\u1EA7n Ph\u1EE5 l\u1EE5c n\u1ED5i ti\u1EBFng: "G\u1EEDi thanh ni\xEAn An Nam".
+\u0110\xE2y l\xE0 b\u1EA3n c\xE1o tr\u1EA1ng \u0111anh th\xE9p, mang t\xEDnh khoa h\u1ECDc v\xE0 th\u1EF1c ti\u1EC5n s\xE2u s\u1EAFc, v\u1EA1ch tr\u1EA7n to\xE0n b\u1ED9 b\u1EA3n ch\u1EA5t d\xE3 man, t\xE0n b\u1EA1o, phi nh\xE2n \u0111\u1EA1o c\u1EE7a ch\u1EBF \u0111\u1ED9 th\u1ED1ng tr\u1ECB th\u1EF1c d\xE2n Ph\xE1p t\u1EA1i \u0110\xF4ng D\u01B0\u01A1ng v\xE0 c\xE1c thu\u1ED9c \u0111\u1ECBa kh\xE1c tr\xEAn th\u1EBF gi\u1EDBi.
+
+2. C\xC1C N\u1ED8I DUNG CH\xCDNH Y\u1EBEU V\xC0 \u0110\xD2N \u0110\xC1NH CH\xCDNH LU\u1EACN S\u1EAEC B\xC9N:
+- Ch\u01B0\u01A1ng 1: "Thu\u1EBF m\xE1u" - V\u1EA1ch tr\u1EA7n s\u1EF1 d\u1ED1i tr\xE1 c\u1EE7a chi\xEAu b\xE0i "m\u1EB9 m\u1EABu qu\u1ED1c b\u1EA3o h\u1ED9", \u0111\u1EA9y h\xE0ng v\u1EA1n ng\u01B0\u1EDDi d\xE2n b\u1EA3n x\u1EE9 v\xF4 t\u1ED9i sang ch\xE2u \xC2u l\xE0m bia \u0111\u1EE1 \u0111\u1EA1n cho th\u1EF1c d\xE2n Ph\xE1p trong Chi\u1EBFn tranh th\u1EBF gi\u1EDBi th\u1EE9 nh\u1EA5t (1914 - 1918).
+- C\xE1c ch\u01B0\u01A1ng ti\u1EBFp theo v\u1EA1ch tr\u1EA7n t\u1ED9i \xE1c: \xC1p \u0111\u1EB7t s\u01B0u cao thu\u1EBF n\u1EB7ng; \u0111\u1EA7u \u0111\u1ED9c ng\u01B0\u1EDDi d\xE2n b\u1EB1ng vi\u1EC7c \u0111\u1ED9c quy\u1EC1n bu\xF4n b\xE1n thu\u1ED1c phi\u1EC7n v\xE0 r\u01B0\u1EE3u c\u1ED3n; thi h\xE0nh ch\xEDnh s\xE1ch ngu d\xE2n \u0111\u1EC3 d\u1EC5 b\u1EC1 \xE1p b\u1EE9c; \u0111\xE0n \xE1p d\xE3 man c\xE1c cu\u1ED9c n\u1ED5i d\u1EADy y\xEAu n\u01B0\u1EDBc.
+- Ph\u1EA7n Ph\u1EE5 l\u1EE5c "G\u1EEDi thanh ni\xEAn An Nam": L\u1EDDi hi\u1EC7u tri\u1EC7u lay \u0111\u1ED9ng h\xE0ng tri\u1EC7u tr\xE1i tim tu\u1ED5i tr\u1EBB:
+"H\u1EE1i thanh ni\xEAn An Nam!... C\xE1c b\u1EA1n h\xE3y nh\xECn th\u1EB3ng v\xE0o s\u1EF1 th\u1EADt... H\xE3y t\u1EF1 gi\u1EA3i ph\xF3ng m\xECnh b\u1EB1ng con \u0111\u01B0\u1EDDng c\xE1ch m\u1EA1ng!".
+
+3. GI\xC1 TR\u1ECA L\u1ECACH S\u1EEC V\xC0 T\u01AF T\u01AF\u1EDENG C\u1EE6A T\xC1C PH\u1EA8M:
+- L\xE0 v\u0169 kh\xED l\xFD lu\u1EADn s\u1EAFc b\xE9n chu\u1EA9n b\u1ECB v\u1EC1 m\u1EB7t ch\xEDnh tr\u1ECB v\xE0 t\u01B0 t\u01B0\u1EDFng cho s\u1EF1 ra \u0111\u1EDDi c\u1EE7a \u0110\u1EA3ng C\u1ED9ng s\u1EA3n Vi\u1EC7t Nam v\xE0o m\xF9a xu\xE2n n\u0103m 1930.
+- Kh\u1EB3ng \u0111\u1ECBnh m\u1ED1i quan h\u1EC7 kh\u0103ng kh\xEDt gi\u1EEFa c\xE1ch m\u1EA1ng gi\u1EA3i ph\xF3ng d\xE2n t\u1ED9c \u1EDF thu\u1ED9c \u0111\u1ECBa v\u1EDBi c\xE1ch m\u1EA1ng v\xF4 s\u1EA3n \u1EDF ch\xEDnh qu\u1ED1c; nh\u1EA5n m\u1EA1nh c\xF4ng cu\u1ED9c gi\u1EA3i ph\xF3ng d\xE2n t\u1ED9c ph\u1EA3i do ch\xEDnh nh\xE2n d\xE2n thu\u1ED9c \u0111\u1ECBa t\u1EF1 \u0111\u1EE9ng l\xEAn gi\xE0nh l\u1EA5y.
+
+4. B\xC0I H\u1ECCC GI\xC1O D\u1EE4C TRUY\u1EC0N TH\u1ED0NG Y\xCAU N\u01AF\u1EDAC CHO H\u1ECCC SINH THCS:
+- Gi\xFAp h\u1ECDc sinh th\u1EA5u hi\u1EC3u s\xE2u s\u1EAFc nh\u1EEFng n\u1ED7i \u0111au th\u01B0\u01A1ng, m\u1EA5t m\xE1t v\xE0 \xE1p b\u1EE9c b\xF3c l\u1ED9t c\xF9ng c\u1EF1c m\xE0 d\xE2n t\u1ED9c ta \u0111\xE3 ph\u1EA3i g\xE1nh ch\u1ECBu d\u01B0\u1EDBi \xE1ch \u0111\xF4 h\u1ED9 c\u1EE7a ngo\u1EA1i bang.
+- B\u1ED3i d\u01B0\u1EE1ng l\xF2ng c\u0103m th\xF9 \xE1p b\u1EE9c b\u1EA5t c\xF4ng, n\xE2ng cao \xFD th\u1EE9c tr\xE2n tr\u1ECDng \u0111\u1ED9c l\u1EADp, t\u1EF1 do v\xE0 h\xF2a b\xECnh h\xF4m nay.
+- H\u1ECDc t\u1EADp ngh\u1EC7 thu\u1EADt h\xE0nh v\u0103n ch\xEDnh lu\u1EADn kh\xFAc chi\u1EBFt, gi\xE0u d\u1EABn ch\u1EE9ng th\xE9p v\xE0 ng\u1ECDn l\u1EEDa nhi\u1EC7t huy\u1EBFt v\xEC \u0111\u1ED9c l\u1EADp d\xE2n t\u1ED9c c\u1EE7a Nguy\u1EC5n \xC1i Qu\u1ED1c.`,
+    metadata: {
+      batch: "BATCH_D_HOCHIMINH_VN_EXPANSION",
+      publicationYear: 1925,
+      originalLanguage: "Ti\u1EBFng Ph\xE1p (Le Proc\xE8s de la colonisation fran\xE7aise)",
+      publisher: "Th\u01B0 qu\xE1n Lao \u0111\u1ED9ng Paris (1925) & hochiminh.vn"
+    }
+  },
   // Security Canary test document: PENDING_REVIEW & isAllowedForRag: false
   // Must NEVER be returned by retrieval engine!
   {
@@ -1805,6 +2460,9 @@ async function computeSha256(text) {
     const hashArray = Array.from(new Uint8Array(hashBuffer));
     return hashArray.map((b) => b.toString(16).padStart(2, "0")).join("").toUpperCase();
   }
+  return computeSha256Sync(text);
+}
+function computeSha256Sync(text) {
   let h1 = 3735928559, h2 = 1103547991;
   for (let i = 0; i < text.length; i++) {
     const ch = text.charCodeAt(i);
@@ -1818,6 +2476,45 @@ async function computeSha256(text) {
   const p1 = (h1 >>> 0).toString(16).padStart(8, "0");
   const p2 = (h2 >>> 0).toString(16).padStart(8, "0");
   return `${p1}${p2}${p1}${p2}${p1}${p2}${p1}${p2}`.toUpperCase().substring(0, 64);
+}
+function seedInitialDocumentsSync() {
+  const initialDocs = [];
+  for (const doc of SAMPLE_HCM_DOCUMENTS) {
+    const checksum = computeSha256Sync(doc.content);
+    let docType = "article";
+    if (doc.id === "DOC-HCM-001" || doc.id === "DOC-HCM-008") docType = "speech";
+    else if (doc.id === "DOC-HCM-003") docType = "letter";
+    else if (doc.id === "DOC-HCM-002" || doc.id === "DOC-HCM-006" || doc.id === "DOC-HCM-007") docType = "book";
+    else if (doc.id === "DOC-HCM-004") docType = "instruction";
+    else if (doc.id === "DOC-HCM-013" || doc.id === "DOC-HCM-015") docType = "official_dispatch";
+    else if (doc.id === "DOC-HCM-011" || doc.id === "DOC-HCM-012") docType = "archive";
+    initialDocs.push({
+      documentId: doc.id,
+      title: doc.title,
+      description: doc.metadata?.historicalSignificance || doc.title,
+      documentType: docType,
+      category: doc.category,
+      author: doc.authorOrSource,
+      publisher: doc.metadata?.volume || "H\u1ED9i \u0111\u1ED3ng Khoa h\u1ECDc B\u1EA3o t\xE0ng H\u1ED3 Ch\xED Minh",
+      sourceUrl: doc.sourceUrl || "",
+      originalFileName: `${doc.id.toLowerCase()}.md`,
+      mimeType: "text/markdown",
+      checksum,
+      fileSize: doc.content.length,
+      createdAt: "2026-11-14T00:00:00.000Z",
+      updatedAt: "2026-11-14T00:00:00.000Z",
+      approvalStatus: doc.status,
+      isAllowedForRag: doc.isAllowedForRag,
+      version: 1,
+      approvedBy: doc.status === "APPROVED" ? "H\u1ED9i \u0111\u1ED3ng Th\u1EA9m \u0111\u1ECBnh THCS Nguy\u1EC5n Trung Tr\u1EF1c" : void 0,
+      approvedAt: doc.status === "APPROVED" ? "2026-11-14T00:00:00.000Z" : void 0,
+      topics: doc.topics,
+      content: doc.content,
+      chunksCount: 0,
+      metadata: doc.metadata
+    });
+  }
+  return initialDocs;
 }
 async function seedInitialDocuments() {
   const initialDocs = [];
@@ -1864,11 +2561,26 @@ var DocumentRegistry = class {
   // checksum -> documentId
   categories = [...HCM_STANDARD_CATEGORIES];
   isInitialized = false;
+  constructor() {
+    this.seedSync();
+  }
   /**
-   * Initialize registry with seeds
+   * Synchronously seed initial corpus so that documents are immediately available upon instantiation
+   */
+  seedSync() {
+    if (this.documents.size > 0) return;
+    const initialDocs = seedInitialDocumentsSync();
+    for (const doc of initialDocs) {
+      this.documents.set(doc.documentId, doc);
+      this.checksumIndex.set(doc.checksum, doc.documentId);
+    }
+  }
+  /**
+   * Initialize registry with seeds (Async with SubtleCrypto if available)
    */
   async initialize() {
     if (this.isInitialized) return;
+    this.seedSync();
     const seeds = await seedInitialDocuments();
     for (const doc of seeds) {
       this.documents.set(doc.documentId, doc);
@@ -1880,6 +2592,9 @@ var DocumentRegistry = class {
    * Get all registered documents
    */
   getAllDocuments(statusFilter) {
+    if (this.documents.size === 0) {
+      this.seedSync();
+    }
     const all = Array.from(this.documents.values());
     if (statusFilter) {
       return all.filter((d) => d.approvalStatus === statusFilter);
@@ -1890,6 +2605,9 @@ var DocumentRegistry = class {
    * Get approved documents allowed for RAG retrieval
    */
   getApprovedRagDocuments() {
+    if (this.documents.size === 0) {
+      this.seedSync();
+    }
     return Array.from(this.documents.values()).filter(
       (d) => d.approvalStatus === "APPROVED" && d.isAllowedForRag === true
     );
@@ -1917,6 +2635,9 @@ var DocumentRegistry = class {
    * Find document by ID
    */
   getDocumentById(docId) {
+    if (this.documents.size === 0) {
+      this.seedSync();
+    }
     return this.documents.get(docId);
   }
   /**
@@ -2342,12 +3063,27 @@ var PersistenceError = class extends Error {
 };
 var PersistentRagStore = class {
   isSupabaseLive = false;
+  isStoreInitialized = false;
+  initPromise = null;
   localChunks = /* @__PURE__ */ new Map();
   // documentId -> DocumentChunk[]
   localFeedbacks = [];
   localRetrievalLogs = [];
   constructor() {
     this.isSupabaseLive = isSupabaseConfigured;
+  }
+  /**
+   * Safe auto-initialization guard (idempotent)
+   */
+  async ensureInitialized() {
+    if (this.isStoreInitialized) return;
+    if (!this.initPromise) {
+      this.initPromise = (async () => {
+        await this.initialize();
+        this.isStoreInitialized = true;
+      })();
+    }
+    await this.initPromise;
   }
   /**
    * Initialize store and sync with document registry
@@ -2372,6 +3108,7 @@ var PersistentRagStore = class {
         this.isSupabaseLive = false;
       }
     }
+    this.isStoreInitialized = true;
   }
   /**
    * Helper to strip internal administrative IDs from public outputs
@@ -2387,6 +3124,7 @@ var PersistentRagStore = class {
    * Retrieve all documents (with optional approval status filter and public privacy gate)
    */
   async getDocuments(statusFilter, publicOnly = false) {
+    await this.ensureInitialized();
     let rawDocs = [];
     if (this.isSupabaseLive) {
       try {
@@ -2416,6 +3154,7 @@ var PersistentRagStore = class {
    * Retrieve a single document by ID (with public privacy gate)
    */
   async getDocumentById(docId, publicOnly = false) {
+    await this.ensureInitialized();
     let doc;
     if (this.isSupabaseLive) {
       try {
@@ -2550,6 +3289,7 @@ var PersistentRagStore = class {
    * Update document approval status (Four-Eyes governance)
    */
   async updateDocumentStatus(docId, newStatus, operatorName, rejectionReason, operatorId) {
+    await this.ensureInitialized();
     let updatedDoc;
     if (newStatus === "APPROVED") {
       updatedDoc = documentRegistry.approveDocument(docId, operatorName, operatorId);
@@ -2564,23 +3304,56 @@ var PersistentRagStore = class {
       doc.isAllowedForRag = false;
       updatedDoc = doc;
     }
+    if (!this.localChunks.has(docId)) {
+      const chunks2 = documentIngestion.reprocessDocument(updatedDoc);
+      this.localChunks.set(docId, chunks2);
+    }
     const chunks = this.localChunks.get(docId) || [];
     for (const c of chunks) {
       c.sourceStatus = newStatus;
     }
     if (this.isSupabaseLive) {
       try {
-        await supabase.from("rag_documents").update({
+        await supabase.from("rag_documents").upsert({
+          document_id: updatedDoc.documentId,
+          title: updatedDoc.title,
+          description: updatedDoc.description,
+          document_type: updatedDoc.documentType,
+          category: updatedDoc.category,
+          author: updatedDoc.author,
+          publisher: updatedDoc.publisher,
+          source_url: updatedDoc.sourceUrl,
+          original_file_name: updatedDoc.originalFileName,
+          mime_type: updatedDoc.mimeType,
+          checksum: updatedDoc.checksum,
+          file_size: updatedDoc.fileSize,
           approval_status: updatedDoc.approvalStatus,
           is_allowed_for_rag: updatedDoc.isAllowedForRag,
+          version: updatedDoc.version,
           approved_by: updatedDoc.approvedBy,
           approved_at: updatedDoc.approvedAt,
           rejection_reason: updatedDoc.rejectionReason,
+          topics: updatedDoc.topics,
+          content: updatedDoc.content,
+          chunks_count: chunks.length,
+          metadata: updatedDoc.metadata || {},
           updated_at: updatedDoc.updatedAt
-        }).eq("document_id", docId);
-        await supabase.from("rag_document_chunks").update({
-          source_status: updatedDoc.approvalStatus
-        }).eq("document_id", docId);
+        });
+        if (chunks.length > 0) {
+          const dbChunks = chunks.map((c) => ({
+            chunk_id: c.id,
+            document_id: c.documentId,
+            document_title: c.documentTitle,
+            content: c.content,
+            section_or_page: c.sectionOrPage,
+            topic: c.topic,
+            source_status: updatedDoc.approvalStatus,
+            provenance_locator: c.provenanceLocator,
+            token_estimate: c.tokenEstimate || 0,
+            metadata: c.metadata || {}
+          }));
+          await supabase.from("rag_document_chunks").upsert(dbChunks);
+        }
       } catch (err) {
         console.warn("[PersistentRagStore] Supabase status update error:", err);
       }
@@ -2607,6 +3380,13 @@ var PersistentRagStore = class {
    * Get chunks for a specific document
    */
   getChunksByDocumentId(docId) {
+    if (!this.localChunks.has(docId)) {
+      const doc = documentRegistry.getDocumentById(docId);
+      if (doc) {
+        const chunks = documentIngestion.reprocessDocument(doc);
+        this.localChunks.set(docId, chunks);
+      }
+    }
     return this.localChunks.get(docId) || [];
   }
   /**

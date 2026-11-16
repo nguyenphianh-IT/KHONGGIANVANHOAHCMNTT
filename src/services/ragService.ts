@@ -280,22 +280,40 @@ export class RagService {
         body: JSON.stringify({ action, reason })
       });
 
-      const json = await response.json();
-      if (json.success && json.data) {
-        return {
-          success: true,
-          document: json.data.document
-        };
+      if (response.ok) {
+        const json = await response.json();
+        if (json.success && json.data) {
+          // Sync client local storage state as well
+          await persistentRagStore.ensureInitialized();
+          await persistentRagStore.updateDocumentStatus(
+            docId,
+            action === 'approve' ? 'APPROVED' : 'REJECTED',
+            userRole === 'super_admin' ? 'Quản Trị Viên Tối Cao' : 'Cán Bộ Quản Trị',
+            reason
+          );
+          return {
+            success: true,
+            document: json.data.document
+          };
+        }
+      } else {
+        const errJson = await response.json().catch(() => ({}));
+        // If 403 (explicit governance rejection like Four-Eyes principle), bubble up the error immediately
+        if (response.status === 403) {
+          return {
+            success: false,
+            error: errJson.error || 'Vi phạm nguyên tắc Phê duyệt 4 mắt: Không được phép duyệt tài liệu này.'
+          };
+        }
+        console.warn(`[RagService] Approve API returned ${response.status}, falling back to local persistent store:`, errJson);
       }
-      return {
-        success: false,
-        error: json.error || 'Lỗi phê duyệt tài liệu'
-      };
     } catch (err: any) {
-      console.warn('[RagService] Approve API failed, updating locally:', err);
+      console.warn('[RagService] Approve API network error, updating locally:', err);
     }
 
+    // Seamless Local Fallback for offline or client-cached state
     try {
+      await persistentRagStore.ensureInitialized();
       const newStatus = action === 'approve' ? 'APPROVED' : 'REJECTED';
       const updated = await persistentRagStore.updateDocumentStatus(
         docId,
@@ -307,7 +325,7 @@ export class RagService {
       ragRuntime.reindex(allApprovedChunks);
       return { success: true, document: updated };
     } catch (e: any) {
-      return { success: false, error: e?.message || 'Lỗi cục bộ' };
+      return { success: false, error: e?.message || 'Lỗi xử lý phê duyệt tài liệu' };
     }
   }
 
