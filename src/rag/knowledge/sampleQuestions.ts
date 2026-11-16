@@ -130,7 +130,7 @@ export const SAMPLE_QUESTIONS_MAP: Record<string, SampleQuestion[]> = {
     { questionId: 'Q-035-5', question: 'Học sinh Trường THCS Nguyễn Trung Trực tự hào và kế thừa khí phách người anh hùng mang tên trường bằng những việc làm gì?' }
   ],
   'DOC-HCM-036': [
-    { questionId: 'Q-036-1', question: 'Di tích lịch sử Khu tưởng niệm Vườn Cau Đỏ tọa lạc tại địa chỉ nào và gắn liền với các vùng đất nào của Quận 12?' },
+    { questionId: 'Q-036-1', question: 'Di tích lịch sử Khu tưởng niệm Vườn Cau Đỏ tọa lạc tại địa chỉ nào và gắn liền với truyền thống lịch sử của các vùng đất nào tại Thành phố Hồ Chí Minh?' },
     { questionId: 'Q-036-2', question: 'Nguồn gốc tên gọi "Vườn Cau Đỏ" bắt nguồn từ đâu và chữ "ĐỎ" mang tầng ý nghĩa thiêng liêng nào đối với lịch sử cách mạng địa phương?' },
     { questionId: 'Q-036-3', question: 'Sự kiện lịch sử thành lập Chiến khu An Phú Đông ngày 25/12/1945 tại Vườn Cau Đỏ có ý nghĩa then chốt như thế nào?' },
     { questionId: 'Q-036-4', question: 'Vai trò "căn cứ lõm" độc đáo của Vườn Cau Đỏ trong việc nuôi giấu bộ đội chuẩn bị bàn đạp cho chiến dịch Mậu Thân 1968 và Chiến dịch Hồ Chí Minh 1975?' },

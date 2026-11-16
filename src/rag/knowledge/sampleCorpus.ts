@@ -1063,7 +1063,7 @@ Thơ chúc Tết của Bác Hồ là di sản văn hóa tinh thần vô giá c�
     title: 'Anh hùng dân tộc Nguyễn Trung Trực – Thân thế, khí tiết và tấm gương trung dũng',
     category: 'hcmc-history',
     categoryLabel: 'Lịch sử Thành phố Hồ Chí Minh',
-    authorOrSource: 'Hội Khoa học Lịch sử Việt Nam & Ban Tuyên giáo Quận 12',
+    authorOrSource: 'Hội Khoa học Lịch sử Việt Nam & Ban Tuyên giáo địa phương',
     dateOrEra: '1838 - 1868',
     status: 'APPROVED',
     isAllowedForRag: true,
@@ -1084,7 +1084,7 @@ Sau đó, giặc Pháp tập trung binh lực đàn áp khốc liệt và bắt 
 Ngày 27 tháng 10 năm 1868, người anh hùng Nguyễn Trung Trực đã hiên ngang đón nhận cái chết tại chợ Rạch Giá khi mới tròn 30 tuổi.
 
 4. NIỀM TỰ HÀO CỦA TRƯỜNG THCS NGUYỄN TRUNG TRỰC:
-Được học tập và rèn luyện dưới mái trường vinh dự mang tên Anh hùng dân tộc Nguyễn Trung Trực tại Quận 12, mỗi học sinh luôn khắc ghi truyền thống bất khuất của Người anh hùng áo vải, không ngừng trau dồi tri thức, rèn luyện phẩm chất để trở thành những công dân có ích, xứng đáng với truyền thống vẻ vang của dân tộc.`,
+Được học tập và rèn luyện dưới mái trường vinh dự mang tên Anh hùng dân tộc Nguyễn Trung Trực tại Phường Thới An, Thành phố Hồ Chí Minh, mỗi học sinh luôn khắc ghi truyền thống bất khuất của Người anh hùng áo vải, không ngừng trau dồi tri thức, rèn luyện phẩm chất để trở thành những công dân có ích, xứng đáng với truyền thống vẻ vang của dân tộc.`,
     metadata: {
       batch: 'BATCH_C_EXPANSION_01',
       schoolPatron: 'Anh hùng dân tộc bảo trợ danh hiệu nhà trường',
@@ -1094,17 +1094,17 @@ Ngày 27 tháng 10 năm 1868, người anh hùng Nguyễn Trung Trực đã hiê
 
   {
     id: 'DOC-HCM-036',
-    title: 'Vườn Cau Đỏ – Di tích lịch sử căn cứ cách mạng kiên cường của quân dân Quận 12',
+    title: 'Vườn Cau Đỏ – Di tích lịch sử căn cứ cách mạng kiên cường',
     category: 'hcmc-history',
     categoryLabel: 'Lịch sử Thành phố Hồ Chí Minh',
-    authorOrSource: 'Ban Tuyên giáo Quận ủy Quận 12 & Trung tâm Văn hóa Quận 12',
+    authorOrSource: 'Tư liệu Lịch sử Đảng bộ & Ban Quản lý Di tích Thành phố Hồ Chí Minh',
     dateOrEra: '1945 - Hiện hành',
     status: 'APPROVED',
     isAllowedForRag: true,
-    topics: ['Vườn Cau Đỏ', 'Căn cứ lõm', 'Chiến khu An Phú Đông', 'Quận 12', 'Thới An', 'Thạnh Xuân', 'Địa chỉ đỏ'],
-    sourceUrl: 'https://quan12.hochiminhcity.gov.vn',
+    topics: ['Vườn Cau Đỏ', 'Căn cứ lõm', 'Chiến khu An Phú Đông', 'Thới An', 'Thạnh Xuân', 'Địa chỉ đỏ', 'Sài Gòn - Gia Định'],
+    sourceUrl: 'https://hcmcpv.org.vn',
     content: `1. VỊ TRÍ ĐỊA LÝ VÀ ĐẶC ĐIỂM TỰ NHIÊN:
-Khu di tích lịch sử - Khu tưởng niệm Vườn Cau Đỏ tọa lạc tại số 12 đường Thạnh Xuân 52, Quận 12, nằm ở vị trí giao thoa truyền thống giữa các vùng đất Thới An, Thạnh Xuân và Thạnh Lộc.
+Khu di tích lịch sử - Khu tưởng niệm Vườn Cau Đỏ tọa lạc tại số 12 đường Thạnh Xuân 52, Thành phố Hồ Chí Minh, nằm ở vị trí giao thoa truyền thống giữa các vùng đất Thới An, Thạnh Xuân và Thạnh Lộc.
 Vùng đất này trước đây là vùng bán đảo trũng thấp ven sông Sài Gòn, kênh rạch chằng chịt, sình lầy hiểm trở, nổi bật với những cánh rừng cau bạt ngàn xen lẫn những vườn trầu xanh ngát của người dân lao động hiền hòa, chất phác.
 
 2. NGUỒN GỐC TÊN GỌI VÀ Ý NGHĨA THIÊNG LIÊNG CỦA CHỮ "ĐỎ":
@@ -1117,7 +1117,7 @@ Vùng đất này trước đây là vùng bán đảo trũng thấp ven sông S
 - Nơi đây là trạm dừng chân, tập kết lực lượng của Trung đoàn Gia Định, bộ đội Gò Môn, E115 chuẩn bị bàn đạp xuất kích tiến công vào các cơ quan đầu não của giặc trong cuộc Tổng tiến công và nổi dậy Xuân Mậu Thân 1968 và Chiến dịch Hồ Chí Minh lịch sử mùa Xuân năm 1975.
 
 4. KHU TƯỞNG NIỆM VƯỜN CAU ĐỎ NGÀY NAY:
-Năm 2010, Đảng bộ và nhân dân Quận 12 đã xây dựng Khu tưởng niệm Vườn Cau Đỏ trang nghiêm với diện tích hơn 4.000 m². Tượng đài trung tâm là hình ảnh biểu tượng hai hàng cau cao vút đan lá vào nhau thể hiện tình quân dân gắn bó keo sơn máu thịt. Di tích là địa chỉ đỏ truyền thống, nơi thầy trò Trường THCS Nguyễn Trung Trực thường xuyên tổ chức các hoạt động về nguồn, báo công dâng Bác và kết nạp Đội viên, Đoàn viên mới.`,
+Năm 2010, Đảng bộ và nhân dân địa phương đã xây dựng Khu tưởng niệm Vườn Cau Đỏ trang nghiêm với diện tích hơn 4.000 m². Tượng đài trung tâm là hình ảnh biểu tượng hai hàng cau cao vút đan lá vào nhau thể hiện tình quân dân gắn bó keo sơn máu thịt. Di tích là địa chỉ đỏ truyền thống, nơi thầy trò Trường THCS Nguyễn Trung Trực thường xuyên tổ chức các hoạt động về nguồn, báo công dâng Bác và kết nạp Đội viên, Đoàn viên mới.`,
     metadata: {
       batch: 'BATCH_C_EXPANSION_01',
       siteArea: 'Hơn 4.000 m2',
@@ -1181,7 +1181,7 @@ Mục tiêu là làm cho tư tưởng, đạo đức, phong cách và sự nghi�
   Ứng dụng mạnh mẽ chuyển đổi số để xây dựng các nền tảng trực tuyến: thư viện số, không gian thực tế ảo 3D, hệ thống trợ lý AI học đường nhằm đưa kho tư liệu quý giá về Bác Hồ đến gần hơn với thế hệ trẻ mọi lúc, mọi nơi.
 
 3. TRÁCH NHIỆM CỦA NGÀNH GIÁO DỤC VÀ NHÀ TRƯỜNG:
-Mỗi trường học trên địa bàn thành phố, trong đó có Trường THCS Nguyễn Trung Trực tại Quận 12, phải là một "Không gian văn hóa Hồ Chí Minh thu nhỏ" sinh động, nơi thầy cô mẫu mực, học trò chăm ngoan, môi trường học đường tràn đầy tình yêu thương, kỷ cương và hạnh phúc.`,
+Mỗi trường học trên địa bàn thành phố, trong đó có Trường THCS Nguyễn Trung Trực tại Phường Thới An, Thành phố Hồ Chí Minh, phải là một "Không gian văn hóa Hồ Chí Minh thu nhỏ" sinh động, nơi thầy cô mẫu mực, học trò chăm ngoan, môi trường học đường tràn đầy tình yêu thương, kỷ cương và hạnh phúc.`,
     metadata: {
       batch: 'BATCH_C_EXPANSION_01',
       congressSession: 'Đại hội Đảng bộ TP.HCM lần thứ XI',
