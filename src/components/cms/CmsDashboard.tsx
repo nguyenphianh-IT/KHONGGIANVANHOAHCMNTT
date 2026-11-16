@@ -511,42 +511,43 @@ export const CmsDashboard: React.FC<CmsDashboardProps> = ({ isOpen, onClose }) =
         {/* ========================================================================= */}
         <div className="flex-grow flex overflow-hidden">
           {/* ----------------------------------------------------------------------- */}
-          {/* LEFT NAVIGATION SIDEBAR (260px)                                         */}
+          {/* LEFT NAVIGATION SIDEBAR (288px - Refined Elegant Layout)                */}
           {/* ----------------------------------------------------------------------- */}
-          <aside className="w-64 bg-heritage-ivory-100 border-r border-heritage-gold-300/60 flex flex-col justify-between flex-shrink-0 z-10 shadow-sm">
+          <aside className="w-72 bg-[#faf7f2] border-r border-heritage-gold-300/60 flex flex-col justify-between flex-shrink-0 z-10 shadow-sm">
             <div className="p-3 space-y-1 overflow-y-auto">
-              <div className="px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-heritage-ink-500 select-none">
-                Quản Trị Biên Tập
+              <div className="pt-1 pb-1.5 px-3 text-[10px] font-extrabold uppercase tracking-wider text-heritage-ink-500 select-none flex items-center justify-between">
+                <span>Quản Trị Biên Tập</span>
+                <span className="w-10 h-px bg-heritage-gold-300/60" />
               </div>
 
               {/* 1. Tổng quan */}
               <button
                 onClick={() => setActiveNav('overview')}
-                className={`w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-xs font-bold transition text-left ${
+                className={`w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all text-left group ${
                   activeNav === 'overview'
-                    ? 'bg-heritage-red-700 text-white shadow-sm'
-                    : 'text-heritage-ink-800 hover:bg-heritage-red-50 hover:text-heritage-red-700'
+                    ? 'bg-gradient-to-r from-heritage-red-800 to-heritage-red-700 text-white shadow-sm border-l-4 border-heritage-gold-400 pl-3'
+                    : 'text-heritage-ink-800 hover:bg-heritage-gold-100/50 hover:text-heritage-red-900 border-l-4 border-transparent pl-3'
                 }`}
               >
-                <LayoutDashboard className="w-4 h-4 flex-shrink-0" />
+                <LayoutDashboard className={`w-4 h-4 flex-shrink-0 ${activeNav === 'overview' ? 'text-heritage-gold-300' : 'text-heritage-gold-600/80 group-hover:text-heritage-red-700'}`} />
                 <span>1. Tổng Quan Điều Hành</span>
               </button>
 
               {/* 2. Quản lý bài viết */}
               <button
                 onClick={() => setActiveNav('articles')}
-                className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold transition text-left ${
+                className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all text-left group ${
                   activeNav === 'articles'
-                    ? 'bg-heritage-red-700 text-white shadow-sm'
-                    : 'text-heritage-ink-800 hover:bg-heritage-red-50 hover:text-heritage-red-700'
+                    ? 'bg-gradient-to-r from-heritage-red-800 to-heritage-red-700 text-white shadow-sm border-l-4 border-heritage-gold-400 pl-3'
+                    : 'text-heritage-ink-800 hover:bg-heritage-gold-100/50 hover:text-heritage-red-900 border-l-4 border-transparent pl-3'
                 }`}
               >
-                <div className="flex items-center space-x-3">
-                  <FileText className="w-4 h-4 flex-shrink-0" />
-                  <span>2. Quản Lý Bài Viết</span>
+                <div className="flex items-center space-x-3 min-w-0 pr-2">
+                  <FileText className={`w-4 h-4 flex-shrink-0 ${activeNav === 'articles' ? 'text-heritage-gold-300' : 'text-heritage-gold-600/80 group-hover:text-heritage-red-700'}`} />
+                  <span className="truncate">2. Quản Lý Bài Viết</span>
                 </div>
-                <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
-                  activeNav === 'articles' ? 'bg-white/20 text-white' : 'bg-heritage-ivory-300 text-heritage-ink-700'
+                <span className={`shrink-0 text-[10px] font-bold px-2 py-0.5 rounded-md whitespace-nowrap transition-colors ${
+                  activeNav === 'articles' ? 'bg-white/20 text-white' : 'bg-heritage-ivory-300/80 text-heritage-ink-700'
                 }`}>
                   {totalCount}
                 </span>
@@ -558,34 +559,42 @@ export const CmsDashboard: React.FC<CmsDashboardProps> = ({ isOpen, onClose }) =
                   setEditingArticle(null);
                   setIsEditing(true);
                 }}
-                className="w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-xs font-bold bg-gradient-to-r from-heritage-gold-400 to-heritage-gold-500 text-heritage-red-950 hover:brightness-105 shadow-sm transition text-left"
+                className="w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold bg-gradient-to-r from-amber-500 via-amber-600 to-amber-500 text-white hover:brightness-105 active:scale-[0.99] shadow-sm transition-all text-left border border-amber-400/50"
               >
-                <PenTool className="w-4 h-4 flex-shrink-0 text-heritage-red-950" />
-                <span>3. Soạn Bản Thảo Mới</span>
+                <div className="flex items-center space-x-3">
+                  <PenTool className="w-4 h-4 flex-shrink-0 text-amber-100" />
+                  <span>3. Soạn Bản Thảo Mới</span>
+                </div>
+                <span className="shrink-0 text-[10px] font-bold px-1.5 py-0.5 rounded bg-white/20 text-white tracking-wide uppercase">
+                  Mới
+                </span>
               </button>
 
-              <div className="my-2 border-t border-heritage-gold-300/40" />
-
-              <div className="px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-heritage-ink-500 select-none">
-                Kiểm Duyệt & Xuất Bản
+              <div className="pt-3 pb-1 px-3 text-[10px] font-extrabold uppercase tracking-wider text-heritage-ink-500 select-none flex items-center justify-between">
+                <span>Kiểm Duyệt & Xuất Bản</span>
+                <span className="w-10 h-px bg-heritage-gold-300/60" />
               </div>
 
               {/* 4. Hàng đợi duyệt 4 mắt */}
               <button
                 onClick={() => setActiveNav('pending')}
-                className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold transition text-left ${
+                className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all text-left group ${
                   activeNav === 'pending'
-                    ? 'bg-heritage-red-700 text-white shadow-sm'
-                    : 'text-heritage-ink-800 hover:bg-heritage-red-50 hover:text-heritage-red-700'
+                    ? 'bg-gradient-to-r from-heritage-red-800 to-heritage-red-700 text-white shadow-sm border-l-4 border-heritage-gold-400 pl-3'
+                    : 'text-heritage-ink-800 hover:bg-heritage-gold-100/50 hover:text-heritage-red-900 border-l-4 border-transparent pl-3'
                 }`}
               >
-                <div className="flex items-center space-x-3">
-                  <Clock className="w-4 h-4 flex-shrink-0" />
-                  <span>4. Hàng Đợi Duyệt 4 Mắt</span>
+                <div className="flex items-center space-x-3 min-w-0 pr-2">
+                  <Clock className={`w-4 h-4 flex-shrink-0 ${activeNav === 'pending' ? 'text-heritage-gold-300' : 'text-heritage-gold-600/80 group-hover:text-heritage-red-700'}`} />
+                  <span className="truncate">4. Hàng Đợi Duyệt 4 Mắt</span>
                 </div>
-                {pendingCount > 0 && (
-                  <span className="px-2 py-0.5 rounded-full text-[10px] font-black bg-purple-600 text-white animate-pulse">
-                    {pendingCount}
+                {pendingCount > 0 ? (
+                  <span className="shrink-0 text-[10px] font-extrabold px-2 py-0.5 rounded-md whitespace-nowrap bg-purple-600 text-white animate-pulse shadow-sm">
+                    {pendingCount} chờ
+                  </span>
+                ) : (
+                  <span className="shrink-0 text-[10px] font-medium px-2 py-0.5 rounded-md whitespace-nowrap bg-stone-200/70 text-stone-600">
+                    0
                   </span>
                 )}
               </button>
@@ -593,18 +602,18 @@ export const CmsDashboard: React.FC<CmsDashboardProps> = ({ isOpen, onClose }) =
               {/* 5. Đã xuất bản */}
               <button
                 onClick={() => setActiveNav('published')}
-                className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold transition text-left ${
+                className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all text-left group ${
                   activeNav === 'published'
-                    ? 'bg-heritage-red-700 text-white shadow-sm'
-                    : 'text-heritage-ink-800 hover:bg-heritage-red-50 hover:text-heritage-red-700'
+                    ? 'bg-gradient-to-r from-heritage-red-800 to-heritage-red-700 text-white shadow-sm border-l-4 border-heritage-gold-400 pl-3'
+                    : 'text-heritage-ink-800 hover:bg-heritage-gold-100/50 hover:text-heritage-red-900 border-l-4 border-transparent pl-3'
                 }`}
               >
-                <div className="flex items-center space-x-3">
-                  <Globe className="w-4 h-4 flex-shrink-0" />
-                  <span>5. Đã Xuất Bản Live</span>
+                <div className="flex items-center space-x-3 min-w-0 pr-2">
+                  <Globe className={`w-4 h-4 flex-shrink-0 ${activeNav === 'published' ? 'text-heritage-gold-300' : 'text-heritage-gold-600/80 group-hover:text-heritage-red-700'}`} />
+                  <span className="truncate">5. Đã Xuất Bản Live</span>
                 </div>
-                <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
-                  activeNav === 'published' ? 'bg-white/20 text-white' : 'bg-heritage-ivory-300 text-heritage-ink-700'
+                <span className={`shrink-0 text-[10px] font-bold px-2 py-0.5 rounded-md whitespace-nowrap transition-colors ${
+                  activeNav === 'published' ? 'bg-white/20 text-white' : 'bg-emerald-100 text-emerald-800 border border-emerald-200'
                 }`}>
                   {publishedCount}
                 </span>
@@ -613,130 +622,133 @@ export const CmsDashboard: React.FC<CmsDashboardProps> = ({ isOpen, onClose }) =
               {/* 6. Thư viện Media */}
               <button
                 onClick={() => setActiveNav('media')}
-                className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold transition text-left ${
+                className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all text-left group ${
                   activeNav === 'media'
-                    ? 'bg-heritage-red-700 text-white shadow-sm'
-                    : 'text-heritage-ink-800 hover:bg-heritage-red-50 hover:text-heritage-red-700'
+                    ? 'bg-gradient-to-r from-heritage-red-800 to-heritage-red-700 text-white shadow-sm border-l-4 border-heritage-gold-400 pl-3'
+                    : 'text-heritage-ink-800 hover:bg-heritage-gold-100/50 hover:text-heritage-red-900 border-l-4 border-transparent pl-3'
                 }`}
               >
-                <div className="flex items-center space-x-3">
-                  <ImageIcon className="w-4 h-4 flex-shrink-0" />
-                  <span>6. Kho Tư Liệu Media</span>
+                <div className="flex items-center space-x-3 min-w-0 pr-2">
+                  <ImageIcon className={`w-4 h-4 flex-shrink-0 ${activeNav === 'media' ? 'text-heritage-gold-300' : 'text-heritage-gold-600/80 group-hover:text-heritage-red-700'}`} />
+                  <span className="truncate">6. Kho Tư Liệu Media</span>
                 </div>
-                <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
-                  activeNav === 'media' ? 'bg-white/20 text-white' : 'bg-heritage-ivory-300 text-heritage-ink-700'
+                <span className={`shrink-0 text-[10px] font-bold px-2 py-0.5 rounded-md whitespace-nowrap transition-colors ${
+                  activeNav === 'media' ? 'bg-white/20 text-white' : 'bg-heritage-ivory-300/80 text-heritage-ink-700'
                 }`}>
                   {mediaAssets.length}
                 </span>
               </button>
 
-              <div className="my-2 border-t border-heritage-gold-300/40" />
-
-              <div className="px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-heritage-ink-500 select-none">
-                Bảo Đảm An Ninh & Pháp Lý
+              <div className="pt-3 pb-1 px-3 text-[10px] font-extrabold uppercase tracking-wider text-heritage-ink-500 select-none flex items-center justify-between">
+                <span>Bảo Đảm An Ninh & Pháp Lý</span>
+                <span className="w-10 h-px bg-heritage-gold-300/60" />
               </div>
 
               {/* 7. Nhật ký kiểm toán */}
               <button
                 onClick={() => setActiveNav('audit')}
-                className={`w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-xs font-bold transition text-left ${
+                className={`w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all text-left group ${
                   activeNav === 'audit'
-                    ? 'bg-heritage-red-700 text-white shadow-sm'
-                    : 'text-heritage-ink-800 hover:bg-heritage-red-50 hover:text-heritage-red-700'
+                    ? 'bg-gradient-to-r from-heritage-red-800 to-heritage-red-700 text-white shadow-sm border-l-4 border-heritage-gold-400 pl-3'
+                    : 'text-heritage-ink-800 hover:bg-heritage-gold-100/50 hover:text-heritage-red-900 border-l-4 border-transparent pl-3'
                 }`}
               >
-                <ShieldCheck className="w-4 h-4 flex-shrink-0" />
+                <ShieldCheck className={`w-4 h-4 flex-shrink-0 ${activeNav === 'audit' ? 'text-heritage-gold-300' : 'text-heritage-gold-600/80 group-hover:text-heritage-red-700'}`} />
                 <span>7. Nhật Ký Kiểm Toán</span>
               </button>
 
               {/* 8. An ninh & Chốt chặn */}
               <button
                 onClick={() => setActiveNav('security')}
-                className={`w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-xs font-bold transition text-left ${
+                className={`w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all text-left group ${
                   activeNav === 'security'
-                    ? 'bg-heritage-red-700 text-white shadow-sm'
-                    : 'text-heritage-ink-800 hover:bg-heritage-red-50 hover:text-heritage-red-700'
+                    ? 'bg-gradient-to-r from-heritage-red-800 to-heritage-red-700 text-white shadow-sm border-l-4 border-heritage-gold-400 pl-3'
+                    : 'text-heritage-ink-800 hover:bg-heritage-gold-100/50 hover:text-heritage-red-900 border-l-4 border-transparent pl-3'
                 }`}
               >
-                <Shield className="w-4 h-4 flex-shrink-0" />
+                <Shield className={`w-4 h-4 flex-shrink-0 ${activeNav === 'security' ? 'text-heritage-gold-300' : 'text-heritage-gold-600/80 group-hover:text-heritage-red-700'}`} />
                 <span>8. An Ninh & Chốt Chặn</span>
               </button>
 
               {/* 9. Quản trị Mật khẩu & Tài khoản */}
               <button
                 onClick={() => setActiveNav('password-manager')}
-                className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold transition text-left ${
+                className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all text-left group ${
                   activeNav === 'password-manager'
-                    ? 'bg-heritage-red-700 text-white shadow-sm'
-                    : 'text-heritage-ink-800 hover:bg-heritage-red-50 hover:text-heritage-red-700'
+                    ? 'bg-gradient-to-r from-heritage-red-800 to-heritage-red-700 text-white shadow-sm border-l-4 border-heritage-gold-400 pl-3'
+                    : 'text-heritage-ink-800 hover:bg-heritage-gold-100/50 hover:text-heritage-red-900 border-l-4 border-transparent pl-3'
                 }`}
               >
-                <div className="flex items-center space-x-3">
-                  <KeyRound className="w-4 h-4 flex-shrink-0 text-heritage-gold-600" />
-                  <span>9. Quản Trị Mật Khẩu</span>
+                <div className="flex items-center space-x-3 min-w-0 pr-2">
+                  <KeyRound className={`w-4 h-4 flex-shrink-0 ${activeNav === 'password-manager' ? 'text-heritage-gold-300' : 'text-heritage-gold-600/80 group-hover:text-heritage-red-700'}`} />
+                  <span className="truncate">9. Quản Trị Mật Khẩu</span>
                 </div>
-                <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-900 border border-amber-300">
+                <span className={`shrink-0 text-[10px] font-bold px-2 py-0.5 rounded-md whitespace-nowrap transition-colors ${
+                  activeNav === 'password-manager' ? 'bg-white/20 text-white' : 'bg-amber-100 text-amber-900 border border-amber-300/80'
+                }`}>
                   Bảo mật
                 </span>
               </button>
 
-              <div className="my-2 border-t border-heritage-gold-300/40" />
-
-              <div className="px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-heritage-ink-500 select-none">
-                Hội Thi & Phong Trào
+              <div className="pt-3 pb-1 px-3 text-[10px] font-extrabold uppercase tracking-wider text-heritage-ink-500 select-none flex items-center justify-between">
+                <span>Hội Thi & Phong Trào</span>
+                <span className="w-10 h-px bg-heritage-gold-300/60" />
               </div>
 
               {/* 10. Quản trị Hội thi, Câu hỏi & Học sinh */}
               <button
                 onClick={() => setActiveNav('contest')}
-                className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold transition text-left ${
+                className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all text-left group ${
                   activeNav === 'contest'
-                    ? 'bg-heritage-red-700 text-white shadow-sm'
-                    : 'text-heritage-ink-800 hover:bg-heritage-red-50 hover:text-heritage-red-700'
+                    ? 'bg-gradient-to-r from-heritage-red-800 to-heritage-red-700 text-white shadow-sm border-l-4 border-heritage-gold-400 pl-3'
+                    : 'text-heritage-ink-800 hover:bg-heritage-gold-100/50 hover:text-heritage-red-900 border-l-4 border-transparent pl-3'
                 }`}
               >
-                <div className="flex items-center space-x-3">
-                  <Trophy className="w-4 h-4 flex-shrink-0 text-heritage-gold-600" />
-                  <span>10. Quản Trị Hội Thi & Đề Thi</span>
+                <div className="flex items-center space-x-3 min-w-0 pr-2">
+                  <Trophy className={`w-4 h-4 flex-shrink-0 ${activeNav === 'contest' ? 'text-heritage-gold-300' : 'text-heritage-gold-600/80 group-hover:text-heritage-red-700'}`} />
+                  <span className="truncate">10. Quản Trị Hội Thi & Đề Thi</span>
                 </div>
-                <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-900 border border-amber-300">
+                <span className={`shrink-0 text-[10px] font-bold px-2 py-0.5 rounded-md whitespace-nowrap transition-colors ${
+                  activeNav === 'contest' ? 'bg-white/20 text-white' : 'bg-amber-100 text-amber-900 border border-amber-300/80'
+                }`}>
                   {contestQuestionsCount} câu
                 </span>
               </button>
 
-              <div className="my-2 border-t border-heritage-gold-300/40" />
-
-              <div className="px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-heritage-ink-500 select-none">
-                Trợ Lý AI & RAG (ADR-002)
+              <div className="pt-3 pb-1 px-3 text-[10px] font-extrabold uppercase tracking-wider text-heritage-ink-500 select-none flex items-center justify-between">
+                <span>Trợ Lý AI & RAG (ADR-002)</span>
+                <span className="w-10 h-px bg-heritage-gold-300/60" />
               </div>
 
               {/* 11. Kho Tri Thức RAG */}
               <button
                 onClick={() => setActiveNav('rag-knowledge')}
-                className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold transition text-left ${
+                className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all text-left group ${
                   activeNav === 'rag-knowledge'
-                    ? 'bg-heritage-red-700 text-white shadow-sm'
-                    : 'text-heritage-ink-800 hover:bg-heritage-red-50 hover:text-heritage-red-700'
+                    ? 'bg-gradient-to-r from-heritage-red-800 to-heritage-red-700 text-white shadow-sm border-l-4 border-heritage-gold-400 pl-3'
+                    : 'text-heritage-ink-800 hover:bg-heritage-gold-100/50 hover:text-heritage-red-900 border-l-4 border-transparent pl-3'
                 }`}
               >
-                <div className="flex items-center space-x-3">
-                  <Database className="w-4 h-4 flex-shrink-0 text-heritage-gold-600" />
-                  <span>11. Kho Tri Thức RAG</span>
+                <div className="flex items-center space-x-3 min-w-0 pr-2">
+                  <Database className={`w-4 h-4 flex-shrink-0 ${activeNav === 'rag-knowledge' ? 'text-heritage-gold-300' : 'text-heritage-gold-600/80 group-hover:text-heritage-red-700'}`} />
+                  <span className="truncate">11. Kho Tri Thức RAG</span>
                 </div>
-                <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-heritage-gold-100 text-heritage-red-900 border border-heritage-gold-300">
+                <span className={`shrink-0 text-[10px] font-bold px-2 py-0.5 rounded-md whitespace-nowrap transition-colors ${
+                  activeNav === 'rag-knowledge' ? 'bg-white/20 text-white' : 'bg-heritage-gold-100 text-heritage-red-950 border border-heritage-gold-300'
+                }`}>
                   Phase 02
                 </span>
               </button>
             </div>
 
             {/* Sidebar Bottom Status */}
-            <div className="p-3.5 border-t border-heritage-gold-300/50 bg-heritage-ivory-200/60 text-xs space-y-1">
+            <div className="p-3 border-t border-heritage-gold-300/50 bg-heritage-ivory-200/50 text-xs">
               <div className="flex items-center space-x-2 text-[11px] text-emerald-800 font-bold">
                 <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
                 <span>Hạ Tầng Sẵn Sàng Vận Hành</span>
               </div>
-              <p className="text-[10px] text-heritage-ink-500">
-                Phiên bản: CMS v2.3 Redesign • Gate G4 Active
+              <p className="text-[10px] text-heritage-ink-500 font-mono mt-0.5">
+                CMS v2.3 Redesign • Gate G4 Active
               </p>
             </div>
           </aside>
