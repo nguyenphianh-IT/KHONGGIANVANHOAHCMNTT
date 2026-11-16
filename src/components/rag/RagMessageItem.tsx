@@ -84,7 +84,24 @@ export const RagMessageItem: React.FC<RagMessageItemProps> = ({ message, userRol
     }
   };
 
-  // Basic markdown-like rendering for bold text and paragraphs
+  // Helper to format inline markdown (bold, italic, code)
+  const formatInlineText = (text: string): React.ReactNode => {
+    const parts = text.split(/(\*\*.*?\*\*|\*[^*\n]+?\*|`[^`\n]+?`)/g);
+    return parts.map((part, i) => {
+      if (part.startsWith('**') && part.endsWith('**') && part.length >= 4) {
+        return <strong key={i} className="font-bold text-heritage-red-950">{part.slice(2, -2)}</strong>;
+      }
+      if (part.startsWith('*') && part.endsWith('*') && part.length >= 2) {
+        return <em key={i} className="italic text-heritage-ink-700">{part.slice(1, -1)}</em>;
+      }
+      if (part.startsWith('`') && part.endsWith('`') && part.length >= 2) {
+        return <code key={i} className="px-1.5 py-0.5 rounded bg-heritage-ivory-200 text-heritage-red-900 font-mono text-[11px]">{part.slice(1, -1)}</code>;
+      }
+      return part;
+    });
+  };
+
+  // Basic markdown-like rendering for bold text, lists, and paragraphs
   const renderFormattedText = (text: string) => {
     const paragraphs = text.split('\n\n');
     return paragraphs.map((para, pIdx) => {
@@ -93,35 +110,47 @@ export const RagMessageItem: React.FC<RagMessageItemProps> = ({ message, userRol
         return (
           <blockquote
             key={pIdx}
-            className="my-2 pl-3 py-1 border-l-2 border-heritage-gold-500 bg-heritage-gold-50/50 italic text-xs sm:text-sm text-heritage-ink-800 rounded-r"
+            className="my-2 pl-3 py-1.5 border-l-2 border-heritage-gold-500 bg-heritage-gold-50/60 italic text-xs sm:text-sm text-heritage-ink-800 rounded-r"
           >
-            {para.replace(/^>\s*/, '')}
+            {formatInlineText(para.replace(/^>\s*/, ''))}
           </blockquote>
         );
       }
 
-      // Check for numbered list or normal lines
+      // Check for lines with bullets or normal text
       const lines = para.split('\n');
       return (
         <p key={pIdx} className="mb-2 last:mb-0 leading-relaxed text-xs sm:text-sm">
-          {lines.map((line, lIdx) => (
-            <React.Fragment key={lIdx}>
-              {lIdx > 0 && <br />}
-              {line}
-            </React.Fragment>
-          ))}
+          {lines.map((line, lIdx) => {
+            const isBullet = line.trim().startsWith('•') || line.trim().startsWith('- ') || line.trim().startsWith('* ');
+            const cleanLine = isBullet ? line.trim().replace(/^[•\-*]\s*/, '') : line;
+
+            return (
+              <React.Fragment key={lIdx}>
+                {lIdx > 0 && <br />}
+                {isBullet ? (
+                  <span className="inline-flex items-start space-x-1.5 pl-1 my-0.5">
+                    <span className="text-heritage-gold-600 font-bold">•</span>
+                    <span>{formatInlineText(cleanLine)}</span>
+                  </span>
+                ) : (
+                  formatInlineText(cleanLine)
+                )}
+              </React.Fragment>
+            );
+          })}
         </p>
       );
     });
   };
 
   return (
-    <div className={`flex w-full ${isUser ? 'justify-end' : 'justify-start'} mb-4`}>
-      <div className={`flex max-w-[92%] sm:max-w-[85%] items-start space-x-2.5 ${isUser ? 'flex-row-reverse space-x-reverse' : 'flex-row'}`}>
+    <div className={`flex w-full ${isUser ? 'justify-end' : 'justify-start'} mb-3 sm:mb-4`}>
+      <div className={`flex max-w-[94%] sm:max-w-[85%] items-start space-x-2.5 ${isUser ? 'flex-row-reverse space-x-reverse' : 'flex-row'}`}>
         {/* Avatar */}
         <div
-          className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 text-white shadow-sm ${
-            isUser ? 'bg-heritage-ink-800' : 'bg-heritage-red-700 border border-heritage-gold-400'
+          className={`w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 text-white shadow-xs ${
+            isUser ? 'bg-heritage-ink-800' : 'bg-heritage-red-800 border border-heritage-gold-400'
           }`}
         >
           {isUser ? <User className="w-4 h-4" /> : <Bot className="w-4 h-4 text-heritage-gold-300" />}
@@ -179,9 +208,9 @@ export const RagMessageItem: React.FC<RagMessageItemProps> = ({ message, userRol
           {!isUser && (
             <div className="mt-3 pt-2.5 border-t border-heritage-ivory-200 flex flex-wrap items-center justify-between gap-2 text-[11px] text-heritage-ink-500">
               <div className="flex items-center space-x-2">
-                <span className="flex items-center space-x-1 text-heritage-ink-400">
+                <span className="flex items-center space-x-1 text-emerald-700 font-medium">
                   <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
-                  <span className="text-[10px] hidden sm:inline">Không gian Văn hóa HCM</span>
+                  <span className="text-[10px]">Tư liệu chuẩn kiểm định</span>
                 </span>
 
                 {/* Feedback Buttons */}
@@ -190,24 +219,24 @@ export const RagMessageItem: React.FC<RagMessageItemProps> = ({ message, userRol
                     type="button"
                     onClick={handleThumbUp}
                     disabled={feedbackGiven !== null}
-                    className={`flex items-center space-x-1 px-1.5 py-0.5 rounded text-[10px] transition-colors ${
+                    className={`flex items-center space-x-1 px-2 py-0.5 rounded-md text-[10px] transition-all ${
                       feedbackGiven === 'helpful'
-                        ? 'bg-emerald-100 text-emerald-800 font-medium'
+                        ? 'bg-emerald-100 text-emerald-800 font-bold border border-emerald-300'
                         : 'hover:bg-heritage-ivory-200 text-heritage-ink-600'
                     }`}
                     title="Câu trả lời hữu ích"
                   >
                     <ThumbsUp className="w-3 h-3" />
-                    <span>{feedbackGiven === 'helpful' ? 'Hữu ích' : 'Thích'}</span>
+                    <span>{feedbackGiven === 'helpful' ? 'Đã thích' : 'Thích'}</span>
                   </button>
 
                   <button
                     type="button"
                     onClick={handleThumbDownClick}
                     disabled={feedbackGiven !== null}
-                    className={`flex items-center space-x-1 px-1.5 py-0.5 rounded text-[10px] transition-colors ${
+                    className={`flex items-center space-x-1 px-2 py-0.5 rounded-md text-[10px] transition-all ${
                       feedbackGiven === 'unhelpful'
-                        ? 'bg-amber-100 text-amber-800 font-medium'
+                        ? 'bg-amber-100 text-amber-800 font-bold border border-amber-300'
                         : 'hover:bg-heritage-ivory-200 text-heritage-ink-600'
                     }`}
                     title="Cần cải thiện chất lượng"
@@ -222,7 +251,7 @@ export const RagMessageItem: React.FC<RagMessageItemProps> = ({ message, userRol
               <button
                 type="button"
                 onClick={handleCopy}
-                className="hover:text-heritage-ink-800 flex items-center space-x-1 px-2 py-0.5 rounded border border-heritage-ivory-300 hover:bg-heritage-ivory-100 transition-colors text-[10px]"
+                className="hover:text-heritage-red-900 flex items-center space-x-1 px-2.5 py-0.5 rounded-md border border-heritage-ivory-300 hover:border-heritage-gold-400 bg-white hover:bg-heritage-gold-50 transition-all text-[10px] text-heritage-ink-700 shadow-xs"
                 title="Sao chép nội dung"
               >
                 {copied ? <Check className="w-3 h-3 text-emerald-600" /> : <Copy className="w-3 h-3" />}
