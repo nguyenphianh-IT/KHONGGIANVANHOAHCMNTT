@@ -1,8 +1,10 @@
 /**
  * ==============================================================================
  * DỰ ÁN: KHÔNG GIAN VĂN HÓA HỒ CHÍ MINH - TRƯỜNG THCS NGUYỄN TRUNG TRỰC
- * API: UPLOAD PDF FILE HANDLER & SIGNED URL SERVICE (SUPABASE STORAGE)
+ * API: UPLOAD FILE HANDLER & SIGNED URL SERVICE (SUPABASE STORAGE)
  * ==============================================================================
+ * Cấp Signed Upload URL cho tệp PDF và Âm thanh (Audio), cho phép tải trực tiếp
+ * từ trình duyệt lên Supabase Storage CDN, vượt qua giới hạn 4.5MB của Vercel.
  */
 
 import type { VercelRequest, VercelResponse } from '@vercel/node';
@@ -26,7 +28,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   try {
-    // 1. Đảm bảo bucket 'documents' đã tồn tại và công khai
+    // 1. Đảm bảo bucket 'documents' đã tồn tại và công khai với dung lượng 50MB
     const { data: buckets } = await admin.storage.listBuckets();
     const docBucket = buckets?.find((b) => b.name === 'documents');
     if (!docBucket) {
@@ -36,17 +38,25 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       });
     }
 
-    // 2. Tạo Signed Upload URL cho tệp của người dùng
+    // 2. Xác định loại tệp: PDF hoặc Băng ghi âm (Audio)
     const rawFileName = (req.query?.fileName as string) || (req.body?.fileName as string) || `tai-lieu-${Date.now()}.pdf`;
     
-    // Chuẩn hóa tên file an toàn (giữ nguyên tên gốc của người dùng nhưng loại bỏ ký tự nguy hiểm)
+    // Chuẩn hóa tên file an toàn (giữ nguyên tên gốc nhưng loại bỏ dấu tiếng Việt và ký tự đặc biệt)
     const sanitizedFileName = rawFileName
       .normalize('NFD')
       .replace(/[\u0300-\u036f]/g, '')
       .replace(/[^a-zA-Z0-9._-]/g, '_');
 
+    const isAudio = Boolean(
+      sanitizedFileName.match(/\.(mp3|wav|m4a|ogg|aac)$/i) || 
+      req.query?.type === 'audio' || 
+      req.body?.type === 'audio'
+    );
+
     const uniquePrefix = Date.now().toString(36);
-    const filePath = `uploads/${uniquePrefix}_${sanitizedFileName}`;
+    const filePath = isAudio
+      ? `audio/${uniquePrefix}_${sanitizedFileName}`
+      : `uploads/${uniquePrefix}_${sanitizedFileName}`;
 
     const { data: signedData, error: signErr } = await admin.storage
       .from('documents')
@@ -68,13 +78,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       filePath,
       signedUploadUrl: signedData.signedUrl,
       publicUrl: publicData.publicUrl,
-      fileName: rawFileName
+      fileName: rawFileName,
+      isAudio
     });
   } catch (err: any) {
-    console.error('[Upload PDF API Exception]', err);
+    console.error('[Upload API Exception]', err);
     return res.status(500).json({
       success: false,
-      error: err?.message || 'Lỗi ngoại lệ khi xử lý tải tệp PDF'
+      error: `Lỗi máy chủ lưu trữ: ${err.message || String(err)}`
     });
   }
 }

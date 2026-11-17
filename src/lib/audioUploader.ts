@@ -54,7 +54,7 @@ export async function uploadAudioToCloud(file: File): Promise<AudioUploadResult>
     const duration = await getAudioDuration(file);
 
     // 1. Lấy Signed Upload URL từ serverless endpoint
-    const res = await fetch(`/api/cms/upload-audio?fileName=${encodeURIComponent(file.name)}`);
+    const res = await fetch(`/api/cms/upload-pdf?fileName=${encodeURIComponent(file.name)}&type=audio`);
     if (!res.ok) {
       const errJson = await res.json().catch(() => ({}));
       throw new Error(errJson.error || `Lỗi máy chủ khi cấp quyền tải âm thanh (HTTP ${res.status})`);

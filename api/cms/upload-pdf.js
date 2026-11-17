@@ -54,8 +54,11 @@ async function handler(req, res) {
     }
     const rawFileName = req.query?.fileName || req.body?.fileName || `tai-lieu-${Date.now()}.pdf`;
     const sanitizedFileName = rawFileName.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-zA-Z0-9._-]/g, "_");
+    const isAudio = Boolean(
+      sanitizedFileName.match(/\.(mp3|wav|m4a|ogg|aac)$/i) || req.query?.type === "audio" || req.body?.type === "audio"
+    );
     const uniquePrefix = Date.now().toString(36);
-    const filePath = `uploads/${uniquePrefix}_${sanitizedFileName}`;
+    const filePath = isAudio ? `audio/${uniquePrefix}_${sanitizedFileName}` : `uploads/${uniquePrefix}_${sanitizedFileName}`;
     const { data: signedData, error: signErr } = await admin.storage.from("documents").createSignedUploadUrl(filePath);
     if (signErr || !signedData?.signedUrl) {
       return res.status(500).json({
@@ -69,13 +72,14 @@ async function handler(req, res) {
       filePath,
       signedUploadUrl: signedData.signedUrl,
       publicUrl: publicData.publicUrl,
-      fileName: rawFileName
+      fileName: rawFileName,
+      isAudio
     });
   } catch (err) {
-    console.error("[Upload PDF API Exception]", err);
+    console.error("[Upload API Exception]", err);
     return res.status(500).json({
       success: false,
-      error: err?.message || "L\u1ED7i ngo\u1EA1i l\u1EC7 khi x\u1EED l\xFD t\u1EA3i t\u1EC7p PDF"
+      error: `L\u1ED7i m\xE1y ch\u1EE7 l\u01B0u tr\u1EEF: ${err.message || String(err)}`
     });
   }
 }
