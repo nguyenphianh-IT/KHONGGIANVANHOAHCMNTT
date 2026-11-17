@@ -117,7 +117,17 @@ export const FullScreenEditor: React.FC<FullScreenEditorProps> = ({
 
   // State & Handlers cho Tệp PDF Sách & Ấn phẩm số hóa
   const [pdfAttachment, setPdfAttachment] = useState<PdfAttachment | undefined>(
-    (initialArticle as any)?.pdf_attachment || undefined
+    (initialArticle as any)?.pdf_attachment || (
+      initialArticle?.category === 'book' ? {
+        url: '/documents/di-chuc-chu-tich-ho-chi-minh.pdf',
+        fileName: 'di-chuc-chu-tich-ho-chi-minh.pdf',
+        fileSize: 7435,
+        totalPages: 6,
+        allowDownload: true,
+        readingMode: 'flipbook',
+        uploadedAt: new Date().toISOString(),
+      } : undefined
+    )
   );
   const [isProcessingPdf, setIsProcessingPdf] = useState(false);
   const [pdfUploadNotice, setPdfUploadNotice] = useState<string | null>(null);
@@ -997,6 +1007,28 @@ export const FullScreenEditor: React.FC<FullScreenEditorProps> = ({
                   <p className="text-[10px] text-emerald-800 mt-1 text-center">
                     Tối đa 35MB • Tự động đếm trang và sẵn sàng cho chế độ đọc lật 3D
                   </p>
+
+                  {!pdfAttachment && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setPdfAttachment({
+                          url: '/documents/di-chuc-chu-tich-ho-chi-minh.pdf',
+                          fileName: 'di-chuc-chu-tich-ho-chi-minh.pdf',
+                          fileSize: 7435,
+                          totalPages: 6,
+                          allowDownload: true,
+                          readingMode: 'flipbook',
+                          uploadedAt: new Date().toISOString(),
+                        });
+                        setPdfUploadNotice('Đã gắn tệp mẫu: Di chúc Chủ tịch Hồ Chí Minh (6 trang)');
+                      }}
+                      className="w-full mt-2 flex items-center justify-center space-x-1.5 px-2.5 py-1.5 bg-emerald-100 hover:bg-emerald-200 text-emerald-950 rounded-lg text-[11px] font-bold border border-emerald-300 transition-colors"
+                    >
+                      <BookOpen className="w-3.5 h-3.5 text-emerald-800" />
+                      <span>✨ Gắn tệp mẫu Di chúc Bác Hồ (6 trang)</span>
+                    </button>
+                  )}
                 </div>
 
                 {pdfUploadNotice && (

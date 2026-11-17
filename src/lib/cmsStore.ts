@@ -1112,12 +1112,18 @@ export async function fetchArticlesFromSupabase(): Promise<{
             id: articleId,
             title: rev.title,
             slug,
-            summary: rev.summary || '',
+            summary: rev.summary || revData.summary || '',
             content: revData.content || '',
             category: revData.category || 'article',
             topic: revData.topic || 'Không gian văn hóa Hồ Chí Minh',
             featured_image: revData.featured_image || '',
+            media_assets: Array.isArray(revData.media_assets) ? revData.media_assets : [],
             references: revData.references || '',
+            audio_url: revData.audio_url || '',
+            audio_duration: revData.audio_duration || '',
+            quote_id: revData.quote_id,
+            custom_quote: revData.custom_quote || '',
+            pdf_attachment: revData.pdf_attachment || undefined,
             status: (rev.status as any) || 'published',
             author_id: revData.author_id || '',
             author_name: revData.author_name || 'Ban Biên Tập THCS Nguyễn Trung Trực',
@@ -1173,7 +1179,14 @@ export async function fetchArticlesFromSupabase(): Promise<{
           mergedMap.set(key, la);
           saveArticleToCloud(la).catch(() => {});
         } else {
-          mergedMap.set(key, ca);
+          // Bảo toàn pdf_attachment, quote_id, custom_quote nếu cục bộ có mà cloud bị rỗng/thiếu
+          const mergedPublished: ArticleData = {
+            ...ca,
+            pdf_attachment: ca.pdf_attachment || la.pdf_attachment,
+            quote_id: ca.quote_id !== undefined ? ca.quote_id : la.quote_id,
+            custom_quote: ca.custom_quote || la.custom_quote,
+          };
+          mergedMap.set(key, mergedPublished);
         }
         continue;
       }

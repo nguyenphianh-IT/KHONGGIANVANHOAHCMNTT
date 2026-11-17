@@ -162,6 +162,7 @@ async function handleGetCmsArticles() {
         audio_duration: rData.audio_duration || "",
         quote_id: rData.quote_id,
         custom_quote: rData.custom_quote || "",
+        pdf_attachment: rData.pdf_attachment || void 0,
         status: rev.status || "draft",
         author_id: rData.author_id || rev.author_id || "",
         author_name: rData.author_name || "Ban Bi\xEAn T\u1EADp THCS Nguy\u1EC5n Trung Tr\u1EF1c",
@@ -233,6 +234,7 @@ async function handleSaveCmsArticle(article) {
       status: article.status || existingRev?.status || "draft",
       author_id: SYSTEM_AUTHOR_ID,
       data: {
+        summary: safeSummary,
         content: safeContent,
         category: article.category || existingData.category || "article",
         topic: article.topic || existingData.topic || "Kh\xF4ng gian v\u0103n h\xF3a H\u1ED3 Ch\xED Minh",
@@ -243,6 +245,7 @@ async function handleSaveCmsArticle(article) {
         audio_duration: article.audio_duration || existingData.audio_duration || "",
         quote_id: article.quote_id !== void 0 ? article.quote_id : existingData.quote_id,
         custom_quote: article.custom_quote !== void 0 ? article.custom_quote : existingData.custom_quote || "",
+        pdf_attachment: article.pdf_attachment !== void 0 ? article.pdf_attachment : existingData.pdf_attachment || void 0,
         author_name: article.author_name || existingData.author_name || "Ban Bi\xEAn T\u1EADp THCS Nguy\u1EC5n Trung Tr\u1EF1c",
         author_id: article.author_id || existingData.author_id || "",
         slug: itemPayload.slug,

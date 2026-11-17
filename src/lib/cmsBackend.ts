@@ -262,6 +262,7 @@ export async function handleSaveCmsArticle(article: ArticleData): Promise<{
       status: article.status || existingRev?.status || 'draft',
       author_id: SYSTEM_AUTHOR_ID,
       data: {
+        summary: safeSummary,
         content: safeContent,
         category: article.category || existingData.category || 'article',
         topic: article.topic || existingData.topic || 'Không gian văn hóa Hồ Chí Minh',

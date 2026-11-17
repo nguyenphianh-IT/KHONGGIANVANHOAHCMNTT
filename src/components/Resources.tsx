@@ -40,7 +40,14 @@ const mapArticleToResource = (art: ArticleData): ResourceItem => {
     thumbnail: resolveMediaUrl(art.featured_image, art.media_assets) || (normCat === 'video' ? '/images/timeline-ngoi-sao.png' : '/images/ho-chi-minh-tp-hcm.png'),
     audioUrl: art.audio_url || (normCat === 'audio' ? '/audio/tuyen-ngon-doc-lap-1945.mp3' : undefined),
     audioDuration: art.audio_duration || (normCat === 'audio' ? '03:30' : undefined),
-    pdfAttachment: art.pdf_attachment,
+    pdfAttachment: art.pdf_attachment || (normCat === 'book' ? {
+      url: '/documents/di-chuc-chu-tich-ho-chi-minh.pdf',
+      fileName: 'di-chuc-chu-tich-ho-chi-minh.pdf',
+      fileSize: 7435,
+      totalPages: 6,
+      allowDownload: true,
+      readingMode: 'flipbook',
+    } : undefined),
     badgeText: art.topic ? `⭐ ${art.topic}` : '⭐ Đã duyệt 4 Mắt (CMS)',
     isMockData: false,
     tags: [normCat, '4-eyes-approved', 'chinh-thuc', art.topic || '', art.category],
@@ -113,8 +120,15 @@ export const Resources: React.FC = () => {
   ];
 
   const allCombinedResources = useMemo(() => {
-    // Đưa các bài viết thực tế vừa xuất bản lên vị trí đầu tiên
-    return [...liveResources, ...resourcesData];
+    // Nếu trong liveResources từ CMS đã có sách/tài liệu Di chúc, loại bỏ mục mẫu trùng lặp res-2
+    const hasLiveDiChuc = liveResources.some(
+      (r) => r.category === 'book' || r.title.toLowerCase().includes('di chúc')
+    );
+    const filteredStatic = hasLiveDiChuc
+      ? resourcesData.filter((r) => r.id !== 'res-2')
+      : resourcesData;
+
+    return [...liveResources, ...filteredStatic];
   }, [liveResources]);
 
   const filteredResources = useMemo(() => {
