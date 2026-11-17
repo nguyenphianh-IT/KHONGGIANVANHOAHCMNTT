@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { activitiesData } from '../data/activitiesData';
 import { SchoolActivity } from '../types';
 import { ActivityModal } from './ActivityModal';
-import { Calendar, Users, ChevronRight, ChevronLeft, Award, AlertCircle, Sparkles } from 'lucide-react';
+import { Calendar, Users, ChevronRight, ChevronLeft, Award, AlertCircle, Sparkles, Eye } from 'lucide-react';
 import { 
   getPublishedArticles, 
   EVENT_ARTICLES_CHANGED, 
@@ -11,25 +11,49 @@ import {
   isActivityArticle,
   fetchArticlesFromSupabase 
 } from '../lib/cmsStore';
+import { getViewCount } from '../lib/viewsStore';
+
+export const formatActivityDate = (rawDate?: string): string => {
+  if (!rawDate) return 'Vừa đăng';
+  const trimmed = rawDate.trim();
+  if (/^\d{1,2}\/\d{1,2}\/\d{4}$/.test(trimmed)) {
+    return trimmed;
+  }
+  try {
+    const d = new Date(trimmed);
+    if (!isNaN(d.getTime())) {
+      const day = String(d.getDate()).padStart(2, '0');
+      const month = String(d.getMonth() + 1).padStart(2, '0');
+      const year = d.getFullYear();
+      return `${day}/${month}/${year}`;
+    }
+  } catch {
+    // fallback
+  }
+  return trimmed.includes('T') ? trimmed.split('T')[0] : trimmed.split(' ')[0];
+};
 
 const mapArticleToActivity = (art: ArticleData): SchoolActivity => {
   return {
     id: art.id || `act-${art.slug}`,
     title: art.title,
-    date: art.created_at ? art.created_at.split(' ')[0] : 'Vừa đăng',
-    academicYear: 'Năm học 2024 - 2025',
+    date: formatActivityDate(art.created_at),
+    academicYear: 'Năm học 2025 - 2026',
     organizer: art.author_name || 'Trường THCS Nguyễn Trung Trực',
     summary: art.summary,
-    fullDetail: art.content,
+    fullDetail: art.content || art.summary,
     imageUrl: resolveMediaUrl(art.featured_image, art.media_assets) || '/images/ho-chi-minh-tp-hcm.png',
     participants: 'Cán bộ, giáo viên và học sinh trường THCS Nguyễn Trung Trực',
     isSampleData: false,
+    categoryLabel: 'Hoạt Động & Phong Trào',
+    badgeText: '⭐ Hoạt động chính thức (CMS)',
     highlights: [
       'Tin bài hoạt động chính thức từ Không gian văn hóa Hồ Chí Minh',
       'Đã qua quy trình thẩm định 4 mắt của Ban Giám Hiệu nhà trường',
       art.references ? `Xuất xứ tư liệu: ${art.references}` : 'Hoạt động phong trào giáo dục truyền thống học đường'
     ],
     mediaAssets: art.media_assets,
+    tags: art.topic ? [art.topic] : ['Hoạt động học đường', 'Nguyễn Trung Trực'],
   };
 };
 
@@ -173,9 +197,15 @@ export const Activities: React.FC = () => {
 
                 {/* Body */}
                 <div className="p-4 sm:p-5">
-                  <div className="flex items-center space-x-1.5 text-xs font-semibold text-heritage-red-700 mb-2">
-                    <Calendar className="w-4 h-4 flex-shrink-0" />
-                    <span>{activity.date}</span>
+                  <div className="flex items-center justify-between text-xs font-semibold text-heritage-red-700 mb-2">
+                    <div className="flex items-center space-x-1.5">
+                      <Calendar className="w-4 h-4 flex-shrink-0" />
+                      <span>{formatActivityDate(activity.date)}</span>
+                    </div>
+                    <div className="flex items-center space-x-1 text-heritage-gold-700 font-bold" title="Lượt đọc thực tế">
+                      <Eye className="w-3.5 h-3.5 text-heritage-gold-600" />
+                      <span>{getViewCount(activity.id)} lượt</span>
+                    </div>
                   </div>
 
                   <h3 className="font-serif text-base sm:text-lg font-bold text-heritage-ink-900 group-hover:text-heritage-red-700 transition-colors line-clamp-2 mb-2 leading-snug">

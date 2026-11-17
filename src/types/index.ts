@@ -68,4 +68,8 @@ export interface SchoolActivity {
   isSampleData: boolean;
   highlights: string[];
   mediaAssets?: any[];
+  categoryLabel?: string;
+  badgeText?: string;
+  tags?: string[];
+  viewCount?: number;
 }
