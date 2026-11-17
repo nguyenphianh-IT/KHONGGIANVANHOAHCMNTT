@@ -107,10 +107,11 @@ export async function handleGetCmsArticles(): Promise<{
       return { success: true, articles: [], total: 0 };
     }
 
-    // 3. Filter out system containers and deleted items
+    // 3. Filter out system containers, archived and deleted items
     const filteredRevs = revsData.filter((r) => {
       if (r.item_id === RESERVED_CONTEST_ID || r.item_id === RESERVED_RESOURCES_ID || r.item_id === RESERVED_MEDIA_LIBRARY_ID) return false;
       if (deletedItemIds.has(r.item_id)) return false;
+      if (r.status === 'archived') return false;
       const title = r.title || '';
       if (title.includes('Hồ Sơ Hội Thi') || title.includes('Kho Tư Liệu Số Hóa') || title.includes('Kho Media')) return false;
       return true;
@@ -355,6 +356,13 @@ export async function handleDeleteCmsArticle(articleId: string): Promise<{
       .from('content_revisions')
       .update({ status: 'archived', updated_at: new Date().toISOString() })
       .or(`id.eq.${itemId},item_id.eq.${itemId}`);
+
+    if (articleId.startsWith('art-')) {
+      await db
+        .from('content_revisions')
+        .update({ status: 'archived', updated_at: new Date().toISOString() })
+        .contains('data', { legacy_id: articleId });
+    }
 
     return { success: true };
   } catch (err: any) {

@@ -134,6 +134,7 @@ async function handleGetCmsArticles() {
     const filteredRevs = revsData.filter((r) => {
       if (r.item_id === RESERVED_CONTEST_ID || r.item_id === RESERVED_RESOURCES_ID || r.item_id === RESERVED_MEDIA_LIBRARY_ID) return false;
       if (deletedItemIds.has(r.item_id)) return false;
+      if (r.status === "archived") return false;
       const title = r.title || "";
       if (title.includes("H\u1ED3 S\u01A1 H\u1ED9i Thi") || title.includes("Kho T\u01B0 Li\u1EC7u S\u1ED1 H\xF3a") || title.includes("Kho Media")) return false;
       return true;
@@ -294,6 +295,9 @@ async function handleDeleteCmsArticle(articleId) {
   try {
     await db.from("content_items").update({ is_deleted: true, deleted_at: (/* @__PURE__ */ new Date()).toISOString() }).or(`id.eq.${itemId},slug.eq.${articleId}`);
     await db.from("content_revisions").update({ status: "archived", updated_at: (/* @__PURE__ */ new Date()).toISOString() }).or(`id.eq.${itemId},item_id.eq.${itemId}`);
+    if (articleId.startsWith("art-")) {
+      await db.from("content_revisions").update({ status: "archived", updated_at: (/* @__PURE__ */ new Date()).toISOString() }).contains("data", { legacy_id: articleId });
+    }
     return { success: true };
   } catch (err) {
     console.error("[handleDeleteCmsArticle Exception]", err);
