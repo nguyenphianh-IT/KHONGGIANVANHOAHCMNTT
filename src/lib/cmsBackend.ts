@@ -345,11 +345,16 @@ export async function handleDeleteCmsArticle(articleId: string): Promise<{
   const itemId = toValidUuid(articleId);
 
   try {
-    // 1. Soft delete content_items
+    // 1. Soft delete content_items (đảm bảo tồn tại bản ghi is_deleted = true)
     await db
       .from('content_items')
-      .update({ is_deleted: true, deleted_at: new Date().toISOString() })
-      .or(`id.eq.${itemId},slug.eq.${articleId}`);
+      .upsert({
+        id: itemId,
+        is_deleted: true,
+        deleted_at: new Date().toISOString(),
+        slug: articleId,
+        author_id: SYSTEM_AUTHOR_ID
+      }, { onConflict: 'id' });
 
     // 2. Set revisions to archived or delete
     await db

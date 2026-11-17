@@ -293,7 +293,13 @@ async function handleDeleteCmsArticle(articleId) {
   const db = getSupabaseAdmin() || supabase;
   const itemId = toValidUuid(articleId);
   try {
-    await db.from("content_items").update({ is_deleted: true, deleted_at: (/* @__PURE__ */ new Date()).toISOString() }).or(`id.eq.${itemId},slug.eq.${articleId}`);
+    await db.from("content_items").upsert({
+      id: itemId,
+      is_deleted: true,
+      deleted_at: (/* @__PURE__ */ new Date()).toISOString(),
+      slug: articleId,
+      author_id: SYSTEM_AUTHOR_ID
+    }, { onConflict: "id" });
     await db.from("content_revisions").update({ status: "archived", updated_at: (/* @__PURE__ */ new Date()).toISOString() }).or(`id.eq.${itemId},item_id.eq.${itemId}`);
     if (articleId.startsWith("art-")) {
       await db.from("content_revisions").update({ status: "archived", updated_at: (/* @__PURE__ */ new Date()).toISOString() }).contains("data", { legacy_id: articleId });
