@@ -1011,27 +1011,9 @@ export async function saveArticleToCloud(article: ArticleData): Promise<{
   // Trích xuất và đính kèm mọi MediaAsset liên quan để đồng bộ đa thiết bị
   const referencedAssets = extractMediaAssetsForArticle(article);
 
-  // Tối ưu hóa tệp PDF đính kèm để tránh làm tràn payload Vercel Serverless (4.5MB)
-  let safePdfAttachment = article.pdf_attachment ? { ...article.pdf_attachment } : undefined;
-  if (safePdfAttachment && safePdfAttachment.url) {
-    const rawUrl = safePdfAttachment.url;
-    const titleLower = (article.title || '').toLowerCase();
-    const fileLower = (safePdfAttachment.fileName || '').toLowerCase();
-
-    // Tự động liên kết tài liệu kinh điển với kho lưu trữ static tốc độ cao
-    if (titleLower.includes('nhật ký') || fileLower.includes('nhat-ky') || fileLower.includes('nhat ky')) {
-      safePdfAttachment.url = '/documents/nhat-ky-trong-tu-chu-tich-ho-chi-minh.pdf';
-    } else if (titleLower.includes('di chúc') || fileLower.includes('di-chuc') || fileLower.includes('di chuc')) {
-      safePdfAttachment.url = '/documents/di-chuc-chu-tich-ho-chi-minh.pdf';
-    } else if (rawUrl.startsWith('data:application/pdf;base64,') && rawUrl.length > 500000) {
-      // Nếu là tệp PDF tùy chỉnh khác vượt quá 500KB Base64, giữ nguyên metadata để không làm sập Serverless API
-      console.warn('[saveArticleToCloud] PDF payload lớn (>500KB), tối ưu hóa metadata để đảm bảo an toàn Vercel Serverless.');
-    }
-  }
-
+  // Bảo toàn nguyên vẹn tệp PDF do người dùng tải lên, không tự ý thay thế bằng tệp khác
   const payloadArticle: ArticleData = {
     ...article,
-    pdf_attachment: safePdfAttachment,
     media_assets: referencedAssets,
   };
 

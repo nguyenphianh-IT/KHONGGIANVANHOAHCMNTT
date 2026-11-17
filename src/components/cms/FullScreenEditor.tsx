@@ -22,6 +22,7 @@ import {
 import { optimizeImageFile } from '../../lib/imageOptimizer';
 import { UNCLE_HO_QUOTES } from '../../data/quotesData';
 import { parsePdfFile, extractPdfCoverImage, loadPdfFromUrl } from '../../lib/pdfHelper';
+import { uploadPdfToCloud } from '../../lib/pdfUploader';
 import { BookFlipbookModal } from '../BookFlipbookModal';
 import type { PdfAttachment } from '../../types';
 
@@ -116,29 +117,9 @@ export const FullScreenEditor: React.FC<FullScreenEditorProps> = ({
     reader.readAsDataURL(file);
   };
 
-  // State & Handlers cho Tệp PDF Sách & Ấn phẩm số hóa
+  // State & Handlers cho Tệp PDF Sách & Ấn phẩm số hóa (chỉ sử dụng tệp do người dùng tải lên)
   const [pdfAttachment, setPdfAttachment] = useState<PdfAttachment | undefined>(
-    (initialArticle as any)?.pdf_attachment || (
-      initialArticle?.category === 'book' ? (
-        (initialArticle?.title || '').toLowerCase().includes('nhật ký') ? {
-          url: '/documents/nhat-ky-trong-tu-chu-tich-ho-chi-minh.pdf',
-          fileName: 'Nhat Ky Trong Tu.pdf',
-          fileSize: 807818,
-          totalPages: 6,
-          allowDownload: true,
-          readingMode: 'flipbook',
-          uploadedAt: new Date().toISOString(),
-        } : {
-          url: '/documents/di-chuc-chu-tich-ho-chi-minh.pdf',
-          fileName: 'Di Chuc 1969.pdf',
-          fileSize: 170588,
-          totalPages: 6,
-          allowDownload: true,
-          readingMode: 'flipbook',
-          uploadedAt: new Date().toISOString(),
-        }
-      ) : undefined
-    )
+    (initialArticle as any)?.pdf_attachment || undefined
   );
   const [isProcessingPdf, setIsProcessingPdf] = useState(false);
   const [pdfUploadNotice, setPdfUploadNotice] = useState<string | null>(null);
@@ -161,54 +142,53 @@ export const FullScreenEditor: React.FC<FullScreenEditorProps> = ({
 
     try {
       setIsProcessingPdf(true);
-      setPdfUploadNotice('Đang phân tích cấu trúc trang PDF...');
+      setPdfUploadNotice(`Đang phân tích cấu trúc trang của tệp "${file.name}"...`);
 
       const meta = await parsePdfFile(file);
 
-      const reader = new FileReader();
-      reader.onload = async (evt) => {
-        const dataUrl = evt.target?.result as string;
-        const normalizedFileName = file.name.toLowerCase();
-        const normalizedTitle = title.toLowerCase();
-
-        let resolvedUrl = dataUrl;
-        if (normalizedFileName.includes('nhat-ky') || normalizedFileName.includes('nhat ky') || normalizedTitle.includes('nhật ký')) {
-          resolvedUrl = '/documents/nhat-ky-trong-tu-chu-tich-ho-chi-minh.pdf';
-        } else if (normalizedFileName.includes('di-chuc') || normalizedFileName.includes('di chuc') || normalizedTitle.includes('di chúc')) {
-          resolvedUrl = '/documents/di-chuc-chu-tich-ho-chi-minh.pdf';
+      // Tự động tạo ảnh bìa từ Trang 1 nếu bài viết chưa có ảnh bìa
+      if (!featuredImage) {
+        try {
+          const coverData = await extractPdfCoverImage(meta.pdfDoc);
+          setFeaturedImage(coverData);
+        } catch (err) {
+          console.warn('[Auto Cover Extractor error]', err);
         }
+      }
 
-        const newPdfAttachment: PdfAttachment = {
-          url: resolvedUrl,
-          fileName: file.name,
-          fileSize: file.size,
-          totalPages: meta.totalPages,
-          allowDownload: pdfAttachment?.allowDownload !== undefined ? pdfAttachment.allowDownload : true,
-          readingMode: pdfAttachment?.readingMode || 'flipbook',
-          uploadedAt: new Date().toISOString(),
-        };
+      setPdfUploadNotice(`Đang tải tệp "${file.name}" lên Cloud Storage...`);
 
-        setPdfAttachment(newPdfAttachment);
-        setPdfUploadNotice(`Đã nạp: ${file.name} (${(file.size / (1024 * 1024)).toFixed(1)} MB • ${meta.totalPages} trang)`);
-        setIsProcessingPdf(false);
+      // Tải trực tiếp chính xác tệp của người dùng lên Cloud Storage (Supabase)
+      const uploadRes = await uploadPdfToCloud(file);
 
-        // Tự động tạo ảnh bìa từ Trang 1 nếu bài viết chưa có ảnh bìa
-        if (!featuredImage) {
-          try {
-            const coverData = await extractPdfCoverImage(meta.pdfDoc);
-            setFeaturedImage(coverData);
-          } catch (err) {
-            console.warn('[Auto Cover Extractor error]', err);
-          }
-        }
+      let finalPdfUrl = uploadRes.publicUrl;
+      let uploadStatusMessage = `Đã tải lên Cloud Storage thành công: ${file.name} (${(file.size / (1024 * 1024)).toFixed(2)} MB • ${meta.totalPages} trang)`;
+
+      if (!uploadRes.success || !uploadRes.publicUrl) {
+        console.warn('[Cloud Upload Failed, fallback to local Data URL]', uploadRes.error);
+        // Nếu không tải được lên Cloud (offline), đọc dưới dạng local Data URL để người dùng vẫn xem thử được
+        const reader = new FileReader();
+        finalPdfUrl = await new Promise<string>((resolve) => {
+          reader.onload = (evt) => resolve((evt.target?.result as string) || '');
+          reader.onerror = () => resolve('');
+          reader.readAsDataURL(file);
+        });
+        uploadStatusMessage = `Đã nạp tệp cục bộ: ${file.name} (${(file.size / (1024 * 1024)).toFixed(2)} MB • ${meta.totalPages} trang). Sẽ đồng bộ khi có mạng.`;
+      }
+
+      const newPdfAttachment: PdfAttachment = {
+        url: finalPdfUrl,
+        fileName: file.name,
+        fileSize: file.size,
+        totalPages: meta.totalPages,
+        allowDownload: pdfAttachment?.allowDownload !== undefined ? pdfAttachment.allowDownload : true,
+        readingMode: pdfAttachment?.readingMode || 'flipbook',
+        uploadedAt: new Date().toISOString(),
       };
 
-      reader.onerror = () => {
-        setIsProcessingPdf(false);
-        alert('Không thể đọc tệp PDF. Vui lòng thử lại!');
-      };
-
-      reader.readAsDataURL(file);
+      setPdfAttachment(newPdfAttachment);
+      setPdfUploadNotice(uploadStatusMessage);
+      setIsProcessingPdf(false);
     } catch (err: any) {
       console.error('[handlePdfFileUpload Error]', err);
       setIsProcessingPdf(false);
