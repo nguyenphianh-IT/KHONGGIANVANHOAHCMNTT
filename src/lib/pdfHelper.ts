@@ -85,6 +85,7 @@ export async function extractPdfCoverImage(fileOrDoc: File | any, maxWidth = 900
 
 /**
  * Nạp tài liệu PDF từ URL (Supabase Storage, server path hoặc Data URL)
+ * Hỗ trợ HTTP Range Requests để tải từng phần (stream on-demand) khi tệp nằm trên CDN
  */
 export async function loadPdfFromUrl(url: string): Promise<any> {
   const docParams: any = {
@@ -104,6 +105,10 @@ export async function loadPdfFromUrl(url: string): Promise<any> {
     docParams.data = bytes;
   } else {
     docParams.url = url;
+    // Kích hoạt HTTP 206 Byte-Range streaming: tải trang theo nhu cầu lật trang
+    docParams.rangeChunkSize = 65536; // 64KB chunks
+    docParams.disableAutoFetch = true;
+    docParams.disableStream = false;
   }
 
   const loadingTask = pdfjsLib.getDocument(docParams);

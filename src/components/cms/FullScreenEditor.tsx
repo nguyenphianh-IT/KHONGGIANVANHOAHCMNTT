@@ -23,6 +23,7 @@ import { optimizeImageFile } from '../../lib/imageOptimizer';
 import { UNCLE_HO_QUOTES } from '../../data/quotesData';
 import { parsePdfFile, extractPdfCoverImage, loadPdfFromUrl } from '../../lib/pdfHelper';
 import { uploadPdfToCloud } from '../../lib/pdfUploader';
+import { uploadAudioToCloud } from '../../lib/audioUploader';
 import { BookFlipbookModal } from '../BookFlipbookModal';
 import type { PdfAttachment } from '../../types';
 
@@ -71,50 +72,44 @@ export const FullScreenEditor: React.FC<FullScreenEditorProps> = ({
   const [audioUploadNotice, setAudioUploadNotice] = useState<string | null>(null);
   const audioFileInputRef = useRef<HTMLInputElement>(null);
 
-  const handleAudioFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleAudioFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    if (!file.type.startsWith('audio/') && !file.name.endsWith('.mp3') && !file.name.endsWith('.wav') && !file.name.endsWith('.m4a')) {
-      alert('Vui lòng chọn tệp âm thanh định dạng .mp3, .wav, hoặc .m4a!');
+    if (!file.type.startsWith('audio/') && !file.name.toLowerCase().endsWith('.mp3') && !file.name.toLowerCase().endsWith('.wav') && !file.name.toLowerCase().endsWith('.m4a') && !file.name.toLowerCase().endsWith('.ogg')) {
+      alert('Vui lòng chọn tệp âm thanh định dạng .mp3, .wav, .m4a hoặc .ogg!');
       return;
     }
 
-    if (file.size > 15 * 1024 * 1024) {
-      alert(`Tệp âm thanh quá lớn (${(file.size / (1024 * 1024)).toFixed(1)} MB). Vui lòng chọn tệp nhỏ hơn 15MB để đảm bảo tốc độ tải.`);
+    if (file.size > 50 * 1024 * 1024) {
+      alert(`Tệp âm thanh quá lớn (${(file.size / (1024 * 1024)).toFixed(1)} MB). Vui lòng chọn tệp nhỏ hơn 50MB.`);
       return;
     }
 
     setIsProcessingAudio(true);
     setAudioFileName(file.name);
+    setAudioUploadNotice(`Đang tải tệp lên Cloud Storage: ${file.name}...`);
 
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      const dataUrl = event.target?.result as string;
-      setAudioUrl(dataUrl);
-
-      // Tự động đo thời lượng âm thanh
-      const tempAudio = new Audio();
-      tempAudio.src = dataUrl;
-      tempAudio.onloadedmetadata = () => {
-        if (tempAudio.duration && !isNaN(tempAudio.duration)) {
-          const totalSecs = Math.floor(tempAudio.duration);
-          const mins = Math.floor(totalSecs / 60);
-          const secs = totalSecs % 60;
-          const formatted = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-          setAudioDuration(formatted);
-          setAudioUploadNotice(`Đã nạp: ${file.name} (${(file.size / (1024 * 1024)).toFixed(2)} MB - ${formatted})`);
-        } else {
-          setAudioUploadNotice(`Đã nạp: ${file.name} (${(file.size / (1024 * 1024)).toFixed(2)} MB)`);
+    try {
+      const uploadRes = await uploadAudioToCloud(file);
+      if (uploadRes.success && uploadRes.publicUrl) {
+        setAudioUrl(uploadRes.publicUrl);
+        if (uploadRes.duration) {
+          setAudioDuration(uploadRes.duration);
         }
-        setIsProcessingAudio(false);
-      };
-      tempAudio.onerror = () => {
-        setIsProcessingAudio(false);
-        setAudioUploadNotice(`Đã nạp: ${file.name}`);
-      };
-    };
-    reader.readAsDataURL(file);
+        setAudioUploadNotice(`Đã lưu trữ Cloud Storage: ${file.name} (${(file.size / (1024 * 1024)).toFixed(2)} MB - ${uploadRes.duration || '03:00'})`);
+      } else {
+        // Fallback an toàn: tạo URL đối tượng tạm thời để nghe thử
+        const localBlobUrl = URL.createObjectURL(file);
+        setAudioUrl(localBlobUrl);
+        setAudioUploadNotice(`Đã nạp cục bộ: ${file.name} (${(file.size / (1024 * 1024)).toFixed(2)} MB). ${uploadRes.error || ''}`);
+      }
+    } catch (err: any) {
+      console.error('Lỗi khi tải file audio:', err);
+      setAudioUploadNotice(`Lỗi nạp tệp: ${err?.message || 'Không thể tải file'}`);
+    } finally {
+      setIsProcessingAudio(false);
+    }
   };
 
   // State & Handlers cho Tệp PDF Sách & Ấn phẩm số hóa (chỉ sử dụng tệp do người dùng tải lên)
@@ -947,7 +942,7 @@ export const FullScreenEditor: React.FC<FullScreenEditorProps> = ({
                     <div className="flex items-center justify-between text-[11px] font-semibold text-heritage-ink-800">
                       <span className="flex items-center space-x-1">
                         <Music className="w-3.5 h-3.5 text-amber-700" />
-                        <span>Nghe thử bản ghi âm:</span>
+                        <span>Nghe thử bản ghi âm {audioFileName ? `(${audioFileName})` : ''}:</span>
                       </span>
                       <button
                         type="button"
@@ -970,22 +965,25 @@ export const FullScreenEditor: React.FC<FullScreenEditorProps> = ({
 
                 {/* 3. HOẶC DÁN ĐƯỜNG DẪN / URL */}
                 <div className="pt-1 border-t border-amber-200">
-                  <label className="block text-[11px] font-bold text-heritage-ink-800 mb-1">
-                    Hoặc nhập đường dẫn / URL tệp âm thanh:
-                  </label>
+                  <div className="flex items-center justify-between mb-1">
+                    <label className="text-[11px] font-bold text-heritage-ink-800">
+                      Đường dẫn / URL tệp âm thanh:
+                    </label>
+                    {audioUrl.includes('supabase.co') && (
+                      <span className="text-[10px] bg-emerald-100 text-emerald-800 px-1.5 py-0.5 rounded font-semibold">
+                        Cloud Storage CDN
+                      </span>
+                    )}
+                  </div>
                   <input
                     type="text"
-                    value={audioUrl.startsWith('data:') ? `[Đã nạp tệp cục bộ: ${audioFileName || 'Tệp âm thanh'}]` : audioUrl}
-                    onChange={(e) => {
-                      if (!audioUrl.startsWith('data:')) {
-                        setAudioUrl(e.target.value);
-                      }
-                    }}
-                    placeholder="/audio/tuyen-ngon-doc-lap-1945.mp3 hoặc https://..."
+                    value={audioUrl}
+                    onChange={(e) => setAudioUrl(e.target.value)}
+                    placeholder="https://...supabase.co/... hoặc /audio/tuyen-ngon-doc-lap-1945.mp3"
                     className="w-full px-2.5 py-1.5 bg-white border border-heritage-gold-300 rounded text-xs text-heritage-ink-900 outline-none focus:ring-1 focus:ring-heritage-red-600 font-mono"
                   />
                   <p className="text-[10px] text-heritage-ink-500 mt-1 leading-snug">
-                    Dành cho file đã lưu sẵn trong thư mục <code className="bg-amber-100 px-1 py-0.5 rounded text-amber-900">public/audio/</code> hoặc liên kết trực tuyến (.mp3).
+                    Tự động điền khi tải tệp lên Cloud Storage hoặc nhập đường dẫn file tĩnh (.mp3).
                   </p>
                 </div>
 

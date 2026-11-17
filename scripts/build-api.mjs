@@ -18,7 +18,8 @@ const endpoints = [
   'api/rag/analytics.ts',
   'api/cms/articles.ts',
   'api/cms/media.ts',
-  'api/cms/upload-pdf.ts'
+  'api/cms/upload-pdf.ts',
+  'api/cms/upload-audio.ts'
 ];
 
 async function bundleApi() {

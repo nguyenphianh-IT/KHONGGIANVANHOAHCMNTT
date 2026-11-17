@@ -112,11 +112,12 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
       <div className="absolute top-0 right-0 w-64 h-64 bg-heritage-gold-500/10 rounded-full blur-3xl pointer-events-none" />
       <Radio className="absolute -right-4 -bottom-4 w-36 h-36 text-white/[0.03] pointer-events-none" />
 
-      {/* Real HTML5 Audio Element */}
+      {/* Real HTML5 Audio Element hỗ trợ Byte-Range Streaming HTTP 206 */}
       <audio
         ref={audioRef}
         src={finalAudioUrl}
-        preload="auto"
+        preload="metadata"
+        crossOrigin="anonymous"
         onPlay={() => setIsPlaying(true)}
         onPause={() => setIsPlaying(false)}
         onTimeUpdate={() => {
