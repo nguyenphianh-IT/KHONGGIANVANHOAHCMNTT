@@ -341,14 +341,6 @@ export const CmsDashboard: React.FC<CmsDashboardProps> = ({ isOpen, onClose }) =
     setStatusFilter('all');
     setIsEditing(false);
 
-    // Đồng bộ lên Database Cloud để Ban Giám Hiệu trên thiết bị khác thấy ngay
-    setIsCloudSynced(false);
-    saveArticleToCloud(updated).then((cloudRes) => {
-      setIsCloudSynced(cloudRes.success);
-    }).catch(() => {
-      setIsCloudSynced(false);
-    });
-
     // Add Audit Log
     const newLog: AuditLogItem = {
       id: `evt-${Date.now()}`,
@@ -363,9 +355,32 @@ export const CmsDashboard: React.FC<CmsDashboardProps> = ({ isOpen, onClose }) =
     addStoredAuditLog(newLog);
     setAuditLogs((prev) => [newLog, ...prev]);
 
+    // Đồng bộ lên Database Cloud để Ban Giám Hiệu trên thiết bị khác thấy ngay
+    setIsCloudSynced(false);
     setToastMsg({
-      type: 'success',
-      text: `Đã chuyển bài viết "${updated.title}" sang Hàng Đợi Kiểm Duyệt 4 Mắt thành công!`,
+      type: 'info',
+      text: `Đang lưu và đồng bộ bài viết "${updated.title}" lên Cloud Database cho Ban Giám Hiệu...`,
+    });
+
+    saveArticleToCloud(updated).then((cloudRes) => {
+      setIsCloudSynced(cloudRes.success);
+      if (cloudRes.success) {
+        setToastMsg({
+          type: 'success',
+          text: `Đã chuyển bài viết "${updated.title}" sang Hàng Đợi Kiểm Duyệt 4 Mắt và đồng bộ Cloud thành công! Ban Giám Hiệu trên mọi thiết bị có thể thẩm định ngay.`,
+        });
+      } else {
+        setToastMsg({
+          type: 'error',
+          text: `Bài viết đã lưu cục bộ nhưng chưa thể đồng bộ lên Cloud: ${cloudRes.error || 'Lỗi mạng'}. Vui lòng bấm "Đồng bộ Cloud" để thử lại.`,
+        });
+      }
+    }).catch((err) => {
+      setIsCloudSynced(false);
+      setToastMsg({
+        type: 'error',
+        text: `Lỗi kết nối Cloud: ${err?.message || 'Không thể đồng bộ'}.`,
+      });
     });
   };
 

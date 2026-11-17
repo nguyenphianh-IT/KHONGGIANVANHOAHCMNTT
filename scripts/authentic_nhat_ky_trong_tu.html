@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Tác phẩm: Nhật ký trong tù - Hồ Chí Minh</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700&display=swap');
+
+    @page {
+      size: 155mm 230mm;
+      margin: 0;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Merriweather', serif;
+      background-color: #ffffff;
+      color: #1a1a1a;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .page {
+      width: 155mm;
+      height: 230mm;
+      position: relative;
+      page-break-after: always;
+      overflow: hidden;
+      background: #fffdfa;
+      padding: 22mm 18mm 18mm 18mm;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* TRANG BÌA CHÍNH THỨC */
+    .page-cover {
+      background: linear-gradient(135deg, #7c1214 0%, #8f1619 50%, #680d0f 100%);
+      color: #fff;
+      padding: 20mm 16mm;
+      text-align: center;
+      justify-content: space-between;
+      align-items: center;
+      border: 8px double #d4af37;
+    }
+
+    .cover-top {
+      font-size: 11pt;
+      font-weight: 700;
+      letter-spacing: 2px;
+      color: #f7e7b4;
+      text-transform: uppercase;
+      border-bottom: 2px solid #d4af37;
+      padding-bottom: 10px;
+      width: 100%;
+    }
+
+    .cover-center {
+      margin: auto 0;
+    }
+
+    .cover-author {
+      font-size: 14pt;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      color: #fceea7;
+      margin-bottom: 15px;
+      text-transform: uppercase;
+    }
+
+    .cover-title {
+      font-size: 24pt;
+      font-weight: 900;
+      line-height: 1.25;
+      color: #ffffff;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.4);
+      margin-bottom: 12px;
+      text-transform: uppercase;
+    }
+
+    .cover-subtitle {
+      font-size: 11pt;
+      font-style: italic;
+      color: #f5d77f;
+      letter-spacing: 1px;
+    }
+
+    .cover-ornament {
+      margin: 20px auto;
+      width: 60px;
+      height: 2px;
+      background: #d4af37;
+    }
+
+    .cover-badge {
+      font-size: 8.5pt;
+      background: rgba(212, 175, 55, 0.2);
+      border: 1px solid #d4af37;
+      color: #fff;
+      padding: 6px 14px;
+      border-radius: 4px;
+      display: inline-block;
+      margin-top: 10px;
+    }
+
+    .cover-bottom {
+      font-size: 9pt;
+      color: #f7e7b4;
+      line-height: 1.5;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    /* CÁC TRANG NỘI DUNG */
+    .header-bar {
+      display: flex;
+      justify-content: space-between;
+      border-bottom: 1px solid #b89758;
+      padding-bottom: 4mm;
+      margin-bottom: 6mm;
+      font-size: 8pt;
+      color: #7c1214;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .footer-bar {
+      margin-top: auto;
+      border-top: 1px solid #e0d5be;
+      padding-top: 3mm;
+      display: flex;
+      justify-content: space-between;
+      font-size: 8pt;
+      color: #888;
+    }
+
+    .page-title {
+      font-size: 13pt;
+      font-weight: 900;
+      color: #7c1214;
+      text-align: center;
+      margin-bottom: 4mm;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .poem-box {
+      background: #fdfaf3;
+      border-left: 3px solid #7c1214;
+      padding: 4mm 5mm;
+      margin-bottom: 4.5mm;
+      border-radius: 0 4px 4px 0;
+    }
+
+    .poem-title {
+      font-size: 10pt;
+      font-weight: 700;
+      color: #7c1214;
+      margin-bottom: 2mm;
+    }
+
+    .poem-han {
+      font-size: 8.5pt;
+      color: #666;
+      font-style: italic;
+      margin-bottom: 2mm;
+      line-height: 1.4;
+    }
+
+    .poem-dich {
+      font-size: 9.5pt;
+      color: #1a1a1a;
+      line-height: 1.5;
+      font-weight: 500;
+    }
+
+    .intro-text {
+      font-size: 9.5pt;
+      line-height: 1.6;
+      text-align: justify;
+      color: #2b2b2b;
+      margin-bottom: 4mm;
+    }
+
+    .quote-callout {
+      background: #f7efe1;
+      border: 1px dashed #b89758;
+      border-radius: 4px;
+      padding: 3mm 4mm;
+      margin: 3mm 0;
+      text-align: center;
+      font-style: italic;
+      font-size: 9pt;
+      color: #7c1214;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- TRANG 1: BÌA SÁCH -->
+  <div class="page page-cover">
+    <div class="cover-top">
+      Không Gian Văn Hóa Hồ Chí Minh • THCS Nguyễn Trung Trực
+    </div>
+    <div class="cover-center">
+      <div class="cover-author">Chủ tịch Hồ Chí Minh</div>
+      <div class="cover-ornament"></div>
+      <div class="cover-title">Nhật Ký Trong Tù</div>
+      <div class="cover-subtitle">(Ngục Trung Nhật Ký)</div>
+      <div class="cover-ornament"></div>
+      <div class="cover-badge">TÁC PHẨM VĂN HỌC & DI SẢN TƯ TƯỞNG CÁCH MẠNG</div>
+    </div>
+    <div class="cover-bottom">
+      Tài Liệu Giáo Dục Truyền Thống Số Hóa<br>
+      Trường THCS Nguyễn Trung Trực – Phường Thới An
+    </div>
+  </div>
+
+  <!-- TRANG 2: LỜI GIỚI THIỆU TÁC PHẨM -->
+  <div class="page">
+    <div class="header-bar">
+      <span>Di Sản Tư Tưởng & Tác Phẩm</span>
+      <span>Nhật Ký Trong Tù</span>
+    </div>
+
+    <div class="page-title">Lời Giới Thiệu Tác Phẩm</div>
+
+    <p class="intro-text">
+      <strong>"Nhật ký trong tù"</strong> (chữ Hán: <em>Ngục trung nhật ký</em>) là tập thơ gồm 133 bài thơ chữ Hán được Chủ tịch Hồ Chí Minh sáng tác trong thời gian Người bị chính quyền Tưởng Giới Thạch bắt giam vô cớ và giải qua gần 30 nhà lao thuộc 13 huyện của tỉnh Quảng Tây (Trung Quốc), từ mùa thu năm 1942 đến mùa thu năm 1943.
+    </p>
+
+    <p class="intro-text">
+      Tập thơ là bức chân dung tự họa tinh thần vô giá của vị lãnh tụ kính yêu: một ý chí kiên cường, phong thái ung dung tự tại, lòng yêu nước nồng nàn và tấm lòng nhân ái bao la vượt lên trên gông xiềng, đói rét và đày đọa thể xác.
+    </p>
+
+    <div class="quote-callout">
+      "Thân thể ở trong lao,<br>
+      Tinh thần ở ngoài lao;<br>
+      Muốn nên sự nghiệp lớn,<br>
+      Tinh thần càng phải cao."
+    </div>
+
+    <p class="intro-text">
+      Tháng 10 năm 2012, Thủ tướng Chính phủ đã ký quyết định công nhận tập thơ <em>Nhật ký trong tù</em> là <strong>Bảo vật Quốc gia</strong> của nước Cộng hòa Xã hội Chủ nghĩa Việt Nam.
+    </p>
+
+    <div class="footer-bar">
+      <span>Trường THCS Nguyễn Trung Trực</span>
+      <span>Trang 2</span>
+    </div>
+  </div>
+
+  <!-- TRANG 3: BÀI THƠ ĐỀ TỪ & TỰ KHUYÊN -->
+  <div class="page">
+    <div class="header-bar">
+      <span>Tác Phẩm: Nhật Ký Trong Tù</span>
+      <span>Ý Chí & Nghị Lực Thép</span>
+    </div>
+
+    <div class="page-title">Những Vần Thơ Thép</div>
+
+    <div class="poem-box">
+      <div class="poem-title">1. ĐỀ TỪ (Khởi đầu tập thơ)</div>
+      <div class="poem-han">
+        Thân thể tại ngục trung,<br>
+        Tinh thần tại ngục ngoại;<br>
+        Dục thành đại sự nghiệp,<br>
+        Tinh thần cánh yếu đại.
+      </div>
+      <div class="poem-dich">
+        <strong>Dịch thơ (Nam Trân):</strong><br>
+        Thân thể ở trong lao,<br>
+        Tinh thần ở ngoài lao;<br>
+        Muốn nên sự nghiệp lớn,<br>
+        Tinh thần càng phải cao.
+      </div>
+    </div>
+
+    <div class="poem-box">
+      <div class="poem-title">2. TỰ KHUYÊN (Tự rèn luyện mình)</div>
+      <div class="poem-han">
+        Kiên trì nhất định thành công,<br>
+        Bất kinh đông lãnh chuyển xuân phong.<br>
+        Hàn đông tàn tạ hoa vô sắc,<br>
+        Xuân sắc vinh hoa mộc diệp hồng.
+      </div>
+      <div class="poem-dich">
+        <strong>Dịch thơ (Nam Trân):</strong><br>
+        Kiên trì nhất định thành công,<br>
+        Đông qua ắt hẳn gió xuân nồng.<br>
+        Đông tàn cây rụng trơ cành lá,<br>
+        Xuân đến chồi non nở rực hồng.
+      </div>
+    </div>
+
+    <div class="footer-bar">
+      <span>Không Gian Văn Hóa Hồ Chí Minh</span>
+      <span>Trang 3</span>
+    </div>
+  </div>
+
+  <!-- TRANG 4: NGẮM TRĂNG & CHIỀU TỐI -->
+  <div class="page">
+    <div class="header-bar">
+      <span>Tác Phẩm: Nhật Ký Trong Tù</span>
+      <span>Tâm Hồn Thi Sĩ Ung Dung</span>
+    </div>
+
+    <div class="page-title">Tinh Thần Lạc Quan Cách Mạng</div>
+
+    <div class="poem-box">
+      <div class="poem-title">3. VỌNG NGUYỆT (Ngắm trăng)</div>
+      <div class="poem-han">
+        Ngục trung vô tửu diệc vô hoa,<br>
+        Đối thử lương tiêu nại nhược hà?<br>
+        Nhân hướng song tiền khán minh nguyệt,<br>
+        Nguyệt tòng song khích khán thi gia.
+      </div>
+      <div class="poem-dich">
+        <strong>Dịch thơ (Nam Trân):</strong><br>
+        Trong tù không rượu cũng không hoa,<br>
+        Cảnh đẹp đêm nay, khó hững hờ;<br>
+        Người ngắm trăng soi ngoài cửa sổ,<br>
+        Trăng nhòm khe cửa ngắm nhà thơ.
+      </div>
+    </div>
+
+    <div class="poem-box">
+      <div class="poem-title">4. MỘ (Chiều tối)</div>
+      <div class="poem-han">
+        Quyện điểu quy lâm tầm túc thụ,<br>
+        Cô vân mạn mạn độ cô thôn.<br>
+        Sơn thôn thiếu nữ ma bao túc,<br>
+        Bao túc ma hoàn, lô dĩ hồng.
+      </div>
+      <div class="poem-dich">
+        <strong>Dịch thơ (Nam Trân):</strong><br>
+        Chim mỏi về rừng tìm chốn ngủ,<br>
+        Chòm mây trôi nhẹ giữa tầng không;<br>
+        Cô em xóm núi xay ngô tối,<br>
+        Xay hết, lò than đã rực hồng.
+      </div>
+    </div>
+
+    <div class="footer-bar">
+      <span>Không Gian Văn Hóa Hồ Chí Minh</span>
+      <span>Trang 4</span>
+    </div>
+  </div>
+
+  <!-- TRANG 5: GIẢI ĐI SỚM & LAI TÂN -->
+  <div class="page">
+    <div class="header-bar">
+      <span>Tác Phẩm: Nhật Ký Trong Tù</span>
+      <span>Bút Pháp Hiện Thực & Thép</span>
+    </div>
+
+    <div class="page-title">Hiện Thực & Tương Lai Tươi Sáng</div>
+
+    <div class="poem-box">
+      <div class="poem-title">5. TẢO GIẢI (Giải đi sớm)</div>
+      <div class="poem-han">
+        Nhất thứ kê đề dạ vị lan,<br>
+        Quần tinh ủng nguyệt thượng thu sơn.<br>
+        Chinh nhân dĩ tại chinh đồ thượng,<br>
+        Nghinh diện thu phong trận trận hàn.
+      </div>
+      <div class="poem-dich">
+        <strong>Dịch thơ (Nam Trân):</strong><br>
+        Gà gáy một lần đêm chửa tan,<br>
+        Chòm sao nâng nguyệt vượt lên ngàn;<br>
+        Người đi cất bước trên đường thẳm,<br>
+        Rát mặt đêm thu gió lạnh tràn.<br>
+        ...<br>
+        Phương đông màu trắng chuyển sang hồng,<br>
+        Bóng tối đêm tàn, quét sạch không;<br>
+        Hơi ấm bao la trùm vũ trụ,<br>
+        Người đi, thi hứng bỗng thêm nồng.
+      </div>
+    </div>
+
+    <div class="poem-box">
+      <div class="poem-title">6. BÀI HỌC GIÁO DỤC CHO HỌC SINH</div>
+      <div class="poem-dich">
+        Qua <em>Nhật ký trong tù</em>, học sinh Trường THCS Nguyễn Trung Trực học tập ở Bác tinh thần kiên trì vượt khó, tình yêu thương con người và lý tưởng sống cống hiến vì đất nước, quê hương.
+      </div>
+    </div>
+
+    <div class="footer-bar">
+      <span>Trường THCS Nguyễn Trung Trực</span>
+      <span>Trang 5</span>
+    </div>
+  </div>
+
+  <!-- TRANG 6: TRANG BÌA SAU -->
+  <div class="page page-cover" style="justify-content: center; gap: 20px;">
+    <div class="cover-top" style="border: none;">
+      DI SẢN VĂN HÓA VÔ GIÁ CỦA DÂN TỘC VIỆT NAM
+    </div>
+    <div class="cover-ornament"></div>
+    <div style="font-size: 11pt; line-height: 1.8; color: #fdfaf3; max-width: 90%;">
+      "Thơ Bác chữ Hán cổ kính, thâm trầm mà hiện đại, tràn đầy tinh thần lạc quan cách mạng và nhân đạo cộng sản chủ nghĩa cao đẹp."
+    </div>
+    <div class="cover-ornament"></div>
+    <div class="cover-bottom">
+      ẤN PHẨM SỐ HÓA PHỤC VỤ DẠY VÀ HỌC<br>
+      KHÔNG GIAN VĂN HÓA HỒ CHÍ MINH – THCS NGUYỄN TRUNG TRỰC<br>
+      Năm học 2025 – 2026
+    </div>
+  </div>
+
+</body>
+</html>

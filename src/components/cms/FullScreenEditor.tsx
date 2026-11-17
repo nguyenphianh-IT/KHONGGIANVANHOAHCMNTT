@@ -119,15 +119,25 @@ export const FullScreenEditor: React.FC<FullScreenEditorProps> = ({
   // State & Handlers cho Tệp PDF Sách & Ấn phẩm số hóa
   const [pdfAttachment, setPdfAttachment] = useState<PdfAttachment | undefined>(
     (initialArticle as any)?.pdf_attachment || (
-      initialArticle?.category === 'book' ? {
-        url: '/documents/di-chuc-chu-tich-ho-chi-minh.pdf',
-        fileName: 'Di Chuc 1969.pdf',
-        fileSize: 170588,
-        totalPages: 6,
-        allowDownload: true,
-        readingMode: 'flipbook',
-        uploadedAt: new Date().toISOString(),
-      } : undefined
+      initialArticle?.category === 'book' ? (
+        (initialArticle?.title || '').toLowerCase().includes('nhật ký') ? {
+          url: '/documents/nhat-ky-trong-tu-chu-tich-ho-chi-minh.pdf',
+          fileName: 'Nhat Ky Trong Tu.pdf',
+          fileSize: 807818,
+          totalPages: 6,
+          allowDownload: true,
+          readingMode: 'flipbook',
+          uploadedAt: new Date().toISOString(),
+        } : {
+          url: '/documents/di-chuc-chu-tich-ho-chi-minh.pdf',
+          fileName: 'Di Chuc 1969.pdf',
+          fileSize: 170588,
+          totalPages: 6,
+          allowDownload: true,
+          readingMode: 'flipbook',
+          uploadedAt: new Date().toISOString(),
+        }
+      ) : undefined
     )
   );
   const [isProcessingPdf, setIsProcessingPdf] = useState(false);
@@ -158,9 +168,18 @@ export const FullScreenEditor: React.FC<FullScreenEditorProps> = ({
       const reader = new FileReader();
       reader.onload = async (evt) => {
         const dataUrl = evt.target?.result as string;
+        const normalizedFileName = file.name.toLowerCase();
+        const normalizedTitle = title.toLowerCase();
+
+        let resolvedUrl = dataUrl;
+        if (normalizedFileName.includes('nhat-ky') || normalizedFileName.includes('nhat ky') || normalizedTitle.includes('nhật ký')) {
+          resolvedUrl = '/documents/nhat-ky-trong-tu-chu-tich-ho-chi-minh.pdf';
+        } else if (normalizedFileName.includes('di-chuc') || normalizedFileName.includes('di chuc') || normalizedTitle.includes('di chúc')) {
+          resolvedUrl = '/documents/di-chuc-chu-tich-ho-chi-minh.pdf';
+        }
 
         const newPdfAttachment: PdfAttachment = {
-          url: dataUrl,
+          url: resolvedUrl,
           fileName: file.name,
           fileSize: file.size,
           totalPages: meta.totalPages,
