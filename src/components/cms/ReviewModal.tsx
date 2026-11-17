@@ -38,10 +38,16 @@ export const ReviewModal: React.FC<ReviewModalProps> = ({
       return;
     }
     if (!article.id) return;
-    setIsSubmitting(true);
-    await onApprove(article.id, feedback);
-    setIsSubmitting(false);
-    onClose();
+    try {
+      setIsSubmitting(true);
+      await onApprove(article.id, feedback);
+      onClose();
+    } catch (err: any) {
+      console.error('[handleApprove Error]', err);
+      alert('Đã xảy ra lỗi khi phê duyệt bài viết: ' + (err?.message || 'Vui lòng thử lại.'));
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleReject = async () => {
@@ -50,10 +56,16 @@ export const ReviewModal: React.FC<ReviewModalProps> = ({
       alert('Vui lòng nhập lý do hoặc hướng dẫn chỉnh sửa trước khi từ chối bài viết!');
       return;
     }
-    setIsSubmitting(true);
-    await onReject(article.id, feedback);
-    setIsSubmitting(false);
-    onClose();
+    try {
+      setIsSubmitting(true);
+      await onReject(article.id, feedback);
+      onClose();
+    } catch (err: any) {
+      console.error('[handleReject Error]', err);
+      alert('Đã xảy ra lỗi khi yêu cầu sửa: ' + (err?.message || 'Vui lòng thử lại.'));
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (

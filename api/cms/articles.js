@@ -207,32 +207,37 @@ async function handleSaveCmsArticle(article) {
         console.warn("[handleSaveCmsArticle itemUpsert Warning]", itemErr.message);
       }
     }
-    const { data: revs } = await db.from("content_revisions").select("id, version_number").eq("item_id", itemId).order("version_number", { ascending: false }).limit(1);
+    const { data: revs } = await db.from("content_revisions").select("id, version_number, title, summary, status, data").eq("item_id", itemId).order("version_number", { ascending: false }).limit(1);
     const existingRev = revs && revs.length > 0 ? revs[0] : null;
+    const existingData = existingRev?.data || {};
     const revId = existingRev ? existingRev.id : toValidUuid(`rev-${rawId}`);
     const nextVersion = existingRev ? existingRev.version_number || 1 : 1;
+    const safeContent = article.content !== void 0 && article.content !== "" ? article.content : existingData.content || "";
+    const safeSummary = article.summary !== void 0 && article.summary !== "" ? article.summary : existingRev?.summary || "";
+    const safeFeaturedImage = article.featured_image !== void 0 && article.featured_image !== "" ? article.featured_image : existingData.featured_image || "";
+    const safeMediaAssets = Array.isArray(article.media_assets) && article.media_assets.length > 0 ? article.media_assets : Array.isArray(existingData.media_assets) ? existingData.media_assets : [];
     const revPayload = {
       id: revId,
       item_id: itemId,
       version_number: nextVersion,
-      title: article.title,
-      summary: article.summary || "",
-      status: article.status || "draft",
+      title: article.title || existingRev?.title || "B\xE0i vi\u1EBFt",
+      summary: safeSummary,
+      status: article.status || existingRev?.status || "draft",
       author_id: SYSTEM_AUTHOR_ID,
       data: {
-        content: article.content || "",
-        category: article.category || "article",
-        topic: article.topic || "Kh\xF4ng gian v\u0103n h\xF3a H\u1ED3 Ch\xED Minh",
-        featured_image: article.featured_image || "",
-        media_assets: Array.isArray(article.media_assets) ? article.media_assets : [],
-        references: article.references || "",
-        audio_url: article.audio_url || "",
-        audio_duration: article.audio_duration || "",
-        author_name: article.author_name || "Ban Bi\xEAn T\u1EADp THCS Nguy\u1EC5n Trung Tr\u1EF1c",
-        author_id: article.author_id || "",
+        content: safeContent,
+        category: article.category || existingData.category || "article",
+        topic: article.topic || existingData.topic || "Kh\xF4ng gian v\u0103n h\xF3a H\u1ED3 Ch\xED Minh",
+        featured_image: safeFeaturedImage,
+        media_assets: safeMediaAssets,
+        references: article.references || existingData.references || "",
+        audio_url: article.audio_url || existingData.audio_url || "",
+        audio_duration: article.audio_duration || existingData.audio_duration || "",
+        author_name: article.author_name || existingData.author_name || "Ban Bi\xEAn T\u1EADp THCS Nguy\u1EC5n Trung Tr\u1EF1c",
+        author_id: article.author_id || existingData.author_id || "",
         slug: itemPayload.slug,
         legacy_id: rawId,
-        tags: [article.category, article.topic || ""].filter(Boolean),
+        tags: [article.category || existingData.category, article.topic || existingData.topic || ""].filter(Boolean),
         synced_at: nowIso
       },
       updated_at: nowIso

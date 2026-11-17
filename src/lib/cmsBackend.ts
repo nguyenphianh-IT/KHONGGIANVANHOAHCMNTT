@@ -212,38 +212,53 @@ export async function handleSaveCmsArticle(article: ArticleData): Promise<{
     // 2. Check existing revision for this item_id
     const { data: revs } = await db
       .from('content_revisions')
-      .select('id, version_number')
+      .select('id, version_number, title, summary, status, data')
       .eq('item_id', itemId)
       .order('version_number', { ascending: false })
       .limit(1);
 
     const existingRev = revs && revs.length > 0 ? revs[0] : null;
+    const existingData = (existingRev?.data || {}) as Record<string, any>;
     const revId = existingRev ? existingRev.id : toValidUuid(`rev-${rawId}`);
     const nextVersion = existingRev ? (existingRev.version_number || 1) : 1;
+
+    // Bảo toàn dữ liệu đã có nếu payload chỉ cập nhật trạng thái duyệt
+    const safeContent = article.content !== undefined && article.content !== ''
+      ? article.content
+      : (existingData.content || '');
+    const safeSummary = article.summary !== undefined && article.summary !== ''
+      ? article.summary
+      : (existingRev?.summary || '');
+    const safeFeaturedImage = article.featured_image !== undefined && article.featured_image !== ''
+      ? article.featured_image
+      : (existingData.featured_image || '');
+    const safeMediaAssets = Array.isArray(article.media_assets) && article.media_assets.length > 0
+      ? article.media_assets
+      : (Array.isArray(existingData.media_assets) ? existingData.media_assets : []);
 
     // 3. Upsert content_revisions
     const revPayload = {
       id: revId,
       item_id: itemId,
       version_number: nextVersion,
-      title: article.title,
-      summary: article.summary || '',
-      status: article.status || 'draft',
+      title: article.title || existingRev?.title || 'Bài viết',
+      summary: safeSummary,
+      status: article.status || existingRev?.status || 'draft',
       author_id: SYSTEM_AUTHOR_ID,
       data: {
-        content: article.content || '',
-        category: article.category || 'article',
-        topic: article.topic || 'Không gian văn hóa Hồ Chí Minh',
-        featured_image: article.featured_image || '',
-        media_assets: Array.isArray(article.media_assets) ? article.media_assets : [],
-        references: article.references || '',
-        audio_url: article.audio_url || '',
-        audio_duration: article.audio_duration || '',
-        author_name: article.author_name || 'Ban Biên Tập THCS Nguyễn Trung Trực',
-        author_id: article.author_id || '',
+        content: safeContent,
+        category: article.category || existingData.category || 'article',
+        topic: article.topic || existingData.topic || 'Không gian văn hóa Hồ Chí Minh',
+        featured_image: safeFeaturedImage,
+        media_assets: safeMediaAssets,
+        references: article.references || existingData.references || '',
+        audio_url: article.audio_url || existingData.audio_url || '',
+        audio_duration: article.audio_duration || existingData.audio_duration || '',
+        author_name: article.author_name || existingData.author_name || 'Ban Biên Tập THCS Nguyễn Trung Trực',
+        author_id: article.author_id || existingData.author_id || '',
         slug: itemPayload.slug,
         legacy_id: rawId,
-        tags: [article.category, article.topic || ''].filter(Boolean),
+        tags: [article.category || existingData.category, article.topic || existingData.topic || ''].filter(Boolean),
         synced_at: nowIso,
       },
       updated_at: nowIso,

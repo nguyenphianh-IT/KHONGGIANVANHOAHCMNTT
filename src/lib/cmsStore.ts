@@ -1006,13 +1006,19 @@ export async function saveArticleToCloud(article: ArticleData): Promise<{
     saveMediaBatchToCloud(referencedAssets).catch((e) => console.warn('[syncMediaAssets background error]', e));
   }
 
-  // 1. Kênh 1: Gọi Serverless API chuyên dụng (/api/cms/articles)
+  // 1. Kênh 1: Gọi Serverless API chuyên dụng (/api/cms/articles) với timeout an toàn
   try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 8000);
+
     const res = await fetch('/api/cms/articles', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ article: payloadArticle }),
+      signal: controller.signal,
     });
+    clearTimeout(timeoutId);
+
     if (res.ok) {
       const json = await res.json();
       if (json.success && json.article) {
@@ -1023,8 +1029,8 @@ export async function saveArticleToCloud(article: ArticleData): Promise<{
     console.warn('[saveArticleToCloud API error]', apiErr);
   }
 
-  // 2. Kênh 2: Gọi trực tiếp cmsBackend (Dự phòng cục bộ hoặc môi trường Node/SSR)
-  if (isSupabaseConfigured) {
+  // 2. Kênh 2: Dự phòng nếu đang ở môi trường SSR/Node.js phía máy chủ
+  if (typeof window === 'undefined' && isSupabaseConfigured) {
     try {
       const { handleSaveCmsArticle } = await import('./cmsBackend');
       return await handleSaveCmsArticle(payloadArticle);

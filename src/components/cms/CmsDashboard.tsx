@@ -329,18 +329,13 @@ export const CmsDashboard: React.FC<CmsDashboardProps> = ({ isOpen, onClose }) =
       return;
     }
 
-    // Atomic Approve & Publish
+    // Atomic Approve & Publish LOCALLY first (Phản hồi tức thì không chờ mạng)
     const approvedItem: ArticleData = { ...target, status: 'published' as const, updated_at: 'Vừa duyệt' };
     const updatedList = articles.map((a) =>
       a.id === articleId ? approvedItem : a
     );
     setArticles(updatedList);
     saveStoredArticles(updatedList);
-
-    // Đồng bộ xuất bản lên Database Cloud
-    setIsCloudSynced(false);
-    const cloudRes = await saveArticleToCloud(approvedItem);
-    setIsCloudSynced(cloudRes.success);
 
     // Record Audit Event
     const newLog: AuditLogItem = {
@@ -358,8 +353,25 @@ export const CmsDashboard: React.FC<CmsDashboardProps> = ({ isOpen, onClose }) =
 
     setToastMsg({
       type: 'success',
-      text: `Phê duyệt 4 mắt thành công! Bài viết "${target.title}" đã được xuất bản đồng bộ lên Cloud Database cho mọi thiết bị!`,
+      text: `Phê duyệt 4 mắt thành công! Bài viết "${target.title}" đã được duyệt xuất bản.`,
     });
+
+    // Đồng bộ xuất bản lên Database Cloud ở chế độ nền
+    setIsCloudSynced(false);
+    saveArticleToCloud(approvedItem)
+      .then((cloudRes) => {
+        setIsCloudSynced(cloudRes.success);
+        if (cloudRes.success) {
+          setToastMsg({
+            type: 'success',
+            text: `Đã đồng bộ xuất bản bài viết "${target.title}" lên Cloud Database cho mọi thiết bị!`,
+          });
+        }
+      })
+      .catch((cloudErr) => {
+        console.warn('[Cloud publish background error]', cloudErr);
+        setIsCloudSynced(false);
+      });
   };
 
   // 4. Action: Reject Article
