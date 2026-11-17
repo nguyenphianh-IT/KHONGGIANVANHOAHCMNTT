@@ -96,9 +96,11 @@ export const Hero: React.FC<HeroProps> = ({ onExplore, onViewResources }) => {
             <span className="block sm:inline whitespace-nowrap">HỒ CHÍ MINH</span>
           </h1>
 
-          {/* Mô tả ngắn gọn (1 câu tinh giản) */}
-          <p className="mt-1 sm:mt-2.5 md:mt-3 text-[11px] min-[360px]:text-xs sm:text-sm md:text-base text-heritage-ivory-100/90 leading-snug sm:leading-relaxed max-w-2xl mx-auto font-normal">
-            Lan tỏa tư tưởng, đạo đức, phong cách Hồ Chí Minh trong môi trường học đường.
+          {/* Khẩu hiệu trang trọng màu vàng ánh kim có hiệu ứng tỏa sáng */}
+          <p className="mt-1.5 sm:mt-3 md:mt-3.5 max-w-3xl mx-auto text-center">
+            <span className="inline-block font-serif font-bold tracking-wide text-sm min-[360px]:text-base sm:text-lg md:text-xl lg:text-2xl leading-snug sm:leading-relaxed hero-gold-shimmer">
+              Sáng mãi tên Người trên không gian số.
+            </span>
           </p>
 
           {/* Cụm 2 nút hành động (CTA) - Vùng chạm lớn min-h-[44px] sm:min-h-[48px] chuẩn Accessibility */}

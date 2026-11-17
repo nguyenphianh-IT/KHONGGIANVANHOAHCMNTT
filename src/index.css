@@ -87,8 +87,47 @@
   animation: fadeInSoft 0.8s ease-out forwards;
 }
 
+/* Hiệu ứng ánh kim vàng chuyển động trang trọng cho khẩu hiệu Hero */
+@keyframes goldShimmerSweep {
+  0% {
+    background-position: 0% 50%;
+    filter: drop-shadow(0 0 8px rgba(255, 215, 94, 0.32)) drop-shadow(0 2px 4px rgba(0, 0, 0, 0.5));
+  }
+  50% {
+    background-position: 100% 50%;
+    filter: drop-shadow(0 0 16px rgba(255, 224, 122, 0.58)) drop-shadow(0 2px 5px rgba(0, 0, 0, 0.55));
+  }
+  100% {
+    background-position: 200% 50%;
+    filter: drop-shadow(0 0 8px rgba(255, 215, 94, 0.32)) drop-shadow(0 2px 4px rgba(0, 0, 0, 0.5));
+  }
+}
+
+.hero-gold-shimmer {
+  background: linear-gradient(
+    110deg,
+    #e8b931 0%,
+    #f9df7b 22%,
+    #fffbe6 42%,
+    #ffd54f 58%,
+    #e5b024 78%,
+    #f9df7b 92%,
+    #e8b931 100%
+  );
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: goldShimmerSweep 5s linear infinite;
+}
+
 /* Accessibility: Respect user's motion preferences */
 @media (prefers-reduced-motion: reduce) {
+  .hero-gold-shimmer {
+    background: none;
+    color: #fde68a;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.5));
+  }
   *,
   ::before,
   ::after {
