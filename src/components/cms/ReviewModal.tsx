@@ -39,10 +39,11 @@ export const ReviewModal: React.FC<ReviewModalProps> = ({
       alert('VI PHẠM QUY TẮC 4 MẮT: Bạn không thể tự phê duyệt bài viết của chính mình!');
       return;
     }
-    if (!article.id) return;
+    const targetKey = article.id || article.slug;
+    if (!targetKey) return;
     try {
       setIsSubmitting(true);
-      await onApprove(article.id, feedback);
+      await onApprove(targetKey, feedback);
       onClose();
     } catch (err: any) {
       console.error('[handleApprove Error]', err);
@@ -53,14 +54,15 @@ export const ReviewModal: React.FC<ReviewModalProps> = ({
   };
 
   const handleReject = async () => {
-    if (!article.id) return;
+    const targetKey = article.id || article.slug;
+    if (!targetKey) return;
     if (!feedback.trim()) {
       alert('Vui lòng nhập lý do hoặc hướng dẫn chỉnh sửa trước khi từ chối bài viết!');
       return;
     }
     try {
       setIsSubmitting(true);
-      await onReject(article.id, feedback);
+      await onReject(targetKey, feedback);
       onClose();
     } catch (err: any) {
       console.error('[handleReject Error]', err);

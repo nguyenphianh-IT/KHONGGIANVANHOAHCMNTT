@@ -460,11 +460,12 @@ export function saveDeletedArticleId(id: string): void {
 }
 
 export async function unpublishArticleInCloud(articleId: string): Promise<boolean> {
+  const nowIso = new Date().toISOString();
   try {
     const current = getStoredArticles();
     const art = current.find((a) => a.id === articleId || a.slug === articleId);
     if (art) {
-      await saveArticleToCloud({ ...art, status: 'draft' });
+      await saveArticleToCloud({ ...art, status: 'draft', updated_at: nowIso });
       return true;
     }
   } catch {}
@@ -1150,10 +1151,17 @@ export async function fetchArticlesFromSupabase(): Promise<{
       const laTime = parseTime(la.updated_at || la.created_at);
       const caTime = parseTime(ca.updated_at || ca.created_at);
 
-      // QUY TẮC VÀNG 1: Nếu Cloud đã duyệt và xuất bản ('published'), Cloud LUÔN CHIẾN THẮNG trước trạng thái 'pending'/'draft' của tác giả!
-      // (Bảo đảm bài viết đã duyệt trên mọi thiết bị lập tức rời khỏi Hàng Đợi Chờ Duyệt)
+      // QUY TẮC VÀNG 1: Nếu Cloud đã duyệt và xuất bản ('published'):
+      // - Nếu cục bộ biên tập viên vừa hiệu chỉnh và nộp duyệt lại ('pending' hoặc 'draft') SAU thời điểm xuất bản Cloud (laTime > caTime + 1000):
+      //   Bảo toàn bản hiệu chỉnh 'pending'/'draft' của tác giả và đồng bộ lên Cloud!
+      // - Ngược lại (nếu Cloud được duyệt sau hoặc cùng lúc), Cloud 'published' LUÔN CHIẾN THẮNG để bài đã duyệt lập tức rời khỏi hàng đợi chờ duyệt trên mọi thiết bị!
       if (ca.status === 'published') {
-        mergedMap.set(key, ca);
+        if ((la.status === 'pending' || la.status === 'draft') && laTime > caTime + 1000) {
+          mergedMap.set(key, la);
+          saveArticleToCloud(la).catch(() => {});
+        } else {
+          mergedMap.set(key, ca);
+        }
         continue;
       }
 
@@ -1168,12 +1176,13 @@ export async function fetchArticlesFromSupabase(): Promise<{
         }
       }
 
-      // QUY TẮC VÀNG 3: Nếu Local vừa nộp duyệt ('pending') gần đây, bảo vệ không để Cloud 'draft' ghi đè
-      if (la.status === 'pending' && ca.status === 'draft') {
+      // QUY TẮC VÀNG 3: Nếu Local vừa nộp duyệt ('pending') sau khi bị từ chối ('rejected') hoặc từ bản nháp ('draft'):
+      // Bảo vệ không để Cloud 'draft' hoặc 'rejected' cũ ghi đè
+      if (la.status === 'pending' && (ca.status === 'draft' || ca.status === 'rejected')) {
         const isRecentSubmission = Date.now() - laTime < 3600000 || laTime >= caTime;
         if (isRecentSubmission) {
-          mergedMap.set(key, { ...ca, status: 'pending', updated_at: la.updated_at });
-          saveArticleToCloud({ ...ca, status: 'pending', updated_at: la.updated_at }).catch(() => {});
+          mergedMap.set(key, { ...ca, ...la, status: 'pending', updated_at: la.updated_at });
+          saveArticleToCloud({ ...ca, ...la, status: 'pending', updated_at: la.updated_at }).catch(() => {});
           continue;
         }
       }

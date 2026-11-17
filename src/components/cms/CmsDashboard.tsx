@@ -267,13 +267,21 @@ export const CmsDashboard: React.FC<CmsDashboardProps> = ({ isOpen, onClose }) =
     const nowIso = new Date().toISOString();
     let updatedList: ArticleData[];
     let targetArticle: ArticleData;
-    if (article.id) {
+    const targetId = article.id;
+    const targetSlug = article.slug;
+    const exists = articles.some(
+      (a) => (targetId && a.id === targetId) || (targetSlug && a.slug === targetSlug)
+    );
+
+    if (exists) {
       targetArticle = { ...article, updated_at: nowIso };
-      updatedList = articles.map((a) => (a.id === article.id ? targetArticle : a));
+      updatedList = articles.map((a) =>
+        (targetId && a.id === targetId) || (targetSlug && a.slug === targetSlug) ? targetArticle : a
+      );
     } else {
       targetArticle = {
         ...article,
-        id: `art-${Date.now()}`,
+        id: article.id || `art-${Date.now()}`,
         status: 'draft',
         author_id: currentPersona.id,
         author_name: currentPersona.name,
@@ -311,8 +319,18 @@ export const CmsDashboard: React.FC<CmsDashboardProps> = ({ isOpen, onClose }) =
       updated_at: nowIso,
     };
 
-    const updatedList = article.id
-      ? articles.map((a) => (a.id === article.id ? updated : a))
+    const targetId = updated.id;
+    const targetSlug = updated.slug;
+    const exists = articles.some(
+      (a) => (targetId && a.id === targetId) || (targetSlug && a.slug === targetSlug)
+    );
+
+    const updatedList = exists
+      ? articles.map((a) =>
+          (targetId && a.id === targetId) || (targetSlug && a.slug === targetSlug)
+            ? updated
+            : a
+        )
       : [updated, ...articles];
 
     setArticles(updatedList);
@@ -353,7 +371,7 @@ export const CmsDashboard: React.FC<CmsDashboardProps> = ({ isOpen, onClose }) =
 
   // 3. Action: Four-Eyes Approve
   const handleApproveArticle = async (articleId: string, feedback: string) => {
-    const target = articles.find((a) => a.id === articleId);
+    const target = articles.find((a) => a.id === articleId || a.slug === articleId);
     if (!target) return;
 
     // Four-Eyes Rule Check!
@@ -368,8 +386,10 @@ export const CmsDashboard: React.FC<CmsDashboardProps> = ({ isOpen, onClose }) =
     const nowIso = new Date().toISOString();
     // Atomic Approve & Publish LOCALLY first (Phản hồi tức thì không chờ mạng)
     const approvedItem: ArticleData = { ...target, status: 'published' as const, updated_at: nowIso };
+    const targetId = approvedItem.id;
+    const targetSlug = approvedItem.slug;
     const updatedList = articles.map((a) =>
-      a.id === articleId ? approvedItem : a
+      (targetId && a.id === targetId) || (targetSlug && a.slug === targetSlug) ? approvedItem : a
     );
     setArticles(updatedList);
     saveStoredArticles(updatedList);
@@ -421,8 +441,18 @@ export const CmsDashboard: React.FC<CmsDashboardProps> = ({ isOpen, onClose }) =
       updated_at: nowIso,
     };
 
-    const updatedList = article.id
-      ? articles.map((a) => (a.id === article.id ? approvedItem : a))
+    const targetId = approvedItem.id;
+    const targetSlug = approvedItem.slug;
+    const exists = articles.some(
+      (a) => (targetId && a.id === targetId) || (targetSlug && a.slug === targetSlug)
+    );
+
+    const updatedList = exists
+      ? articles.map((a) =>
+          (targetId && a.id === targetId) || (targetSlug && a.slug === targetSlug)
+            ? approvedItem
+            : a
+        )
       : [approvedItem, ...articles];
 
     setArticles(updatedList);
@@ -458,13 +488,15 @@ export const CmsDashboard: React.FC<CmsDashboardProps> = ({ isOpen, onClose }) =
 
   // 5. Action: Reject Article
   const handleRejectArticle = async (articleId: string, feedback: string) => {
-    const target = articles.find((a) => a.id === articleId);
+    const target = articles.find((a) => a.id === articleId || a.slug === articleId);
     if (!target) return;
 
     const nowIso = new Date().toISOString();
     const rejectedItem: ArticleData = { ...target, status: 'rejected' as const, updated_at: nowIso };
+    const targetId = rejectedItem.id;
+    const targetSlug = rejectedItem.slug;
     const updatedList = articles.map((a) =>
-      a.id === articleId ? rejectedItem : a
+      (targetId && a.id === targetId) || (targetSlug && a.slug === targetSlug) ? rejectedItem : a
     );
     setArticles(updatedList);
     saveStoredArticles(updatedList);

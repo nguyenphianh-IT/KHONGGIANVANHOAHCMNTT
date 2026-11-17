@@ -258,29 +258,37 @@ export const FullScreenEditor: React.FC<FullScreenEditorProps> = ({
 
   // Handle Save
   const handleSave = async () => {
-    setIsSaving(true);
-    const article: ArticleData = {
-      id: initialArticle?.id,
-      title: title || 'Bản thảo chưa đặt tên',
-      slug: slug || 'ban-thao-chua-dat-ten',
-      summary,
-      content,
-      category,
-      topic,
-      featured_image: featuredImage,
-      references,
-      audio_url: audioUrl,
-      audio_duration: audioDuration,
-      status: initialArticle?.status || 'draft',
-      author_name: currentUserName,
-    };
-    await onSaveDraft(article);
-    setIsSaving(false);
-    const now = new Date();
-    setLastSavedTime(`${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}:${now.getSeconds().toString().padStart(2, '0')}`);
+    try {
+      setIsSaving(true);
+      const nowIso = new Date().toISOString();
+      const article: ArticleData = {
+        ...(initialArticle || {}),
+        title: title || 'Bản thảo chưa đặt tên',
+        slug: slug || 'ban-thao-chua-dat-ten',
+        summary,
+        content,
+        category,
+        topic,
+        featured_image: featuredImage,
+        references,
+        audio_url: audioUrl,
+        audio_duration: audioDuration,
+        status: initialArticle?.status || 'draft',
+        author_name: initialArticle?.author_name || currentUserName,
+        updated_at: nowIso,
+      };
+      await onSaveDraft(article);
+      const now = new Date();
+      setLastSavedTime(`${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}:${now.getSeconds().toString().padStart(2, '0')}`);
+    } catch (err: any) {
+      console.error('[handleSave Error]', err);
+      alert('Có lỗi khi lưu bản nháp: ' + (err?.message || 'Vui lòng thử lại!'));
+    } finally {
+      setIsSaving(false);
+    }
   };
 
-  // Handle Submit
+  // Handle Submit for Review
   const handleSubmit = async () => {
     if (!title.trim()) {
       alert('Vui lòng nhập Tiêu đề bài viết trước khi nộp duyệt!');
@@ -295,26 +303,33 @@ export const FullScreenEditor: React.FC<FullScreenEditorProps> = ({
       return;
     }
 
-    setIsSaving(true);
-    const nowIso = new Date().toISOString();
-    const article: ArticleData = {
-      id: initialArticle?.id,
-      title,
-      slug,
-      summary,
-      content,
-      category,
-      topic,
-      featured_image: featuredImage,
-      references,
-      audio_url: audioUrl,
-      audio_duration: audioDuration,
-      status: 'pending',
-      author_name: initialArticle?.author_name || currentUserName,
-      updated_at: nowIso,
-    };
-    await onSubmitReview(article);
-    setIsSaving(false);
+    try {
+      setIsSaving(true);
+      const nowIso = new Date().toISOString();
+      const article: ArticleData = {
+        ...(initialArticle || {}),
+        title,
+        slug,
+        summary,
+        content,
+        category,
+        topic,
+        featured_image: featuredImage,
+        references,
+        audio_url: audioUrl,
+        audio_duration: audioDuration,
+        status: 'pending',
+        author_name: initialArticle?.author_name || currentUserName,
+        updated_at: nowIso,
+      };
+      await onSubmitReview(article);
+      onBack();
+    } catch (err: any) {
+      console.error('[handleSubmit Error]', err);
+      alert('Có lỗi khi gửi bài viết kiểm duyệt: ' + (err?.message || 'Vui lòng thử lại!'));
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   // Direct Approve & Publish by Reviewer / Admin
