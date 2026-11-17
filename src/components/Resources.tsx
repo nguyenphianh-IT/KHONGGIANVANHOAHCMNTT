@@ -120,13 +120,8 @@ export const Resources: React.FC = () => {
   ];
 
   const allCombinedResources = useMemo(() => {
-    // Nếu trong liveResources từ CMS đã có sách/tài liệu Di chúc, loại bỏ mục mẫu trùng lặp res-2
-    const hasLiveDiChuc = liveResources.some(
-      (r) => r.category === 'book' || r.title.toLowerCase().includes('di chúc')
-    );
-    const filteredStatic = hasLiveDiChuc
-      ? resourcesData.filter((r) => r.id !== 'res-2')
-      : resourcesData;
+    // Loại bỏ các mục mẫu res-2 và res-6 sinh ra trong quá trình làm giao diện
+    const filteredStatic = resourcesData.filter((r) => r.id !== 'res-2' && r.id !== 'res-6');
 
     return [...liveResources, ...filteredStatic];
   }, [liveResources]);

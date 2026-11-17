@@ -17,28 +17,6 @@ export const resourcesData: ResourceItem[] = [
     tags: ['Tuyên ngôn độc lập', 'Ba Đình', '1945', 'Lịch sử dân tộc']
   },
   {
-    id: 'res-2',
-    title: 'Di chúc của Chủ tịch Hồ Chí Minh (Bản công bố chính thức)',
-    category: 'book',
-    categoryLabel: 'Sách & Tài liệu học tập',
-    description: 'Bảo vật quốc gia kết tinh tư tưởng nhân văn, tầm nhìn chiến lược và lời căn dặn ân cần đối với thế hệ tương lai của đất nước.',
-    fullContent: 'Di chúc là tâm nguyện cuối cùng, là công trình tư tưởng vĩ đại Bác viết và sửa đổi cẩn trọng từ tháng 5/1965 đến tháng 5/1969. Trong Di chúc, Bác căn dặn toàn diện các mặt: sự đoàn kết thống nhất trong Đảng, kế hoạch kiến thiết lại đất nước sau chiến tranh, chính sách đối với thương binh liệt sĩ, và đặc biệt dành trọn vẹn một phần quan trọng để nói về thế hệ thanh niên: "Đoàn viên và thanh niên ta nói chung là tốt, mọi việc đều hăng hái xung phong... Đảng cần phải chăm lo giáo dục đạo đức cách mạng cho họ, đào tạo họ thành những người thừa kế xây dựng chủ nghĩa xã hội vừa hồng vừa chuyên."',
-    authorOrSource: 'Nhà xuất bản Chính trị Quốc gia Sự thật',
-    dateOrEra: '1965 - 1969',
-    thumbnail: 'https://images.unsplash.com/photo-1512820790803-83ca734da794?auto=format&fit=crop&w=600&q=80',
-    pdfAttachment: {
-      url: '/documents/di-chuc-chu-tich-ho-chi-minh.pdf',
-      fileName: 'di-chuc-chu-tich-ho-chi-minh.pdf',
-      fileSize: 7435,
-      totalPages: 6,
-      allowDownload: true,
-      readingMode: 'flipbook',
-    },
-    badgeText: 'Bảo vật quốc gia',
-    isMockData: false,
-    tags: ['Di chúc', 'Đoàn kết', 'Thế hệ trẻ', 'Vừa hồng vừa chuyên']
-  },
-  {
     id: 'res-3',
     title: 'Bộ sưu tập ảnh tư liệu: Bác Hồ với thiếu niên, nhi đồng',
     category: 'image',
@@ -79,20 +57,6 @@ export const resourcesData: ResourceItem[] = [
     badgeText: 'Thư gửi học sinh',
     isMockData: false,
     tags: ['Thư khai trường', 'Học sinh', 'Sánh vai cường quốc', '1945']
-  },
-  {
-    id: 'res-6',
-    title: 'Tập thơ "Nhật ký trong tù" (Ngục trung nhật ký) - Bản dịch tuyển chọn',
-    category: 'book',
-    categoryLabel: 'Sách & Tài liệu học tập',
-    description: 'Tập thơ chữ Hán gồm 133 bài thơ được Bác viết trong chuỗi ngày bị chính quyền Tưởng Giới Thạch giam giữ trái phép tại Quảng Tây (1942 - 1943).',
-    fullContent: 'Tập thơ "Nhật ký trong tù" phản ánh tâm hồn kiên định, tinh thần thép của người chiến sĩ cách mạng vĩ đại ("Thân thể ở trong lao / Tinh thần ở ngoài lao / Muốn nên sự nghiệp lớn / Tinh thần càng phải cao"). Tác phẩm là di sản văn học lớn, được đưa vào chương trình giáo dục phổ thông giúp học sinh cảm nhận ý chí phi thường vượt lên nghịch cảnh.',
-    authorOrSource: 'Viện Văn học - NXB Văn học',
-    dateOrEra: '1942 - 1943',
-    thumbnail: 'https://images.unsplash.com/photo-1457369804613-52c61a468e7d?auto=format&fit=crop&w=600&q=80',
-    badgeText: 'Di sản văn học',
-    isMockData: false,
-    tags: ['Nhật ký trong tù', 'Thơ Bác Hồ', 'Ý chí nghị lực', 'Ngữ văn THCS']
   },
   {
     id: 'res-7',
@@ -140,8 +104,8 @@ export async function fetchResourcesFromSupabase(): Promise<ResourceItem[]> {
 
     if (data?.data && Array.isArray((data.data as any).resources)) {
       const items = (data.data as any).resources as ResourceItem[];
-      // Loại bỏ hoàn toàn các bài ghi âm mock sinh ra trong lúc làm giao diện
-      return items.filter((r) => !r.id.startsWith('audio-') && r.category !== 'audio');
+      // Loại bỏ hoàn toàn các bài ghi âm mock và sách mock res-2, res-6 sinh ra trong lúc làm giao diện
+      return items.filter((r) => !r.id.startsWith('audio-') && r.category !== 'audio' && r.id !== 'res-2' && r.id !== 'res-6');
     }
   } catch (err) {
     console.warn('[Supabase resources fetch warning]', err);

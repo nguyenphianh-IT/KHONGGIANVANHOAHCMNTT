@@ -145,7 +145,7 @@ export const Spotlight: React.FC = () => {
       if (viewsB !== viewsA) return viewsB - viewsA;
 
       // Tiêu chí phụ khi lượt đọc bằng nhau (ví dụ mới khởi tạo): Giữ thứ tự ưu tiên di sản
-      const orderPriority = ['res-2', 'res-1', 'art-003', 'res-3', 'art-002'];
+      const orderPriority = ['res-1', 'art-003', 'res-3', 'art-002'];
       const idxA = orderPriority.indexOf(a.id);
       const idxB = orderPriority.indexOf(b.id);
       if (idxA !== -1 && idxB !== -1) return idxA - idxB;
