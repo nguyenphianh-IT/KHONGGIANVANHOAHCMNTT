@@ -5,7 +5,7 @@ import {
   CheckCircle2, AlertCircle, Send,
   ExternalLink, Sparkles, ArrowRight,
   Upload, Copy, Check, Trash2, Trophy, GraduationCap, LogOut, Cloud, Database,
-  KeyRound, Eye, Archive
+  KeyRound, Eye, Archive, RefreshCw
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { FullScreenEditor } from './FullScreenEditor';
@@ -23,7 +23,7 @@ import {
   getStoredAuditLogs, addStoredAuditLog,
   EVENT_ARTICLES_CHANGED, EVENT_MEDIA_CHANGED,
   CMS_CATEGORIES, getCategoryLabel, normalizeCategoryToHomepage,
-  fetchArticlesFromSupabase, unpublishArticleInCloud, deleteArticleInCloud
+  saveArticleToCloud, fetchArticlesFromSupabase, unpublishArticleInCloud, deleteArticleInCloud
 } from '../../lib/cmsStore';
 import {
   getAllViewCounts,
@@ -112,6 +112,7 @@ export const CmsDashboard: React.FC<CmsDashboardProps> = ({ isOpen, onClose }) =
   // Media Library modal state (for picking from editor)
   const [mediaLibraryOpen, setMediaLibraryOpen] = useState(false);
   const [isCloudSynced, setIsCloudSynced] = useState<boolean>(true);
+  const [isSyncing, setIsSyncing] = useState<boolean>(false);
 
   // Kéo toàn bộ bài viết từ Supabase Cloud khi mở CMS Dashboard
   useEffect(() => {
@@ -127,6 +128,34 @@ export const CmsDashboard: React.FC<CmsDashboardProps> = ({ isOpen, onClose }) =
       isMounted = false;
     };
   }, [isOpen]);
+
+  // Thao tác đồng bộ thủ công từ Cloud Database
+  const handleManualCloudSync = async () => {
+    setIsSyncing(true);
+    try {
+      const res = await fetchArticlesFromSupabase();
+      if (res.success && res.articles) {
+        setArticles(res.articles);
+        setIsCloudSynced(true);
+        setToastMsg({
+          type: 'success',
+          text: `Đồng bộ Cloud thành công! Đã nạp ${res.articles.length} bài viết từ cơ sở dữ liệu mọi thiết bị.`,
+        });
+      } else {
+        setToastMsg({
+          type: 'info',
+          text: res.error || 'Dữ liệu bài viết trên Cloud đã là bản mới nhất.',
+        });
+      }
+    } catch (err: any) {
+      setToastMsg({
+        type: 'error',
+        text: err?.message || 'Lỗi khi đồng bộ bài viết từ Cloud Database',
+      });
+    } finally {
+      setIsSyncing(false);
+    }
+  };
 
   // Sync with cmsStore events
   useEffect(() => {
@@ -189,10 +218,12 @@ export const CmsDashboard: React.FC<CmsDashboardProps> = ({ isOpen, onClose }) =
   // 1. Action: Save Draft
   const handleSaveDraft = async (article: ArticleData) => {
     let updatedList: ArticleData[];
+    let targetArticle: ArticleData;
     if (article.id) {
-      updatedList = articles.map((a) => (a.id === article.id ? { ...article, updated_at: 'Vừa xong' } : a));
+      targetArticle = { ...article, updated_at: 'Vừa xong' };
+      updatedList = articles.map((a) => (a.id === article.id ? targetArticle : a));
     } else {
-      const newArticle: ArticleData = {
+      targetArticle = {
         ...article,
         id: `art-${Date.now()}`,
         status: 'draft',
@@ -201,15 +232,22 @@ export const CmsDashboard: React.FC<CmsDashboardProps> = ({ isOpen, onClose }) =
         created_at: 'Vừa xong',
         updated_at: 'Vừa xong',
       };
-      updatedList = [newArticle, ...articles];
+      updatedList = [targetArticle, ...articles];
     }
 
     setArticles(updatedList);
     saveStoredArticles(updatedList);
 
+    // Đồng bộ trực tiếp lên Database Cloud cho mọi thiết bị
+    setIsCloudSynced(false);
+    const cloudRes = await saveArticleToCloud(targetArticle);
+    setIsCloudSynced(cloudRes.success);
+
     setToastMsg({
       type: 'success',
-      text: `Đã lưu bản nháp "${article.title}" thành công!`,
+      text: cloudRes.success
+        ? `Đã lưu bản nháp "${article.title}" và đồng bộ lên Database Cloud thành công!`
+        : `Đã lưu bản nháp "${article.title}" cục bộ.`,
     });
   };
 
@@ -231,6 +269,11 @@ export const CmsDashboard: React.FC<CmsDashboardProps> = ({ isOpen, onClose }) =
     setArticles(updatedList);
     saveStoredArticles(updatedList);
 
+    // Đồng bộ lên Database Cloud để Ban Giám Hiệu trên thiết bị khác thấy ngay
+    setIsCloudSynced(false);
+    const cloudRes = await saveArticleToCloud(updated);
+    setIsCloudSynced(cloudRes.success);
+
     // Add Audit Log
     const newLog: AuditLogItem = {
       id: `evt-${Date.now()}`,
@@ -248,7 +291,9 @@ export const CmsDashboard: React.FC<CmsDashboardProps> = ({ isOpen, onClose }) =
     setIsEditing(false);
     setToastMsg({
       type: 'success',
-      text: `Nộp duyệt thành công! Bài viết "${updated.title}" đã chuyển sang hàng đợi kiểm duyệt 4 mắt.`,
+      text: cloudRes.success
+        ? `Nộp duyệt thành công và đã đồng bộ lên Database Cloud! Bài viết đã hiển thị trong hàng đợi duyệt 4 mắt của mọi thiết bị.`
+        : `Nộp duyệt thành công cục bộ! Bài viết đã chuyển sang hàng đợi kiểm duyệt 4 mắt.`,
     });
   };
 
@@ -267,11 +312,17 @@ export const CmsDashboard: React.FC<CmsDashboardProps> = ({ isOpen, onClose }) =
     }
 
     // Atomic Approve & Publish
+    const approvedItem: ArticleData = { ...target, status: 'published' as const, updated_at: 'Vừa duyệt' };
     const updatedList = articles.map((a) =>
-      a.id === articleId ? { ...a, status: 'published' as const, updated_at: 'Vừa duyệt' } : a
+      a.id === articleId ? approvedItem : a
     );
     setArticles(updatedList);
     saveStoredArticles(updatedList);
+
+    // Đồng bộ xuất bản lên Database Cloud
+    setIsCloudSynced(false);
+    const cloudRes = await saveArticleToCloud(approvedItem);
+    setIsCloudSynced(cloudRes.success);
 
     // Record Audit Event
     const newLog: AuditLogItem = {
@@ -289,7 +340,7 @@ export const CmsDashboard: React.FC<CmsDashboardProps> = ({ isOpen, onClose }) =
 
     setToastMsg({
       type: 'success',
-      text: `Phê duyệt 4 mắt thành công! Bài viết "${target.title}" đã được xuất bản trực tiếp lên trang Kho Tư Liệu!`,
+      text: `Phê duyệt 4 mắt thành công! Bài viết "${target.title}" đã được xuất bản đồng bộ lên Cloud Database cho mọi thiết bị!`,
     });
   };
 
@@ -298,11 +349,15 @@ export const CmsDashboard: React.FC<CmsDashboardProps> = ({ isOpen, onClose }) =
     const target = articles.find((a) => a.id === articleId);
     if (!target) return;
 
+    const rejectedItem: ArticleData = { ...target, status: 'rejected' as const, updated_at: 'Yêu cầu sửa' };
     const updatedList = articles.map((a) =>
-      a.id === articleId ? { ...a, status: 'rejected' as const, updated_at: 'Yêu cầu sửa' } : a
+      a.id === articleId ? rejectedItem : a
     );
     setArticles(updatedList);
     saveStoredArticles(updatedList);
+
+    // Đồng bộ lên Cloud Database
+    saveArticleToCloud(rejectedItem);
 
     const newLog: AuditLogItem = {
       id: `evt-${Date.now()}`,
@@ -534,6 +589,17 @@ export const CmsDashboard: React.FC<CmsDashboardProps> = ({ isOpen, onClose }) =
                 </span>
               </div>
             </div>
+
+            {/* Nút Đồng Bộ Cloud giữa các thiết bị */}
+            <button
+              onClick={handleManualCloudSync}
+              disabled={isSyncing}
+              className="px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center space-x-1.5 shadow-sm border bg-blue-900/60 hover:bg-blue-800 text-blue-200 border-blue-400/50 disabled:opacity-50"
+              title="Đồng bộ dữ liệu bài viết mới nhất từ Database Cloud của tất cả các thiết bị"
+            >
+              <RefreshCw className={`w-3.5 h-3.5 text-blue-300 ${isSyncing ? 'animate-spin' : ''}`} />
+              <span className="hidden sm:inline">{isSyncing ? 'Đang đồng bộ...' : 'Đồng bộ Cloud'}</span>
+            </button>
 
             {/* Nút Đổi Mật Khẩu nhanh */}
             <button

@@ -459,6 +459,14 @@ export function saveDeletedArticleId(id: string): void {
 }
 
 export async function unpublishArticleInCloud(articleId: string): Promise<boolean> {
+  try {
+    const current = getStoredArticles();
+    const art = current.find((a) => a.id === articleId || a.slug === articleId);
+    if (art) {
+      await saveArticleToCloud({ ...art, status: 'draft' });
+      return true;
+    }
+  } catch {}
   if (!isSupabaseConfigured) return true;
   try {
     const { error } = await supabase
@@ -475,17 +483,26 @@ export async function unpublishArticleInCloud(articleId: string): Promise<boolea
 
 export async function deleteArticleInCloud(articleId: string): Promise<boolean> {
   saveDeletedArticleId(articleId);
+  try {
+    await fetch(`/api/cms/articles?id=${encodeURIComponent(articleId)}`, { method: 'DELETE' });
+  } catch {}
   if (!isSupabaseConfigured) return true;
   try {
-    const { error } = await supabase
-      .from('content_revisions')
-      .delete()
-      .or(`id.eq.${articleId},item_id.eq.${articleId}`);
-    if (error) console.warn('[CMS Cloud Delete Warning]', error.message);
-    return !error;
-  } catch (err: any) {
-    console.warn('[CMS Cloud Delete Exception]', err?.message || err);
-    return false;
+    const { handleDeleteCmsArticle } = await import('./cmsBackend');
+    await handleDeleteCmsArticle(articleId);
+    return true;
+  } catch {
+    try {
+      const { error } = await supabase
+        .from('content_revisions')
+        .delete()
+        .or(`id.eq.${articleId},item_id.eq.${articleId}`);
+      if (error) console.warn('[CMS Cloud Delete Warning]', error.message);
+      return !error;
+    } catch (err: any) {
+      console.warn('[CMS Cloud Delete Exception]', err?.message || err);
+      return false;
+    }
   }
 }
 
@@ -776,60 +793,95 @@ export function cleanBase64FromContent(
 }
 
 // ------------------------------------------------------------------------------
-// ĐỒNG BỘ BÀI VIẾT TỪ SUPABASE CLOUD DATABASE
+// ĐỒNG BỘ BÀI VIẾT TỪ SUPABASE CLOUD DATABASE (TOÀN DIỆN MỌI THIẾT BỊ)
 // ------------------------------------------------------------------------------
+export async function saveArticleToCloud(article: ArticleData): Promise<{
+  success: boolean;
+  article?: ArticleData;
+  error?: string;
+}> {
+  // 1. Kênh 1: Gọi Serverless API chuyên dụng (/api/cms/articles)
+  try {
+    const res = await fetch('/api/cms/articles', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ article }),
+    });
+    if (res.ok) {
+      const json = await res.json();
+      if (json.success && json.article) {
+        return { success: true, article: json.article };
+      }
+    }
+  } catch (apiErr) {
+    console.warn('[saveArticleToCloud API error]', apiErr);
+  }
+
+  // 2. Kênh 2: Gọi trực tiếp cmsBackend (Dự phòng cục bộ hoặc môi trường Node/SSR)
+  if (isSupabaseConfigured) {
+    try {
+      const { handleSaveCmsArticle } = await import('./cmsBackend');
+      return await handleSaveCmsArticle(article);
+    } catch (directErr: any) {
+      console.warn('[saveArticleToCloud direct fallback error]', directErr);
+      return { success: false, error: directErr?.message || 'Lỗi lưu trữ Cloud' };
+    }
+  }
+
+  return { success: true, article };
+}
+
 export async function fetchArticlesFromSupabase(): Promise<{
   success: boolean;
   articles?: ArticleData[];
   error?: string;
 }> {
-  if (!isSupabaseConfigured) {
-    return { success: false, error: 'Chưa cấu hình Supabase URL & Anon Key' };
+  let cloudArticles: ArticleData[] | undefined;
+
+  // 1. Kênh 1: Kéo toàn bộ danh sách bài viết qua Serverless API (lấy cả draft, pending, published, rejected)
+  try {
+    const res = await fetch('/api/cms/articles');
+    if (res.ok) {
+      const json = await res.json();
+      if (json.success && Array.isArray(json.articles)) {
+        cloudArticles = json.articles;
+      }
+    }
+  } catch (apiErr) {
+    console.warn('[fetchArticlesFromSupabase API error]', apiErr);
   }
 
-  try {
-    const { data, error } = await supabase
-      .from('content_revisions')
-      .select('id, item_id, title, summary, data, status, created_at, updated_at')
-      .eq('status', 'published');
-
-    if (error) {
-      console.warn('[Supabase Articles Warning]', error.message);
-      return { success: false, error: error.message };
+  // 2. Kênh 2: Dự phòng truy vấn trực tiếp cmsBackend nếu API chưa sẵn sàng
+  if (!cloudArticles && isSupabaseConfigured) {
+    try {
+      const { handleGetCmsArticles } = await import('./cmsBackend');
+      const directRes = await handleGetCmsArticles();
+      if (directRes.success && Array.isArray(directRes.articles)) {
+        cloudArticles = directRes.articles;
+      }
+    } catch (directErr) {
+      console.warn('[fetchArticlesFromSupabase direct error]', directErr);
     }
+  }
 
-    if (data && data.length > 0) {
-      // Lọc các bản ghi là bài viết (loại trừ hội thi và kho tư liệu tập trung)
-      const postRevs = data.filter((d) => {
-        const title = d.title || '';
-        return (
-          !title.includes('Hồ Sơ Hội Thi') &&
-          !title.includes('Kho Tư Liệu Số Hóa') &&
-          d.data &&
-          (d.data.content || d.data.category)
-        );
-      });
+  // 3. Kênh 3: Dự phòng đọc published từ bảng content_revisions trực tiếp
+  if (!cloudArticles && isSupabaseConfigured) {
+    try {
+      const { data, error } = await supabase
+        .from('content_revisions')
+        .select('id, item_id, title, summary, data, status, created_at, updated_at')
+        .order('updated_at', { ascending: false });
 
-      if (postRevs.length > 0) {
-        const deletedIds = getDeletedArticleIds();
-        const validRevs = postRevs.filter((rev) => {
-          const revId = rev.item_id || rev.id;
-          const slug = rev.data?.slug;
-          return !deletedIds.has(revId) && !deletedIds.has(rev.id) && (!slug || !deletedIds.has(slug));
+      if (!error && data && data.length > 0) {
+        const postRevs = data.filter((d) => {
+          const title = d.title || '';
+          return !title.includes('Hồ Sơ Hội Thi') && !title.includes('Kho Tư Liệu') && d.data && (d.data.content || d.data.category);
         });
 
-        const currentLocal = getStoredArticles();
-        const localStatusMap = new Map(currentLocal.map((a) => [a.id || a.slug, a.status]));
-
-        const mappedArticles: ArticleData[] = validRevs.map((rev) => {
+        cloudArticles = postRevs.map((rev) => {
           const revData = rev.data || {};
-          const articleId = rev.item_id || rev.id;
+          const articleId = revData.legacy_id || rev.item_id || rev.id;
           const slug = revData.slug || rev.title.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-');
-          
-          // Preserve local draft / unpublish status if operator previously unpublished it
-          const localStatus = localStatusMap.get(articleId) || localStatusMap.get(slug);
-          const status = (localStatus && localStatus !== 'published') ? localStatus : 'published';
-
           return {
             id: articleId,
             title: rev.title,
@@ -840,27 +892,42 @@ export async function fetchArticlesFromSupabase(): Promise<{
             topic: revData.topic || 'Không gian văn hóa Hồ Chí Minh',
             featured_image: revData.featured_image || '',
             references: revData.references || '',
-            status,
+            status: (rev.status as any) || 'published',
             author_id: revData.author_id || '',
             author_name: revData.author_name || 'Ban Biên Tập THCS Nguyễn Trung Trực',
             created_at: rev.created_at || '',
             updated_at: rev.updated_at || rev.created_at || '',
           };
         });
+      }
+    } catch {}
+  }
 
-        // Kết hợp với các bài nháp nội bộ nếu có
-        const mappedIdSet = new Set(mappedArticles.map((m) => m.id));
-        const nonPublishedLocal = currentLocal.filter((a) => !mappedIdSet.has(a.id));
-        const merged = [...mappedArticles, ...nonPublishedLocal];
+  if (cloudArticles && cloudArticles.length > 0) {
+    const deletedIds = getDeletedArticleIds();
+    const validCloud = cloudArticles.filter((a) => !a.id || (!deletedIds.has(a.id) && !deletedIds.has(a.slug)));
 
-        saveStoredArticles(merged);
-        return { success: true, articles: merged };
+    // Đồng bộ vào localStorage thiết bị hiện tại để bảo toàn hiển thị và truy cập nhanh
+    const currentLocal = getStoredArticles();
+    const localMap = new Map(currentLocal.map((a) => [a.id || a.slug, a]));
+
+    const mergedMap = new Map<string, ArticleData>();
+    // Bài viết Cloud từ thiết bị khác hoặc cơ sở dữ liệu làm chuẩn
+    for (const ca of validCloud) {
+      const key = ca.id || ca.slug;
+      mergedMap.set(key, ca);
+    }
+    // Giữ lại các bản nháp cục bộ chưa kịp đồng bộ nếu có
+    for (const [key, la] of localMap.entries()) {
+      if (!mergedMap.has(key)) {
+        mergedMap.set(key, la);
       }
     }
 
-    return { success: false, error: 'Không tìm thấy bài viết xuất bản trên Cloud' };
-  } catch (err: any) {
-    console.warn('[Supabase Articles Exception]', err);
-    return { success: false, error: err?.message || 'Lỗi mạng khi tải bài viết' };
+    const mergedList = Array.from(mergedMap.values());
+    saveStoredArticles(mergedList);
+    return { success: true, articles: mergedList };
   }
+
+  return { success: false, error: 'Chưa thể nạp bài viết từ Cloud Database' };
 }
