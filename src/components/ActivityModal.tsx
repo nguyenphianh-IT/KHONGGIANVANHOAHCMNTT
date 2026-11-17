@@ -169,9 +169,6 @@ export const ActivityModal: React.FC<ActivityModalProps> = ({ activity, onClose 
                 <span className="px-3.5 py-1.5 bg-heritage-red-700 text-white font-bold text-xs sm:text-sm rounded-full shadow-md backdrop-blur-sm">
                   {activity.categoryLabel || 'Hoạt Động & Phong Trào'}
                 </span>
-                <span className="px-3.5 py-1.5 bg-heritage-gold-400 text-heritage-red-950 font-black text-xs sm:text-sm rounded-full shadow-md backdrop-blur-sm border border-heritage-gold-300">
-                  {activity.badgeText || activity.academicYear || '⭐ Hoạt động chính thức'}
-                </span>
                 <span className="px-3.5 py-1.5 bg-black/60 text-white text-xs sm:text-sm rounded-full backdrop-blur-sm font-sans font-medium flex items-center space-x-1 border border-white/10" title="Thời gian đọc ước tính">
                   <Sparkles className="w-3.5 h-3.5 text-heritage-gold-300" />
                   <span>~{readingTime} phút đọc</span>
@@ -191,9 +188,6 @@ export const ActivityModal: React.FC<ActivityModalProps> = ({ activity, onClose 
               <div className="flex flex-wrap items-center gap-2">
                 <span className="px-3 py-1 bg-heritage-red-700 text-white font-bold text-xs rounded-full">
                   {activity.categoryLabel || 'Hoạt Động & Phong Trào'}
-                </span>
-                <span className="px-3 py-1 bg-heritage-gold-100 text-heritage-red-900 font-bold text-xs rounded-full border border-heritage-gold-400">
-                  {activity.badgeText || activity.academicYear}
                 </span>
                 <span className="text-xs text-heritage-ink-500 font-sans flex items-center space-x-1.5">
                   <span>~{readingTime} phút đọc</span>

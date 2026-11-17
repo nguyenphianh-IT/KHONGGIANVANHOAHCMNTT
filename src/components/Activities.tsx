@@ -1,8 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { activitiesData } from '../data/activitiesData';
 import { SchoolActivity } from '../types';
 import { ActivityModal } from './ActivityModal';
-import { Calendar, Users, ChevronRight, ChevronLeft, Award, AlertCircle, Sparkles, Eye } from 'lucide-react';
+import { Calendar, Users, ChevronRight, ChevronLeft, Award, Eye } from 'lucide-react';
 import { 
   getPublishedArticles, 
   EVENT_ARTICLES_CHANGED, 
@@ -38,7 +37,7 @@ const mapArticleToActivity = (art: ArticleData): SchoolActivity => {
     id: art.id || `act-${art.slug}`,
     title: art.title,
     date: formatActivityDate(art.created_at),
-    academicYear: 'Năm học 2025 - 2026',
+    academicYear: '',
     organizer: art.author_name || 'Trường THCS Nguyễn Trung Trực',
     summary: art.summary,
     fullDetail: art.content || art.summary,
@@ -46,7 +45,7 @@ const mapArticleToActivity = (art: ArticleData): SchoolActivity => {
     participants: 'Cán bộ, giáo viên và học sinh trường THCS Nguyễn Trung Trực',
     isSampleData: false,
     categoryLabel: 'Hoạt Động & Phong Trào',
-    badgeText: '⭐ Hoạt động chính thức (CMS)',
+    badgeText: '',
     highlights: [
       'Tin bài hoạt động chính thức từ Không gian văn hóa Hồ Chí Minh',
       'Đã qua quy trình thẩm định 4 mắt của Ban Giám Hiệu nhà trường',
@@ -59,7 +58,7 @@ const mapArticleToActivity = (art: ArticleData): SchoolActivity => {
 
 export const Activities: React.FC = () => {
   const [selectedActivity, setSelectedActivity] = useState<SchoolActivity | null>(null);
-  const [activitiesList, setActivitiesList] = useState<SchoolActivity[]>(activitiesData);
+  const [activitiesList, setActivitiesList] = useState<SchoolActivity[]>([]);
 
   useEffect(() => {
     const loadActivities = () => {
@@ -68,8 +67,8 @@ export const Activities: React.FC = () => {
       const activityArticles = cmsPublished.filter((art) => isActivityArticle(art));
 
       const mappedFromCms = activityArticles.map(mapArticleToActivity);
-      // Đưa các bài viết thực tế vừa đăng lên đầu danh sách
-      setActivitiesList([...mappedFromCms, ...activitiesData]);
+      // Bỏ toàn bộ các bài viết mô phỏng, CHỈ hiển thị các tin bài hoạt động thực tế từ CMS
+      setActivitiesList(mappedFromCms);
     };
 
     loadActivities();
@@ -89,8 +88,6 @@ export const Activities: React.FC = () => {
       window.removeEventListener('storage', loadActivities);
     };
   }, []);
-
-  const hasCmsArticles = activitiesList.some((a) => !a.isSampleData);
 
   // ---------------------------------------------------------------------------
   // PHÂN TRANG HOẠT ĐỘNG: 6 tin / trang (3 cột x 2 dòng cân đối, không dàn trải)
@@ -136,64 +133,42 @@ export const Activities: React.FC = () => {
             Các phong trào thi đua, hội thi kể chuyện, sinh hoạt chuyên đề và hành trình về nguồn
             của thầy và trò Trường THCS Nguyễn Trung Trực (Phường Thới An).
           </p>
-
-          <div className="mt-3 inline-flex items-center space-x-1.5 text-xs text-amber-800 bg-amber-50 px-3.5 py-1 rounded-full border border-amber-200">
-            {hasCmsArticles ? (
-              <>
-                <Sparkles className="w-3.5 h-3.5 text-emerald-600 flex-shrink-0" />
-                <span className="text-emerald-900 font-medium">Bao gồm các tin bài hoạt động thực tế cập nhật từ Ban Giám Hiệu và dữ liệu mô phỏng.</span>
-              </>
-            ) : (
-              <>
-                <AlertCircle className="w-3.5 h-3.5 text-amber-600 flex-shrink-0" />
-                <span>Dữ liệu dưới đây là nội dung mẫu minh họa cho mô hình hoạt động thực tế tại nhà trường.</span>
-              </>
-            )}
-          </div>
         </div>
 
         {/* Anchor point for smooth scrolling on pagination change */}
         <div id="activities-catalog" className="scroll-mt-28" />
 
-        {/* Activities Grid (3 cột x 2 dòng = đúng 6 tin/trang vuông vắn, cân đối tuyệt đẹp) */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-7">
-          {paginatedActivities.map((activity) => (
-            <div
-              key={activity.id}
-              onClick={() => setSelectedActivity(activity)}
-              className="group cursor-pointer bg-white rounded-xl border border-heritage-ivory-300 shadow-sm hover:shadow-heritage-hover hover:border-heritage-gold-400 transition-all duration-300 flex flex-col justify-between overflow-hidden"
-            >
-              <div>
-                {/* Image */}
-                <div className="relative h-48 sm:h-52 overflow-hidden bg-heritage-ivory-200">
-                  <img
-                    src={activity.imageUrl}
-                    alt=""
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                    loading="lazy"
-                    onError={(e) => {
-                      (e.target as HTMLImageElement).src = '/images/ho-chi-minh-tp-hcm.png';
-                    }}
-                  />
-                  <div className="absolute top-2.5 left-2.5">
-                    <span className="px-2.5 py-1 bg-heritage-red-700 text-white font-semibold text-xs rounded shadow">
-                      {activity.academicYear}
-                    </span>
+        {activitiesList.length === 0 ? (
+          <div className="text-center py-16 bg-white rounded-2xl border border-heritage-ivory-300 shadow-sm p-8 max-w-xl mx-auto">
+            <div className="w-16 h-16 rounded-full bg-heritage-ivory-100 flex items-center justify-center mx-auto text-heritage-red-700 mb-4 border border-heritage-gold-300">
+              <Award className="w-8 h-8 text-heritage-gold-600" />
+            </div>
+            <h3 className="font-serif font-bold text-lg text-heritage-ink-900 mb-2">Chuyên mục đang cập nhật tin bài</h3>
+            <p className="text-sm text-heritage-ink-600 leading-relaxed">
+              Các phong trào thi đua, hoạt động văn hóa và hành trình về nguồn của thầy và trò Trường THCS Nguyễn Trung Trực sẽ được cập nhật sớm nhất tại đây.
+            </p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-7">
+            {paginatedActivities.map((activity) => (
+              <div
+                key={activity.id}
+                onClick={() => setSelectedActivity(activity)}
+                className="group cursor-pointer bg-white rounded-xl border border-heritage-ivory-300 shadow-sm hover:shadow-heritage-hover hover:border-heritage-gold-400 transition-all duration-300 flex flex-col justify-between overflow-hidden"
+              >
+                <div>
+                  {/* Image */}
+                  <div className="relative h-48 sm:h-52 overflow-hidden bg-heritage-ivory-200">
+                    <img
+                      src={activity.imageUrl}
+                      alt=""
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      loading="lazy"
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).src = '/images/ho-chi-minh-tp-hcm.png';
+                      }}
+                    />
                   </div>
-                  {!activity.isSampleData ? (
-                    <div className="absolute bottom-2 left-2 right-2">
-                      <span className="px-2.5 py-1 bg-emerald-800/95 text-white text-xs font-semibold rounded backdrop-blur-sm block truncate shadow">
-                        ⭐ Hoạt động chính thức (CMS)
-                      </span>
-                    </div>
-                  ) : (
-                    <div className="absolute bottom-2 left-2 right-2">
-                      <span className="px-2.5 py-1 bg-black/80 text-amber-300 text-xs font-medium rounded backdrop-blur-sm block truncate shadow">
-                        Nội dung minh họa mô phỏng
-                      </span>
-                    </div>
-                  )}
-                </div>
 
                 {/* Body */}
                 <div className="p-4 sm:p-5">
@@ -232,6 +207,7 @@ export const Activities: React.FC = () => {
             </div>
           ))}
         </div>
+        )}
 
         {/* Thanh điều khiển phân trang (Pagination Controls) */}
         {totalPages > 1 && (
