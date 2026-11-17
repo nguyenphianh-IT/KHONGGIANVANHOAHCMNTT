@@ -28,6 +28,8 @@ interface FullScreenEditorProps {
   onBack: () => void;
   onSaveDraft: (article: ArticleData) => Promise<void>;
   onSubmitReview: (article: ArticleData) => Promise<void>;
+  onDirectApprove?: (article: ArticleData) => Promise<void>;
+  isReviewerRole?: boolean;
   currentUserName: string;
 }
 
@@ -36,6 +38,8 @@ export const FullScreenEditor: React.FC<FullScreenEditorProps> = ({
   onBack,
   onSaveDraft,
   onSubmitReview,
+  onDirectApprove,
+  isReviewerRole,
   currentUserName,
 }) => {
   const [title, setTitle] = useState(initialArticle?.title || '');
@@ -292,6 +296,7 @@ export const FullScreenEditor: React.FC<FullScreenEditorProps> = ({
     }
 
     setIsSaving(true);
+    const nowIso = new Date().toISOString();
     const article: ArticleData = {
       id: initialArticle?.id,
       title,
@@ -305,10 +310,51 @@ export const FullScreenEditor: React.FC<FullScreenEditorProps> = ({
       audio_url: audioUrl,
       audio_duration: audioDuration,
       status: 'pending',
-      author_name: currentUserName,
+      author_name: initialArticle?.author_name || currentUserName,
+      updated_at: nowIso,
     };
     await onSubmitReview(article);
     setIsSaving(false);
+  };
+
+  // Direct Approve & Publish by Reviewer / Admin
+  const handleDirectApprove = async () => {
+    if (!title.trim()) {
+      alert('Vui lòng nhập Tiêu đề bài viết trước khi phê duyệt!');
+      return;
+    }
+    if (!summary.trim()) {
+      alert('Vui lòng nhập Tóm tắt bài viết trước khi phê duyệt!');
+      return;
+    }
+    if (!content.trim()) {
+      alert('Vui lòng nhập Nội dung tư liệu trước khi phê duyệt!');
+      return;
+    }
+
+    setIsSaving(true);
+    const nowIso = new Date().toISOString();
+    const article: ArticleData = {
+      id: initialArticle?.id,
+      title,
+      slug,
+      summary,
+      content,
+      category,
+      topic,
+      featured_image: featuredImage,
+      references,
+      audio_url: audioUrl,
+      audio_duration: audioDuration,
+      status: 'published',
+      author_name: initialArticle?.author_name || currentUserName,
+      updated_at: nowIso,
+    };
+    if (onDirectApprove) {
+      await onDirectApprove(article);
+    }
+    setIsSaving(false);
+    onBack();
   };
 
   // Insert YouTube Video
@@ -392,10 +438,23 @@ export const FullScreenEditor: React.FC<FullScreenEditorProps> = ({
             onClick={handleSubmit}
             disabled={isSaving}
             className="px-4 py-1.5 bg-gradient-to-r from-heritage-red-700 to-heritage-red-800 hover:from-heritage-red-800 hover:to-heritage-red-900 text-white font-bold text-xs rounded-lg shadow-sm flex items-center space-x-1.5 transition border border-heritage-gold-400/40 disabled:opacity-50"
+            title="Nộp duyệt bài viết sang Hàng đợi Kiểm duyệt 4 mắt"
           >
             <Send className="w-3.5 h-3.5 text-heritage-gold-300" />
             <span>Gửi duyệt 4 mắt</span>
           </button>
+
+          {isReviewerRole && onDirectApprove && (
+            <button
+              onClick={handleDirectApprove}
+              disabled={isSaving}
+              className="px-4 py-1.5 bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs rounded-lg shadow-sm flex items-center space-x-1.5 transition border border-emerald-500/40 disabled:opacity-50"
+              title="Phê duyệt quy trình 4 mắt và xuất bản trực tiếp lên trang chủ"
+            >
+              <CheckCircle2 className="w-3.5 h-3.5 text-white" />
+              <span>{isSaving ? 'Đang duyệt...' : 'Phê duyệt & Xuất bản'}</span>
+            </button>
+          )}
 
           <button
             onClick={() => setShowInspector(!showInspector)}

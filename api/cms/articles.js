@@ -242,6 +242,12 @@ async function handleSaveCmsArticle(article) {
       },
       updated_at: nowIso
     };
+    if (article.status === "published") {
+      revPayload.reviewed_at = nowIso;
+      revPayload.reviewed_by = SYSTEM_AUTHOR_ID;
+    } else if (article.status === "pending") {
+      revPayload.submitted_at = nowIso;
+    }
     const { error: revErr } = await db.from("content_revisions").upsert(revPayload, { onConflict: "id" });
     if (revErr) {
       console.warn("[handleSaveCmsArticle revUpsert Error]", revErr.message);

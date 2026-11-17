@@ -1009,7 +1009,7 @@ export async function saveArticleToCloud(article: ArticleData): Promise<{
   // 1. Kênh 1: Gọi Serverless API chuyên dụng (/api/cms/articles) với timeout an toàn
   try {
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 8000);
+    const timeoutId = setTimeout(() => controller.abort(), 25000);
 
     const res = await fetch('/api/cms/articles', {
       method: 'POST',
@@ -1025,8 +1025,8 @@ export async function saveArticleToCloud(article: ArticleData): Promise<{
         return { success: true, article: json.article };
       }
     }
-  } catch (apiErr) {
-    console.warn('[saveArticleToCloud API error]', apiErr);
+  } catch (apiErr: any) {
+    console.warn('[saveArticleToCloud API error]', apiErr?.message || apiErr);
   }
 
   // 2. Kênh 2: Dự phòng nếu đang ở môi trường SSR/Node.js phía máy chủ
@@ -1123,15 +1123,67 @@ export async function fetchArticlesFromSupabase(): Promise<{
     const currentLocal = getStoredArticles();
     const localMap = new Map(currentLocal.map((a) => [a.id || a.slug, a]));
 
+    const parseTime = (t?: string): number => {
+      if (!t) return 0;
+      if (t === 'Vừa xong' || t === 'Vừa duyệt' || t === 'Vừa lưu' || t === 'Mới cập nhật') return Date.now();
+      const n = new Date(t).getTime();
+      return isNaN(n) ? 0 : n;
+    };
+
     const mergedMap = new Map<string, ArticleData>();
-    // Bài viết Cloud từ thiết bị khác hoặc cơ sở dữ liệu làm chuẩn
+
+    // 1. Phân giải thông minh giữa Cloud và Local (chống tình trạng bài vừa duyệt bị revert về pending)
     for (const ca of validCloud) {
       const key = ca.id || ca.slug;
-      mergedMap.set(key, ca);
+      const la = localMap.get(key) ||
+                 (ca.id ? localMap.get(ca.id) : undefined) ||
+                 (ca.slug ? localMap.get(ca.slug) : undefined);
+
+      if (!la) {
+        // Chưa có bản cục bộ, chấp nhận bài Cloud trực tiếp
+        mergedMap.set(key, ca);
+        continue;
+      }
+
+      const laTime = parseTime(la.updated_at || la.created_at);
+      const caTime = parseTime(ca.updated_at || ca.created_at);
+
+      // Quy tắc bảo vệ 1: Trạng thái 'published' cục bộ có giá trị ưu tiên tuyệt đối trước 'pending' / 'draft'
+      if (la.status === 'published' && ca.status !== 'published') {
+        const isRecentLocalApproval = Date.now() - laTime < 3600000 || laTime >= caTime;
+        if (isRecentLocalApproval) {
+          mergedMap.set(key, { ...ca, status: 'published', updated_at: la.updated_at });
+          // Tự động đẩy ngược lên Cloud ở chế độ nền để đồng bộ trạng thái đã duyệt
+          saveArticleToCloud({ ...ca, status: 'published', updated_at: la.updated_at }).catch(() => {});
+          continue;
+        }
+      }
+
+      // Quy tắc bảo vệ 2: Trạng thái 'pending' cục bộ (vừa nộp duyệt) ưu tiên trước 'draft' của Cloud
+      if (la.status === 'pending' && ca.status === 'draft') {
+        const isRecentSubmission = Date.now() - laTime < 3600000 || laTime >= caTime;
+        if (isRecentSubmission) {
+          mergedMap.set(key, { ...ca, status: 'pending', updated_at: la.updated_at });
+          saveArticleToCloud({ ...ca, status: 'pending', updated_at: la.updated_at }).catch(() => {});
+          continue;
+        }
+      }
+
+      // Quy tắc so sánh thời gian chuẩn: Nếu cục bộ có chỉnh sửa mới hơn Cloud > 1s, giữ cục bộ
+      if (laTime > caTime + 1000) {
+        mergedMap.set(key, la);
+        saveArticleToCloud(la).catch(() => {});
+      } else {
+        mergedMap.set(key, ca);
+      }
     }
-    // Giữ lại các bản nháp cục bộ chưa kịp đồng bộ nếu có
+
+    // 2. Giữ lại các bản nháp hoặc bài viết cục bộ chưa kịp xuất hiện trên Cloud
     for (const [key, la] of localMap.entries()) {
-      if (!mergedMap.has(key)) {
+      const existsInMerged = mergedMap.has(key) ||
+        (la.id && mergedMap.has(la.id)) ||
+        (la.slug && mergedMap.has(la.slug));
+      if (!existsInMerged) {
         mergedMap.set(key, la);
       }
     }

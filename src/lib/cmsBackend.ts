@@ -237,7 +237,7 @@ export async function handleSaveCmsArticle(article: ArticleData): Promise<{
       : (Array.isArray(existingData.media_assets) ? existingData.media_assets : []);
 
     // 3. Upsert content_revisions
-    const revPayload = {
+    const revPayload: Record<string, any> = {
       id: revId,
       item_id: itemId,
       version_number: nextVersion,
@@ -263,6 +263,13 @@ export async function handleSaveCmsArticle(article: ArticleData): Promise<{
       },
       updated_at: nowIso,
     };
+
+    if (article.status === 'published') {
+      revPayload.reviewed_at = nowIso;
+      revPayload.reviewed_by = SYSTEM_AUTHOR_ID;
+    } else if (article.status === 'pending') {
+      revPayload.submitted_at = nowIso;
+    }
 
     const { error: revErr } = await db
       .from('content_revisions')

@@ -11,6 +11,7 @@ interface ReviewModalProps {
   currentUserName: string;
   onApprove: (articleId: string, feedback: string) => Promise<void>;
   onReject: (articleId: string, feedback: string) => Promise<void>;
+  onSwitchPersona?: (role: string) => void;
 }
 
 export const ReviewModal: React.FC<ReviewModalProps> = ({
@@ -21,6 +22,7 @@ export const ReviewModal: React.FC<ReviewModalProps> = ({
   currentUserName,
   onApprove,
   onReject,
+  onSwitchPersona,
 }) => {
   const [feedback, setFeedback] = useState('Nội dung chuẩn mực, tư tưởng chính xác, đạt chuẩn xuất bản.');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -102,8 +104,18 @@ export const ReviewModal: React.FC<ReviewModalProps> = ({
               <div className="text-xs">
                 <p className="font-bold">CẢNH BÁO VI PHẠM QUY TẮC AN TOÀN 4 MẮT (FOUR-EYES ENFORCEMENT):</p>
                 <p className="mt-0.5 text-red-700">
-                  Bạn đang đăng nhập với tư cách tác giả của bài viết này (<strong>{currentUserName}</strong>). Theo quy chế quản trị, <strong>tác giả tuyệt đối không được phép tự phê duyệt bài viết do chính mình biên soạn</strong>. Vui lòng chuyển sang tài khoản Cán bộ Quản trị Trưởng (Ban Giám Hiệu) để duyệt bài!
+                  Bạn đang đăng nhập với tư cách tác giả của bài viết này (<strong>{currentUserName}</strong>). Theo quy chế quản trị, <strong>tác giả tuyệt đối không được phép tự phê duyệt bài viết do chính mình biên soạn</strong>. Vui lòng chuyển sang vai trò Cán bộ Quản trị Trưởng (Ban Giám Hiệu) để duyệt bài!
                 </p>
+                {onSwitchPersona && (
+                  <button
+                    type="button"
+                    onClick={() => onSwitchPersona('admin')}
+                    className="mt-2.5 px-3 py-1.5 bg-gradient-to-r from-heritage-red-700 to-heritage-red-800 hover:from-heritage-red-800 hover:to-heritage-red-900 text-white rounded-lg font-bold text-xs shadow-sm transition inline-flex items-center space-x-1.5 border border-heritage-gold-400/40"
+                  >
+                    <ShieldCheck className="w-4 h-4 text-heritage-gold-300" />
+                    <span>Chuyển sang vai trò Ban Giám Hiệu (Để thẩm định & duyệt ngay)</span>
+                  </button>
+                )}
               </div>
             </div>
           ) : (

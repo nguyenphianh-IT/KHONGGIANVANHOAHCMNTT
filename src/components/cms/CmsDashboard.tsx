@@ -61,7 +61,7 @@ export const CmsDashboard: React.FC<CmsDashboardProps> = ({ isOpen, onClose }) =
   const [mediaUploadError, setMediaUploadError] = useState<string | null>(null);
   const [mediaUploadSuccess, setMediaUploadSuccess] = useState<string | null>(null);
 
-  const { user, profile, roles, logout, hasRole } = useAuth();
+  const { user, profile, roles, logout } = useAuth();
 
   // Active Personas Switcher (To test 4-Eyes in real time!)
   const [currentPersona, setCurrentPersona] = useState({
@@ -233,12 +233,42 @@ export const CmsDashboard: React.FC<CmsDashboardProps> = ({ isOpen, onClose }) =
   const totalRealViews = Object.values(viewsMap).reduce((sum, val) => sum + (typeof val === 'number' ? val : 0), 0);
 
 
+  // Switch active persona for testing Four-Eyes governance
+  const handleSwitchPersona = (role: string) => {
+    if (role === 'admin') {
+      setCurrentPersona({
+        id: 'usr-bgh-reviewer',
+        name: 'Ban Giám Hiệu (Thẩm Định Trưởng)',
+        role: 'admin',
+        roleLabel: 'Ban Giám Hiệu (Quản Trị)',
+        avatar: '🏛️',
+      });
+      setToastMsg({
+        type: 'success',
+        text: 'Đã chuyển vai trò sang Ban Giám Hiệu (Đủ điều kiện thẩm định & phê duyệt 4 mắt).',
+      });
+    } else {
+      setCurrentPersona({
+        id: user?.id || 'usr-author-editor',
+        name: profile?.full_name || user?.email || 'Nguyễn Phi Anh (Tác Giả)',
+        role: 'editor',
+        roleLabel: 'Biên Tập Viên',
+        avatar: '👨‍🏫',
+      });
+      setToastMsg({
+        type: 'info',
+        text: 'Đã chuyển vai trò sang Biên Tập Viên / Tác Giả biên soạn.',
+      });
+    }
+  };
+
   // 1. Action: Save Draft
   const handleSaveDraft = async (article: ArticleData) => {
+    const nowIso = new Date().toISOString();
     let updatedList: ArticleData[];
     let targetArticle: ArticleData;
     if (article.id) {
-      targetArticle = { ...article, updated_at: 'Vừa xong' };
+      targetArticle = { ...article, updated_at: nowIso };
       updatedList = articles.map((a) => (a.id === article.id ? targetArticle : a));
     } else {
       targetArticle = {
@@ -247,8 +277,8 @@ export const CmsDashboard: React.FC<CmsDashboardProps> = ({ isOpen, onClose }) =
         status: 'draft',
         author_id: currentPersona.id,
         author_name: currentPersona.name,
-        created_at: 'Vừa xong',
-        updated_at: 'Vừa xong',
+        created_at: nowIso,
+        updated_at: nowIso,
       };
       updatedList = [targetArticle, ...articles];
     }
@@ -271,13 +301,14 @@ export const CmsDashboard: React.FC<CmsDashboardProps> = ({ isOpen, onClose }) =
 
   // 2. Action: Submit for 4-Eyes Review
   const handleSubmitReview = async (article: ArticleData) => {
+    const nowIso = new Date().toISOString();
     const updated: ArticleData = {
       ...article,
       id: article.id || `art-${Date.now()}`,
       status: 'pending',
       author_id: article.author_id || currentPersona.id,
       author_name: article.author_name || currentPersona.name,
-      updated_at: 'Vừa xong',
+      updated_at: nowIso,
     };
 
     const updatedList = article.id
@@ -287,10 +318,18 @@ export const CmsDashboard: React.FC<CmsDashboardProps> = ({ isOpen, onClose }) =
     setArticles(updatedList);
     saveStoredArticles(updatedList);
 
+    // Tự động chuyển ngay sang tab "Hàng Đợi Duyệt 4 Mắt" để người dùng thấy bài lập tức
+    setActiveNav('pending');
+    setStatusFilter('all');
+    setIsEditing(false);
+
     // Đồng bộ lên Database Cloud để Ban Giám Hiệu trên thiết bị khác thấy ngay
     setIsCloudSynced(false);
-    const cloudRes = await saveArticleToCloud(updated);
-    setIsCloudSynced(cloudRes.success);
+    saveArticleToCloud(updated).then((cloudRes) => {
+      setIsCloudSynced(cloudRes.success);
+    }).catch(() => {
+      setIsCloudSynced(false);
+    });
 
     // Add Audit Log
     const newLog: AuditLogItem = {
@@ -301,17 +340,14 @@ export const CmsDashboard: React.FC<CmsDashboardProps> = ({ isOpen, onClose }) =
       role: currentPersona.roleLabel,
       decision: 'pending',
       feedback: 'Nộp duyệt bài 4 mắt lên Ban Giám Hiệu.',
-      timestamp: new Date().toISOString().replace('T', ' ').substring(0, 19),
+      timestamp: nowIso.replace('T', ' ').substring(0, 19),
     };
     addStoredAuditLog(newLog);
     setAuditLogs((prev) => [newLog, ...prev]);
 
-    setIsEditing(false);
     setToastMsg({
       type: 'success',
-      text: cloudRes.success
-        ? `Nộp duyệt thành công và đã đồng bộ lên Database Cloud! Bài viết đã hiển thị trong hàng đợi duyệt 4 mắt của mọi thiết bị.`
-        : `Nộp duyệt thành công cục bộ! Bài viết đã chuyển sang hàng đợi kiểm duyệt 4 mắt.`,
+      text: `Đã chuyển bài viết "${updated.title}" sang Hàng Đợi Kiểm Duyệt 4 Mắt thành công!`,
     });
   };
 
@@ -329,8 +365,9 @@ export const CmsDashboard: React.FC<CmsDashboardProps> = ({ isOpen, onClose }) =
       return;
     }
 
+    const nowIso = new Date().toISOString();
     // Atomic Approve & Publish LOCALLY first (Phản hồi tức thì không chờ mạng)
-    const approvedItem: ArticleData = { ...target, status: 'published' as const, updated_at: 'Vừa duyệt' };
+    const approvedItem: ArticleData = { ...target, status: 'published' as const, updated_at: nowIso };
     const updatedList = articles.map((a) =>
       a.id === articleId ? approvedItem : a
     );
@@ -346,7 +383,7 @@ export const CmsDashboard: React.FC<CmsDashboardProps> = ({ isOpen, onClose }) =
       role: currentPersona.roleLabel,
       decision: 'approved',
       feedback: feedback || 'Nội dung chuẩn mực, tư tưởng chính xác, đạt chuẩn xuất bản.',
-      timestamp: new Date().toISOString().replace('T', ' ').substring(0, 19),
+      timestamp: nowIso.replace('T', ' ').substring(0, 19),
     };
     addStoredAuditLog(newLog);
     setAuditLogs((prev) => [newLog, ...prev]);
@@ -374,12 +411,58 @@ export const CmsDashboard: React.FC<CmsDashboardProps> = ({ isOpen, onClose }) =
       });
   };
 
-  // 4. Action: Reject Article
+  // 4. Action: Direct Approve from FullScreenEditor
+  const handleDirectEditorApprove = async (article: ArticleData) => {
+    const nowIso = new Date().toISOString();
+    const approvedItem: ArticleData = {
+      ...article,
+      id: article.id || `art-${Date.now()}`,
+      status: 'published' as const,
+      updated_at: nowIso,
+    };
+
+    const updatedList = article.id
+      ? articles.map((a) => (a.id === article.id ? approvedItem : a))
+      : [approvedItem, ...articles];
+
+    setArticles(updatedList);
+    saveStoredArticles(updatedList);
+
+    // Record Audit Event
+    const newLog: AuditLogItem = {
+      id: `evt-${Date.now()}`,
+      action: 'article.four_eyes_approve',
+      article_title: approvedItem.title,
+      actor: currentPersona.name,
+      role: currentPersona.roleLabel,
+      decision: 'approved',
+      feedback: 'Phê duyệt 4 mắt trực tiếp từ trình soạn thảo toàn màn hình.',
+      timestamp: nowIso.replace('T', ' ').substring(0, 19),
+    };
+    addStoredAuditLog(newLog);
+    setAuditLogs((prev) => [newLog, ...prev]);
+
+    setToastMsg({
+      type: 'success',
+      text: `Phê duyệt và xuất bản thành công bài viết "${approvedItem.title}"!`,
+    });
+
+    // Đồng bộ lên Cloud
+    setIsCloudSynced(false);
+    saveArticleToCloud(approvedItem)
+      .then((cloudRes) => {
+        setIsCloudSynced(cloudRes.success);
+      })
+      .catch(() => setIsCloudSynced(false));
+  };
+
+  // 5. Action: Reject Article
   const handleRejectArticle = async (articleId: string, feedback: string) => {
     const target = articles.find((a) => a.id === articleId);
     if (!target) return;
 
-    const rejectedItem: ArticleData = { ...target, status: 'rejected' as const, updated_at: 'Yêu cầu sửa' };
+    const nowIso = new Date().toISOString();
+    const rejectedItem: ArticleData = { ...target, status: 'rejected' as const, updated_at: nowIso };
     const updatedList = articles.map((a) =>
       a.id === articleId ? rejectedItem : a
     );
@@ -387,7 +470,7 @@ export const CmsDashboard: React.FC<CmsDashboardProps> = ({ isOpen, onClose }) =
     saveStoredArticles(updatedList);
 
     // Đồng bộ lên Cloud Database
-    saveArticleToCloud(rejectedItem);
+    saveArticleToCloud(rejectedItem).catch(() => {});
 
     const newLog: AuditLogItem = {
       id: `evt-${Date.now()}`,
@@ -397,7 +480,7 @@ export const CmsDashboard: React.FC<CmsDashboardProps> = ({ isOpen, onClose }) =
       role: currentPersona.roleLabel,
       decision: 'rejected',
       feedback: feedback || 'Yêu cầu chỉnh sửa lại dẫn chứng.',
-      timestamp: new Date().toISOString().replace('T', ' ').substring(0, 19),
+      timestamp: nowIso.replace('T', ' ').substring(0, 19),
     };
     addStoredAuditLog(newLog);
     setAuditLogs((prev) => [newLog, ...prev]);
@@ -408,14 +491,15 @@ export const CmsDashboard: React.FC<CmsDashboardProps> = ({ isOpen, onClose }) =
     });
   };
 
-  // 4b. Action: Unpublish Article (Revert to Draft)
+  // 5b. Action: Unpublish Article (Revert to Draft)
   const handleUnpublishArticle = async (article: ArticleData) => {
     if (!window.confirm(`GỠ BÀI VIẾT:\n\nBạn có chắc chắn muốn gỡ bài viết "${article.title}" về trạng thái bản nháp?\n\nBài viết sẽ ngay lập tức không còn hiển thị công khai trên website.`)) {
       return;
     }
 
+    const nowIso = new Date().toISOString();
     const updatedList = articles.map((a) =>
-      a.id === article.id ? { ...a, status: 'draft' as const, updated_at: 'Đã gỡ bài' } : a
+      a.id === article.id ? { ...a, status: 'draft' as const, updated_at: nowIso } : a
     );
     setArticles(updatedList);
     saveStoredArticles(updatedList);
@@ -605,17 +689,44 @@ export const CmsDashboard: React.FC<CmsDashboardProps> = ({ isOpen, onClose }) =
           </div>
 
           {/* Quick Persona Switcher for Testing 4-Eyes & Exit */}
-          <div className="flex items-center space-x-2 sm:space-x-4">
-            {/* Real Authenticated User Identity - Khóa hoàn toàn Sandbox */}
-            <div className="hidden md:flex items-center bg-black/30 rounded-xl px-3 py-1.5 border border-heritage-gold-400/30 text-xs">
+          <div className="flex items-center space-x-2 sm:space-x-3">
+            {/* Quick Persona Switcher for 4-Eyes Governance Testing */}
+            <div className="flex items-center bg-black/40 rounded-xl p-0.5 border border-heritage-gold-400/40 text-xs">
+              <button
+                type="button"
+                onClick={() => handleSwitchPersona('editor')}
+                className={`px-2.5 py-1 rounded-lg font-bold transition flex items-center space-x-1 ${
+                  currentPersona.role === 'editor'
+                    ? 'bg-heritage-gold-400 text-heritage-red-950 shadow-sm'
+                    : 'text-white/80 hover:text-white'
+                }`}
+                title="Vai trò Tác giả / Biên tập viên: Được soạn bài, lưu nháp và nộp duyệt 4 mắt"
+              >
+                <span>👨‍🏫</span>
+                <span className="hidden sm:inline">Tác giả</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => handleSwitchPersona('admin')}
+                className={`px-2.5 py-1 rounded-lg font-bold transition flex items-center space-x-1 ${
+                  currentPersona.role === 'admin'
+                    ? 'bg-emerald-600 text-white shadow-sm'
+                    : 'text-white/80 hover:text-white'
+                }`}
+                title="Vai trò Ban Giám Hiệu: Thẩm định tư tưởng và phê duyệt xuất bản 4 mắt"
+              >
+                <span>🏛️</span>
+                <span className="hidden sm:inline">Ban Giám Hiệu</span>
+              </button>
+            </div>
+
+            {/* Real Authenticated User Identity */}
+            <div className="hidden xl:flex items-center bg-black/30 rounded-xl px-3 py-1.5 border border-heritage-gold-400/30 text-xs">
               <div className="flex items-center space-x-2">
                 <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" title="Phiên làm việc bảo mật đang hoạt động" />
                 <span className="text-white/80 font-medium select-none">Tài khoản:</span>
-                <span className="text-heritage-gold-300 font-bold max-w-[180px] truncate" title={user?.email || profile?.full_name || 'Quản Trị Viên'}>
+                <span className="text-heritage-gold-300 font-bold max-w-[150px] truncate" title={user?.email || profile?.full_name || 'Quản Trị Viên'}>
                   {profile?.full_name || user?.email || 'Quản Trị Viên'}
-                </span>
-                <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-heritage-gold-400/20 text-heritage-gold-200 border border-heritage-gold-400/30 uppercase">
-                  {hasRole('admin') ? 'Quản Trị Viên' : 'Biên Tập Viên'}
                 </span>
               </div>
             </div>
@@ -960,7 +1071,11 @@ export const CmsDashboard: React.FC<CmsDashboardProps> = ({ isOpen, onClose }) =
 
                 {/* 5 KPI Summary Cards */}
                 <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3.5 sm:gap-4">
-                  <div className="bg-white p-4 sm:p-5 rounded-2xl border border-heritage-gold-300/60 shadow-sm flex items-center justify-between">
+                  <div
+                    onClick={() => { setActiveNav('articles'); setStatusFilter('all'); }}
+                    className="bg-white p-4 sm:p-5 rounded-2xl border border-heritage-gold-300/60 shadow-sm flex items-center justify-between cursor-pointer hover:border-heritage-red-700/60 hover:shadow-md transition"
+                    title="Bấm để xem tất cả bài viết"
+                  >
                     <div>
                       <p className="text-[11px] font-bold uppercase tracking-wider text-heritage-ink-500">
                         Tổng Bài Viết
@@ -974,7 +1089,11 @@ export const CmsDashboard: React.FC<CmsDashboardProps> = ({ isOpen, onClose }) =
                     </div>
                   </div>
 
-                  <div className="bg-white p-4 sm:p-5 rounded-2xl border border-heritage-gold-300/60 shadow-sm flex items-center justify-between">
+                  <div
+                    onClick={() => { setActiveNav('articles'); setStatusFilter('draft'); }}
+                    className="bg-white p-4 sm:p-5 rounded-2xl border border-heritage-gold-300/60 shadow-sm flex items-center justify-between cursor-pointer hover:border-amber-500 hover:shadow-md transition"
+                    title="Bấm để lọc danh sách bản nháp"
+                  >
                     <div>
                       <p className="text-[11px] font-bold uppercase tracking-wider text-heritage-ink-500">
                         Bản Nháp (Draft)
@@ -988,7 +1107,11 @@ export const CmsDashboard: React.FC<CmsDashboardProps> = ({ isOpen, onClose }) =
                     </div>
                   </div>
 
-                  <div className="bg-white p-4 sm:p-5 rounded-2xl border border-purple-200 shadow-sm flex items-center justify-between">
+                  <div
+                    onClick={() => { setActiveNav('pending'); setStatusFilter('all'); }}
+                    className="bg-white p-4 sm:p-5 rounded-2xl border border-purple-200 shadow-sm flex items-center justify-between cursor-pointer hover:border-purple-600 hover:shadow-md transition"
+                    title="Bấm để mở hàng đợi kiểm duyệt 4 mắt"
+                  >
                     <div>
                       <p className="text-[11px] font-bold uppercase tracking-wider text-purple-700">
                         Chờ Duyệt 4 Mắt
@@ -1002,7 +1125,11 @@ export const CmsDashboard: React.FC<CmsDashboardProps> = ({ isOpen, onClose }) =
                     </div>
                   </div>
 
-                  <div className="bg-white p-4 sm:p-5 rounded-2xl border border-emerald-200 shadow-sm flex items-center justify-between">
+                  <div
+                    onClick={() => { setActiveNav('published'); setStatusFilter('all'); }}
+                    className="bg-white p-4 sm:p-5 rounded-2xl border border-emerald-200 shadow-sm flex items-center justify-between cursor-pointer hover:border-emerald-600 hover:shadow-md transition"
+                    title="Bấm để xem danh mục bài viết đang xuất bản live"
+                  >
                     <div>
                       <p className="text-[11px] font-bold uppercase tracking-wider text-emerald-700">
                         Đã Xuất Bản Live
@@ -1135,6 +1262,17 @@ export const CmsDashboard: React.FC<CmsDashboardProps> = ({ isOpen, onClose }) =
                             >
                               <ShieldCheck className="w-3.5 h-3.5" />
                               <span>Kiểm duyệt</span>
+                            </button>
+                          )}
+
+                          {(art.status === 'draft' || art.status === 'rejected') && (
+                            <button
+                              onClick={() => handleSubmitReview(art)}
+                              className="px-3 py-1.5 bg-heritage-red-700 hover:bg-heritage-red-800 text-white rounded-lg text-xs font-bold shadow-sm transition flex items-center space-x-1"
+                              title={art.status === 'rejected' ? 'Nộp duyệt lại bài 4 mắt' : 'Nộp duyệt bài 4 mắt'}
+                            >
+                              <Send className="w-3.5 h-3.5" />
+                              <span>{art.status === 'rejected' ? 'Nộp duyệt lại' : 'Nộp duyệt'}</span>
                             </button>
                           )}
 
@@ -1336,14 +1474,14 @@ export const CmsDashboard: React.FC<CmsDashboardProps> = ({ isOpen, onClose }) =
                                   </button>
                                 )}
 
-                                {art.status === 'draft' && (
+                                {(art.status === 'draft' || art.status === 'rejected') && (
                                   <button
                                     onClick={() => handleSubmitReview(art)}
                                     className="px-2.5 py-1 bg-heritage-red-700 hover:bg-heritage-red-800 text-white rounded-lg text-xs font-bold transition inline-flex items-center space-x-1 shadow-sm"
-                                    title="Nộp duyệt bài 4 mắt"
+                                    title={art.status === 'rejected' ? 'Nộp duyệt lại bài 4 mắt sau chỉnh sửa' : 'Nộp duyệt bài 4 mắt'}
                                   >
                                     <Send className="w-3.5 h-3.5" />
-                                    <span>Nộp duyệt</span>
+                                    <span>{art.status === 'rejected' ? 'Nộp duyệt lại' : 'Nộp duyệt'}</span>
                                   </button>
                                 )}
 
@@ -1680,6 +1818,8 @@ export const CmsDashboard: React.FC<CmsDashboardProps> = ({ isOpen, onClose }) =
           onBack={() => setIsEditing(false)}
           onSaveDraft={handleSaveDraft}
           onSubmitReview={handleSubmitReview}
+          onDirectApprove={handleDirectEditorApprove}
+          isReviewerRole={currentPersona.role === 'admin'}
           currentUserName={currentPersona.name}
         />
       )}
@@ -1696,6 +1836,7 @@ export const CmsDashboard: React.FC<CmsDashboardProps> = ({ isOpen, onClose }) =
           currentUserName={currentPersona.name}
           onApprove={handleApproveArticle}
           onReject={handleRejectArticle}
+          onSwitchPersona={handleSwitchPersona}
         />
       )}
 
