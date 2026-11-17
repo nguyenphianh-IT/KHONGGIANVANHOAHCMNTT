@@ -1,5 +1,6 @@
 import React from 'react';
 import { ArrowRight, BookOpen, Compass, ShieldCheck, Sparkles } from 'lucide-react';
+import { DongSonDrumWatermark } from './DongSonDrumWatermark';
 
 interface HeroProps {
   onExplore: () => void;
@@ -11,15 +12,28 @@ export const Hero: React.FC<HeroProps> = ({ onExplore, onViewResources }) => {
     <section
       id="hero"
       aria-label="Không gian văn hóa Hồ Chí Minh"
-      className="relative w-full overflow-x-hidden text-white bg-gradient-to-b from-[#56090D] via-[#781017] to-[#580A0E] pt-14 min-[360px]:pt-16 sm:pt-20 md:pt-20 selection:bg-heritage-gold-400 selection:text-heritage-red-950"
+      className="relative w-full overflow-x-hidden text-white bg-gradient-to-b from-[#750D13] via-[#9B151C] to-[#6A0A10] pt-14 min-[360px]:pt-16 sm:pt-20 md:pt-20 selection:bg-heritage-gold-400 selection:text-heritage-red-950"
     >
-      {/* Hiệu ứng hào quang ấm áp nâng sáng phông nền trang trọng, tươi sáng */}
+      {/* =========================================================================
+          NỀN HOA VĂN TRỐNG ĐỒNG ĐÔNG SƠN ẨN CHÌM & HÀO QUANG ĐỎ SON TƯƠI SÁNG
+          - Hoa văn Trống đồng Đông Sơn (mặt trời 14 cánh, chim Lạc bay ngược chiều kim đồng hồ)
+          - Phông nền đỏ sơn son truyền thống tươi tắn, không bị bầm tối
+          - Ánh sáng hào quang ấm áp tôn vinh không khí trang trọng, thiêng liêng
+      ========================================================================= */}
       <div
-        className="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_75%_55%_at_50%_25%,rgba(221,95,99,0.22),transparent_75%)]"
+        className="absolute inset-0 flex items-center justify-center pointer-events-none select-none overflow-hidden opacity-[0.075] sm:opacity-[0.09] mix-blend-screen"
+        aria-hidden="true"
+      >
+        <DongSonDrumWatermark className="w-[700px] h-[700px] sm:w-[950px] sm:h-[950px] md:w-[1150px] md:h-[1150px] lg:w-[1350px] lg:h-[1350px] text-heritage-gold-400 flex-shrink-0" />
+      </div>
+
+      {/* Hiệu ứng hào quang đỏ son & ánh vàng ấm áp nâng sáng phông nền trang trọng, tươi sáng */}
+      <div
+        className="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_80%_60%_at_50%_35%,rgba(235,55,62,0.28),transparent_75%)]"
         aria-hidden="true"
       />
       <div
-        className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[350px] bg-heritage-gold-400/10 rounded-full blur-3xl pointer-events-none"
+        className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] sm:w-[900px] h-[350px] sm:h-[450px] bg-[radial-gradient(circle_at_50%_40%,rgba(245,185,50,0.13),transparent_65%)] rounded-full blur-3xl pointer-events-none"
         aria-hidden="true"
       />
 
@@ -71,7 +85,7 @@ export const Hero: React.FC<HeroProps> = ({ onExplore, onViewResources }) => {
       <div className="relative z-10 w-full pt-1 min-[360px]:pt-2 sm:pt-4 md:pt-6 pb-10 sm:pb-12 md:pb-14 px-3 sm:px-6 lg:px-8">
         <div className="max-w-5xl mx-auto text-center">
           {/* Huy hiệu nhận diện trường */}
-          <div className="inline-flex items-center space-x-1.5 sm:space-x-2 px-2.5 sm:px-4 py-0.5 sm:py-1.5 rounded-full bg-heritage-red-900/80 border border-heritage-gold-400/60 text-heritage-gold-300 text-[10px] min-[360px]:text-[11px] sm:text-xs md:text-sm font-semibold mb-1 sm:mb-3 shadow-md backdrop-blur-sm">
+          <div className="inline-flex items-center space-x-1.5 sm:space-x-2 px-2.5 sm:px-4 py-0.5 sm:py-1.5 rounded-full bg-[#660C12]/85 border border-heritage-gold-400/70 text-heritage-gold-300 text-[10px] min-[360px]:text-[11px] sm:text-xs md:text-sm font-semibold mb-1 sm:mb-3 shadow-md backdrop-blur-sm">
             <ShieldCheck className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-heritage-gold-400 flex-shrink-0" />
             <span>Trường THCS Nguyễn Trung Trực • Phường Thới An</span>
           </div>
@@ -99,7 +113,7 @@ export const Hero: React.FC<HeroProps> = ({ onExplore, onViewResources }) => {
 
             <button
               onClick={onViewResources}
-              className="min-h-[40px] min-[360px]:min-h-[44px] sm:min-h-[48px] px-4 sm:px-7 py-1.5 min-[360px]:py-2 sm:py-3.5 rounded-lg bg-heritage-red-950/60 hover:bg-heritage-red-950/85 border border-heritage-gold-400/70 hover:border-heritage-gold-300 text-heritage-ivory-50 hover:text-white font-semibold text-[11.5px] min-[360px]:text-xs sm:text-sm md:text-base backdrop-blur-md shadow-md hover:shadow-lg hover:shadow-black/40 hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.99] transition-all duration-200 ease-out flex items-center justify-center space-x-2 group focus:outline-none focus-visible:ring-2 focus-visible:ring-heritage-gold-300"
+              className="min-h-[40px] min-[360px]:min-h-[44px] sm:min-h-[48px] px-4 sm:px-7 py-1.5 min-[360px]:py-2 sm:py-3.5 rounded-lg bg-[#52090E]/65 hover:bg-[#680D14]/85 border border-heritage-gold-400/70 hover:border-heritage-gold-300 text-heritage-ivory-50 hover:text-white font-semibold text-[11.5px] min-[360px]:text-xs sm:text-sm md:text-base backdrop-blur-md shadow-md hover:shadow-lg hover:shadow-black/40 hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.99] transition-all duration-200 ease-out flex items-center justify-center space-x-2 group focus:outline-none focus-visible:ring-2 focus-visible:ring-heritage-gold-300"
             >
               <BookOpen className="w-4 h-4 text-heritage-gold-300 group-hover:text-heritage-gold-200 group-hover:scale-105 transition-all duration-200 ease-out" />
               <span>Tìm hiểu tư liệu</span>
@@ -109,7 +123,7 @@ export const Hero: React.FC<HeroProps> = ({ onExplore, onViewResources }) => {
           {/* Khối 3 Thẻ giới thiệu tinh giản (Heritage Modern - Minimalist) */}
           <div className="mt-5 sm:mt-8 md:mt-10 max-w-md md:max-w-3xl lg:max-w-[53rem] xl:max-w-5xl mx-auto pr-14 md:pr-0 grid grid-cols-1 md:grid-cols-3 gap-2.5 sm:gap-4 lg:gap-5 text-left select-none">
             {/* Thẻ 1 – DI SẢN */}
-            <div className="group p-4 sm:p-5 rounded-xl bg-[#3D0508]/65 hover:bg-[#3D0508]/85 border border-heritage-gold-400/30 hover:border-heritage-gold-400/60 shadow-lg shadow-black/25 backdrop-blur-sm transition-all duration-200 ease-out flex flex-col justify-between">
+            <div className="group p-4 sm:p-5 rounded-xl bg-[#52090E]/60 hover:bg-[#630C12]/80 border border-heritage-gold-400/35 hover:border-heritage-gold-400/65 shadow-xl shadow-black/25 backdrop-blur-md transition-all duration-200 ease-out flex flex-col justify-between">
               <div>
                 <div className="flex items-center space-x-2 text-heritage-gold-300 mb-2">
                   <Compass className="w-5 h-5 text-heritage-gold-400 flex-shrink-0 group-hover:scale-105 transition-transform duration-200" />
@@ -124,7 +138,7 @@ export const Hero: React.FC<HeroProps> = ({ onExplore, onViewResources }) => {
             </div>
 
             {/* Thẻ 2 – TRI THỨC */}
-            <div className="group p-4 sm:p-5 rounded-xl bg-[#3D0508]/65 hover:bg-[#3D0508]/85 border border-heritage-gold-400/30 hover:border-heritage-gold-400/60 shadow-lg shadow-black/25 backdrop-blur-sm transition-all duration-200 ease-out flex flex-col justify-between">
+            <div className="group p-4 sm:p-5 rounded-xl bg-[#52090E]/60 hover:bg-[#630C12]/80 border border-heritage-gold-400/35 hover:border-heritage-gold-400/65 shadow-xl shadow-black/25 backdrop-blur-md transition-all duration-200 ease-out flex flex-col justify-between">
               <div>
                 <div className="flex items-center space-x-2 text-heritage-gold-300 mb-2">
                   <BookOpen className="w-5 h-5 text-heritage-gold-400 flex-shrink-0 group-hover:scale-105 transition-transform duration-200" />
@@ -139,7 +153,7 @@ export const Hero: React.FC<HeroProps> = ({ onExplore, onViewResources }) => {
             </div>
 
             {/* Thẻ 3 – TUỔI TRẺ */}
-            <div className="group p-4 sm:p-5 rounded-xl bg-[#3D0508]/65 hover:bg-[#3D0508]/85 border border-heritage-gold-400/30 hover:border-heritage-gold-400/60 shadow-lg shadow-black/25 backdrop-blur-sm transition-all duration-200 ease-out flex flex-col justify-between">
+            <div className="group p-4 sm:p-5 rounded-xl bg-[#52090E]/60 hover:bg-[#630C12]/80 border border-heritage-gold-400/35 hover:border-heritage-gold-400/65 shadow-xl shadow-black/25 backdrop-blur-md transition-all duration-200 ease-out flex flex-col justify-between">
               <div>
                 <div className="flex items-center space-x-2 text-heritage-gold-300 mb-2">
                   <Sparkles className="w-5 h-5 text-heritage-gold-400 flex-shrink-0 group-hover:scale-105 transition-transform duration-200" />
