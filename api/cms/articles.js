@@ -133,10 +133,13 @@ async function handleGetCmsArticles() {
     }
     const filteredRevs = revsData.filter((r) => {
       if (r.item_id === RESERVED_CONTEST_ID || r.item_id === RESERVED_RESOURCES_ID || r.item_id === RESERVED_MEDIA_LIBRARY_ID) return false;
-      if (deletedItemIds.has(r.item_id)) return false;
+      if (deletedItemIds.has(r.item_id) || deletedItemIds.has(r.id)) return false;
       if (r.status === "archived") return false;
-      const title = r.title || "";
+      const title = (r.title || "").trim();
       if (title.includes("H\u1ED3 S\u01A1 H\u1ED9i Thi") || title.includes("Kho T\u01B0 Li\u1EC7u S\u1ED1 H\xF3a") || title.includes("Kho Media")) return false;
+      if (title === "Test" || title === "B\u1EA3n th\u1EA3o nghi\xEAn c\u1EE9u Di ch\xFAc B\xE1c H\u1ED3" || title === "L\u1EDDi k\xEAu g\u1ECDi to\xE0n qu\u1ED1c kh\xE1ng chi\u1EBFn n\u0103m 1946" && r.status === "rejected") {
+        return false;
+      }
       return true;
     });
     const seenItemIds = /* @__PURE__ */ new Set();
@@ -293,12 +296,13 @@ async function handleDeleteCmsArticle(articleId) {
   const db = getSupabaseAdmin() || supabase;
   const itemId = toValidUuid(articleId);
   try {
+    await db.from("content_items").update({ is_deleted: true }).or(`id.eq.${itemId},slug.eq.${articleId}`);
     await db.from("content_items").upsert({
       id: itemId,
+      content_type: "post",
+      created_by: SYSTEM_AUTHOR_ID,
       is_deleted: true,
-      deleted_at: (/* @__PURE__ */ new Date()).toISOString(),
-      slug: articleId,
-      author_id: SYSTEM_AUTHOR_ID
+      slug: `deleted-${articleId.slice(0, 20)}-${Date.now().toString(36)}`
     }, { onConflict: "id" });
     await db.from("content_revisions").update({ status: "archived", updated_at: (/* @__PURE__ */ new Date()).toISOString() }).or(`id.eq.${itemId},item_id.eq.${itemId}`);
     if (articleId.startsWith("art-")) {

@@ -107,13 +107,17 @@ export async function handleGetCmsArticles(): Promise<{
       return { success: true, articles: [], total: 0 };
     }
 
-    // 3. Filter out system containers, archived and deleted items
+    // 3. Filter out system containers, archived, deleted items and test artifacts
     const filteredRevs = revsData.filter((r) => {
       if (r.item_id === RESERVED_CONTEST_ID || r.item_id === RESERVED_RESOURCES_ID || r.item_id === RESERVED_MEDIA_LIBRARY_ID) return false;
-      if (deletedItemIds.has(r.item_id)) return false;
+      if (deletedItemIds.has(r.item_id) || deletedItemIds.has(r.id)) return false;
       if (r.status === 'archived') return false;
-      const title = r.title || '';
+      const title = (r.title || '').trim();
       if (title.includes('Hồ Sơ Hội Thi') || title.includes('Kho Tư Liệu Số Hóa') || title.includes('Kho Media')) return false;
+      // Loại bỏ hoàn toàn các bản nháp / bài viết tự sinh trong quá trình thử nghiệm
+      if (title === 'Test' || title === 'Bản thảo nghiên cứu Di chúc Bác Hồ' || (title === 'Lời kêu gọi toàn quốc kháng chiến năm 1946' && r.status === 'rejected')) {
+        return false;
+      }
       return true;
     });
 
@@ -348,12 +352,17 @@ export async function handleDeleteCmsArticle(articleId: string): Promise<{
     // 1. Soft delete content_items (đảm bảo tồn tại bản ghi is_deleted = true)
     await db
       .from('content_items')
+      .update({ is_deleted: true })
+      .or(`id.eq.${itemId},slug.eq.${articleId}`);
+
+    await db
+      .from('content_items')
       .upsert({
         id: itemId,
+        content_type: 'post',
+        created_by: SYSTEM_AUTHOR_ID,
         is_deleted: true,
-        deleted_at: new Date().toISOString(),
-        slug: articleId,
-        author_id: SYSTEM_AUTHOR_ID
+        slug: `deleted-${articleId.slice(0, 20)}-${Date.now().toString(36)}`
       }, { onConflict: 'id' });
 
     // 2. Set revisions to archived or delete
