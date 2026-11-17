@@ -438,11 +438,12 @@ export const Resources: React.FC = () => {
               <AlertCircle className="w-7 h-7" />
             </div>
             <h3 className="font-serif text-lg font-bold text-heritage-ink-900 mb-2">
-              Không tìm thấy tư liệu phù hợp
+              {searchQuery ? 'Không tìm thấy tư liệu phù hợp' : 'Chưa có tư liệu trong chuyên mục này'}
             </h3>
             <p className="text-sm text-heritage-ink-600 mb-6 leading-relaxed">
-              Không có tư liệu nào khớp với từ khóa "{searchQuery}" trong danh mục đã chọn.
-              Bạn hãy thử đổi từ khóa khác hoặc xóa bộ lọc.
+              {searchQuery
+                ? `Không có tư liệu nào khớp với từ khóa "${searchQuery}". Bạn hãy thử đổi từ khóa khác hoặc xóa bộ lọc.`
+                : 'Chuyên mục đang được cập nhật các tư liệu chính thức. Mời bạn đón xem các bài đăng mới nhất.'}
             </p>
             <button
               onClick={resetFilters}
