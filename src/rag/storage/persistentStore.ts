@@ -126,7 +126,7 @@ export class PersistentRagStore {
     publicOnly: boolean = false
   ): Promise<RealKnowledgeDocument[]> {
     await this.ensureInitialized();
-    let rawDocs: RealKnowledgeDocument[] = [];
+    let dbDocs: RealKnowledgeDocument[] = [];
 
     if (this.isSupabaseLive) {
       try {
@@ -138,24 +138,48 @@ export class PersistentRagStore {
         }
         const { data, error } = await query;
         if (!error && data && data.length > 0) {
-          rawDocs = data.map(this.mapDbToDocument);
+          dbDocs = data.map(this.mapDbToDocument);
         }
       } catch (err) {
         console.warn('[PersistentRagStore] Error fetching from Supabase, using local registry:', err);
       }
     }
 
-    if (rawDocs.length === 0) {
-      rawDocs = documentRegistry.getAllDocuments(publicOnly ? 'APPROVED' : statusFilter);
+    // Always retrieve base/seed documents from documentRegistry (46 total standard items)
+    const seedDocs = documentRegistry.getAllDocuments(publicOnly ? 'APPROVED' : statusFilter);
+    const dbMap = new Map(dbDocs.map(d => [d.documentId, d]));
+
+    // Seamless Merge: start with seed documents overlaid by Supabase DB records if present
+    const mergedMap = new Map<string, RealKnowledgeDocument>();
+
+    for (const seed of seedDocs) {
+      if (dbMap.has(seed.documentId)) {
+        mergedMap.set(seed.documentId, dbMap.get(seed.documentId)!);
+      } else {
+        mergedMap.set(seed.documentId, seed);
+      }
+    }
+
+    // Include any custom documents uploaded directly to Supabase that were not in seed
+    for (const dbDoc of dbDocs) {
+      if (!mergedMap.has(dbDoc.documentId)) {
+        mergedMap.set(dbDoc.documentId, dbDoc);
+      }
+    }
+
+    let finalDocs = Array.from(mergedMap.values());
+
+    if (statusFilter) {
+      finalDocs = finalDocs.filter(d => d.approvalStatus === statusFilter);
     }
 
     if (publicOnly) {
-      return rawDocs
+      return finalDocs
         .filter(d => d.approvalStatus === 'APPROVED' && d.isAllowedForRag === true)
         .map(d => this.sanitizeForPublic(d));
     }
 
-    return rawDocs;
+    return finalDocs;
   }
 
   /**

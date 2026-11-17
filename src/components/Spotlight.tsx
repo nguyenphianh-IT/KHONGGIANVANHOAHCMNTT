@@ -11,7 +11,8 @@ import {
   EVENT_ARTICLES_CHANGED,
   ArticleData,
   normalizeCategoryToHomepage,
-  getCategoryLabel
+  getCategoryLabel,
+  fetchArticlesFromSupabase
 } from '../lib/cmsStore';
 import {
   getAllViewCounts,
@@ -70,6 +71,13 @@ export const Spotlight: React.FC = () => {
     loadResources();
     handleViewsUpdate();
 
+    // Tự động kéo các bài viết mới nhất đã xuất bản từ Cloud Database về Spotlight
+    fetchArticlesFromSupabase()
+      .then(() => {
+        loadResources();
+      })
+      .catch(() => {});
+
     // Đồng bộ số lượt đọc từ Supabase Cloud
     fetchCloudViewCounts().then((cloudCounts) => {
       if (cloudCounts && Object.keys(cloudCounts).length > 0) {
@@ -108,9 +116,22 @@ export const Spotlight: React.FC = () => {
       .slice(0, 2);
   }, [allResources, featuredHero]);
 
-  // 2. TƯ LIỆU MỚI NHẤT (Latest Articles - 4 bài giúp cân đối trọn vẹn chiều cao hai cột)
+  // 2. TƯ LIỆU MỚI NHẤT (Latest Articles - tự động ưu tiên bài viết CMS mới xuất bản và sắp xếp theo mốc thời gian)
   const latestResources = useMemo(() => {
-    return allResources.slice(0, 4);
+    const sorted = [...allResources].sort((a, b) => {
+      const timeA = a.dateOrEra ? new Date(a.dateOrEra).getTime() : 0;
+      const timeB = b.dateOrEra ? new Date(b.dateOrEra).getTime() : 0;
+      if (!isNaN(timeA) && !isNaN(timeB) && timeA !== timeB && timeA > 0 && timeB > 0) {
+        return timeB - timeA;
+      }
+      // Ưu tiên hiển thị bài viết CMS mới (art- hoặc uuid) trước các dữ liệu tĩnh
+      const isCmsA = a.id.startsWith('art-') || a.id.includes('-');
+      const isCmsB = b.id.startsWith('art-') || b.id.includes('-');
+      if (isCmsA && !isCmsB) return -1;
+      if (!isCmsA && isCmsB) return 1;
+      return 0;
+    });
+    return sorted.slice(0, 4);
   }, [allResources]);
 
   // 3. TƯ LIỆU ĐỌC NHIỀU NHẤT (Top 3 tác phẩm theo số lượt đọc THỰC TẾ, không view ảo)

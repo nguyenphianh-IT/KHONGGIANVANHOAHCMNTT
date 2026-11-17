@@ -2596,6 +2596,9 @@ var DocumentRegistry = class {
             } else {
               const doc = this.documents.get(id);
               if (doc && ov && typeof ov === "object") {
+                if (doc.approvalStatus === "APPROVED" && ov.approvalStatus === "PENDING_REVIEW") {
+                  continue;
+                }
                 Object.assign(doc, ov);
               }
             }
@@ -3204,7 +3207,7 @@ var PersistentRagStore = class {
    */
   async getDocuments(statusFilter, publicOnly = false) {
     await this.ensureInitialized();
-    let rawDocs = [];
+    let dbDocs = [];
     if (this.isSupabaseLive) {
       try {
         let query = supabase.from("rag_documents").select("*");
@@ -3215,19 +3218,35 @@ var PersistentRagStore = class {
         }
         const { data, error } = await query;
         if (!error && data && data.length > 0) {
-          rawDocs = data.map(this.mapDbToDocument);
+          dbDocs = data.map(this.mapDbToDocument);
         }
       } catch (err) {
         console.warn("[PersistentRagStore] Error fetching from Supabase, using local registry:", err);
       }
     }
-    if (rawDocs.length === 0) {
-      rawDocs = documentRegistry.getAllDocuments(publicOnly ? "APPROVED" : statusFilter);
+    const seedDocs = documentRegistry.getAllDocuments(publicOnly ? "APPROVED" : statusFilter);
+    const dbMap = new Map(dbDocs.map((d) => [d.documentId, d]));
+    const mergedMap = /* @__PURE__ */ new Map();
+    for (const seed of seedDocs) {
+      if (dbMap.has(seed.documentId)) {
+        mergedMap.set(seed.documentId, dbMap.get(seed.documentId));
+      } else {
+        mergedMap.set(seed.documentId, seed);
+      }
+    }
+    for (const dbDoc of dbDocs) {
+      if (!mergedMap.has(dbDoc.documentId)) {
+        mergedMap.set(dbDoc.documentId, dbDoc);
+      }
+    }
+    let finalDocs = Array.from(mergedMap.values());
+    if (statusFilter) {
+      finalDocs = finalDocs.filter((d) => d.approvalStatus === statusFilter);
     }
     if (publicOnly) {
-      return rawDocs.filter((d) => d.approvalStatus === "APPROVED" && d.isAllowedForRag === true).map((d) => this.sanitizeForPublic(d));
+      return finalDocs.filter((d) => d.approvalStatus === "APPROVED" && d.isAllowedForRag === true).map((d) => this.sanitizeForPublic(d));
     }
-    return rawDocs;
+    return finalDocs;
   }
   /**
    * Retrieve a single document by ID (with public privacy gate)

@@ -183,6 +183,10 @@ export class DocumentRegistry {
             } else {
               const doc = this.documents.get(id);
               if (doc && ov && typeof ov === 'object') {
+                // Safeguard: Do NOT let a stale client-side "PENDING_REVIEW" override revert an officially APPROVED document
+                if (doc.approvalStatus === 'APPROVED' && (ov as any).approvalStatus === 'PENDING_REVIEW') {
+                  continue;
+                }
                 Object.assign(doc, ov);
               }
             }
