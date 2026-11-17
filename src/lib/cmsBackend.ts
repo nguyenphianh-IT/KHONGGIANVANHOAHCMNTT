@@ -424,17 +424,20 @@ export async function handleSaveCmsMedia(newAssets: MediaAsset | MediaAsset[]): 
     const nowIso = new Date().toISOString();
 
     // 1. Ensure content_items row exists
-    await db.from('content_items').upsert(
+    const { error: itemErr } = await db.from('content_items').upsert(
       {
         id: RESERVED_MEDIA_LIBRARY_ID,
         content_type: 'media_library',
         slug: 'kho-media-tu-lieu-so-hoa',
-        status: 'published',
+        created_by: SYSTEM_AUTHOR_ID,
         is_deleted: false,
         updated_at: nowIso,
       },
       { onConflict: 'id' }
     );
+    if (itemErr) {
+      console.warn('[handleSaveCmsMedia itemUpsert error]', itemErr.message);
+    }
 
     // 2. Fetch existing assets
     const { data: revs } = await db
