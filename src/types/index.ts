@@ -15,6 +15,16 @@ export interface TimelineEvent {
 
 export type ResourceCategory = 'all' | 'article' | 'image' | 'video' | 'book' | 'audio';
 
+export interface PdfAttachment {
+  url: string;               // URL hoặc Data URL của tệp PDF
+  fileName: string;          // Tên tệp (vd: Nhat-ky-trong-tu.pdf)
+  fileSize: number;          // Dung lượng bytes
+  totalPages: number;        // Tổng số trang
+  allowDownload?: boolean;   // Cho phép tải tệp về máy (mặc định: true)
+  readingMode?: 'flipbook' | 'scroll'; // Mặc định: 'flipbook'
+  uploadedAt?: string;
+}
+
 export interface ResourceItem {
   id: string;
   title: string;
@@ -28,6 +38,7 @@ export interface ResourceItem {
   mediaUrl?: string;
   audioUrl?: string;
   audioDuration?: string;
+  pdfAttachment?: PdfAttachment;
   badgeText: string;
   isMockData: boolean;
   tags: string[];

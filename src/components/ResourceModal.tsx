@@ -6,6 +6,7 @@ import {
 } from 'lucide-react';
 import { ContentRenderer } from './cms/ContentRenderer';
 import { AudioPlayer } from './AudioPlayer';
+import { BookFlipbookModal } from './BookFlipbookModal';
 import {
   recordArticleView,
   getViewCount,
@@ -22,6 +23,7 @@ interface ResourceModalProps {
 export const ResourceModal: React.FC<ResourceModalProps> = ({ item, onClose }) => {
   const [fontSize, setFontSize] = useState<'normal' | 'large'>('normal');
   const [currentViews, setCurrentViews] = useState<number>(() => item ? getViewCount(item.id) : 0);
+  const [isFlipbookOpen, setIsFlipbookOpen] = useState(false);
 
   useEffect(() => {
     if (!item?.id) return;
@@ -266,6 +268,39 @@ export const ResourceModal: React.FC<ResourceModalProps> = ({ item, onClose }) =
               </div>
             )}
 
+            {/* NÚT MỞ BỘ ĐỌC SÁCH LẬT TRANG 3D (Nếu có đính kèm file PDF) */}
+            {item.pdfAttachment && (
+              <div className="my-6 p-4 sm:p-5 bg-gradient-to-r from-emerald-900 via-emerald-800 to-emerald-950 rounded-2xl text-white shadow-xl border-2 border-emerald-400/40 flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div className="flex items-center space-x-3.5">
+                  <div className="w-12 h-12 rounded-xl bg-heritage-gold-400 text-heritage-red-950 flex items-center justify-center flex-shrink-0 shadow-md">
+                    <BookOpen className="w-6 h-6" />
+                  </div>
+                  <div>
+                    <div className="flex items-center space-x-2">
+                      <span className="text-[10px] font-bold uppercase tracking-wider bg-heritage-gold-400 text-heritage-red-950 px-2 py-0.5 rounded-full">
+                        Ấn phẩm PDF số hóa
+                      </span>
+                      <span className="text-xs text-emerald-200">
+                        {item.pdfAttachment.totalPages} trang • {(item.pdfAttachment.fileSize / (1024 * 1024)).toFixed(1)} MB
+                      </span>
+                    </div>
+                    <h4 className="font-serif font-bold text-base sm:text-lg text-white mt-0.5">
+                      Trải nghiệm Đọc sách Lật trang 3D (Interactive Flipbook)
+                    </h4>
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => setIsFlipbookOpen(true)}
+                  className="w-full sm:w-auto px-5 py-2.5 bg-gradient-to-r from-heritage-gold-400 to-heritage-gold-500 hover:from-heritage-gold-300 hover:to-heritage-gold-400 text-heritage-red-950 font-bold text-sm rounded-xl shadow-lg hover:shadow-xl transition-all flex items-center justify-center space-x-2 flex-shrink-0 active:scale-95 cursor-pointer"
+                >
+                  <span>📖 Mở Sách Lật Trang</span>
+                  <span>→</span>
+                </button>
+              </div>
+            )}
+
             {/* MAIN ARTICLE BODY (ContentRenderer) */}
             <div className="pt-2">
               <ContentRenderer
@@ -366,6 +401,15 @@ export const ResourceModal: React.FC<ResourceModalProps> = ({ item, onClose }) =
           </div>
         </footer>
       </div>
+
+      {/* Trình đọc Sách Lật Trang 3D (Interactive Flipbook) */}
+      {item.pdfAttachment && (
+        <BookFlipbookModal
+          isOpen={isFlipbookOpen}
+          onClose={() => setIsFlipbookOpen(false)}
+          item={item}
+        />
+      )}
     </div>
   );
 };

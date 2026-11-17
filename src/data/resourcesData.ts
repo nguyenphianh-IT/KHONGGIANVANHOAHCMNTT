@@ -26,6 +26,14 @@ export const resourcesData: ResourceItem[] = [
     authorOrSource: 'Nhà xuất bản Chính trị Quốc gia Sự thật',
     dateOrEra: '1965 - 1969',
     thumbnail: 'https://images.unsplash.com/photo-1512820790803-83ca734da794?auto=format&fit=crop&w=600&q=80',
+    pdfAttachment: {
+      url: '/documents/di-chuc-chu-tich-ho-chi-minh.pdf',
+      fileName: 'di-chuc-chu-tich-ho-chi-minh.pdf',
+      fileSize: 7435,
+      totalPages: 6,
+      allowDownload: true,
+      readingMode: 'flipbook',
+    },
     badgeText: 'Bảo vật quốc gia',
     isMockData: false,
     tags: ['Di chúc', 'Đoàn kết', 'Thế hệ trẻ', 'Vừa hồng vừa chuyên']

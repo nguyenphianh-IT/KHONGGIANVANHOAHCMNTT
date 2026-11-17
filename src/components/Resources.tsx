@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { resourcesData } from '../data/resourcesData';
 import { ResourceCategory, ResourceItem } from '../types';
 import { ResourceModal } from './ResourceModal';
+import { BookFlipbookModal } from './BookFlipbookModal';
 import { 
   Search, Filter, BookOpen, FileText, Image as ImageIcon, Video, Book, 
   X, AlertCircle, Volume2, Headphones, ChevronLeft, ChevronRight, Eye 
@@ -39,6 +40,7 @@ const mapArticleToResource = (art: ArticleData): ResourceItem => {
     thumbnail: resolveMediaUrl(art.featured_image, art.media_assets) || (normCat === 'video' ? '/images/timeline-ngoi-sao.png' : '/images/ho-chi-minh-tp-hcm.png'),
     audioUrl: art.audio_url || (normCat === 'audio' ? '/audio/tuyen-ngon-doc-lap-1945.mp3' : undefined),
     audioDuration: art.audio_duration || (normCat === 'audio' ? '03:30' : undefined),
+    pdfAttachment: art.pdf_attachment,
     badgeText: art.topic ? `⭐ ${art.topic}` : '⭐ Đã duyệt 4 Mắt (CMS)',
     isMockData: false,
     tags: [normCat, '4-eyes-approved', 'chinh-thuc', art.topic || '', art.category],
@@ -52,6 +54,7 @@ export const Resources: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState<ResourceCategory>('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [activeModalItem, setActiveModalItem] = useState<ResourceItem | null>(null);
+  const [activeFlipbookItem, setActiveFlipbookItem] = useState<ResourceItem | null>(null);
   const [liveResources, setLiveResources] = useState<ResourceItem[]>([]);
   const [viewsMap, setViewsMap] = useState<Record<string, number>>(() => getAllViewCounts());
 
@@ -277,6 +280,15 @@ export const Resources: React.FC = () => {
                         </div>
                       )}
 
+                      {item.pdfAttachment && (
+                        <div className="absolute top-2.5 right-2.5">
+                          <span className="px-2 py-0.5 bg-emerald-950/90 text-emerald-200 text-[11px] font-mono font-bold rounded backdrop-blur-sm border border-emerald-400/50 shadow flex items-center space-x-1">
+                            <BookOpen className="w-3 h-3 text-emerald-300" />
+                            <span>{item.pdfAttachment.totalPages} trang</span>
+                          </span>
+                        </div>
+                      )}
+
                       {item.category === 'audio' && (
                         <div className="absolute inset-0 bg-black/25 flex items-center justify-center group-hover:bg-black/10 transition-colors">
                           <div className="w-12 h-12 rounded-full bg-heritage-gold-400 text-heritage-red-950 flex items-center justify-center shadow-xl group-hover:scale-110 transition-transform">
@@ -321,10 +333,24 @@ export const Resources: React.FC = () => {
                         <span>{(viewsMap[item.id] || 0).toLocaleString('vi-VN')}</span>
                       </span>
                     </div>
-                    <span className="text-heritage-red-700 font-bold group-hover:underline flex-shrink-0 whitespace-nowrap flex items-center space-x-1">
-                      <span>{item.category === 'audio' ? '🎧 Nghe ghi âm' : 'Xem chi tiết'}</span>
-                      <span>→</span>
-                    </span>
+                    {item.pdfAttachment ? (
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setActiveFlipbookItem(item);
+                        }}
+                        className="px-2.5 py-1 bg-emerald-700 hover:bg-emerald-800 text-white rounded-lg text-xs font-bold transition flex items-center space-x-1 shadow-sm flex-shrink-0"
+                      >
+                        <span>📖 Đọc lật trang</span>
+                        <span>→</span>
+                      </button>
+                    ) : (
+                      <span className="text-heritage-red-700 font-bold group-hover:underline flex-shrink-0 whitespace-nowrap flex items-center space-x-1">
+                        <span>{item.category === 'audio' ? '🎧 Nghe ghi âm' : 'Xem chi tiết'}</span>
+                        <span>→</span>
+                      </span>
+                    )}
                   </div>
                 </div>
               ))}
@@ -419,6 +445,15 @@ export const Resources: React.FC = () => {
         item={activeModalItem}
         onClose={() => setActiveModalItem(null)}
       />
+
+      {/* Direct Interactive 3D Flipbook Reader */}
+      {activeFlipbookItem && (
+        <BookFlipbookModal
+          isOpen={!!activeFlipbookItem}
+          onClose={() => setActiveFlipbookItem(null)}
+          item={activeFlipbookItem}
+        />
+      )}
     </section>
   );
 };

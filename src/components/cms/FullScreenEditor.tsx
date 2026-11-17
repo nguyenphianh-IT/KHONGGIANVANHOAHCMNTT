@@ -3,7 +3,7 @@ import {
   ChevronLeft, Save, Send, Eye, Sliders, Maximize2, Minimize2,
   Bold, Italic, Underline, Heading1, Heading2, Heading3, Quote,
   List, ListOrdered, Image as ImageIcon, Video, Volume2, Upload, Music,
-  CheckCircle2, Trash2, Sparkles
+  CheckCircle2, Trash2, Sparkles, BookOpen, FileText
 } from 'lucide-react';
 import { MediaLibraryModal } from './MediaLibraryModal';
 import { ContentRenderer } from './ContentRenderer';
@@ -21,6 +21,8 @@ import {
 } from '../../lib/cmsStore';
 import { optimizeImageFile } from '../../lib/imageOptimizer';
 import { UNCLE_HO_QUOTES } from '../../data/quotesData';
+import { parsePdfFile, extractPdfCoverImage, loadPdfFromUrl } from '../../lib/pdfHelper';
+import type { PdfAttachment } from '../../types';
 
 export type { ArticleData };
 
@@ -111,6 +113,92 @@ export const FullScreenEditor: React.FC<FullScreenEditorProps> = ({
       };
     };
     reader.readAsDataURL(file);
+  };
+
+  // State & Handlers cho Tệp PDF Sách & Ấn phẩm số hóa
+  const [pdfAttachment, setPdfAttachment] = useState<PdfAttachment | undefined>(
+    (initialArticle as any)?.pdf_attachment || undefined
+  );
+  const [isProcessingPdf, setIsProcessingPdf] = useState(false);
+  const [pdfUploadNotice, setPdfUploadNotice] = useState<string | null>(null);
+  const [isExtractingCover, setIsExtractingCover] = useState(false);
+  const pdfFileInputRef = useRef<HTMLInputElement>(null);
+
+  const handlePdfFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.name.toLowerCase().endsWith('.pdf') && file.type !== 'application/pdf') {
+      alert('Vui lòng chọn tệp tài liệu định dạng .pdf!');
+      return;
+    }
+
+    if (file.size > 35 * 1024 * 1024) {
+      alert(`Tệp PDF quá lớn (${(file.size / (1024 * 1024)).toFixed(1)} MB). Vui lòng chọn tệp nhỏ hơn 35MB để đảm bảo tốc độ tải.`);
+      return;
+    }
+
+    try {
+      setIsProcessingPdf(true);
+      setPdfUploadNotice('Đang phân tích cấu trúc trang PDF...');
+
+      const meta = await parsePdfFile(file);
+
+      const reader = new FileReader();
+      reader.onload = async (evt) => {
+        const dataUrl = evt.target?.result as string;
+
+        const newPdfAttachment: PdfAttachment = {
+          url: dataUrl,
+          fileName: file.name,
+          fileSize: file.size,
+          totalPages: meta.totalPages,
+          allowDownload: pdfAttachment?.allowDownload !== undefined ? pdfAttachment.allowDownload : true,
+          readingMode: pdfAttachment?.readingMode || 'flipbook',
+          uploadedAt: new Date().toISOString(),
+        };
+
+        setPdfAttachment(newPdfAttachment);
+        setPdfUploadNotice(`Đã nạp: ${file.name} (${(file.size / (1024 * 1024)).toFixed(1)} MB • ${meta.totalPages} trang)`);
+        setIsProcessingPdf(false);
+
+        // Tự động tạo ảnh bìa từ Trang 1 nếu bài viết chưa có ảnh bìa
+        if (!featuredImage) {
+          try {
+            const coverData = await extractPdfCoverImage(meta.pdfDoc);
+            setFeaturedImage(coverData);
+          } catch (err) {
+            console.warn('[Auto Cover Extractor error]', err);
+          }
+        }
+      };
+
+      reader.onerror = () => {
+        setIsProcessingPdf(false);
+        alert('Không thể đọc tệp PDF. Vui lòng thử lại!');
+      };
+
+      reader.readAsDataURL(file);
+    } catch (err: any) {
+      console.error('[handlePdfFileUpload Error]', err);
+      setIsProcessingPdf(false);
+      alert('Lỗi đọc tệp PDF: ' + (err?.message || 'Tệp có thể bị hỏng hoặc có mật khẩu bảo vệ'));
+    }
+  };
+
+  const handleExtractCover = async () => {
+    if (!pdfAttachment?.url) return;
+    try {
+      setIsExtractingCover(true);
+      const doc = await loadPdfFromUrl(pdfAttachment.url);
+      const cover = await extractPdfCoverImage(doc);
+      setFeaturedImage(cover);
+      alert('Đã trích xuất Trang 1 thành công và đặt làm Ảnh bìa bài viết!');
+    } catch (err: any) {
+      alert('Không thể trích xuất trang bìa: ' + (err?.message || 'Lỗi không xác định'));
+    } finally {
+      setIsExtractingCover(false);
+    }
   };
   
   const [isFocusMode, setIsFocusMode] = useState(false);
@@ -280,6 +368,7 @@ export const FullScreenEditor: React.FC<FullScreenEditorProps> = ({
         audio_url: audioUrl,
         audio_duration: audioDuration,
         quote_id: selectedQuoteId,
+        pdf_attachment: pdfAttachment,
         status: initialArticle?.status || 'draft',
         author_name: initialArticle?.author_name || currentUserName,
         updated_at: nowIso,
@@ -326,6 +415,7 @@ export const FullScreenEditor: React.FC<FullScreenEditorProps> = ({
         audio_url: audioUrl,
         audio_duration: audioDuration,
         quote_id: selectedQuoteId,
+        pdf_attachment: pdfAttachment,
         status: 'pending',
         author_name: initialArticle?.author_name || currentUserName,
         updated_at: nowIso,
@@ -370,6 +460,7 @@ export const FullScreenEditor: React.FC<FullScreenEditorProps> = ({
       audio_url: audioUrl,
       audio_duration: audioDuration,
       quote_id: selectedQuoteId,
+      pdf_attachment: pdfAttachment,
       status: 'published',
       author_name: initialArticle?.author_name || currentUserName,
       updated_at: nowIso,
@@ -867,6 +958,115 @@ export const FullScreenEditor: React.FC<FullScreenEditorProps> = ({
                     className="w-full px-2.5 py-1.5 bg-white border border-heritage-gold-300 rounded text-xs text-heritage-ink-900 outline-none focus:ring-1 focus:ring-heritage-red-600"
                   />
                 </div>
+              </div>
+            )}
+
+            {/* Cấu hình Tệp PDF Sách & Ấn phẩm số hóa (Hiển thị khi danh mục là book hoặc đã có file PDF đính kèm) */}
+            {(category === 'book' || pdfAttachment) && (
+              <div className="p-3.5 bg-emerald-50/95 border border-emerald-300 rounded-xl space-y-3 animate-fadeIn shadow-sm">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-1.5 text-xs font-bold text-emerald-950">
+                    <BookOpen className="w-4 h-4 text-emerald-700 flex-shrink-0" />
+                    <span>Cấu hình Sách & Tài liệu PDF lật trang</span>
+                  </div>
+                  {pdfAttachment && (
+                    <span className="text-[10px] bg-emerald-200/80 text-emerald-900 font-extrabold px-2 py-0.5 rounded-full border border-emerald-300">
+                      {pdfAttachment.totalPages} trang
+                    </span>
+                  )}
+                </div>
+
+                {/* 1. NÚT CHỌN FILE PDF TỪ MÁY TÍNH */}
+                <div>
+                  <input
+                    ref={pdfFileInputRef}
+                    type="file"
+                    accept="application/pdf,.pdf"
+                    onChange={handlePdfFileUpload}
+                    className="hidden"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => pdfFileInputRef.current?.click()}
+                    disabled={isProcessingPdf}
+                    className="w-full flex items-center justify-center space-x-2 px-3 py-2.5 bg-gradient-to-r from-emerald-700 to-emerald-800 text-white rounded-lg text-xs font-bold hover:brightness-110 active:scale-95 transition-all shadow-sm border border-emerald-900 disabled:opacity-50"
+                  >
+                    <Upload className="w-4 h-4" />
+                    <span>{isProcessingPdf ? 'Đang đọc & đếm trang PDF...' : (pdfAttachment ? '🔄 Thay đổi tệp PDF khác' : '📁 Tải tệp sách PDF (.pdf) từ máy')}</span>
+                  </button>
+                  <p className="text-[10px] text-emerald-800 mt-1 text-center">
+                    Tối đa 35MB • Tự động đếm trang và sẵn sàng cho chế độ đọc lật 3D
+                  </p>
+                </div>
+
+                {pdfUploadNotice && (
+                  <div className="p-2 bg-white/90 border border-emerald-300 rounded-lg flex items-start space-x-2 text-emerald-900 text-xs">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-600 flex-shrink-0 mt-0.5" />
+                    <span className="leading-snug">{pdfUploadNotice}</span>
+                  </div>
+                )}
+
+                {/* 2. THÔNG TIN FILE HIỆN TẠI & TIỆN ÍCH TRÍCH XUẤT ẢNH BÌA */}
+                {pdfAttachment && (
+                  <div className="p-2.5 bg-white rounded-lg border border-emerald-200 space-y-2">
+                    <div className="flex items-start justify-between">
+                      <div className="flex items-center space-x-2 overflow-hidden">
+                        <FileText className="w-5 h-5 text-emerald-700 flex-shrink-0" />
+                        <div className="truncate">
+                          <p className="text-xs font-bold text-emerald-950 truncate">{pdfAttachment.fileName}</p>
+                          <p className="text-[10px] text-emerald-700">
+                            {(pdfAttachment.fileSize / (1024 * 1024)).toFixed(2)} MB • {pdfAttachment.totalPages} trang
+                          </p>
+                        </div>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setPdfAttachment(undefined);
+                          setPdfUploadNotice(null);
+                        }}
+                        className="text-red-600 hover:text-red-800 text-[10px] font-bold ml-2 flex-shrink-0"
+                      >
+                        Gỡ bỏ
+                      </button>
+                    </div>
+
+                    {/* Tiện ích trích xuất Trang 1 làm Ảnh bìa */}
+                    <div className="pt-2 border-t border-emerald-100 flex items-center justify-between">
+                      <span className="text-[11px] text-emerald-900 font-medium">Trang bìa từ PDF:</span>
+                      <button
+                        type="button"
+                        onClick={handleExtractCover}
+                        disabled={isExtractingCover}
+                        className="px-2 py-1 bg-emerald-100 hover:bg-emerald-200 text-emerald-900 rounded text-[10px] font-bold border border-emerald-300 transition-colors disabled:opacity-50"
+                      >
+                        {isExtractingCover ? 'Đang trích xuất...' : '📸 Đặt Trang 1 làm Ảnh bìa'}
+                      </button>
+                    </div>
+
+                    {/* Tuỳ chọn tải về máy & chế độ lật trang */}
+                    <div className="pt-2 border-t border-emerald-100 space-y-1.5">
+                      <label className="flex items-center space-x-2 cursor-pointer text-[11px] text-emerald-950">
+                        <input
+                          type="checkbox"
+                          checked={pdfAttachment.allowDownload !== false}
+                          onChange={(e) => setPdfAttachment({ ...pdfAttachment, allowDownload: e.target.checked })}
+                          className="rounded text-emerald-700 focus:ring-emerald-600"
+                        />
+                        <span>Cho phép học sinh tải tệp PDF về máy</span>
+                      </label>
+                      <label className="flex items-center space-x-2 cursor-pointer text-[11px] text-emerald-950">
+                        <input
+                          type="checkbox"
+                          checked={pdfAttachment.readingMode !== 'scroll'}
+                          onChange={(e) => setPdfAttachment({ ...pdfAttachment, readingMode: e.target.checked ? 'flipbook' : 'scroll' })}
+                          className="rounded text-emerald-700 focus:ring-emerald-600"
+                        />
+                        <span>Bật hiệu ứng đọc lật trang 3D (Interactive Flipbook)</span>
+                      </label>
+                    </div>
+                  </div>
+                )}
               </div>
             )}
 

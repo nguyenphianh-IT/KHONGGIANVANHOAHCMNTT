@@ -5,6 +5,7 @@
 // ==============================================================================
 
 import { supabase, isSupabaseConfigured } from './supabase';
+import type { PdfAttachment } from '../types';
 
 export interface ArticleData {
   id?: string;
@@ -21,6 +22,7 @@ export interface ArticleData {
   audio_duration?: string;
   quote_id?: number;
   custom_quote?: string;
+  pdf_attachment?: PdfAttachment;
   status: 'draft' | 'pending' | 'approved' | 'published' | 'rejected' | 'archived';
   author_id?: string;
   author_name?: string;

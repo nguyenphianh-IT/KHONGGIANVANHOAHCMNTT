@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { X, CheckCircle2, XCircle, AlertTriangle, ShieldCheck, User } from 'lucide-react';
+import { X, CheckCircle2, XCircle, AlertTriangle, ShieldCheck, User, BookOpen } from 'lucide-react';
 import { ContentRenderer } from './ContentRenderer';
 import { ArticleData, getCategoryLabel } from '../../lib/cmsStore';
+import { BookFlipbookModal } from '../BookFlipbookModal';
 
 interface ReviewModalProps {
   isOpen: boolean;
@@ -26,6 +27,7 @@ export const ReviewModal: React.FC<ReviewModalProps> = ({
 }) => {
   const [feedback, setFeedback] = useState('Nội dung chuẩn mực, tư tưởng chính xác, đạt chuẩn xuất bản.');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isFlipbookReviewOpen, setIsFlipbookReviewOpen] = useState(false);
 
   if (!isOpen || !article) return null;
 
@@ -169,6 +171,32 @@ export const ReviewModal: React.FC<ReviewModalProps> = ({
                 <strong>Nguồn trích dẫn:</strong> {article.references}
               </p>
             )}
+
+            {/* Tệp PDF đính kèm & Xem thử lật trang trước khi duyệt */}
+            {article.pdf_attachment && (
+              <div className="p-3 bg-emerald-50 border border-emerald-300 rounded-xl flex items-center justify-between gap-3">
+                <div className="flex items-center space-x-2.5 overflow-hidden">
+                  <div className="p-2 bg-emerald-100 text-emerald-800 rounded-lg flex-shrink-0">
+                    <BookOpen className="w-5 h-5" />
+                  </div>
+                  <div className="truncate">
+                    <p className="text-xs font-bold text-emerald-950 truncate">
+                      {article.pdf_attachment.fileName}
+                    </p>
+                    <p className="text-[10px] text-emerald-700">
+                      {article.pdf_attachment.totalPages} trang • {(article.pdf_attachment.fileSize / (1024 * 1024)).toFixed(1)} MB • Đã sẵn sàng chế độ lật trang 3D
+                    </p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setIsFlipbookReviewOpen(true)}
+                  className="px-3 py-1.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-lg text-xs font-bold shadow-sm transition flex-shrink-0"
+                >
+                  📖 Xem thử lật trang
+                </button>
+              </div>
+            )}
           </div>
 
           {/* Feedback & Decision Notes */}
@@ -220,6 +248,28 @@ export const ReviewModal: React.FC<ReviewModalProps> = ({
           </div>
         </div>
       </div>
+
+      {/* Xem thử Sách lật trang 3D trong phiên thẩm định 4 Mắt */}
+      {article.pdf_attachment && isFlipbookReviewOpen && (
+        <BookFlipbookModal
+          isOpen={isFlipbookReviewOpen}
+          onClose={() => setIsFlipbookReviewOpen(false)}
+          item={{
+            id: article.id || article.slug,
+            title: article.title,
+            category: 'book',
+            categoryLabel: 'Sách & Tài liệu',
+            description: article.summary,
+            authorOrSource: article.author_name || 'Biên tập viên',
+            dateOrEra: 'Thẩm định 4 Mắt',
+            thumbnail: article.featured_image || '',
+            badgeText: 'Thẩm định 4 Mắt',
+            isMockData: false,
+            tags: [],
+            pdfAttachment: article.pdf_attachment,
+          }}
+        />
+      )}
     </div>
   );
 };
