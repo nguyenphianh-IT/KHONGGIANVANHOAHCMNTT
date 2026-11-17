@@ -282,16 +282,11 @@ export const CmsDashboard: React.FC<CmsDashboardProps> = ({ isOpen, onClose }) =
     let updatedList: ArticleData[];
     let targetArticle: ArticleData;
     const targetId = article.id;
-    const targetSlug = article.slug;
-    const exists = articles.some(
-      (a) => (targetId && a.id === targetId) || (targetSlug && a.slug === targetSlug)
-    );
+    const exists = Boolean(targetId && articles.some((a) => a.id === targetId));
 
     if (exists) {
       targetArticle = { ...article, updated_at: nowIso };
-      updatedList = articles.map((a) =>
-        (targetId && a.id === targetId) || (targetSlug && a.slug === targetSlug) ? targetArticle : a
-      );
+      updatedList = articles.map((a) => (a.id === targetId ? targetArticle : a));
     } else {
       targetArticle = {
         ...article,
@@ -324,6 +319,7 @@ export const CmsDashboard: React.FC<CmsDashboardProps> = ({ isOpen, onClose }) =
   // 2. Action: Submit for 4-Eyes Review
   const handleSubmitReview = async (article: ArticleData) => {
     const nowIso = new Date().toISOString();
+    const isExistingArticle = Boolean(article.id && articles.some((a) => a.id === article.id));
     const updated: ArticleData = {
       ...article,
       id: article.id || `art-${Date.now()}`,
@@ -333,18 +329,8 @@ export const CmsDashboard: React.FC<CmsDashboardProps> = ({ isOpen, onClose }) =
       updated_at: nowIso,
     };
 
-    const targetId = updated.id;
-    const targetSlug = updated.slug;
-    const exists = articles.some(
-      (a) => (targetId && a.id === targetId) || (targetSlug && a.slug === targetSlug)
-    );
-
-    const updatedList = exists
-      ? articles.map((a) =>
-          (targetId && a.id === targetId) || (targetSlug && a.slug === targetSlug)
-            ? updated
-            : a
-        )
+    const updatedList = isExistingArticle
+      ? articles.map((a) => (a.id === updated.id ? updated : a))
       : [updated, ...articles];
 
     setArticles(updatedList);

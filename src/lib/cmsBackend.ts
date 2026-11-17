@@ -130,7 +130,7 @@ export async function handleGetCmsArticles(): Promise<{
       if (title === 'Test' || title === 'Bản thảo nghiên cứu Di chúc Bác Hồ' || (title === 'Lời kêu gọi toàn quốc kháng chiến năm 1946' && r.status === 'rejected')) {
         return false;
       }
-      if (r.data && (r.data.slug === 't' || r.data.slug === 'test')) {
+      if (r.data && r.data.slug === 'test') {
         return false;
       }
       const rId = r.id || '';
@@ -212,15 +212,16 @@ export async function handleSaveCmsArticle(article: ArticleData): Promise<{
   try {
     const rawId = article.id || `art-${Date.now()}`;
     let itemId = toValidUuid(rawId);
-    const safeSlug = article.slug || generateSlug(article.title);
+    const trimmedSlug = (article.slug || '').trim();
+    const safeSlug = trimmedSlug.length > 2 ? trimmedSlug : generateSlug(article.title);
     const nowIso = new Date().toISOString();
 
-    // Tra cứu xem slug này đã tồn tại trong content_items (chưa bị xóa) chưa để cập nhật đúng item
-    if (article.slug) {
+    // Chỉ tra cứu theo slug nếu bài viết KHÔNG có id (tránh trường hợp slug ngắn/trùng ghi đè bài khác)
+    if (!article.id && safeSlug.length > 2) {
       const { data: itemBySlug } = await db
         .from('content_items')
         .select('id, is_deleted')
-        .eq('slug', article.slug)
+        .eq('slug', safeSlug)
         .eq('is_deleted', false)
         .limit(1);
       if (itemBySlug && itemBySlug.length > 0 && itemBySlug[0].id) {

@@ -50,6 +50,9 @@ export const FullScreenEditor: React.FC<FullScreenEditorProps> = ({
 }) => {
   const [title, setTitle] = useState(initialArticle?.title || '');
   const [slug, setSlug] = useState(initialArticle?.slug || '');
+  const [isSlugManual, setIsSlugManual] = useState<boolean>(
+    Boolean(initialArticle?.id && initialArticle?.slug && initialArticle.slug.trim().length > 2)
+  );
   const [summary, setSummary] = useState(initialArticle?.summary || '');
   const [content, setContent] = useState(initialArticle?.content || '');
   const [category, setCategory] = useState<string>(
@@ -219,18 +222,20 @@ export const FullScreenEditor: React.FC<FullScreenEditorProps> = ({
 
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-  // Auto-generate slug from title if empty
+  const buildSlugFromTitle = (val: string) =>
+    val
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/[đĐ]/g, 'd')
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '');
+
+  // Tự động cập nhật đầy đủ slug theo toàn bộ tiêu đề (chỉ dừng khi người dùng tự sửa tay ô đường dẫn)
   const handleTitleChange = (val: string) => {
     setTitle(val);
-    if (!initialArticle?.id && (!slug || slug === '')) {
-      const autoSlug = val
-        .toLowerCase()
-        .normalize('NFD')
-        .replace(/[\u0300-\u036f]/g, '')
-        .replace(/[đĐ]/g, 'd')
-        .replace(/[^a-z0-9]+/g, '-')
-        .replace(/^-+|-+$/g, '');
-      setSlug(autoSlug);
+    if (!initialArticle?.id && !isSlugManual) {
+      setSlug(buildSlugFromTitle(val));
     }
   };
 
@@ -356,15 +361,22 @@ export const FullScreenEditor: React.FC<FullScreenEditorProps> = ({
     }, 50);
   };
 
+  const resolveFinalSlug = (rawSlug: string, rawTitle: string) => {
+    const trimmed = (rawSlug || '').trim();
+    if (trimmed.length > 2) return trimmed;
+    return buildSlugFromTitle(rawTitle) || `bai-viet-${Date.now()}`;
+  };
+
   // Handle Save
   const handleSave = async () => {
     try {
       setIsSaving(true);
       const nowIso = new Date().toISOString();
+      const safeTitle = title || 'Bản thảo chưa đặt tên';
       const article: ArticleData = {
         ...(initialArticle || {}),
-        title: title || 'Bản thảo chưa đặt tên',
-        slug: slug || 'ban-thao-chua-dat-ten',
+        title: safeTitle,
+        slug: resolveFinalSlug(slug, safeTitle),
         summary,
         content,
         category,
@@ -411,7 +423,7 @@ export const FullScreenEditor: React.FC<FullScreenEditorProps> = ({
       const article: ArticleData = {
         ...(initialArticle || {}),
         title,
-        slug,
+        slug: resolveFinalSlug(slug, title),
         summary,
         content,
         category,
@@ -456,7 +468,7 @@ export const FullScreenEditor: React.FC<FullScreenEditorProps> = ({
     const article: ArticleData = {
       ...(initialArticle || {}),
       title,
-      slug,
+      slug: resolveFinalSlug(slug, title),
       summary,
       content,
       category,
@@ -823,7 +835,10 @@ export const FullScreenEditor: React.FC<FullScreenEditorProps> = ({
                   <input
                     type="text"
                     value={slug}
-                    onChange={(e) => setSlug(e.target.value)}
+                    onChange={(e) => {
+                      setIsSlugManual(true);
+                      setSlug(e.target.value);
+                    }}
                     placeholder="duong-dan-bai-viet"
                     className="bg-transparent border-none outline-none font-mono text-heritage-ink-800 flex-grow"
                   />

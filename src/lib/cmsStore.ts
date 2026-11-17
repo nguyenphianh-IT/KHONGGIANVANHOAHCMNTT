@@ -514,8 +514,8 @@ export function isTestOrDeletedArticle(art: Partial<ArticleData>): boolean {
   // 1. Kiểm tra chính xác ID test cũ (KHÔNG dùng startsWith('art-179493') vì sẽ chặn nhầm bài mới tạo cùng khung giờ)
   if (id && KNOWN_TEST_ARTICLE_IDS.has(id)) return true;
 
-  // 2. Kiểm tra slug test rác
-  if (slug === 't' || slug === 'test') return true;
+  // 2. Kiểm tra slug test rác (KHÔNG chặn slug === 't' vì bài thật gõ chữ T đầu tiên có thể bị dính slug 't')
+  if (slug === 'test') return true;
 
   // 3. Kiểm tra tiêu đề test cũ sinh ra trong lúc thử nghiệm
   if (title === 'Test' || title === 'Bản thảo nghiên cứu Di chúc Bác Hồ') return true;

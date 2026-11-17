@@ -151,7 +151,7 @@ async function handleGetCmsArticles() {
       if (title === "Test" || title === "B\u1EA3n th\u1EA3o nghi\xEAn c\u1EE9u Di ch\xFAc B\xE1c H\u1ED3" || title === "L\u1EDDi k\xEAu g\u1ECDi to\xE0n qu\u1ED1c kh\xE1ng chi\u1EBFn n\u0103m 1946" && r.status === "rejected") {
         return false;
       }
-      if (r.data && (r.data.slug === "t" || r.data.slug === "test")) {
+      if (r.data && r.data.slug === "test") {
         return false;
       }
       const rId = r.id || "";
@@ -215,10 +215,11 @@ async function handleSaveCmsArticle(article) {
   try {
     const rawId = article.id || `art-${Date.now()}`;
     let itemId = toValidUuid(rawId);
-    const safeSlug = article.slug || generateSlug(article.title);
+    const trimmedSlug = (article.slug || "").trim();
+    const safeSlug = trimmedSlug.length > 2 ? trimmedSlug : generateSlug(article.title);
     const nowIso = (/* @__PURE__ */ new Date()).toISOString();
-    if (article.slug) {
-      const { data: itemBySlug } = await db.from("content_items").select("id, is_deleted").eq("slug", article.slug).eq("is_deleted", false).limit(1);
+    if (!article.id && safeSlug.length > 2) {
+      const { data: itemBySlug } = await db.from("content_items").select("id, is_deleted").eq("slug", safeSlug).eq("is_deleted", false).limit(1);
       if (itemBySlug && itemBySlug.length > 0 && itemBySlug[0].id) {
         itemId = itemBySlug[0].id;
       }
