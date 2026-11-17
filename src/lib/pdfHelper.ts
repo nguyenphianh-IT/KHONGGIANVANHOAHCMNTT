@@ -84,14 +84,29 @@ export async function extractPdfCoverImage(fileOrDoc: File | any, maxWidth = 900
 }
 
 /**
- * Nạp tài liệu PDF từ URL (Supabase Storage hoặc Data URL)
+ * Nạp tài liệu PDF từ URL (Supabase Storage, server path hoặc Data URL)
  */
 export async function loadPdfFromUrl(url: string): Promise<any> {
-  const loadingTask = pdfjsLib.getDocument({
-    url,
+  const docParams: any = {
     cMapUrl: 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/cmaps/',
     cMapPacked: true,
-  });
+  };
+
+  if (url.startsWith('data:')) {
+    // Chuyển đổi chuỗi Base64 Data URL thành Uint8Array an toàn tuyệt đối
+    const base64Data = (url.split(',')[1] || url).replace(/\s/g, '');
+    const binaryStr = typeof window !== 'undefined' ? window.atob(base64Data) : Buffer.from(base64Data, 'base64').toString('binary');
+    const len = binaryStr.length;
+    const bytes = new Uint8Array(len);
+    for (let i = 0; i < len; i++) {
+      bytes[i] = binaryStr.charCodeAt(i);
+    }
+    docParams.data = bytes;
+  } else {
+    docParams.url = url;
+  }
+
+  const loadingTask = pdfjsLib.getDocument(docParams);
   return await loadingTask.promise;
 }
 

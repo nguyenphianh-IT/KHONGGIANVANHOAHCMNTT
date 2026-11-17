@@ -22,6 +22,7 @@ import {
 import { optimizeImageFile } from '../../lib/imageOptimizer';
 import { UNCLE_HO_QUOTES } from '../../data/quotesData';
 import { parsePdfFile, extractPdfCoverImage, loadPdfFromUrl } from '../../lib/pdfHelper';
+import { BookFlipbookModal } from '../BookFlipbookModal';
 import type { PdfAttachment } from '../../types';
 
 export type { ArticleData };
@@ -214,6 +215,7 @@ export const FullScreenEditor: React.FC<FullScreenEditorProps> = ({
   const [isFocusMode, setIsFocusMode] = useState(false);
   const [showInspector, setShowInspector] = useState(true);
   const [isPreviewMode, setIsPreviewMode] = useState(false);
+  const [isFlipbookPreviewOpen, setIsFlipbookPreviewOpen] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [lastSavedTime, setLastSavedTime] = useState<string>('Vừa mới khởi tạo');
   const [videoModalOpen, setVideoModalOpen] = useState(false);
@@ -458,7 +460,7 @@ export const FullScreenEditor: React.FC<FullScreenEditorProps> = ({
     setIsSaving(true);
     const nowIso = new Date().toISOString();
     const article: ArticleData = {
-      id: initialArticle?.id,
+      ...(initialArticle || {}),
       title,
       slug,
       summary,
@@ -755,6 +757,40 @@ export const FullScreenEditor: React.FC<FullScreenEditorProps> = ({
                 {featuredImage && (
                   <div className="rounded-xl overflow-hidden shadow-sm border border-heritage-gold-200">
                     <img src={featuredImage} alt={title} className="w-full max-h-96 object-cover" />
+                  </div>
+                )}
+
+                {/* BANNER MỞ ĐỌC SÁCH LẬT TRANG 3D TRONG CHẾ ĐỘ XEM TRƯỚC */}
+                {pdfAttachment && (
+                  <div className="p-4 sm:p-5 bg-gradient-to-r from-emerald-900 via-emerald-800 to-emerald-950 rounded-2xl text-white shadow-xl border-2 border-emerald-400/40 flex flex-col sm:flex-row items-center justify-between gap-4">
+                    <div className="flex items-center space-x-3.5">
+                      <div className="w-12 h-12 rounded-xl bg-heritage-gold-400 text-heritage-red-950 flex items-center justify-center flex-shrink-0 shadow-md">
+                        <BookOpen className="w-6 h-6" />
+                      </div>
+                      <div>
+                        <div className="flex items-center space-x-2">
+                          <span className="text-[10px] font-bold uppercase tracking-wider bg-heritage-gold-400 text-heritage-red-950 px-2 py-0.5 rounded-full">
+                            Tài liệu PDF lật trang 3D
+                          </span>
+                          <span className="text-xs text-emerald-200">
+                            {pdfAttachment.totalPages} trang • {(pdfAttachment.fileSize / (1024 * 1024)).toFixed(1)} MB
+                          </span>
+                        </div>
+                        <h4 className="font-serif font-bold text-base sm:text-lg text-white mt-1">
+                          {pdfAttachment.fileName || 'Ấn phẩm số hóa'}
+                        </h4>
+                      </div>
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={() => setIsFlipbookPreviewOpen(true)}
+                      className="w-full sm:w-auto px-5 py-2.5 bg-gradient-to-r from-heritage-gold-400 to-heritage-gold-500 hover:from-heritage-gold-300 hover:to-heritage-gold-400 text-heritage-red-950 font-bold text-sm rounded-xl shadow-lg hover:shadow-xl transition-all flex items-center justify-center space-x-2 flex-shrink-0 active:scale-95 cursor-pointer"
+                    >
+                      <BookOpen className="w-4 h-4" />
+                      <span>📖 Mở Đọc Sách Lật Trang 3D</span>
+                      <span>→</span>
+                    </button>
                   </div>
                 )}
 
@@ -1063,6 +1099,16 @@ export const FullScreenEditor: React.FC<FullScreenEditorProps> = ({
                       </button>
                     </div>
 
+                    {/* Nút Đọc thử lật trang 3D trực tiếp trong Sidebar */}
+                    <button
+                      type="button"
+                      onClick={() => setIsFlipbookPreviewOpen(true)}
+                      className="w-full flex items-center justify-center space-x-1.5 px-3 py-2 bg-gradient-to-r from-emerald-700 to-teal-800 hover:from-emerald-800 hover:to-teal-900 text-white rounded-lg text-xs font-bold transition shadow-sm active:scale-95 cursor-pointer"
+                    >
+                      <BookOpen className="w-3.5 h-3.5" />
+                      <span>📖 Đọc thử lật trang 3D ({pdfAttachment.totalPages} trang)</span>
+                    </button>
+
                     {/* Tiện ích trích xuất Trang 1 làm Ảnh bìa */}
                     <div className="pt-2 border-t border-emerald-100 flex items-center justify-between">
                       <span className="text-[11px] text-emerald-900 font-medium">Trang bìa từ PDF:</span>
@@ -1308,6 +1354,29 @@ export const FullScreenEditor: React.FC<FullScreenEditorProps> = ({
             </div>
           </div>
         </div>
+      )}
+
+      {/* 3D FLIPBOOK MODAL PREVIEW CHO TRÌNH SOẠN THẢO CMS */}
+      {pdfAttachment && isFlipbookPreviewOpen && (
+        <BookFlipbookModal
+          isOpen={isFlipbookPreviewOpen}
+          onClose={() => setIsFlipbookPreviewOpen(false)}
+          item={{
+            id: initialArticle?.id || slug || 'preview-book',
+            title: title || 'Tài liệu Sách & Ấn phẩm',
+            category: 'book',
+            categoryLabel: 'Sách & Tài liệu',
+            description: summary || '',
+            fullContent: content || '',
+            authorOrSource: currentUserName || 'Ban Biên Tập THCS Nguyễn Trung Trực',
+            dateOrEra: 'Bản xem trước CMS',
+            thumbnail: featuredImage || '',
+            badgeText: 'Bản xem trước',
+            isMockData: false,
+            tags: [],
+            pdfAttachment: pdfAttachment,
+          }}
+        />
       )}
     </div>
   );
