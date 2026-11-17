@@ -424,20 +424,36 @@ export async function handleSaveCmsMedia(newAssets: MediaAsset | MediaAsset[]): 
     const nowIso = new Date().toISOString();
 
     // 1. Ensure content_items row exists
-    const { error: itemErr } = await db.from('content_items').upsert(
-      {
+    const { data: existingItem } = await db
+      .from('content_items')
+      .select('id, slug')
+      .eq('id', RESERVED_MEDIA_LIBRARY_ID)
+      .maybeSingle();
+
+    if (!existingItem) {
+      const { data: slugItem } = await db
+        .from('content_items')
+        .select('id')
+        .eq('slug', 'kho-media-tu-lieu-so-hoa')
+        .maybeSingle();
+
+      const mediaSlug = slugItem ? `kho-media-so-hoa-${Date.now()}` : 'kho-media-tu-lieu-so-hoa';
+
+      const { error: itemErr } = await db.from('content_items').insert({
         id: RESERVED_MEDIA_LIBRARY_ID,
-        content_type: 'resource',
-        slug: 'kho-media-tu-lieu-so-hoa',
+        content_type: 'post',
+        slug: mediaSlug,
         created_by: SYSTEM_AUTHOR_ID,
         is_deleted: false,
         updated_at: nowIso,
-      },
-      { onConflict: 'id' }
-    );
-    if (itemErr) {
-      console.warn('[handleSaveCmsMedia itemUpsert error]', itemErr.message);
-      return { success: false, error: `Lỗi khởi tạo item media: ${itemErr.message}` };
+      });
+
+      if (itemErr) {
+        return {
+          success: false,
+          error: `Lỗi tạo content_items media: ${itemErr.message} (Code: ${itemErr.code})`,
+        };
+      }
     }
 
     // 2. Fetch existing assets
