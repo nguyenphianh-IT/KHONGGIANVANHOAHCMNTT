@@ -427,7 +427,7 @@ export async function handleSaveCmsMedia(newAssets: MediaAsset | MediaAsset[]): 
     const { error: itemErr } = await db.from('content_items').upsert(
       {
         id: RESERVED_MEDIA_LIBRARY_ID,
-        content_type: 'media_library',
+        content_type: 'resource',
         slug: 'kho-media-tu-lieu-so-hoa',
         created_by: SYSTEM_AUTHOR_ID,
         is_deleted: false,
@@ -437,6 +437,7 @@ export async function handleSaveCmsMedia(newAssets: MediaAsset | MediaAsset[]): 
     );
     if (itemErr) {
       console.warn('[handleSaveCmsMedia itemUpsert error]', itemErr.message);
+      return { success: false, error: `Lỗi khởi tạo item media: ${itemErr.message}` };
     }
 
     // 2. Fetch existing assets

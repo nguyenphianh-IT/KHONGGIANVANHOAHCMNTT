@@ -165,7 +165,7 @@ async function handleSaveCmsMedia(newAssets) {
     const { error: itemErr } = await db.from("content_items").upsert(
       {
         id: RESERVED_MEDIA_LIBRARY_ID,
-        content_type: "media_library",
+        content_type: "resource",
         slug: "kho-media-tu-lieu-so-hoa",
         created_by: SYSTEM_AUTHOR_ID,
         is_deleted: false,
@@ -175,6 +175,7 @@ async function handleSaveCmsMedia(newAssets) {
     );
     if (itemErr) {
       console.warn("[handleSaveCmsMedia itemUpsert error]", itemErr.message);
+      return { success: false, error: `L\u1ED7i kh\u1EDFi t\u1EA1o item media: ${itemErr.message}` };
     }
     const { data: revs } = await db.from("content_revisions").select("id, version_number, data").eq("item_id", RESERVED_MEDIA_LIBRARY_ID).order("version_number", { ascending: false }).limit(1);
     const existingRev = revs && revs.length > 0 ? revs[0] : null;
