@@ -6,14 +6,14 @@ import {
   Search, Filter, BookOpen, FileText, Image as ImageIcon, Video, Book, 
   X, AlertCircle, Volume2, Headphones, ChevronLeft, ChevronRight, Eye 
 } from 'lucide-react';
-import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import {
   getPublishedArticles,
   EVENT_ARTICLES_CHANGED,
   ArticleData,
   normalizeCategoryToHomepage,
   getCategoryLabel,
-  resolveMediaUrl
+  resolveMediaUrl,
+  fetchArticlesFromSupabase
 } from '../lib/cmsStore';
 import {
   getAllViewCounts,
@@ -79,46 +79,12 @@ export const Resources: React.FC = () => {
     window.addEventListener('storage', loadPublishedResources);
     window.addEventListener('storage', handleViewsUpdate);
 
-    // 2. Dự phòng kết nối thêm từ Supabase nếu có
-    const fetchSupabase = async () => {
-      try {
-        const { data, error } = await supabase
-          .from('content_revisions')
-          .select('id, title, summary, data, created_at, author_id')
-          .eq('status', 'published')
-          .order('created_at', { ascending: false });
-
-        if (!error && data && data.length > 0) {
-          const supabaseItems: ResourceItem[] = data.map((d: any) => ({
-            id: d.id,
-            title: d.title,
-            category: 'article',
-            categoryLabel: 'Văn kiện số hóa',
-            description: d.summary || '',
-            fullContent: d.data?.content || d.summary || '',
-            authorOrSource: 'Trường THCS Nguyễn Trung Trực',
-            dateOrEra: new Date(d.created_at).toLocaleDateString('vi-VN'),
-            thumbnail: resolveMediaUrl(d.data?.featured_image, d.data?.media_assets) || '/images/ho-chi-minh-tp-hcm.png',
-            badgeText: 'Đã xuất bản (Cloud)',
-            isMockData: false,
-            tags: d.data?.tags || ['lich-su', 'tu-lieu-so'],
-            mediaAssets: d.data?.media_assets,
-          }));
-
-          setLiveResources((prev) => {
-            const existingIds = new Set(prev.map((p) => p.id));
-            const fresh = supabaseItems.filter((item) => !existingIds.has(item.id));
-            return [...prev, ...fresh];
-          });
-        }
-      } catch {
-        // Fallback nhẹ nhàng về local store
-      }
-    };
-
-    if (isSupabaseConfigured) {
-      fetchSupabase();
-    }
+    // 2. Tự động đồng bộ các bài viết đã duyệt 4 mắt & xuất bản từ Cloud Database về kho tư liệu
+    fetchArticlesFromSupabase()
+      .then(() => {
+        loadPublishedResources();
+      })
+      .catch(() => {});
 
     return () => {
       window.removeEventListener(EVENT_ARTICLES_CHANGED, loadPublishedResources);

@@ -26,7 +26,7 @@ export const activitiesData: SchoolActivity[] = [
     organizer: 'Ban Giám hiệu & Công đoàn Trường THCS Nguyễn Trung Trực',
     summary: 'Chuyến trải nghiệm thực tế ý nghĩa nhân dịp kỷ niệm 134 năm Ngày sinh Chủ tịch Hồ Chí Minh tại Bến cảng Nhà Rồng lịch sử.',
     fullDetail: 'Đoàn đại biểu gồm các thầy cô giáo tiêu biểu và hơn 100 học sinh xuất sắc, Cháu ngoan Bác Hồ của trường đã đến dâng hoa tưởng niệm Chủ tịch Hồ Chí Minh tại Bảo tàng Hồ Chí Minh - Chi nhánh TP. Hồ Chí Minh. Các em được trực tiếp lắng nghe thuyết minh về hành trình 30 năm bôn ba tìm đường cứu nước của Người, quan sát những hiện vật vô giá như vali mây, đôi dép cao su và những lá thư Bác gửi về quê hương.',
-    imageUrl: 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?auto=format&fit=crop&w=800&q=80',
+    imageUrl: '/images/ben-nha-rong-1911.jpg',
     participants: 'Đại diện giáo viên và học sinh xuất sắc khối 8, 9',
     isSampleData: true,
     highlights: [
