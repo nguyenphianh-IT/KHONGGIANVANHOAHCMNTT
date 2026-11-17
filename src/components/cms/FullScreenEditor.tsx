@@ -10,33 +10,18 @@ import { ContentRenderer } from './ContentRenderer';
 import {
   getStoredMedia,
   saveStoredMedia,
+  saveMediaToCloud,
   MediaAsset,
   cleanBase64FromContent,
   CMS_CATEGORIES,
   THEMATIC_TOPICS,
   getCategoryLabel,
-  normalizeCategoryToHomepage
+  normalizeCategoryToHomepage,
+  ArticleData
 } from '../../lib/cmsStore';
 import { optimizeImageFile } from '../../lib/imageOptimizer';
 
-export interface ArticleData {
-  id?: string;
-  title: string;
-  slug: string;
-  summary: string;
-  content: string;
-  category: string;
-  topic?: string;
-  featured_image?: string;
-  references?: string;
-  audio_url?: string;
-  audio_duration?: string;
-  status: 'draft' | 'pending' | 'approved' | 'published' | 'rejected' | 'archived';
-  author_id?: string;
-  author_name?: string;
-  created_at?: string;
-  updated_at?: string;
-}
+export type { ArticleData };
 
 interface FullScreenEditorProps {
   initialArticle?: ArticleData | null;
@@ -203,6 +188,7 @@ export const FullScreenEditor: React.FC<FullScreenEditorProps> = ({
               };
               const mediaList = getStoredMedia();
               saveStoredMedia([newAsset, ...mediaList]);
+              saveMediaToCloud(newAsset).catch((e) => console.warn('Lỗi lưu ảnh clipboard lên Cloud:', e));
 
               const imgMarkdown = `\n\n![${newAsset.name}](media://${newAsset.id})\n\n`;
               insertAtCursor(imgMarkdown);
@@ -590,7 +576,7 @@ export const FullScreenEditor: React.FC<FullScreenEditorProps> = ({
 
                 <div className="prose max-w-none font-serif text-heritage-ink-800 text-base leading-relaxed">
                   {content ? (
-                    <ContentRenderer content={content} />
+                    <ContentRenderer content={content} mediaAssets={getStoredMedia()} />
                   ) : (
                     <p className="text-heritage-ink-400 italic">Chưa có nội dung văn bản.</p>
                   )}

@@ -32,6 +32,7 @@ export interface ResourceItem {
   isMockData: boolean;
   tags: string[];
   viewCount?: number;
+  mediaAssets?: any[];
 }
 
 export interface LearningTopic {

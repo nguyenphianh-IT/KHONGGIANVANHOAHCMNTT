@@ -269,6 +269,7 @@ export const ResourceModal: React.FC<ResourceModalProps> = ({ item, onClose }) =
               <ContentRenderer
                 content={item.fullContent || item.description}
                 fontSize={fontSize}
+                mediaAssets={item.mediaAssets}
               />
             </div>
 

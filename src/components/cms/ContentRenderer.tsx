@@ -1,16 +1,123 @@
-import React from 'react';
-import { getStoredMedia, cleanBase64FromContent } from '../../lib/cmsStore';
+import React, { useState, useEffect } from 'react';
+import { getStoredMedia, saveStoredMedia, cleanBase64FromContent, MediaAsset } from '../../lib/cmsStore';
 
 interface ContentRendererProps {
   content: string;
   className?: string;
   fontSize?: 'normal' | 'large';
+  mediaAssets?: MediaAsset[];
 }
+
+interface ResolvedImageProps {
+  src: string;
+  alt: string;
+  className?: string;
+  mediaAssets?: MediaAsset[];
+  fallbackSrc?: string;
+}
+
+export const ResolvedImage: React.FC<ResolvedImageProps> = ({
+  src,
+  alt,
+  className = '',
+  mediaAssets,
+  fallbackSrc = '/images/logo-bieu-tuong.png',
+}) => {
+  const getInitialUrl = (): string => {
+    if (!src) return fallbackSrc;
+    if (src.startsWith('media://') || src.startsWith('media:')) {
+      const mediaId = src.replace(/^media:\/\//, '').replace(/^media:/, '');
+      if (mediaAssets && Array.isArray(mediaAssets)) {
+        const found = mediaAssets.find((m) => m.id === mediaId || m.name === mediaId);
+        if (found && found.url) return found.url;
+      }
+      const local = getStoredMedia();
+      const foundLocal = local.find((m) => m.id === mediaId || m.name === mediaId);
+      if (foundLocal && foundLocal.url) return foundLocal.url;
+      return ''; // Chờ nạp từ Cloud
+    }
+    return src;
+  };
+
+  const [imageUrl, setImageUrl] = useState<string>(getInitialUrl);
+  const [isLoading, setIsLoading] = useState<boolean>(() => {
+    return (src.startsWith('media://') || src.startsWith('media:')) && !getInitialUrl();
+  });
+
+  useEffect(() => {
+    if (!src) {
+      setImageUrl(fallbackSrc);
+      return;
+    }
+
+    if (src.startsWith('media://') || src.startsWith('media:')) {
+      const mediaId = src.replace(/^media:\/\//, '').replace(/^media:/, '');
+      if (mediaAssets && Array.isArray(mediaAssets)) {
+        const found = mediaAssets.find((m) => m.id === mediaId || m.name === mediaId);
+        if (found && found.url) {
+          setImageUrl(found.url);
+          setIsLoading(false);
+          return;
+        }
+      }
+      const local = getStoredMedia();
+      const foundLocal = local.find((m) => m.id === mediaId || m.name === mediaId);
+      if (foundLocal && foundLocal.url) {
+        setImageUrl(foundLocal.url);
+        setIsLoading(false);
+        return;
+      }
+
+      // Nạp từ Cloud Serverless API
+      setIsLoading(true);
+      fetch(`/api/cms/media?id=${encodeURIComponent(mediaId)}`)
+        .then((res) => (res.ok ? res.json() : null))
+        .then((data) => {
+          if (data && data.success && data.asset && data.asset.url) {
+            setImageUrl(data.asset.url);
+            try {
+              const current = getStoredMedia();
+              if (!current.some((m) => m.id === data.asset.id)) {
+                saveStoredMedia([data.asset, ...current]);
+              }
+            } catch {}
+          } else {
+            setImageUrl(fallbackSrc);
+          }
+        })
+        .catch(() => setImageUrl(fallbackSrc))
+        .finally(() => setIsLoading(false));
+    } else {
+      setImageUrl(src);
+      setIsLoading(false);
+    }
+  }, [src, mediaAssets, fallbackSrc]);
+
+  if (isLoading) {
+    return (
+      <div className="w-full h-44 bg-heritage-gold-50/70 border border-dashed border-heritage-gold-300 rounded-xl flex items-center justify-center animate-pulse text-heritage-red-800 text-xs font-sans">
+        Đang đồng bộ hình ảnh tư liệu từ Cloud...
+      </div>
+    );
+  }
+
+  return (
+    <img
+      src={imageUrl || fallbackSrc}
+      alt={alt}
+      className={className}
+      onError={(e) => {
+        (e.target as HTMLImageElement).src = fallbackSrc;
+      }}
+    />
+  );
+};
 
 export const ContentRenderer: React.FC<ContentRendererProps> = ({
   content,
   className = '',
   fontSize = 'normal',
+  mediaAssets,
 }) => {
   if (!content) return null;
 
@@ -54,28 +161,16 @@ export const ContentRenderer: React.FC<ContentRendererProps> = ({
           const endIdx = trimmed.lastIndexOf(')');
           if (splitIdx !== -1 && endIdx > splitIdx) {
             const altText = trimmed.substring(2, splitIdx).trim() || 'Hình ảnh tư liệu lịch sử';
-            let imgUrl = trimmed.substring(splitIdx + 2, endIdx).trim();
-
-            // Phân giải định danh Media Tag: media://<id>
-            if (imgUrl.startsWith('media://') || imgUrl.startsWith('media:')) {
-              const mediaId = imgUrl.replace(/^media:\/\//, '').replace(/^media:/, '');
-              const mediaList = getStoredMedia();
-              const found = mediaList.find((m) => m.id === mediaId || m.name === mediaId);
-              if (found) {
-                imgUrl = found.url;
-              }
-            }
+            const imgUrl = trimmed.substring(splitIdx + 2, endIdx).trim();
 
             if (imgUrl) {
               return (
                 <figure key={index} className="my-6 rounded-2xl overflow-hidden border border-heritage-gold-300 shadow-md bg-white p-2.5 max-w-3xl mx-auto">
-                  <img
+                  <ResolvedImage
                     src={imgUrl}
                     alt={altText}
                     className="w-full max-h-[480px] object-contain rounded-xl mx-auto"
-                    onError={(e) => {
-                      (e.target as HTMLImageElement).src = '/images/logo-bieu-tuong.png';
-                    }}
+                    mediaAssets={mediaAssets}
                   />
                   {altText && (
                     <figcaption className="text-center text-xs font-sans italic text-heritage-ink-600 mt-2.5 py-1">
@@ -92,13 +187,11 @@ export const ContentRenderer: React.FC<ContentRendererProps> = ({
         if (trimmed.startsWith('data:image/')) {
           return (
             <figure key={index} className="my-6 rounded-2xl overflow-hidden border border-heritage-gold-300 shadow-md bg-white p-2.5 max-w-2xl mx-auto">
-              <img
+              <ResolvedImage
                 src={trimmed}
                 alt="Tư liệu lịch sử số hóa"
                 className="w-full max-h-[480px] object-contain rounded-xl mx-auto"
-                onError={(e) => {
-                  (e.target as HTMLImageElement).src = '/images/logo-bieu-tuong.png';
-                }}
+                mediaAssets={mediaAssets}
               />
               <figcaption className="text-center text-xs font-sans italic text-heritage-ink-600 mt-2.5 py-1">
                 Tư liệu lịch sử số hóa

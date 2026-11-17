@@ -16,7 +16,8 @@ const endpoints = [
   'api/rag/documents/[id]/reprocess.ts',
   'api/rag/feedback.ts',
   'api/rag/analytics.ts',
-  'api/cms/articles.ts'
+  'api/cms/articles.ts',
+  'api/cms/media.ts'
 ];
 
 async function bundleApi() {

@@ -1,6 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { X, Upload, Image as ImageIcon, Trash2, CheckCircle2, AlertCircle, Shield, Copy, Check } from 'lucide-react';
-import { MediaAsset, getStoredMedia, saveStoredMedia, EVENT_MEDIA_CHANGED, getStoredArticles } from '../../lib/cmsStore';
+import {
+  MediaAsset,
+  getStoredMedia,
+  saveStoredMedia,
+  EVENT_MEDIA_CHANGED,
+  getStoredArticles,
+  saveMediaToCloud,
+  fetchMediaFromCloud,
+  deleteMediaFromCloud,
+} from '../../lib/cmsStore';
 import { optimizeImageFile } from '../../lib/imageOptimizer';
 
 interface MediaLibraryModalProps {
@@ -26,6 +35,14 @@ export const MediaLibraryModal: React.FC<MediaLibraryModalProps> = ({
   useEffect(() => {
     if (isOpen) {
       setAssets(getStoredMedia());
+      // Tự động kéo kho media mới nhất từ Cloud Supabase
+      fetchMediaFromCloud()
+        .then((cloudAssets) => {
+          if (cloudAssets && cloudAssets.length > 0) {
+            setAssets(cloudAssets);
+          }
+        })
+        .catch(() => {});
     }
   }, [isOpen]);
 
@@ -83,6 +100,8 @@ export const MediaLibraryModal: React.FC<MediaLibraryModalProps> = ({
         const updated = [newAsset, ...assets];
         setAssets(updated);
         saveStoredMedia(updated);
+        // Đồng bộ tức thời lên Cloud Media Repository
+        saveMediaToCloud(newAsset).catch((err) => console.warn('Lỗi lưu media lên cloud:', err));
         setIsUploading(false);
         setUploadSuccess(`Tải lên thành công tệp ${file.name} (Đã nén tối ưu ${(optimized.sizeBytes / 1024).toFixed(1)} KB)!`);
       })
@@ -114,6 +133,7 @@ export const MediaLibraryModal: React.FC<MediaLibraryModalProps> = ({
       const updated = assets.filter((a) => a.id !== asset.id);
       setAssets(updated);
       saveStoredMedia(updated);
+      deleteMediaFromCloud(asset.id).catch((err) => console.warn('Lỗi xóa media trên cloud:', err));
     }
   };
 

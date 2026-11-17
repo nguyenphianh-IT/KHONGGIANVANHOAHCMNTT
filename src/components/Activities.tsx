@@ -3,7 +3,7 @@ import { activitiesData } from '../data/activitiesData';
 import { SchoolActivity } from '../types';
 import { ActivityModal } from './ActivityModal';
 import { Calendar, Users, ChevronRight, ChevronLeft, Award, AlertCircle, Sparkles } from 'lucide-react';
-import { getPublishedArticles, EVENT_ARTICLES_CHANGED, ArticleData } from '../lib/cmsStore';
+import { getPublishedArticles, EVENT_ARTICLES_CHANGED, ArticleData, resolveMediaUrl } from '../lib/cmsStore';
 
 const mapArticleToActivity = (art: ArticleData): SchoolActivity => {
   return {
@@ -14,7 +14,7 @@ const mapArticleToActivity = (art: ArticleData): SchoolActivity => {
     organizer: art.author_name || 'Trường THCS Nguyễn Trung Trực',
     summary: art.summary,
     fullDetail: art.content,
-    imageUrl: art.featured_image || '/images/ho-chi-minh-tp-hcm.png',
+    imageUrl: resolveMediaUrl(art.featured_image, art.media_assets) || '/images/ho-chi-minh-tp-hcm.png',
     participants: 'Cán bộ, giáo viên và học sinh trường THCS Nguyễn Trung Trực',
     isSampleData: false,
     highlights: [

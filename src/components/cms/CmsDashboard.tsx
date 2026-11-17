@@ -23,7 +23,8 @@ import {
   getStoredAuditLogs, addStoredAuditLog,
   EVENT_ARTICLES_CHANGED, EVENT_MEDIA_CHANGED,
   CMS_CATEGORIES, getCategoryLabel, normalizeCategoryToHomepage,
-  saveArticleToCloud, fetchArticlesFromSupabase, unpublishArticleInCloud, deleteArticleInCloud
+  saveArticleToCloud, fetchArticlesFromSupabase, unpublishArticleInCloud, deleteArticleInCloud,
+  saveMediaBatchToCloud, fetchMediaFromCloud
 } from '../../lib/cmsStore';
 import {
   getAllViewCounts,
@@ -114,16 +115,27 @@ export const CmsDashboard: React.FC<CmsDashboardProps> = ({ isOpen, onClose }) =
   const [isCloudSynced, setIsCloudSynced] = useState<boolean>(true);
   const [isSyncing, setIsSyncing] = useState<boolean>(false);
 
-  // Kéo toàn bộ bài viết từ Supabase Cloud khi mở CMS Dashboard
+  // Kéo toàn bộ bài viết và đồng bộ media từ Supabase Cloud khi mở CMS Dashboard
   useEffect(() => {
     if (!isOpen) return;
     let isMounted = true;
+
+    // 1. Đồng bộ bài viết và media kèm theo
     fetchArticlesFromSupabase().then((res) => {
       if (isMounted && res.success && res.articles) {
         setArticles(res.articles);
         setIsCloudSynced(true);
       }
     });
+
+    // 2. Kéo kho media Cloud và đẩy bất kỳ media cục bộ chưa đồng bộ lên Cloud
+    fetchMediaFromCloud().then(() => {
+      const localMedia = getStoredMedia();
+      if (localMedia.length > 0) {
+        saveMediaBatchToCloud(localMedia).catch(() => {});
+      }
+    }).catch(() => {});
+
     return () => {
       isMounted = false;
     };
@@ -134,12 +146,18 @@ export const CmsDashboard: React.FC<CmsDashboardProps> = ({ isOpen, onClose }) =
     setIsSyncing(true);
     try {
       const res = await fetchArticlesFromSupabase();
+      await fetchMediaFromCloud();
+      const localMedia = getStoredMedia();
+      if (localMedia.length > 0) {
+        await saveMediaBatchToCloud(localMedia);
+      }
+
       if (res.success && res.articles) {
         setArticles(res.articles);
         setIsCloudSynced(true);
         setToastMsg({
           type: 'success',
-          text: `Đồng bộ Cloud thành công! Đã nạp ${res.articles.length} bài viết từ cơ sở dữ liệu mọi thiết bị.`,
+          text: `Đồng bộ Cloud thành công! Đã nạp ${res.articles.length} bài viết và toàn bộ kho media từ cơ sở dữ liệu mọi thiết bị.`,
         });
       } else {
         setToastMsg({

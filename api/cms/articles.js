@@ -76,6 +76,7 @@ var getSupabaseAdmin = () => {
 var SYSTEM_AUTHOR_ID = "c4821ce7-7c41-45d2-bb9d-ebf7b2228004";
 var RESERVED_CONTEST_ID = "a0000000-0000-0000-0000-000000000001";
 var RESERVED_RESOURCES_ID = "a0000000-0000-0000-0000-000000000002";
+var RESERVED_MEDIA_LIBRARY_ID = "a0000000-0000-0000-0000-000000000003";
 function toValidUuid(id) {
   if (!id) return "f" + "0".repeat(31);
   const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -131,10 +132,10 @@ async function handleGetCmsArticles() {
       return { success: true, articles: [], total: 0 };
     }
     const filteredRevs = revsData.filter((r) => {
-      if (r.item_id === RESERVED_CONTEST_ID || r.item_id === RESERVED_RESOURCES_ID) return false;
+      if (r.item_id === RESERVED_CONTEST_ID || r.item_id === RESERVED_RESOURCES_ID || r.item_id === RESERVED_MEDIA_LIBRARY_ID) return false;
       if (deletedItemIds.has(r.item_id)) return false;
       const title = r.title || "";
-      if (title.includes("H\u1ED3 S\u01A1 H\u1ED9i Thi") || title.includes("Kho T\u01B0 Li\u1EC7u S\u1ED1 H\xF3a")) return false;
+      if (title.includes("H\u1ED3 S\u01A1 H\u1ED9i Thi") || title.includes("Kho T\u01B0 Li\u1EC7u S\u1ED1 H\xF3a") || title.includes("Kho Media")) return false;
       return true;
     });
     const seenItemIds = /* @__PURE__ */ new Set();
@@ -155,6 +156,7 @@ async function handleGetCmsArticles() {
         category: rData.category || "article",
         topic: rData.topic || "Kh\xF4ng gian v\u0103n h\xF3a H\u1ED3 Ch\xED Minh",
         featured_image: rData.featured_image || "",
+        media_assets: Array.isArray(rData.media_assets) ? rData.media_assets : [],
         references: rData.references || "",
         audio_url: rData.audio_url || "",
         audio_duration: rData.audio_duration || "",
@@ -222,6 +224,7 @@ async function handleSaveCmsArticle(article) {
         category: article.category || "article",
         topic: article.topic || "Kh\xF4ng gian v\u0103n h\xF3a H\u1ED3 Ch\xED Minh",
         featured_image: article.featured_image || "",
+        media_assets: Array.isArray(article.media_assets) ? article.media_assets : [],
         references: article.references || "",
         audio_url: article.audio_url || "",
         audio_duration: article.audio_duration || "",

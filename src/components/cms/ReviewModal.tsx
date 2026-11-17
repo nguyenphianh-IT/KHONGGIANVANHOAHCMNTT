@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import { X, CheckCircle2, XCircle, AlertTriangle, ShieldCheck, User } from 'lucide-react';
-import { ArticleData } from './FullScreenEditor';
 import { ContentRenderer } from './ContentRenderer';
-import { getCategoryLabel } from '../../lib/cmsStore';
+import { ArticleData, getCategoryLabel } from '../../lib/cmsStore';
 
 interface ReviewModalProps {
   isOpen: boolean;
@@ -136,7 +135,7 @@ export const ReviewModal: React.FC<ReviewModalProps> = ({
             </p>
 
             <div className="max-w-none text-xs text-heritage-ink-800 leading-relaxed font-serif max-h-56 overflow-y-auto p-3.5 bg-heritage-ivory-50 rounded-lg border border-heritage-ivory-300">
-              <ContentRenderer content={article.content} />
+              <ContentRenderer content={article.content} mediaAssets={article.media_assets} />
             </div>
 
             {article.references && (

@@ -5,11 +5,12 @@
 
 import { supabase, isSupabaseConfigured } from './supabase';
 import { getSupabaseAdmin } from './supabaseBackend';
-import type { ArticleData } from './cmsStore';
+import type { ArticleData, MediaAsset } from './cmsStore';
 
 const SYSTEM_AUTHOR_ID = 'c4821ce7-7c41-45d2-bb9d-ebf7b2228004';
 const RESERVED_CONTEST_ID = 'a0000000-0000-0000-0000-000000000001';
 const RESERVED_RESOURCES_ID = 'a0000000-0000-0000-0000-000000000002';
+export const RESERVED_MEDIA_LIBRARY_ID = 'a0000000-0000-0000-0000-000000000003';
 
 /**
  * Deterministically maps arbitrary IDs (like 'art-001', 'art-179488...') to valid RFC 4122 UUIDs.
@@ -108,10 +109,10 @@ export async function handleGetCmsArticles(): Promise<{
 
     // 3. Filter out system containers and deleted items
     const filteredRevs = revsData.filter((r) => {
-      if (r.item_id === RESERVED_CONTEST_ID || r.item_id === RESERVED_RESOURCES_ID) return false;
+      if (r.item_id === RESERVED_CONTEST_ID || r.item_id === RESERVED_RESOURCES_ID || r.item_id === RESERVED_MEDIA_LIBRARY_ID) return false;
       if (deletedItemIds.has(r.item_id)) return false;
       const title = r.title || '';
-      if (title.includes('Hồ Sơ Hội Thi') || title.includes('Kho Tư Liệu Số Hóa')) return false;
+      if (title.includes('Hồ Sơ Hội Thi') || title.includes('Kho Tư Liệu Số Hóa') || title.includes('Kho Media')) return false;
       return true;
     });
 
@@ -137,6 +138,7 @@ export async function handleGetCmsArticles(): Promise<{
         category: rData.category || 'article',
         topic: rData.topic || 'Không gian văn hóa Hồ Chí Minh',
         featured_image: rData.featured_image || '',
+        media_assets: Array.isArray(rData.media_assets) ? rData.media_assets : [],
         references: rData.references || '',
         audio_url: rData.audio_url || '',
         audio_duration: rData.audio_duration || '',
@@ -233,6 +235,7 @@ export async function handleSaveCmsArticle(article: ArticleData): Promise<{
         category: article.category || 'article',
         topic: article.topic || 'Không gian văn hóa Hồ Chí Minh',
         featured_image: article.featured_image || '',
+        media_assets: Array.isArray(article.media_assets) ? article.media_assets : [],
         references: article.references || '',
         audio_url: article.audio_url || '',
         audio_duration: article.audio_duration || '',
@@ -315,5 +318,230 @@ export async function handleDeleteCmsArticle(articleId: string): Promise<{
   } catch (err: any) {
     console.error('[handleDeleteCmsArticle Exception]', err);
     return { success: false, error: err?.message || 'Lỗi khi xóa bài viết' };
+  }
+}
+
+/**
+ * GET Media Assets from Supabase Cloud Media Library & Article Revisions
+ */
+export async function handleGetCmsMedia(mediaId?: string): Promise<{
+  success: boolean;
+  assets?: MediaAsset[];
+  asset?: MediaAsset;
+  error?: string;
+}> {
+  if (!isSupabaseConfigured) {
+    return { success: false, error: 'Chưa cấu hình Supabase URL & Anon Key' };
+  }
+  const db = getSupabaseAdmin() || supabase;
+  try {
+    // 1. Fetch from RESERVED_MEDIA_LIBRARY_ID
+    const { data: revs } = await db
+      .from('content_revisions')
+      .select('data')
+      .eq('item_id', RESERVED_MEDIA_LIBRARY_ID)
+      .order('version_number', { ascending: false })
+      .limit(1);
+
+    let libraryAssets: MediaAsset[] = [];
+    if (revs && revs.length > 0 && revs[0].data && Array.isArray(revs[0].data.assets)) {
+      libraryAssets = revs[0].data.assets;
+    }
+
+    // Nếu tìm kiếm 1 media cụ thể
+    if (mediaId) {
+      const foundInLib = libraryAssets.find((a) => a.id === mediaId || a.name === mediaId);
+      if (foundInLib) {
+        return { success: true, asset: foundInLib };
+      }
+
+      // Quét thêm trong các revisions bài viết để không bao giờ bị lỡ
+      const { data: articleRevs } = await db
+        .from('content_revisions')
+        .select('data')
+        .order('updated_at', { ascending: false });
+
+      if (articleRevs) {
+        for (const rev of articleRevs) {
+          if (rev.data && Array.isArray(rev.data.media_assets)) {
+            const foundInArt = rev.data.media_assets.find(
+              (a: MediaAsset) => a.id === mediaId || a.name === mediaId
+            );
+            if (foundInArt) {
+              return { success: true, asset: foundInArt };
+            }
+          }
+        }
+      }
+      return { success: false, error: 'Không tìm thấy tư liệu media' };
+    }
+
+    // Nạp toàn bộ kho media: gộp giữa thư viện trung tâm và mọi bài viết
+    const { data: articleRevs } = await db
+      .from('content_revisions')
+      .select('data')
+      .order('updated_at', { ascending: false });
+
+    const assetMap = new Map<string, MediaAsset>();
+    for (const a of libraryAssets) {
+      if (a && a.id) assetMap.set(a.id, a);
+    }
+    if (articleRevs) {
+      for (const rev of articleRevs) {
+        if (rev.data && Array.isArray(rev.data.media_assets)) {
+          for (const a of rev.data.media_assets) {
+            if (a && a.id && !assetMap.has(a.id)) {
+              assetMap.set(a.id, a);
+            }
+          }
+        }
+      }
+    }
+
+    return { success: true, assets: Array.from(assetMap.values()) };
+  } catch (err: any) {
+    console.error('[handleGetCmsMedia Exception]', err);
+    return { success: false, error: err?.message || 'Lỗi truy vấn media từ Cloud' };
+  }
+}
+
+/**
+ * SAVE or UPSERT Media Asset(s) to Supabase Cloud Media Library
+ */
+export async function handleSaveCmsMedia(newAssets: MediaAsset | MediaAsset[]): Promise<{
+  success: boolean;
+  count?: number;
+  error?: string;
+}> {
+  if (!isSupabaseConfigured) {
+    return { success: false, error: 'Chưa cấu hình Supabase URL & Anon Key' };
+  }
+  const toAdd = Array.isArray(newAssets) ? newAssets : [newAssets];
+  if (toAdd.length === 0) return { success: true, count: 0 };
+
+  const db = getSupabaseAdmin() || supabase;
+  try {
+    const nowIso = new Date().toISOString();
+
+    // 1. Ensure content_items row exists
+    await db.from('content_items').upsert(
+      {
+        id: RESERVED_MEDIA_LIBRARY_ID,
+        content_type: 'media_library',
+        slug: 'kho-media-tu-lieu-so-hoa',
+        status: 'published',
+        is_deleted: false,
+        updated_at: nowIso,
+      },
+      { onConflict: 'id' }
+    );
+
+    // 2. Fetch existing assets
+    const { data: revs } = await db
+      .from('content_revisions')
+      .select('id, version_number, data')
+      .eq('item_id', RESERVED_MEDIA_LIBRARY_ID)
+      .order('version_number', { ascending: false })
+      .limit(1);
+
+    const existingRev = revs && revs.length > 0 ? revs[0] : null;
+    let existingAssets: MediaAsset[] = [];
+    if (existingRev && existingRev.data && Array.isArray(existingRev.data.assets)) {
+      existingAssets = existingRev.data.assets;
+    }
+
+    const assetMap = new Map<string, MediaAsset>();
+    for (const a of existingAssets) {
+      if (a && a.id) assetMap.set(a.id, a);
+    }
+    for (const a of toAdd) {
+      if (a && a.id) assetMap.set(a.id, a);
+    }
+
+    const mergedAssets = Array.from(assetMap.values());
+    const revId = existingRev ? existingRev.id : toValidUuid('rev-media-library');
+    const versionNumber = (existingRev?.version_number || 0) + 1;
+
+    // 3. Upsert revision
+    const { error: revErr } = await db.from('content_revisions').upsert(
+      {
+        id: revId,
+        item_id: RESERVED_MEDIA_LIBRARY_ID,
+        version_number: versionNumber,
+        title: 'Kho Media Tư Liệu Số Hóa',
+        summary: `Kho lưu trữ ${mergedAssets.length} tư liệu hình ảnh và đa phương tiện đồng bộ`,
+        status: 'published',
+        author_id: SYSTEM_AUTHOR_ID,
+        data: {
+          assets: mergedAssets,
+          synced_at: nowIso,
+        },
+        updated_at: nowIso,
+      },
+      { onConflict: 'id' }
+    );
+
+    if (revErr) {
+      return { success: false, error: revErr.message };
+    }
+
+    // 4. Update pointer in content_items
+    await db
+      .from('content_items')
+      .update({
+        published_revision_id: revId,
+        updated_at: nowIso,
+      })
+      .eq('id', RESERVED_MEDIA_LIBRARY_ID);
+
+    return { success: true, count: mergedAssets.length };
+  } catch (err: any) {
+    console.error('[handleSaveCmsMedia Exception]', err);
+    return { success: false, error: err?.message || 'Lỗi lưu trữ media lên Cloud' };
+  }
+}
+
+/**
+ * DELETE Media Asset from Supabase Cloud Media Library
+ */
+export async function handleDeleteCmsMedia(id: string): Promise<{
+  success: boolean;
+  error?: string;
+}> {
+  if (!isSupabaseConfigured) return { success: true };
+  if (!id) return { success: false, error: 'Thiếu mã media' };
+
+  const db = getSupabaseAdmin() || supabase;
+  try {
+    const { data: revs } = await db
+      .from('content_revisions')
+      .select('id, version_number, data')
+      .eq('item_id', RESERVED_MEDIA_LIBRARY_ID)
+      .order('version_number', { ascending: false })
+      .limit(1);
+
+    if (!revs || revs.length === 0 || !revs[0].data || !Array.isArray(revs[0].data.assets)) {
+      return { success: true };
+    }
+
+    const existingAssets: MediaAsset[] = revs[0].data.assets;
+    const filteredAssets = existingAssets.filter((a) => a.id !== id && a.name !== id);
+    const nowIso = new Date().toISOString();
+
+    await db
+      .from('content_revisions')
+      .update({
+        data: {
+          assets: filteredAssets,
+          synced_at: nowIso,
+        },
+        updated_at: nowIso,
+      })
+      .eq('id', revs[0].id);
+
+    return { success: true };
+  } catch (err: any) {
+    console.error('[handleDeleteCmsMedia Exception]', err);
+    return { success: false, error: err?.message || 'Lỗi khi xóa media' };
   }
 }

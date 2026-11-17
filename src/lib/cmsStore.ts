@@ -15,6 +15,7 @@ export interface ArticleData {
   category: 'article' | 'book' | 'image' | 'video' | 'audio' | string;
   topic?: string;
   featured_image?: string;
+  media_assets?: MediaAsset[];
   references?: string;
   audio_url?: string;
   audio_duration?: string;
@@ -793,6 +794,199 @@ export function cleanBase64FromContent(
 }
 
 // ------------------------------------------------------------------------------
+// MEDIA SYNCHRONIZATION HELPERS & RESOLVERS
+// ------------------------------------------------------------------------------
+
+/**
+ * Trích xuất toàn bộ MediaAsset được nhúng trong bài viết hoặc ảnh tiêu biểu
+ */
+export function extractMediaAssetsForArticle(article: ArticleData): MediaAsset[] {
+  const assets: MediaAsset[] = [];
+  const assetMap = new Map<string, MediaAsset>();
+
+  // Kiểm tra danh sách đã đính kèm sẵn
+  if (Array.isArray(article.media_assets)) {
+    for (const a of article.media_assets) {
+      if (a && a.id) assetMap.set(a.id, a);
+    }
+  }
+
+  // Quét nội dung và featured_image để tìm thẻ media://<id>
+  const combinedText = `${article.content || ''} ${article.featured_image || ''}`;
+  const regex = /media:\/\/([a-zA-Z0-9_\-]+)/g;
+  let match: RegExpExecArray | null;
+  const referencedIds = new Set<string>();
+
+  while ((match = regex.exec(combinedText)) !== null) {
+    referencedIds.add(match[1]);
+  }
+
+  // Tìm trong kho media hiện hành
+  const storedMedia = getStoredMedia();
+  for (const id of referencedIds) {
+    if (assetMap.has(id)) {
+      assets.push(assetMap.get(id)!);
+    } else {
+      const found = storedMedia.find((m) => m.id === id || m.name === id);
+      if (found) {
+        assets.push(found);
+        assetMap.set(id, found);
+      }
+    }
+  }
+
+  return assets;
+}
+
+/**
+ * Phân giải URL hình ảnh hoặc thẻ media://<id> thành URL thực tế
+ */
+export function resolveMediaUrl(url?: string, extraAssets?: MediaAsset[]): string {
+  if (!url) return '';
+  if (url.startsWith('media://') || url.startsWith('media:')) {
+    const id = url.replace(/^media:\/\//, '').replace(/^media:/, '');
+    if (extraAssets && Array.isArray(extraAssets)) {
+      const found = extraAssets.find((m) => m.id === id || m.name === id);
+      if (found && found.url) return found.url;
+    }
+    const stored = getStoredMedia();
+    const foundStored = stored.find((m) => m.id === id || m.name === id);
+    if (foundStored && foundStored.url) return foundStored.url;
+  }
+  return url;
+}
+
+/**
+ * Lưu 1 MediaAsset lên Cloud Supabase (bảo đảm mọi thiết bị đều tải được)
+ */
+export async function saveMediaToCloud(asset: MediaAsset): Promise<boolean> {
+  try {
+    const res = await fetch('/api/cms/media', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ asset }),
+    });
+    if (res.ok) {
+      const json = await res.json();
+      return json.success === true;
+    }
+  } catch (err) {
+    console.warn('[saveMediaToCloud API error]', err);
+  }
+
+  if (isSupabaseConfigured) {
+    try {
+      const { handleSaveCmsMedia } = await import('./cmsBackend');
+      const direct = await handleSaveCmsMedia(asset);
+      return direct.success === true;
+    } catch {}
+  }
+  return true;
+}
+
+/**
+ * Lưu nhiều MediaAssets lên Cloud Supabase
+ */
+export async function saveMediaBatchToCloud(assets: MediaAsset[]): Promise<boolean> {
+  if (!assets || assets.length === 0) return true;
+  try {
+    const res = await fetch('/api/cms/media', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ assets }),
+    });
+    if (res.ok) {
+      const json = await res.json();
+      return json.success === true;
+    }
+  } catch (err) {
+    console.warn('[saveMediaBatchToCloud API error]', err);
+  }
+
+  if (isSupabaseConfigured) {
+    try {
+      const { handleSaveCmsMedia } = await import('./cmsBackend');
+      const direct = await handleSaveCmsMedia(assets);
+      return direct.success === true;
+    } catch {}
+  }
+  return true;
+}
+
+/**
+ * Tải toàn bộ MediaAssets từ Cloud về kho media cục bộ
+ */
+export async function fetchMediaFromCloud(): Promise<MediaAsset[]> {
+  let cloudAssets: MediaAsset[] | undefined;
+  try {
+    const res = await fetch('/api/cms/media');
+    if (res.ok) {
+      const json = await res.json();
+      if (json.success && Array.isArray(json.assets)) {
+        cloudAssets = json.assets;
+      }
+    }
+  } catch (err) {
+    console.warn('[fetchMediaFromCloud API error]', err);
+  }
+
+  if (!cloudAssets && isSupabaseConfigured) {
+    try {
+      const { handleGetCmsMedia } = await import('./cmsBackend');
+      const direct = await handleGetCmsMedia();
+      if (direct.success && Array.isArray(direct.assets)) {
+        cloudAssets = direct.assets;
+      }
+    } catch {}
+  }
+
+  if (cloudAssets && cloudAssets.length > 0) {
+    const currentLocal = getStoredMedia();
+    const mediaMap = new Map(currentLocal.map((m) => [m.id, m]));
+    let hasChanges = false;
+    for (const ca of cloudAssets) {
+      if (ca && ca.id && !mediaMap.has(ca.id)) {
+        mediaMap.set(ca.id, ca);
+        hasChanges = true;
+      }
+    }
+    if (hasChanges) {
+      const merged = Array.from(mediaMap.values());
+      saveStoredMedia(merged);
+      return merged;
+    }
+    return currentLocal;
+  }
+  return getStoredMedia();
+}
+
+/**
+ * Xóa MediaAsset khỏi Cloud
+ */
+export async function deleteMediaFromCloud(id: string): Promise<boolean> {
+  try {
+    const res = await fetch(`/api/cms/media?id=${encodeURIComponent(id)}`, {
+      method: 'DELETE',
+    });
+    if (res.ok) {
+      const json = await res.json();
+      return json.success === true;
+    }
+  } catch (err) {
+    console.warn('[deleteMediaFromCloud API error]', err);
+  }
+
+  if (isSupabaseConfigured) {
+    try {
+      const { handleDeleteCmsMedia } = await import('./cmsBackend');
+      const direct = await handleDeleteCmsMedia(id);
+      return direct.success === true;
+    } catch {}
+  }
+  return true;
+}
+
+// ------------------------------------------------------------------------------
 // ĐỒNG BỘ BÀI VIẾT TỪ SUPABASE CLOUD DATABASE (TOÀN DIỆN MỌI THIẾT BỊ)
 // ------------------------------------------------------------------------------
 export async function saveArticleToCloud(article: ArticleData): Promise<{
@@ -800,12 +994,24 @@ export async function saveArticleToCloud(article: ArticleData): Promise<{
   article?: ArticleData;
   error?: string;
 }> {
+  // Trích xuất và đính kèm mọi MediaAsset liên quan để đồng bộ đa thiết bị
+  const referencedAssets = extractMediaAssetsForArticle(article);
+  const payloadArticle: ArticleData = {
+    ...article,
+    media_assets: referencedAssets,
+  };
+
+  // Đồng thời đồng bộ các asset này lên kho media trung tâm ở chế độ nền
+  if (referencedAssets.length > 0) {
+    saveMediaBatchToCloud(referencedAssets).catch((e) => console.warn('[syncMediaAssets background error]', e));
+  }
+
   // 1. Kênh 1: Gọi Serverless API chuyên dụng (/api/cms/articles)
   try {
     const res = await fetch('/api/cms/articles', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ article }),
+      body: JSON.stringify({ article: payloadArticle }),
     });
     if (res.ok) {
       const json = await res.json();
@@ -821,14 +1027,14 @@ export async function saveArticleToCloud(article: ArticleData): Promise<{
   if (isSupabaseConfigured) {
     try {
       const { handleSaveCmsArticle } = await import('./cmsBackend');
-      return await handleSaveCmsArticle(article);
+      return await handleSaveCmsArticle(payloadArticle);
     } catch (directErr: any) {
       console.warn('[saveArticleToCloud direct fallback error]', directErr);
       return { success: false, error: directErr?.message || 'Lỗi lưu trữ Cloud' };
     }
   }
 
-  return { success: true, article };
+  return { success: true, article: payloadArticle };
 }
 
 export async function fetchArticlesFromSupabase(): Promise<{
@@ -926,6 +1132,29 @@ export async function fetchArticlesFromSupabase(): Promise<{
 
     const mergedList = Array.from(mergedMap.values());
     saveStoredArticles(mergedList);
+
+    // Tự động giải nén và đồng bộ tất cả hình ảnh media_assets kèm theo bài viết vào kho media của thiết bị
+    try {
+      const currentMedia = getStoredMedia();
+      const mediaMap = new Map(currentMedia.map((m) => [m.id, m]));
+      let mediaChanged = false;
+      for (const ca of validCloud) {
+        if (Array.isArray(ca.media_assets)) {
+          for (const asset of ca.media_assets) {
+            if (asset && asset.id && !mediaMap.has(asset.id)) {
+              mediaMap.set(asset.id, asset);
+              mediaChanged = true;
+            }
+          }
+        }
+      }
+      if (mediaChanged) {
+        saveStoredMedia(Array.from(mediaMap.values()));
+      }
+    } catch (mediaSyncErr) {
+      console.warn('[fetchArticlesFromSupabase media unpack error]', mediaSyncErr);
+    }
+
     return { success: true, articles: mergedList };
   }
 

@@ -12,7 +12,8 @@ import {
   ArticleData,
   normalizeCategoryToHomepage,
   getCategoryLabel,
-  fetchArticlesFromSupabase
+  fetchArticlesFromSupabase,
+  resolveMediaUrl
 } from '../lib/cmsStore';
 import {
   getAllViewCounts,
@@ -34,10 +35,11 @@ const mapArticleToResource = (art: ArticleData): ResourceItem => {
     fullContent: `${art.content}${art.references ? `\n\n---\n**Nguồn trích dẫn & Tham khảo:** ${art.references}` : ''}`,
     authorOrSource: art.author_name || 'Trường THCS Nguyễn Trung Trực',
     dateOrEra: art.updated_at || art.created_at || 'Mới xuất bản',
-    thumbnail: art.featured_image || (normCat === 'video' ? '/images/timeline-ngoi-sao.png' : '/images/ho-chi-minh-tp-hcm.png'),
+    thumbnail: resolveMediaUrl(art.featured_image, art.media_assets) || (normCat === 'video' ? '/images/timeline-ngoi-sao.png' : '/images/ho-chi-minh-tp-hcm.png'),
     badgeText: art.topic ? `⭐ ${art.topic}` : '⭐ Đã duyệt 4 Mắt (CMS)',
     isMockData: false,
     tags: [normCat, '4-eyes-approved', 'chinh-thuc', art.topic || '', art.category],
+    mediaAssets: art.media_assets,
   };
 };
 

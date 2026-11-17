@@ -12,7 +12,8 @@ import {
   EVENT_ARTICLES_CHANGED,
   ArticleData,
   normalizeCategoryToHomepage,
-  getCategoryLabel
+  getCategoryLabel,
+  resolveMediaUrl
 } from '../lib/cmsStore';
 import {
   getAllViewCounts,
@@ -33,12 +34,13 @@ const mapArticleToResource = (art: ArticleData): ResourceItem => {
     fullContent: `${art.content}${art.references ? `\n\n---\n**Nguồn trích dẫn & Tham khảo:** ${art.references}` : ''}`,
     authorOrSource: art.author_name || 'Trường THCS Nguyễn Trung Trực',
     dateOrEra: art.updated_at || art.created_at || 'Mới xuất bản',
-    thumbnail: art.featured_image || (normCat === 'video' ? '/images/timeline-ngoi-sao.png' : '/images/ho-chi-minh-tp-hcm.png'),
+    thumbnail: resolveMediaUrl(art.featured_image, art.media_assets) || (normCat === 'video' ? '/images/timeline-ngoi-sao.png' : '/images/ho-chi-minh-tp-hcm.png'),
     audioUrl: art.audio_url || (normCat === 'audio' ? '/audio/tuyen-ngon-doc-lap-1945.mp3' : undefined),
     audioDuration: art.audio_duration || (normCat === 'audio' ? '03:30' : undefined),
     badgeText: art.topic ? `⭐ ${art.topic}` : '⭐ Đã duyệt 4 Mắt (CMS)',
     isMockData: false,
     tags: [normCat, '4-eyes-approved', 'chinh-thuc', art.topic || '', art.category],
+    mediaAssets: art.media_assets,
   };
 };
 
@@ -96,10 +98,11 @@ export const Resources: React.FC = () => {
             fullContent: d.data?.content || d.summary || '',
             authorOrSource: 'Trường THCS Nguyễn Trung Trực',
             dateOrEra: new Date(d.created_at).toLocaleDateString('vi-VN'),
-            thumbnail: d.data?.featured_image || '/images/ho-chi-minh-tp-hcm.png',
+            thumbnail: resolveMediaUrl(d.data?.featured_image, d.data?.media_assets) || '/images/ho-chi-minh-tp-hcm.png',
             badgeText: 'Đã xuất bản (Cloud)',
             isMockData: false,
             tags: d.data?.tags || ['lich-su', 'tu-lieu-so'],
+            mediaAssets: d.data?.media_assets,
           }));
 
           setLiveResources((prev) => {
