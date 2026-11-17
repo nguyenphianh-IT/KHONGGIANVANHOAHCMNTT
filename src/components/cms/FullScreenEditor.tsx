@@ -20,6 +20,7 @@ import {
   ArticleData
 } from '../../lib/cmsStore';
 import { optimizeImageFile } from '../../lib/imageOptimizer';
+import { UNCLE_HO_QUOTES } from '../../data/quotesData';
 
 export type { ArticleData };
 
@@ -58,6 +59,7 @@ export const FullScreenEditor: React.FC<FullScreenEditorProps> = ({
   );
   const [featuredImage, setFeaturedImage] = useState(initialArticle?.featured_image || '');
   const [references, setReferences] = useState(initialArticle?.references || 'NXB Chính trị Quốc gia Sự thật; Bảo tàng Hồ Chí Minh');
+  const [selectedQuoteId, setSelectedQuoteId] = useState<number>(initialArticle?.quote_id || 1);
   const [audioUrl, setAudioUrl] = useState<string>((initialArticle as any)?.audio_url || '');
   const [audioDuration, setAudioDuration] = useState<string>((initialArticle as any)?.audio_duration || '');
   const [audioFileName, setAudioFileName] = useState<string>('');
@@ -277,6 +279,7 @@ export const FullScreenEditor: React.FC<FullScreenEditorProps> = ({
         references,
         audio_url: audioUrl,
         audio_duration: audioDuration,
+        quote_id: selectedQuoteId,
         status: initialArticle?.status || 'draft',
         author_name: initialArticle?.author_name || currentUserName,
         updated_at: nowIso,
@@ -322,6 +325,7 @@ export const FullScreenEditor: React.FC<FullScreenEditorProps> = ({
         references,
         audio_url: audioUrl,
         audio_duration: audioDuration,
+        quote_id: selectedQuoteId,
         status: 'pending',
         author_name: initialArticle?.author_name || currentUserName,
         updated_at: nowIso,
@@ -365,6 +369,7 @@ export const FullScreenEditor: React.FC<FullScreenEditorProps> = ({
       references,
       audio_url: audioUrl,
       audio_duration: audioDuration,
+      quote_id: selectedQuoteId,
       status: 'published',
       author_name: initialArticle?.author_name || currentUserName,
       updated_at: nowIso,
@@ -883,6 +888,51 @@ export const FullScreenEditor: React.FC<FullScreenEditorProps> = ({
               </select>
               <p className="text-[10px] text-heritage-ink-400 font-sans">
                 Gắn nhãn chuyên đề giúp học sinh dễ dàng tra cứu theo chủ đề học tập.
+              </p>
+            </div>
+
+            {/* Lựa chọn Danh ngôn Bác Hồ đính kèm cuối bài viết */}
+            <div className="space-y-2 p-3.5 bg-gradient-to-br from-heritage-red-900/5 via-heritage-gold-50/60 to-white rounded-xl border border-heritage-gold-300 shadow-sm">
+              <div className="flex items-center justify-between">
+                <label className="block text-xs font-bold uppercase text-heritage-red-800 tracking-wider flex items-center space-x-1.5">
+                  <Quote className="w-3.5 h-3.5 text-heritage-gold-600" />
+                  <span>Danh ngôn Bác Hồ đính kèm</span>
+                </label>
+                <span className="text-[10px] text-heritage-gold-800 font-semibold bg-heritage-gold-100 px-1.5 py-0.5 rounded border border-heritage-gold-300">
+                  Cuối bài
+                </span>
+              </div>
+
+              <select
+                value={selectedQuoteId}
+                onChange={(e) => setSelectedQuoteId(Number(e.target.value))}
+                className="w-full px-2.5 py-2 bg-white border border-heritage-gold-300 rounded-lg text-xs font-semibold text-heritage-ink-900 outline-none focus:ring-2 focus:ring-heritage-red-600 shadow-sm"
+              >
+                {UNCLE_HO_QUOTES.map((q) => (
+                  <option key={q.id} value={q.id}>
+                    #{q.id} - {q.category}
+                  </option>
+                ))}
+              </select>
+
+              {/* Live Preview of Selected Quote */}
+              {(() => {
+                const currentQ = UNCLE_HO_QUOTES.find((q) => q.id === selectedQuoteId) || UNCLE_HO_QUOTES[0];
+                return (
+                  <div className="p-3 bg-gradient-to-br from-heritage-red-950 via-heritage-red-900 to-heritage-red-950 text-white rounded-lg text-xs space-y-2 shadow-inner border border-heritage-gold-400/40">
+                    <p className="font-serif italic text-heritage-gold-100 line-clamp-3 leading-relaxed text-[11px]">
+                      "{currentQ.quote}"
+                    </p>
+                    <div className="text-[10px] text-heritage-gold-400 font-sans flex items-center justify-between pt-1 border-t border-white/10">
+                      <span className="truncate max-w-[140px]">{currentQ.context ? currentQ.context : `Năm ${currentQ.year}`}</span>
+                      <span className="font-bold flex-shrink-0">— Hồ Chí Minh</span>
+                    </div>
+                  </div>
+                );
+              })()}
+
+              <p className="text-[10px] text-heritage-ink-500 italic leading-snug">
+                Tác giả có thể chọn câu danh ngôn phù hợp nhất với chủ đề hoạt động hoặc tư liệu giảng dạy.
               </p>
             </div>
 

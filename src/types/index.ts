@@ -33,6 +33,8 @@ export interface ResourceItem {
   tags: string[];
   viewCount?: number;
   mediaAssets?: any[];
+  quoteId?: number;
+  quote?: any;
 }
 
 export interface LearningTopic {
@@ -72,4 +74,6 @@ export interface SchoolActivity {
   badgeText?: string;
   tags?: string[];
   viewCount?: number;
+  quoteId?: number;
+  quote?: any;
 }

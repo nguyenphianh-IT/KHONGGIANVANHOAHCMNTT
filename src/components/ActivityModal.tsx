@@ -11,6 +11,7 @@ import {
   EVENT_VIEWS_CHANGED,
   MIN_ENGAGEMENT_DWELL_MS
 } from '../lib/viewsStore';
+import { resolveArticleQuote } from '../data/quotesData';
 
 interface ActivityModalProps {
   activity: SchoolActivity | null;
@@ -62,6 +63,7 @@ export const ActivityModal: React.FC<ActivityModalProps> = ({ activity, onClose 
   // Estimate reading time
   const wordCount = (activity.fullDetail || activity.summary || '').trim().split(/\s+/).length;
   const readingTime = Math.max(1, Math.ceil(wordCount / 180));
+  const activeQuote = activity.quote || resolveArticleQuote(activity.quoteId, undefined, 10);
 
   return (
     <div
@@ -278,18 +280,35 @@ export const ActivityModal: React.FC<ActivityModalProps> = ({ activity, onClose 
               </div>
             )}
 
-            {/* Quote of President Ho Chi Minh */}
-            <div className="my-8 p-6 bg-gradient-to-br from-heritage-red-900 via-heritage-red-850 to-heritage-red-950 text-white rounded-3xl shadow-xl border border-heritage-gold-400/50 relative overflow-hidden">
-              <div className="absolute -right-4 -bottom-4 w-32 h-32 opacity-10 pointer-events-none">
+            {/* Quote of President Ho Chi Minh (Linh hoạt theo danh ngôn được chọn) */}
+            <div className="my-8 p-6 sm:p-7 bg-gradient-to-br from-heritage-red-900 via-heritage-red-850 to-heritage-red-950 text-white rounded-3xl shadow-xl border border-heritage-gold-400/50 relative overflow-hidden">
+              <div className="absolute -right-4 -bottom-4 w-36 h-36 opacity-10 pointer-events-none">
                 <Quote className="w-full h-full text-heritage-gold-300" />
               </div>
-              <div className="relative z-10 space-y-2">
-                <p className="font-serif italic text-sm sm:text-base md:text-lg text-heritage-gold-200 leading-relaxed">
-                  "Vì lợi ích mười năm thì phải trồng cây, vì lợi ích trăm năm thì phải trồng người."
+              <div className="relative z-10 space-y-3">
+                <div className="inline-flex items-center space-x-1.5 px-3 py-1 bg-black/30 rounded-full border border-heritage-gold-400/30 text-[11px] font-sans text-heritage-gold-300 font-semibold">
+                  <span>✨ {activeQuote.category || 'Tư tưởng & Đạo đức Bác Hồ'}</span>
+                  {activeQuote.year && <span>• Năm {activeQuote.year}</span>}
+                </div>
+
+                <p className="font-serif italic text-base sm:text-lg md:text-xl text-heritage-gold-100 leading-relaxed">
+                  "{activeQuote.quote}"
                 </p>
-                <p className="text-right text-xs font-sans font-bold text-heritage-gold-400 uppercase tracking-wider">
-                  — Chủ tịch Hồ Chí Minh
-                </p>
+
+                <div className="pt-2 border-t border-white/10 flex flex-wrap items-center justify-between gap-2 text-xs font-sans">
+                  <span className="text-white/75 italic text-[11px] sm:text-xs">
+                    {activeQuote.context ? `Xuất xứ: ${activeQuote.context}` : ''}
+                  </span>
+                  <span className="text-right font-bold text-heritage-gold-400 uppercase tracking-wider text-xs ml-auto">
+                    — Chủ tịch Hồ Chí Minh
+                  </span>
+                </div>
+
+                {activeQuote.lesson && (
+                  <div className="p-3 bg-black/25 rounded-xl border border-heritage-gold-400/20 text-xs text-heritage-gold-200/90 leading-relaxed">
+                    💡 <strong className="text-heritage-gold-300">Ý nghĩa giáo dục học đường:</strong> {activeQuote.lesson}
+                  </div>
+                )}
               </div>
             </div>
 

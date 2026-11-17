@@ -21,6 +21,7 @@ import {
   EVENT_VIEWS_CHANGED,
   fetchCloudViewCounts
 } from '../lib/viewsStore';
+import { resolveArticleQuote } from '../data/quotesData';
 
 const mapArticleToResource = (art: ArticleData): ResourceItem => {
   const normCat = normalizeCategoryToHomepage(art.category);
@@ -42,6 +43,8 @@ const mapArticleToResource = (art: ArticleData): ResourceItem => {
     isMockData: false,
     tags: [normCat, '4-eyes-approved', 'chinh-thuc', art.topic || '', art.category],
     mediaAssets: art.media_assets,
+    quoteId: art.quote_id,
+    quote: resolveArticleQuote(art.quote_id, art.custom_quote, 1),
   };
 };
 

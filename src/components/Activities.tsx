@@ -11,6 +11,7 @@ import {
   fetchArticlesFromSupabase 
 } from '../lib/cmsStore';
 import { getViewCount } from '../lib/viewsStore';
+import { resolveArticleQuote } from '../data/quotesData';
 
 export const formatActivityDate = (rawDate?: string): string => {
   if (!rawDate) return 'Vừa đăng';
@@ -53,6 +54,8 @@ const mapArticleToActivity = (art: ArticleData): SchoolActivity => {
     ],
     mediaAssets: art.media_assets,
     tags: art.topic ? [art.topic] : ['Hoạt động học đường', 'Nguyễn Trung Trực'],
+    quoteId: art.quote_id,
+    quote: resolveArticleQuote(art.quote_id, art.custom_quote, 10),
   };
 };
 

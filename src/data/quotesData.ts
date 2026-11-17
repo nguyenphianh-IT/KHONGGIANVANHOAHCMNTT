@@ -89,3 +89,31 @@ export const UNCLE_HO_QUOTES: UncleHoQuote[] = [
     lesson: 'Ghi nhớ công lao của các bậc tiền nhân, nuôi dưỡng lòng yêu nước và trách nhiệm gìn giữ non sông Việt Nam.',
   },
 ];
+
+export function getUncleHoQuote(quoteId?: number, fallbackId = 1): UncleHoQuote {
+  if (typeof quoteId === 'number') {
+    const found = UNCLE_HO_QUOTES.find((q) => q.id === quoteId);
+    if (found) return found;
+  }
+  const fallback = UNCLE_HO_QUOTES.find((q) => q.id === fallbackId) || UNCLE_HO_QUOTES[0];
+  return fallback;
+}
+
+export function resolveArticleQuote(
+  quoteId?: number,
+  customQuote?: string,
+  fallbackId = 1
+): UncleHoQuote {
+  if (customQuote && customQuote.trim()) {
+    return {
+      id: 999,
+      quote: customQuote.trim(),
+      context: 'Chủ tịch Hồ Chí Minh căn dặn',
+      year: '',
+      category: 'Tư tưởng & Đạo đức Bác Hồ',
+      lesson: 'Lời căn dặn quý báu soi đường cho thế hệ trẻ học tập, rèn luyện và noi theo.',
+    };
+  }
+  return getUncleHoQuote(quoteId, fallbackId);
+}
+

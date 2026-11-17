@@ -19,6 +19,8 @@ export interface ArticleData {
   references?: string;
   audio_url?: string;
   audio_duration?: string;
+  quote_id?: number;
+  custom_quote?: string;
   status: 'draft' | 'pending' | 'approved' | 'published' | 'rejected' | 'archived';
   author_id?: string;
   author_name?: string;
