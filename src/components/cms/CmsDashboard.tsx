@@ -177,8 +177,22 @@ export const CmsDashboard: React.FC<CmsDashboardProps> = ({ isOpen, onClose }) =
 
   // Sync with cmsStore events
   useEffect(() => {
-    const syncArticles = () => setArticles(getStoredArticles());
-    const syncMedia = () => setMediaAssets(getStoredMedia());
+    const syncArticles = (e?: Event) => {
+      const custom = e as CustomEvent<ArticleData[]>;
+      if (custom?.detail && Array.isArray(custom.detail)) {
+        setArticles(custom.detail);
+      } else {
+        setArticles(getStoredArticles());
+      }
+    };
+    const syncMedia = (e?: Event) => {
+      const custom = e as CustomEvent<MediaAsset[]>;
+      if (custom?.detail && Array.isArray(custom.detail)) {
+        setMediaAssets(custom.detail);
+      } else {
+        setMediaAssets(getStoredMedia());
+      }
+    };
     const syncAudit = () => setAuditLogs(getStoredAuditLogs());
     const syncContest = () => {
       setContestQuestionsCount(getStoredContestQuestions().length);
@@ -580,14 +594,15 @@ export const CmsDashboard: React.FC<CmsDashboardProps> = ({ isOpen, onClose }) =
       return;
     }
 
-    const updatedList = articles.filter((a) => (article.id ? a.id !== article.id : true) && (article.slug ? a.slug !== article.slug : true));
+    const updatedList = articles.filter((a) =>
+      article.id ? a.id !== article.id : (article.slug ? a.slug !== article.slug : true)
+    );
     setArticles(updatedList);
     saveStoredArticles(updatedList);
 
     if (article.id) {
       deleteArticleInCloud(article.id);
-    }
-    if (article.slug) {
+    } else if (article.slug) {
       deleteArticleInCloud(article.slug);
     }
 

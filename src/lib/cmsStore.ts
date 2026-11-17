@@ -599,14 +599,34 @@ export const EVENT_ARTICLES_CHANGED = 'hcm:articles:changed';
 export const EVENT_MEDIA_CHANGED = 'hcm:media:changed';
 
 // ------------------------------------------------------------------------------
+// IN-MEMORY CACHE & CONCURRENCY GUARDS (Chống QuotaExceededError & Race Condition)
+// ------------------------------------------------------------------------------
+let memoryArticlesCache: ArticleData[] | null = null;
+let memoryMediaCache: MediaAsset[] | null = null;
+const inflightSaveArticleIds = new Set<string>();
+let inflightFetchArticlesPromise: Promise<{
+  success: boolean;
+  articles?: ArticleData[];
+  error?: string;
+}> | null = null;
+
+// ------------------------------------------------------------------------------
 // ARTICLE STORE METHODS
 // ------------------------------------------------------------------------------
 export function getStoredArticles(): ArticleData[] {
+  if (memoryArticlesCache) {
+    return memoryArticlesCache.filter((art) => !isTestOrDeletedArticle(art));
+  }
   try {
     const raw = localStorage.getItem(KEY_ARTICLES);
     let articles: ArticleData[];
     if (!raw) {
-      localStorage.setItem(KEY_ARTICLES, JSON.stringify(DEFAULT_ARTICLES));
+      memoryArticlesCache = DEFAULT_ARTICLES;
+      try {
+        localStorage.setItem(KEY_ARTICLES, JSON.stringify(DEFAULT_ARTICLES));
+      } catch {
+        // ignore quota error
+      }
       return DEFAULT_ARTICLES;
     }
     articles = JSON.parse(raw);
@@ -655,8 +675,13 @@ export function getStoredArticles(): ArticleData[] {
       modified = true;
     }
 
+    memoryArticlesCache = sanitizedArticles;
     if (modified) {
-      localStorage.setItem(KEY_ARTICLES, JSON.stringify(sanitizedArticles));
+      try {
+        localStorage.setItem(KEY_ARTICLES, JSON.stringify(sanitizedArticles));
+      } catch {
+        // ignore quota error
+      }
     }
     return sanitizedArticles;
   } catch {
@@ -665,27 +690,49 @@ export function getStoredArticles(): ArticleData[] {
 }
 
 export function saveStoredArticles(articles: ArticleData[]) {
-  try {
-    // Dọn dẹp sạch mã Base64 trước khi ghi vào kho lưu trữ
-    const cleanedArticles = articles.map((art) => {
-      if (
-        art.content &&
-        (art.content.includes('data:image/') ||
-          art.content.includes('AAAA') ||
-          art.content.includes('/9j/') ||
-          art.content.includes('iVBORw'))
-      ) {
-        const { cleanedText } = cleanBase64FromContent(art.content, art.author_name);
-        return { ...art, content: cleanedText };
-      }
-      return art;
-    });
+  // Dọn dẹp sạch mã Base64 trước khi ghi vào kho lưu trữ
+  const cleanedArticles = articles.map((art) => {
+    if (
+      art.content &&
+      (art.content.includes('data:image/') ||
+        art.content.includes('AAAA') ||
+        art.content.includes('/9j/') ||
+        art.content.includes('iVBORw'))
+    ) {
+      const { cleanedText } = cleanBase64FromContent(art.content, art.author_name);
+      return { ...art, content: cleanedText };
+    }
+    return art;
+  });
 
+  // 1. Luôn cập nhật bộ nhớ RAM trước tiên để trạng thái UI không bao giờ bị giật/mất bài
+  memoryArticlesCache = cleanedArticles;
+
+  // 2. Lưu vào localStorage (có cơ chế tự động rút gọn media base64 nặng nếu tràn hạn mức 5MB)
+  try {
     localStorage.setItem(KEY_ARTICLES, JSON.stringify(cleanedArticles));
-    window.dispatchEvent(new CustomEvent(EVENT_ARTICLES_CHANGED, { detail: cleanedArticles }));
   } catch (err) {
-    console.error('Lỗi lưu trữ bài viết:', err);
+    console.warn('[saveStoredArticles] localStorage đầy hạn mức, tự động nén bản cache cục bộ:', err);
+    try {
+      const slimArticles = cleanedArticles.map((art) => ({
+        ...art,
+        // Loại bỏ bản sao base64 nặng trong media_assets khi lưu cache localStorage (bản đầy đủ vẫn nằm ở RAM & Cloud)
+        media_assets: Array.isArray(art.media_assets)
+          ? art.media_assets.map((m) =>
+              m && typeof m.url === 'string' && m.url.startsWith('data:') && m.url.length > 10000
+                ? { ...m, url: '' }
+                : m
+            )
+          : undefined,
+      }));
+      localStorage.setItem(KEY_ARTICLES, JSON.stringify(slimArticles));
+    } catch (err2) {
+      console.warn('[saveStoredArticles] Vẫn vượt hạn mức localStorage, giữ dữ liệu trên RAM & Cloud:', err2);
+    }
   }
+
+  // 3. Luôn phát sự kiện đồng bộ kèm dữ liệu mới nhất
+  window.dispatchEvent(new CustomEvent(EVENT_ARTICLES_CHANGED, { detail: cleanedArticles }));
 }
 
 export function getPublishedArticles(): ArticleData[] {
@@ -697,25 +744,34 @@ export function getPublishedArticles(): ArticleData[] {
 // MEDIA STORE METHODS
 // ------------------------------------------------------------------------------
 export function getStoredMedia(): MediaAsset[] {
+  if (memoryMediaCache) return memoryMediaCache;
   try {
     const raw = localStorage.getItem(KEY_MEDIA);
     if (!raw) {
-      localStorage.setItem(KEY_MEDIA, JSON.stringify(DEFAULT_MEDIA_ASSETS));
+      memoryMediaCache = DEFAULT_MEDIA_ASSETS;
+      try {
+        localStorage.setItem(KEY_MEDIA, JSON.stringify(DEFAULT_MEDIA_ASSETS));
+      } catch {
+        // ignore quota error
+      }
       return DEFAULT_MEDIA_ASSETS;
     }
-    return JSON.parse(raw);
+    const parsed = JSON.parse(raw);
+    memoryMediaCache = Array.isArray(parsed) ? parsed : DEFAULT_MEDIA_ASSETS;
+    return memoryMediaCache;
   } catch {
     return DEFAULT_MEDIA_ASSETS;
   }
 }
 
 export function saveStoredMedia(assets: MediaAsset[]) {
+  memoryMediaCache = assets;
   try {
     localStorage.setItem(KEY_MEDIA, JSON.stringify(assets));
-    window.dispatchEvent(new CustomEvent(EVENT_MEDIA_CHANGED, { detail: assets }));
   } catch (err) {
-    console.error('Lỗi lưu trữ media:', err);
+    console.warn('[saveStoredMedia] localStorage đầy hạn mức, lưu bản cache media trên RAM:', err);
   }
+  window.dispatchEvent(new CustomEvent(EVENT_MEDIA_CHANGED, { detail: assets }));
 }
 
 // ------------------------------------------------------------------------------
@@ -1079,6 +1135,10 @@ export async function saveArticleToCloud(article: ArticleData): Promise<{
     saveMediaBatchToCloud(referencedAssets).catch((e) => console.warn('[syncMediaAssets background error]', e));
   }
 
+  // Đánh dấu đang tải bài lên Cloud để ngăn đồng bộ nền ghi đè mất bài
+  const trackKey = article.id || article.slug;
+  if (trackKey) inflightSaveArticleIds.add(trackKey);
+
   // 1. Kênh 1: Gọi Serverless API chuyên dụng (/api/cms/articles) với timeout an toàn
   try {
     const controller = new AbortController();
@@ -1111,6 +1171,8 @@ export async function saveArticleToCloud(article: ArticleData): Promise<{
     const msg = apiErr?.name === 'AbortError' ? 'Hết thời gian chờ phản hồi từ Cloud (Timeout 25s)' : (apiErr?.message || 'Lỗi kết nối mạng đến Cloud Database');
     console.warn('[saveArticleToCloud API exception]', msg);
     return { success: false, error: msg };
+  } finally {
+    if (trackKey) inflightSaveArticleIds.delete(trackKey);
   }
 }
 
@@ -1119,15 +1181,36 @@ export async function fetchArticlesFromSupabase(): Promise<{
   articles?: ArticleData[];
   error?: string;
 }> {
+  // Gộp các lệnh gọi đồng bộ đồng thời (tránh 4 component chạy song song ghi đè lẫn nhau)
+  if (inflightFetchArticlesPromise) {
+    return inflightFetchArticlesPromise;
+  }
+
+  inflightFetchArticlesPromise = _executeFetchArticlesFromSupabase().finally(() => {
+    inflightFetchArticlesPromise = null;
+  });
+
+  return inflightFetchArticlesPromise;
+}
+
+async function _executeFetchArticlesFromSupabase(): Promise<{
+  success: boolean;
+  articles?: ArticleData[];
+  error?: string;
+}> {
   let cloudArticles: ArticleData[] | undefined;
+  let fetchedFromFullCmsApi = false;
 
   // 1. Kênh 1: Kéo toàn bộ danh sách bài viết qua Serverless API (lấy cả draft, pending, published, rejected)
   try {
-    const res = await fetch('/api/cms/articles');
+    const res = await fetch(`/api/cms/articles?_t=${Date.now()}`, {
+      cache: 'no-store',
+    });
     if (res.ok) {
       const json = await res.json();
       if (json.success && Array.isArray(json.articles)) {
         cloudArticles = json.articles;
+        fetchedFromFullCmsApi = true;
       }
     }
   } catch (apiErr) {
@@ -1279,11 +1362,11 @@ export async function fetchArticlesFromSupabase(): Promise<{
     }
 
     // 2. Xử lý các bài viết có trong Local nhưng KHÔNG có trên Cloud:
-    // NGUYÊN TẮC: Cloud là Single Source of Truth cho các bài 'pending', 'published', 'rejected', 'archived'.
-    // Nếu một bài viết có trạng thái 'pending' hoặc 'published' nhưng máy chủ Cloud không còn trả về,
-    // điều đó đồng nghĩa bài viết đó đã bị xóa hoặc lọc bỏ khỏi hệ thống (ví dụ: các bài viết tạo ra lúc test).
-    // TUYỆT ĐỐI KHÔNG phục hồi chúng vào mergedMap!
-    // CHỈ giữ lại bản nháp thực sự ('draft') đang viết dở của tác giả nếu không phải bài test!
+    // - Nếu chỉ tải được từ Kênh dự phòng Anon Key (!fetchedFromFullCmsApi), RLS chỉ trả về bài 'published',
+    //   nên TUYỆT ĐỐI giữ nguyên các bài 'pending', 'draft', 'rejected' cục bộ!
+    // - Nếu đã tải đầy đủ từ Full CMS API (fetchedFromFullCmsApi === true):
+    //   Giữ lại bản nháp ('draft'), bài đang trong tiến trình lưu lên Cloud (inflightSaveArticleIds),
+    //   hoặc bài 'pending' mới gửi trong vòng 60 giây gần nhất để không bao giờ chớp lên rồi biến mất.
     for (const [key, la] of localMap.entries()) {
       if (isTestOrDeletedArticle(la)) continue;
 
@@ -1292,8 +1375,20 @@ export async function fetchArticlesFromSupabase(): Promise<{
         (la.slug && mergedMap.has(la.slug));
 
       if (!existsInMerged) {
-        if (la.status === 'draft') {
-          mergedMap.set(key, la);
+        if (!fetchedFromFullCmsApi) {
+          if (la.status === 'pending' || la.status === 'draft' || la.status === 'rejected') {
+            mergedMap.set(key, la);
+          }
+        } else {
+          const laTime = parseTime(la.updated_at || la.created_at);
+          const isInflightOrBrandNew =
+            (la.id && inflightSaveArticleIds.has(la.id)) ||
+            (la.slug && inflightSaveArticleIds.has(la.slug)) ||
+            (la.status === 'pending' && laTime > 0 && Date.now() - laTime < 60000);
+
+          if (la.status === 'draft' || isInflightOrBrandNew) {
+            mergedMap.set(key, la);
+          }
         }
       }
     }
