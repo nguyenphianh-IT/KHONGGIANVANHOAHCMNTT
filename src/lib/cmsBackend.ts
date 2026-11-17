@@ -107,24 +107,36 @@ export async function handleGetCmsArticles(): Promise<{
       return { success: true, articles: [], total: 0 };
     }
 
-    // 3. Filter out system containers, archived, deleted items and test artifacts
+    // 3. Filter out system containers, archived, deleted items and exact old test artifacts
+    const EXACT_DELETED_TEST_IDS = new Set([
+      'art-1794931991567',
+      'art-1794934461061',
+      'art-1794909786816',
+      toValidUuid('art-1794931991567'),
+      toValidUuid('art-1794934461061'),
+      toValidUuid('art-1794909786816'),
+      '6be75125-52eb-4678-b0ee-c94de607b24e',
+      'd0000000-0000-0000-0000-000000000004',
+      'd0000000-0000-0000-0000-000000000003',
+    ]);
+
     const filteredRevs = revsData.filter((r) => {
       if (r.item_id === RESERVED_CONTEST_ID || r.item_id === RESERVED_RESOURCES_ID || r.item_id === RESERVED_MEDIA_LIBRARY_ID) return false;
       if (deletedItemIds.has(r.item_id) || deletedItemIds.has(r.id)) return false;
       if (r.status === 'archived') return false;
       const title = (r.title || '').trim();
       if (title.includes('Hồ Sơ Hội Thi') || title.includes('Kho Tư Liệu Số Hóa') || title.includes('Kho Media')) return false;
-      // Loại bỏ hoàn toàn các bản nháp / bài viết tự sinh trong quá trình thử nghiệm
+      // Loại bỏ chính xác các bản nháp / bài viết tự sinh cũ trong quá trình thử nghiệm
       if (title === 'Test' || title === 'Bản thảo nghiên cứu Di chúc Bác Hồ' || (title === 'Lời kêu gọi toàn quốc kháng chiến năm 1946' && r.status === 'rejected')) {
         return false;
       }
-      if (title === 'Tác phẩm: Nhật ký trong tù' || (r.data && (r.data.slug === 't' || r.data.slug === 'test'))) {
+      if (r.data && (r.data.slug === 't' || r.data.slug === 'test')) {
         return false;
       }
       const rId = r.id || '';
       const rItem = r.item_id || '';
       const rLegacy = (r.data && r.data.legacy_id) || '';
-      if (rId.startsWith('art-179493') || rItem.startsWith('art-179493') || rLegacy.startsWith('art-179493')) {
+      if (EXACT_DELETED_TEST_IDS.has(rId) || EXACT_DELETED_TEST_IDS.has(rItem) || EXACT_DELETED_TEST_IDS.has(rLegacy)) {
         return false;
       }
       return true;
@@ -203,12 +215,13 @@ export async function handleSaveCmsArticle(article: ArticleData): Promise<{
     const safeSlug = article.slug || generateSlug(article.title);
     const nowIso = new Date().toISOString();
 
-    // Tra cứu xem slug này đã tồn tại trong content_items chưa để cập nhật đúng item
+    // Tra cứu xem slug này đã tồn tại trong content_items (chưa bị xóa) chưa để cập nhật đúng item
     if (article.slug) {
       const { data: itemBySlug } = await db
         .from('content_items')
-        .select('id')
+        .select('id, is_deleted')
         .eq('slug', article.slug)
+        .eq('is_deleted', false)
         .limit(1);
       if (itemBySlug && itemBySlug.length > 0 && itemBySlug[0].id) {
         itemId = itemBySlug[0].id;

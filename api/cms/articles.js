@@ -131,6 +131,17 @@ async function handleGetCmsArticles() {
     if (!revsData || revsData.length === 0) {
       return { success: true, articles: [], total: 0 };
     }
+    const EXACT_DELETED_TEST_IDS = /* @__PURE__ */ new Set([
+      "art-1794931991567",
+      "art-1794934461061",
+      "art-1794909786816",
+      toValidUuid("art-1794931991567"),
+      toValidUuid("art-1794934461061"),
+      toValidUuid("art-1794909786816"),
+      "6be75125-52eb-4678-b0ee-c94de607b24e",
+      "d0000000-0000-0000-0000-000000000004",
+      "d0000000-0000-0000-0000-000000000003"
+    ]);
     const filteredRevs = revsData.filter((r) => {
       if (r.item_id === RESERVED_CONTEST_ID || r.item_id === RESERVED_RESOURCES_ID || r.item_id === RESERVED_MEDIA_LIBRARY_ID) return false;
       if (deletedItemIds.has(r.item_id) || deletedItemIds.has(r.id)) return false;
@@ -140,13 +151,13 @@ async function handleGetCmsArticles() {
       if (title === "Test" || title === "B\u1EA3n th\u1EA3o nghi\xEAn c\u1EE9u Di ch\xFAc B\xE1c H\u1ED3" || title === "L\u1EDDi k\xEAu g\u1ECDi to\xE0n qu\u1ED1c kh\xE1ng chi\u1EBFn n\u0103m 1946" && r.status === "rejected") {
         return false;
       }
-      if (title === "T\xE1c ph\u1EA9m: Nh\u1EADt k\xFD trong t\xF9" || r.data && (r.data.slug === "t" || r.data.slug === "test")) {
+      if (r.data && (r.data.slug === "t" || r.data.slug === "test")) {
         return false;
       }
       const rId = r.id || "";
       const rItem = r.item_id || "";
       const rLegacy = r.data && r.data.legacy_id || "";
-      if (rId.startsWith("art-179493") || rItem.startsWith("art-179493") || rLegacy.startsWith("art-179493")) {
+      if (EXACT_DELETED_TEST_IDS.has(rId) || EXACT_DELETED_TEST_IDS.has(rItem) || EXACT_DELETED_TEST_IDS.has(rLegacy)) {
         return false;
       }
       return true;
@@ -207,7 +218,7 @@ async function handleSaveCmsArticle(article) {
     const safeSlug = article.slug || generateSlug(article.title);
     const nowIso = (/* @__PURE__ */ new Date()).toISOString();
     if (article.slug) {
-      const { data: itemBySlug } = await db.from("content_items").select("id").eq("slug", article.slug).limit(1);
+      const { data: itemBySlug } = await db.from("content_items").select("id, is_deleted").eq("slug", article.slug).eq("is_deleted", false).limit(1);
       if (itemBySlug && itemBySlug.length > 0 && itemBySlug[0].id) {
         itemId = itemBySlug[0].id;
       }

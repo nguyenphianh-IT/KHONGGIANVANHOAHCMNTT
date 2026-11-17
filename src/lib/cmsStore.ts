@@ -511,25 +511,22 @@ export function isTestOrDeletedArticle(art: Partial<ArticleData>): boolean {
   // Bài viết chính thức được bảo vệ tuyệt đối
   if (id && AUTHENTIC_ARTICLE_IDS.has(id)) return false;
 
-  // 1. Kiểm tra ID test hoặc ID đã lưu vào danh sách xóa
+  // 1. Kiểm tra chính xác ID test cũ (KHÔNG dùng startsWith('art-179493') vì sẽ chặn nhầm bài mới tạo cùng khung giờ)
   if (id && KNOWN_TEST_ARTICLE_IDS.has(id)) return true;
-  if (id.startsWith('art-179493')) return true;
 
-  // 2. Kiểm tra slug test
-  if (slug === 't' || slug === 'test' || slug.startsWith('art-179493')) return true;
+  // 2. Kiểm tra slug test rác
+  if (slug === 't' || slug === 'test') return true;
 
-  // 3. Kiểm tra tiêu đề test sinh ra trong lúc thử nghiệm
+  // 3. Kiểm tra tiêu đề test cũ sinh ra trong lúc thử nghiệm
   if (title === 'Test' || title === 'Bản thảo nghiên cứu Di chúc Bác Hồ') return true;
-  if (title === 'Tác phẩm: Nhật ký trong tù' && (slug === 't' || id.startsWith('art-179493') || art.status === 'pending')) return true;
   if (title === 'Lời kêu gọi toàn quốc kháng chiến năm 1946' && art.status === 'rejected') return true;
 
   // 4. Kiểm tra tóm tắt chứa văn bản rác test
   if (summary.includes('ásdadsdasdads')) return true;
 
-  // 5. Kiểm tra danh sách đã xóa cục bộ
+  // 5. Kiểm tra danh sách ID đã xóa cục bộ (chỉ đối chiếu theo ID duy nhất, không chặn trùng slug bài mới)
   const deletedIds = getDeletedArticleIds();
   if (id && deletedIds.has(id)) return true;
-  if (slug && deletedIds.has(slug)) return true;
 
   return false;
 }
