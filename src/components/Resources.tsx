@@ -120,12 +120,12 @@ export const Resources: React.FC = () => {
   ];
 
   const allCombinedResources = useMemo(() => {
-    // Loại bỏ hoàn toàn các mục mẫu res-1, res-2, res-5, res-6, res-7 và audio-* sinh ra trong lúc làm giao diện
+    // Loại bỏ hoàn toàn toàn bộ các mục mẫu res-1..res-8 và audio-* sinh ra trong lúc làm giao diện
     const filteredStatic = resourcesData.filter(
-      (r) => !MOCK_EXCLUDED_RESOURCE_IDS.has(r.id) && !r.id.startsWith('audio-') && r.category !== 'audio'
+      (r) => !MOCK_EXCLUDED_RESOURCE_IDS.has(r.id) && !r.id.startsWith('audio-')
     );
     const filteredLive = liveResources.filter(
-      (r) => !MOCK_EXCLUDED_RESOURCE_IDS.has(r.id) && !r.id.startsWith('audio-') && r.category !== 'audio'
+      (r) => !MOCK_EXCLUDED_RESOURCE_IDS.has(r.id) && !r.id.startsWith('audio-')
     );
 
     return [...filteredLive, ...filteredStatic];

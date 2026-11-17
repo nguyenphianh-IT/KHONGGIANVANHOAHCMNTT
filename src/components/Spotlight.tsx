@@ -56,7 +56,7 @@ export const Spotlight: React.FC = () => {
       const mappedCms = cmsPublished.map(mapArticleToResource);
       // Kết hợp bài từ CMS (ưu tiên hiển thị) và kho dữ liệu nền tảng, loại trừ bài mẫu
       const combined = [...mappedCms, ...resourcesData].filter(
-        (r) => !MOCK_EXCLUDED_RESOURCE_IDS.has(r.id) && !r.id.startsWith('audio-') && r.category !== 'audio'
+        (r) => !MOCK_EXCLUDED_RESOURCE_IDS.has(r.id) && !r.id.startsWith('audio-')
       );
       // Khử trùng lặp theo id hoặc title
       const uniqueMap = new Map<string, ResourceItem>();
@@ -146,7 +146,7 @@ export const Spotlight: React.FC = () => {
       if (viewsB !== viewsA) return viewsB - viewsA;
 
       // Tiêu chí phụ khi lượt đọc bằng nhau (ví dụ mới khởi tạo): Giữ thứ tự ưu tiên di sản
-      const orderPriority = ['art-003', 'res-3', 'art-002'];
+      const orderPriority = ['art-003', 'art-002'];
       const idxA = orderPriority.indexOf(a.id);
       const idxB = orderPriority.indexOf(b.id);
       if (idxA !== -1 && idxB !== -1) return idxA - idxB;
