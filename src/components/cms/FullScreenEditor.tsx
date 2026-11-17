@@ -121,8 +121,8 @@ export const FullScreenEditor: React.FC<FullScreenEditorProps> = ({
     (initialArticle as any)?.pdf_attachment || (
       initialArticle?.category === 'book' ? {
         url: '/documents/di-chuc-chu-tich-ho-chi-minh.pdf',
-        fileName: 'di-chuc-chu-tich-ho-chi-minh.pdf',
-        fileSize: 7435,
+        fileName: 'Di Chuc 1969.pdf',
+        fileSize: 170588,
         totalPages: 6,
         allowDownload: true,
         readingMode: 'flipbook',
@@ -1050,8 +1050,8 @@ export const FullScreenEditor: React.FC<FullScreenEditorProps> = ({
                       onClick={() => {
                         setPdfAttachment({
                           url: '/documents/di-chuc-chu-tich-ho-chi-minh.pdf',
-                          fileName: 'di-chuc-chu-tich-ho-chi-minh.pdf',
-                          fileSize: 7435,
+                          fileName: 'Di Chuc 1969.pdf',
+                          fileSize: 170588,
                           totalPages: 6,
                           allowDownload: true,
                           readingMode: 'flipbook',

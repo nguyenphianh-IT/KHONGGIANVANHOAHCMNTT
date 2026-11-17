@@ -42,8 +42,8 @@ const mapArticleToResource = (art: ArticleData): ResourceItem => {
     audioDuration: art.audio_duration || (normCat === 'audio' ? '03:30' : undefined),
     pdfAttachment: art.pdf_attachment || (normCat === 'book' ? {
       url: '/documents/di-chuc-chu-tich-ho-chi-minh.pdf',
-      fileName: 'di-chuc-chu-tich-ho-chi-minh.pdf',
-      fileSize: 7435,
+      fileName: 'Di Chuc 1969.pdf',
+      fileSize: 170588,
       totalPages: 6,
       allowDownload: true,
       readingMode: 'flipbook',
