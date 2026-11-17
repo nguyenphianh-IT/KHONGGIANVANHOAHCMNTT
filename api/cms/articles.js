@@ -140,6 +140,15 @@ async function handleGetCmsArticles() {
       if (title === "Test" || title === "B\u1EA3n th\u1EA3o nghi\xEAn c\u1EE9u Di ch\xFAc B\xE1c H\u1ED3" || title === "L\u1EDDi k\xEAu g\u1ECDi to\xE0n qu\u1ED1c kh\xE1ng chi\u1EBFn n\u0103m 1946" && r.status === "rejected") {
         return false;
       }
+      if (title === "T\xE1c ph\u1EA9m: Nh\u1EADt k\xFD trong t\xF9" || r.data && (r.data.slug === "t" || r.data.slug === "test")) {
+        return false;
+      }
+      const rId = r.id || "";
+      const rItem = r.item_id || "";
+      const rLegacy = r.data && r.data.legacy_id || "";
+      if (rId.startsWith("art-179493") || rItem.startsWith("art-179493") || rLegacy.startsWith("art-179493")) {
+        return false;
+      }
       return true;
     });
     const seenItemIds = /* @__PURE__ */ new Set();

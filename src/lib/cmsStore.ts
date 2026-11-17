@@ -171,7 +171,7 @@ const DEFAULT_ARTICLES: ArticleData[] = [
     topic: 'Cuộc đời & Sự nghiệp Bác Hồ',
     featured_image: 'https://images.unsplash.com/photo-1544717305-2782549b5136?auto=format&fit=crop&w=800&q=80',
     references: 'Hồ Chí Minh Toàn tập, Tập 1, NXB Chính trị Quốc gia Sự thật; Bảo tàng Hồ Chí Minh',
-    status: 'draft',
+    status: 'published',
     author_id: 'usr-editor-a',
     author_name: 'Biên Tập Viên A (Thầy Lịch sử)',
     created_at: '2026-11-04 10:15',
@@ -187,7 +187,7 @@ const DEFAULT_ARTICLES: ArticleData[] = [
     topic: 'Bác Hồ với Tuổi trẻ & Thiếu nhi',
     featured_image: 'https://images.unsplash.com/photo-1497633762265-9d179a990aa6?auto=format&fit=crop&w=800&q=80',
     references: 'Bảo tàng Lịch sử Quốc gia; Hội đồng Đội Trung ương',
-    status: 'pending',
+    status: 'published',
     author_id: 'usr-editor-b',
     author_name: 'Biên Tập Viên B (Cô Ngữ văn)',
     created_at: '2026-11-04 11:20',
@@ -472,6 +472,68 @@ export function saveDeletedArticleId(id: string): void {
   }
 }
 
+// ------------------------------------------------------------------------------
+// DANH SÁCH BÀI TEST & BÀI CHÍNH THỨC ĐỂ BẢO VỆ TOÀN VẸN DỮ LIỆU
+// ------------------------------------------------------------------------------
+export const KNOWN_TEST_ARTICLE_IDS = new Set([
+  'art-1794931991567',
+  'art-1794934461061',
+  'art-1794909786816',
+  '6be75125-52eb-4678-b0ee-c94de607b24e',
+  'd0000000-0000-0000-0000-000000000004',
+  'd0000000-0000-0000-0000-000000000003',
+]);
+
+export const AUTHENTIC_ARTICLE_IDS = new Set([
+  'c0000000-0000-0000-0000-000000000005',
+  'art-1794908270719',
+  'art-1794907844769',
+  'art-1794906467860',
+  'art-1794882617978',
+  'art-001',
+  'art-002',
+  'art-003',
+  'art-004',
+  'art-005',
+  '01d1a3ea-76c4-4000-a000-7715af9c7895',
+  'c0000000-0000-0000-0000-000000000004',
+  'd0000000-0000-0000-0000-000000000002',
+  '0290781d-1cba-41e6-94fd-f877bd50e8b0',
+]);
+
+export function isTestOrDeletedArticle(art: Partial<ArticleData>): boolean {
+  if (!art) return false;
+  const id = art.id || '';
+  const slug = art.slug || '';
+  const title = (art.title || '').trim();
+  const summary = (art.summary || '').trim();
+
+  // Bài viết chính thức được bảo vệ tuyệt đối
+  if (id && AUTHENTIC_ARTICLE_IDS.has(id)) return false;
+
+  // 1. Kiểm tra ID test hoặc ID đã lưu vào danh sách xóa
+  if (id && KNOWN_TEST_ARTICLE_IDS.has(id)) return true;
+  if (id.startsWith('art-179493')) return true;
+
+  // 2. Kiểm tra slug test
+  if (slug === 't' || slug === 'test' || slug.startsWith('art-179493')) return true;
+
+  // 3. Kiểm tra tiêu đề test sinh ra trong lúc thử nghiệm
+  if (title === 'Test' || title === 'Bản thảo nghiên cứu Di chúc Bác Hồ') return true;
+  if (title === 'Tác phẩm: Nhật ký trong tù' && (slug === 't' || id.startsWith('art-179493') || art.status === 'pending')) return true;
+  if (title === 'Lời kêu gọi toàn quốc kháng chiến năm 1946' && art.status === 'rejected') return true;
+
+  // 4. Kiểm tra tóm tắt chứa văn bản rác test
+  if (summary.includes('ásdadsdasdads')) return true;
+
+  // 5. Kiểm tra danh sách đã xóa cục bộ
+  const deletedIds = getDeletedArticleIds();
+  if (id && deletedIds.has(id)) return true;
+  if (slug && deletedIds.has(slug)) return true;
+
+  return false;
+}
+
 export async function unpublishArticleInCloud(articleId: string): Promise<boolean> {
   const nowIso = new Date().toISOString();
   try {
@@ -590,20 +652,18 @@ export function getStoredArticles(): ArticleData[] {
       return updatedArt;
     });
 
+    // Lọc bỏ triệt để mọi bài viết sinh ra lúc test để trả lại không gian sạch sẽ 100%
+    const sanitizedArticles = cleanedArticles.filter((art) => !isTestOrDeletedArticle(art));
+    if (sanitizedArticles.length !== articles.length) {
+      modified = true;
+    }
+
     if (modified) {
-      localStorage.setItem(KEY_ARTICLES, JSON.stringify(cleanedArticles));
+      localStorage.setItem(KEY_ARTICLES, JSON.stringify(sanitizedArticles));
     }
-    const deletedIds = getDeletedArticleIds();
-    if (deletedIds.size > 0) {
-      return cleanedArticles.filter((art) => !art.id || (!deletedIds.has(art.id) && !deletedIds.has(art.slug)));
-    }
-    return cleanedArticles;
+    return sanitizedArticles;
   } catch {
-    const deletedIds = getDeletedArticleIds();
-    if (deletedIds.size > 0) {
-      return DEFAULT_ARTICLES.filter((art) => !art.id || (!deletedIds.has(art.id) && !deletedIds.has(art.slug)));
-    }
-    return DEFAULT_ARTICLES;
+    return DEFAULT_ARTICLES.filter((art) => !isTestOrDeletedArticle(art));
   }
 }
 
@@ -1136,8 +1196,7 @@ export async function fetchArticlesFromSupabase(): Promise<{
   }
 
   if (cloudArticles && cloudArticles.length > 0) {
-    const deletedIds = getDeletedArticleIds();
-    const validCloud = cloudArticles.filter((a) => !a.id || (!deletedIds.has(a.id) && !deletedIds.has(a.slug)));
+    const validCloud = cloudArticles.filter((a) => !isTestOrDeletedArticle(a));
 
     // Đồng bộ vào localStorage thiết bị hiện tại để bảo toàn hiển thị và truy cập nhanh
     const currentLocal = getStoredArticles();
@@ -1222,17 +1281,27 @@ export async function fetchArticlesFromSupabase(): Promise<{
       }
     }
 
-    // 2. Giữ lại các bản nháp hoặc bài viết cục bộ chưa kịp xuất hiện trên Cloud
+    // 2. Xử lý các bài viết có trong Local nhưng KHÔNG có trên Cloud:
+    // NGUYÊN TẮC: Cloud là Single Source of Truth cho các bài 'pending', 'published', 'rejected', 'archived'.
+    // Nếu một bài viết có trạng thái 'pending' hoặc 'published' nhưng máy chủ Cloud không còn trả về,
+    // điều đó đồng nghĩa bài viết đó đã bị xóa hoặc lọc bỏ khỏi hệ thống (ví dụ: các bài viết tạo ra lúc test).
+    // TUYỆT ĐỐI KHÔNG phục hồi chúng vào mergedMap!
+    // CHỈ giữ lại bản nháp thực sự ('draft') đang viết dở của tác giả nếu không phải bài test!
     for (const [key, la] of localMap.entries()) {
+      if (isTestOrDeletedArticle(la)) continue;
+
       const existsInMerged = mergedMap.has(key) ||
         (la.id && mergedMap.has(la.id)) ||
         (la.slug && mergedMap.has(la.slug));
+
       if (!existsInMerged) {
-        mergedMap.set(key, la);
+        if (la.status === 'draft') {
+          mergedMap.set(key, la);
+        }
       }
     }
 
-    const mergedList = Array.from(mergedMap.values());
+    const mergedList = Array.from(mergedMap.values()).filter((a) => !isTestOrDeletedArticle(a));
     saveStoredArticles(mergedList);
 
     // Tự động giải nén và đồng bộ tất cả hình ảnh media_assets kèm theo bài viết vào kho media của thiết bị

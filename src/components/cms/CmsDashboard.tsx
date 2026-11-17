@@ -580,12 +580,15 @@ export const CmsDashboard: React.FC<CmsDashboardProps> = ({ isOpen, onClose }) =
       return;
     }
 
-    const updatedList = articles.filter((a) => a.id !== article.id);
+    const updatedList = articles.filter((a) => (article.id ? a.id !== article.id : true) && (article.slug ? a.slug !== article.slug : true));
     setArticles(updatedList);
     saveStoredArticles(updatedList);
 
     if (article.id) {
       deleteArticleInCloud(article.id);
+    }
+    if (article.slug) {
+      deleteArticleInCloud(article.slug);
     }
 
     const newLog: AuditLogItem = {

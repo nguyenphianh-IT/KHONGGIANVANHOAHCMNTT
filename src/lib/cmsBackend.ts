@@ -118,6 +118,15 @@ export async function handleGetCmsArticles(): Promise<{
       if (title === 'Test' || title === 'Bản thảo nghiên cứu Di chúc Bác Hồ' || (title === 'Lời kêu gọi toàn quốc kháng chiến năm 1946' && r.status === 'rejected')) {
         return false;
       }
+      if (title === 'Tác phẩm: Nhật ký trong tù' || (r.data && (r.data.slug === 't' || r.data.slug === 'test'))) {
+        return false;
+      }
+      const rId = r.id || '';
+      const rItem = r.item_id || '';
+      const rLegacy = (r.data && r.data.legacy_id) || '';
+      if (rId.startsWith('art-179493') || rItem.startsWith('art-179493') || rLegacy.startsWith('art-179493')) {
+        return false;
+      }
       return true;
     });
 
