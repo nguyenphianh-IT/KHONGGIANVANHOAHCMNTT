@@ -5,7 +5,7 @@ import {
   Users, Landmark
 } from 'lucide-react';
 import { ResourceItem } from '../types';
-import { resourcesData } from '../data/resourcesData';
+import { resourcesData, MOCK_EXCLUDED_RESOURCE_IDS } from '../data/resourcesData';
 import {
   getPublishedArticles,
   EVENT_ARTICLES_CHANGED,
@@ -54,8 +54,10 @@ export const Spotlight: React.FC = () => {
     const loadResources = () => {
       const cmsPublished = getPublishedArticles();
       const mappedCms = cmsPublished.map(mapArticleToResource);
-      // Kết hợp bài từ CMS (ưu tiên hiển thị) và kho dữ liệu nền tảng
-      const combined = [...mappedCms, ...resourcesData];
+      // Kết hợp bài từ CMS (ưu tiên hiển thị) và kho dữ liệu nền tảng, loại trừ bài mẫu
+      const combined = [...mappedCms, ...resourcesData].filter(
+        (r) => !MOCK_EXCLUDED_RESOURCE_IDS.has(r.id) && !r.id.startsWith('audio-') && r.category !== 'audio'
+      );
       // Khử trùng lặp theo id hoặc title
       const uniqueMap = new Map<string, ResourceItem>();
       combined.forEach((item) => {
@@ -106,7 +108,6 @@ export const Spotlight: React.FC = () => {
     if (allResources.length === 0) return null;
     return (
       allResources.find((r) => r.id === 'art-004' || r.title.includes('Nguyễn Trung Trực')) ||
-      allResources.find((r) => r.id === 'res-1') ||
       allResources[0]
     );
   }, [allResources]);
@@ -145,7 +146,7 @@ export const Spotlight: React.FC = () => {
       if (viewsB !== viewsA) return viewsB - viewsA;
 
       // Tiêu chí phụ khi lượt đọc bằng nhau (ví dụ mới khởi tạo): Giữ thứ tự ưu tiên di sản
-      const orderPriority = ['res-1', 'art-003', 'res-3', 'art-002'];
+      const orderPriority = ['art-003', 'res-3', 'art-002'];
       const idxA = orderPriority.indexOf(a.id);
       const idxB = orderPriority.indexOf(b.id);
       if (idxA !== -1 && idxB !== -1) return idxA - idxB;

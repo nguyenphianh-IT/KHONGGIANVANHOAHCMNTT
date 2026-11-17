@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { resourcesData } from '../data/resourcesData';
+import { resourcesData, MOCK_EXCLUDED_RESOURCE_IDS } from '../data/resourcesData';
 import { ResourceCategory, ResourceItem } from '../types';
 import { ResourceModal } from './ResourceModal';
 import { BookFlipbookModal } from './BookFlipbookModal';
@@ -120,10 +120,15 @@ export const Resources: React.FC = () => {
   ];
 
   const allCombinedResources = useMemo(() => {
-    // Loại bỏ các mục mẫu res-2 và res-6 sinh ra trong quá trình làm giao diện
-    const filteredStatic = resourcesData.filter((r) => r.id !== 'res-2' && r.id !== 'res-6');
+    // Loại bỏ hoàn toàn các mục mẫu res-1, res-2, res-5, res-6, res-7 và audio-* sinh ra trong lúc làm giao diện
+    const filteredStatic = resourcesData.filter(
+      (r) => !MOCK_EXCLUDED_RESOURCE_IDS.has(r.id) && !r.id.startsWith('audio-') && r.category !== 'audio'
+    );
+    const filteredLive = liveResources.filter(
+      (r) => !MOCK_EXCLUDED_RESOURCE_IDS.has(r.id) && !r.id.startsWith('audio-') && r.category !== 'audio'
+    );
 
-    return [...liveResources, ...filteredStatic];
+    return [...filteredLive, ...filteredStatic];
   }, [liveResources]);
 
   const filteredResources = useMemo(() => {
