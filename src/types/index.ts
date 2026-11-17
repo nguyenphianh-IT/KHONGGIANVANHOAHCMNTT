@@ -67,4 +67,5 @@ export interface SchoolActivity {
   participants: string;
   isSampleData: boolean;
   highlights: string[];
+  mediaAssets?: any[];
 }

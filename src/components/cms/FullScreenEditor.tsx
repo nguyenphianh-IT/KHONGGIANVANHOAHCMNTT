@@ -47,7 +47,11 @@ export const FullScreenEditor: React.FC<FullScreenEditorProps> = ({
   const [summary, setSummary] = useState(initialArticle?.summary || '');
   const [content, setContent] = useState(initialArticle?.content || '');
   const [category, setCategory] = useState<string>(
-    initialArticle?.category ? normalizeCategoryToHomepage(initialArticle.category) : 'article'
+    initialArticle?.category
+      ? (initialArticle.category === 'activity' || initialArticle.category === 'CAT-04-NHATRUONG'
+          ? 'activity'
+          : normalizeCategoryToHomepage(initialArticle.category))
+      : 'article'
   );
   const [topic, setTopic] = useState<string>(
     initialArticle?.topic || THEMATIC_TOPICS[0].name

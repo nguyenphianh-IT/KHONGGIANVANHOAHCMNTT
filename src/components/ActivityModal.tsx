@@ -89,7 +89,7 @@ export const ActivityModal: React.FC<ActivityModalProps> = ({ activity, onClose 
             </h4>
             {activity.fullDetail && (activity.fullDetail.includes('![') || activity.fullDetail.includes('media://')) ? (
               <div className="bg-heritage-ivory-50 p-4 sm:p-5 rounded-xl border border-heritage-ivory-200">
-                <ContentRenderer content={activity.fullDetail} />
+                <ContentRenderer content={activity.fullDetail} mediaAssets={activity.mediaAssets} />
               </div>
             ) : (
               <p className="text-sm sm:text-base text-heritage-ink-800 leading-relaxed bg-heritage-ivory-50 p-4 sm:p-5 rounded-xl border border-heritage-ivory-200 whitespace-pre-line">

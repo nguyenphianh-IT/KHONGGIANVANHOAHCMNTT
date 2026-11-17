@@ -13,7 +13,8 @@ import {
   normalizeCategoryToHomepage,
   getCategoryLabel,
   resolveMediaUrl,
-  fetchArticlesFromSupabase
+  fetchArticlesFromSupabase,
+  isActivityArticle
 } from '../lib/cmsStore';
 import {
   getAllViewCounts,
@@ -55,7 +56,9 @@ export const Resources: React.FC = () => {
     // 1. Tải các bài viết đã duyệt 4 mắt & xuất bản từ CMS Store (Đồng bộ thời gian thực)
     const loadPublishedResources = () => {
       const cmsPublished = getPublishedArticles();
-      const mapped = cmsPublished.map(mapArticleToResource);
+      // Phân loại: CHỈ hiển thị bài viết thuộc Kho Tư Liệu Số Hóa, LOẠI BỎ bài thuộc chuyên mục Hoạt động & Phong trào
+      const resourceArticles = cmsPublished.filter((art) => !isActivityArticle(art));
+      const mapped = resourceArticles.map(mapArticleToResource);
       setLiveResources(mapped);
     };
 

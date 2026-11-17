@@ -121,6 +121,15 @@ export function normalizeCategoryToHomepage(catId: string): 'article' | 'book' |
   return 'article';
 }
 
+/**
+ * Kiểm tra xem bài viết có thuộc chuyên mục "Hoạt động & Phong trào" hay không
+ * Phục vụ phân loại: Hiển thị bài viết Hoạt động ở mục riêng "Hoạt Động Văn Hóa & Giáo Dục Truyền Thống"
+ */
+export function isActivityArticle(article: { category?: string } | null | undefined): boolean {
+  if (!article || !article.category) return false;
+  return article.category === 'activity' || article.category === 'CAT-04-NHATRUONG';
+}
+
 export interface MediaAsset {
   id: string;
   name: string;

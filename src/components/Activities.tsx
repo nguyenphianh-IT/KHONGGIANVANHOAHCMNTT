@@ -3,7 +3,14 @@ import { activitiesData } from '../data/activitiesData';
 import { SchoolActivity } from '../types';
 import { ActivityModal } from './ActivityModal';
 import { Calendar, Users, ChevronRight, ChevronLeft, Award, AlertCircle, Sparkles } from 'lucide-react';
-import { getPublishedArticles, EVENT_ARTICLES_CHANGED, ArticleData, resolveMediaUrl } from '../lib/cmsStore';
+import { 
+  getPublishedArticles, 
+  EVENT_ARTICLES_CHANGED, 
+  ArticleData, 
+  resolveMediaUrl, 
+  isActivityArticle,
+  fetchArticlesFromSupabase 
+} from '../lib/cmsStore';
 
 const mapArticleToActivity = (art: ArticleData): SchoolActivity => {
   return {
@@ -21,7 +28,8 @@ const mapArticleToActivity = (art: ArticleData): SchoolActivity => {
       'Tin bài hoạt động chính thức từ Không gian văn hóa Hồ Chí Minh',
       'Đã qua quy trình thẩm định 4 mắt của Ban Giám Hiệu nhà trường',
       art.references ? `Xuất xứ tư liệu: ${art.references}` : 'Hoạt động phong trào giáo dục truyền thống học đường'
-    ]
+    ],
+    mediaAssets: art.media_assets,
   };
 };
 
@@ -32,21 +40,8 @@ export const Activities: React.FC = () => {
   useEffect(() => {
     const loadActivities = () => {
       const cmsPublished = getPublishedArticles();
-      // Tự động nhận diện các bài viết thuộc chuyên mục Hoạt động phong trào hoặc chủ đề trường học
-      const activityArticles = cmsPublished.filter(
-        (art) =>
-          art.category === 'activity' ||
-          art.topic === 'Hoạt động phong trào nhà trường' ||
-          art.topic === 'Hoạt động & Phong trào học đường' ||
-          art.topic === 'Trường THCS Nguyễn Trung Trực Làm theo Bác' ||
-          art.topic?.toLowerCase().includes('hoạt động') ||
-          art.topic?.toLowerCase().includes('phong trào') ||
-          art.title?.toLowerCase().includes('hội thi') ||
-          art.title?.toLowerCase().includes('hành trình') ||
-          art.title?.toLowerCase().includes('kết nạp') ||
-          art.title?.toLowerCase().includes('ra mắt') ||
-          art.title?.toLowerCase().includes('phong trào')
-      );
+      // Phân loại chuẩn: CHỈ hiển thị các bài viết thuộc chuyên mục Hoạt động & Phong trào
+      const activityArticles = cmsPublished.filter((art) => isActivityArticle(art));
 
       const mappedFromCms = activityArticles.map(mapArticleToActivity);
       // Đưa các bài viết thực tế vừa đăng lên đầu danh sách
@@ -54,6 +49,14 @@ export const Activities: React.FC = () => {
     };
 
     loadActivities();
+
+    // Tự động đồng bộ các bài viết từ Cloud Database
+    fetchArticlesFromSupabase()
+      .then(() => {
+        loadActivities();
+      })
+      .catch(() => {});
+
     window.addEventListener(EVENT_ARTICLES_CHANGED, loadActivities);
     window.addEventListener('storage', loadActivities);
 
