@@ -1125,14 +1125,16 @@ export async function fetchArticlesFromSupabase(): Promise<{
 
     const parseTime = (t?: string): number => {
       if (!t) return 0;
-      if (t === 'Vừa xong' || t === 'Vừa duyệt' || t === 'Vừa lưu' || t === 'Mới cập nhật') return Date.now();
+      if (t === 'Vừa xong' || t === 'Vừa duyệt' || t === 'Vừa lưu' || t === 'Mới cập nhật' || t === 'Yêu cầu sửa' || t === 'Đã gỡ bài') {
+        return 0; // Chuỗi placeholder cục bộ không được xem là mới hơn timestamp ISO thực từ Cloud
+      }
       const n = new Date(t).getTime();
       return isNaN(n) ? 0 : n;
     };
 
     const mergedMap = new Map<string, ArticleData>();
 
-    // 1. Phân giải thông minh giữa Cloud và Local (chống tình trạng bài vừa duyệt bị revert về pending)
+    // 1. Phân giải thông minh giữa Cloud và Local
     for (const ca of validCloud) {
       const key = ca.id || ca.slug;
       const la = localMap.get(key) ||
@@ -1148,8 +1150,15 @@ export async function fetchArticlesFromSupabase(): Promise<{
       const laTime = parseTime(la.updated_at || la.created_at);
       const caTime = parseTime(ca.updated_at || ca.created_at);
 
-      // Quy tắc bảo vệ 1: Trạng thái 'published' cục bộ có giá trị ưu tiên tuyệt đối trước 'pending' / 'draft'
-      if (la.status === 'published' && ca.status !== 'published') {
+      // QUY TẮC VÀNG 1: Nếu Cloud đã duyệt và xuất bản ('published'), Cloud LUÔN CHIẾN THẮNG trước trạng thái 'pending'/'draft' của tác giả!
+      // (Bảo đảm bài viết đã duyệt trên mọi thiết bị lập tức rời khỏi Hàng Đợi Chờ Duyệt)
+      if (ca.status === 'published') {
+        mergedMap.set(key, ca);
+        continue;
+      }
+
+      // QUY TẮC VÀNG 2: Nếu Local vừa được duyệt ('published') cục bộ bởi Ban Giám Hiệu, giữ 'published' và đồng bộ lên Cloud
+      if (la.status === 'published') {
         const isRecentLocalApproval = Date.now() - laTime < 3600000 || laTime >= caTime;
         if (isRecentLocalApproval) {
           mergedMap.set(key, { ...ca, status: 'published', updated_at: la.updated_at });
@@ -1159,7 +1168,7 @@ export async function fetchArticlesFromSupabase(): Promise<{
         }
       }
 
-      // Quy tắc bảo vệ 2: Trạng thái 'pending' cục bộ (vừa nộp duyệt) ưu tiên trước 'draft' của Cloud
+      // QUY TẮC VÀNG 3: Nếu Local vừa nộp duyệt ('pending') gần đây, bảo vệ không để Cloud 'draft' ghi đè
       if (la.status === 'pending' && ca.status === 'draft') {
         const isRecentSubmission = Date.now() - laTime < 3600000 || laTime >= caTime;
         if (isRecentSubmission) {

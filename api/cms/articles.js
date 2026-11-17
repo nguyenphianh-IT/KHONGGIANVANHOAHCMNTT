@@ -145,7 +145,7 @@ async function handleGetCmsArticles() {
       if (seenItemIds.has(itemId)) continue;
       seenItemIds.add(itemId);
       const rData = rev.data || {};
-      const articleId = rData.legacy_id || itemId;
+      const articleId = rData.legacy_id && rData.legacy_id.startsWith("art-") ? rData.legacy_id : itemId;
       const slug = rData.slug || itemSlugMap.get(itemId) || generateSlug(rev.title);
       mappedArticles.push({
         id: articleId,
@@ -187,9 +187,15 @@ async function handleSaveCmsArticle(article) {
   const db = getSupabaseAdmin() || supabase;
   try {
     const rawId = article.id || `art-${Date.now()}`;
-    const itemId = toValidUuid(rawId);
+    let itemId = toValidUuid(rawId);
     const safeSlug = article.slug || generateSlug(article.title);
     const nowIso = (/* @__PURE__ */ new Date()).toISOString();
+    if (article.slug) {
+      const { data: itemBySlug } = await db.from("content_items").select("id").eq("slug", article.slug).limit(1);
+      if (itemBySlug && itemBySlug.length > 0 && itemBySlug[0].id) {
+        itemId = itemBySlug[0].id;
+      }
+    }
     const itemPayload = {
       id: itemId,
       content_type: "post",

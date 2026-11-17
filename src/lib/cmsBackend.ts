@@ -126,7 +126,8 @@ export async function handleGetCmsArticles(): Promise<{
       seenItemIds.add(itemId);
 
       const rData = (rev.data || {}) as Record<string, any>;
-      const articleId = rData.legacy_id || itemId;
+      // Đảm bảo articleId là duy nhất cho mỗi bài viết: ưu tiên itemId trừ khi legacy_id bắt đầu bằng 'art-'
+      const articleId = (rData.legacy_id && rData.legacy_id.startsWith('art-')) ? rData.legacy_id : itemId;
       const slug = rData.slug || itemSlugMap.get(itemId) || generateSlug(rev.title);
 
       mappedArticles.push({
@@ -181,9 +182,21 @@ export async function handleSaveCmsArticle(article: ArticleData): Promise<{
 
   try {
     const rawId = article.id || `art-${Date.now()}`;
-    const itemId = toValidUuid(rawId);
+    let itemId = toValidUuid(rawId);
     const safeSlug = article.slug || generateSlug(article.title);
     const nowIso = new Date().toISOString();
+
+    // Tra cứu xem slug này đã tồn tại trong content_items chưa để cập nhật đúng item
+    if (article.slug) {
+      const { data: itemBySlug } = await db
+        .from('content_items')
+        .select('id')
+        .eq('slug', article.slug)
+        .limit(1);
+      if (itemBySlug && itemBySlug.length > 0 && itemBySlug[0].id) {
+        itemId = itemBySlug[0].id;
+      }
+    }
 
     // 1. Ensure content_items row exists
     const itemPayload: Record<string, any> = {
