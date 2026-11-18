@@ -307,9 +307,12 @@ export const Spotlight: React.FC = () => {
                   </p>
 
                   <div className="flex items-center justify-between gap-2 pt-4 border-t border-heritage-gold-200/60 flex-wrap">
-                    <span className="text-xs font-semibold text-heritage-red-800 flex items-center space-x-1.5">
+                    <span
+                      className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-heritage-gold-50 border border-heritage-gold-300/80 text-heritage-gold-700 shadow-xs"
+                      title="Đã thẩm định nội dung chính thống"
+                      aria-label="Đã thẩm định nội dung chính thống"
+                    >
                       <ShieldCheck className="w-4 h-4 text-heritage-gold-600" />
-                      <span>Đã thẩm định 4 mắt • Ban Giám Hiệu</span>
                     </span>
 
                     {featuredHero.pdfAttachment ? (

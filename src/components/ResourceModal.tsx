@@ -253,9 +253,12 @@ export const ResourceModal: React.FC<ResourceModalProps> = ({ item, onClose }) =
                     <Calendar className="w-4 h-4 text-heritage-gold-600 flex-shrink-0" />
                     <span>{item.dateOrEra}</span>
                   </div>
-                  <div className="flex items-center space-x-1 text-emerald-700 font-semibold bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200">
-                    <ShieldCheck className="w-3.5 h-3.5" />
-                    <span>Thẩm định 4 Mắt</span>
+                  <div
+                    className="inline-flex items-center justify-center text-emerald-700 bg-emerald-50 p-1.5 rounded-full border border-emerald-200"
+                    title="Đã thẩm định nội dung chính thống"
+                    aria-label="Đã thẩm định nội dung chính thống"
+                  >
+                    <ShieldCheck className="w-4 h-4" />
                   </div>
                 </div>
               </div>
