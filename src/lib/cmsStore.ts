@@ -5,6 +5,7 @@
 // ==============================================================================
 
 import { supabase, isSupabaseConfigured } from './supabase';
+import { uploadImageDataUrlToCloud } from './imageUploader';
 import type { PdfAttachment } from '../types';
 
 export interface ArticleData {
@@ -28,6 +29,8 @@ export interface ArticleData {
   author_name?: string;
   created_at?: string;
   updated_at?: string;
+  cloud_sync_pending?: boolean;
+  cloud_sync_error?: string;
 }
 
 export interface CmsCategory {
@@ -450,6 +453,36 @@ const KEY_ARTICLES = 'hcm_cultural_articles_v4';
 const KEY_MEDIA = 'hcm_cultural_media_v4';
 const KEY_AUDIT = 'hcm_cultural_audit_v4';
 const KEY_DELETED_ARTICLES = 'hcm_cultural_deleted_articles_v4';
+const KEY_KNOWN_CLOUD_IDS = 'hcm_cultural_known_cloud_ids_v1';
+
+export function getKnownCloudArticleIds(): Set<string> {
+  try {
+    const raw = localStorage.getItem(KEY_KNOWN_CLOUD_IDS);
+    if (!raw) return new Set();
+    const arr = JSON.parse(raw);
+    return new Set(Array.isArray(arr) ? arr : []);
+  } catch {
+    return new Set();
+  }
+}
+
+export function markKnownCloudArticleIds(ids: Array<string | undefined>): void {
+  try {
+    const set = getKnownCloudArticleIds();
+    let changed = false;
+    for (const id of ids) {
+      if (id && !set.has(id)) {
+        set.add(id);
+        changed = true;
+      }
+    }
+    if (changed) {
+      localStorage.setItem(KEY_KNOWN_CLOUD_IDS, JSON.stringify(Array.from(set)));
+    }
+  } catch {
+    // ignore quota error
+  }
+}
 
 export function getDeletedArticleIds(): Set<string> {
   try {
@@ -931,10 +964,10 @@ export function extractMediaAssetsForArticle(article: ArticleData): MediaAsset[]
   const assets: MediaAsset[] = [];
   const assetMap = new Map<string, MediaAsset>();
 
-  // Kiểm tra danh sách đã đính kèm sẵn
+  // Kiểm tra danh sách đã đính kèm sẵn (chỉ lấy asset còn URL hợp lệ)
   if (Array.isArray(article.media_assets)) {
     for (const a of article.media_assets) {
-      if (a && a.id) assetMap.set(a.id, a);
+      if (a && a.id && a.url) assetMap.set(a.id, a);
     }
   }
 
@@ -1115,65 +1148,284 @@ export async function deleteMediaFromCloud(id: string): Promise<boolean> {
 
 // ------------------------------------------------------------------------------
 // ĐỒNG BỘ BÀI VIẾT TỪ SUPABASE CLOUD DATABASE (TOÀN DIỆN MỌI THIẾT BỊ)
+// Tự động chuyển đổi ảnh Base64 sang Supabase Storage CDN trước khi lưu để payload
+// chỉ còn vài KB (< 2 giây đồng bộ, không bao giờ quá tải hay timeout trên Vercel).
 // ------------------------------------------------------------------------------
+async function offloadArticleImagesToCdn(article: ArticleData): Promise<{
+  article: ArticleData;
+  assets: MediaAsset[];
+}> {
+  let workingContent = article.content || '';
+  if (
+    workingContent.includes('data:image/') ||
+    workingContent.includes('AAAA') ||
+    workingContent.includes('/9j/') ||
+    workingContent.includes('iVBORw')
+  ) {
+    const { cleanedText } = cleanBase64FromContent(workingContent, article.author_name);
+    workingContent = cleanedText;
+  }
+
+  const workingArticle: ArticleData = {
+    ...article,
+    content: workingContent,
+  };
+
+  const referencedAssets = extractMediaAssetsForArticle(workingArticle);
+  const uploadedUrlByDataUrl = new Map<string, string>();
+  const uploadedUrlByAssetId = new Map<string, string>();
+
+  // Gom toàn bộ ảnh Base64 (ảnh bìa + ảnh trong nội dung) để tải song song lên Supabase Storage CDN
+  const uploadTasks: Array<{ key: string; dataUrl: string; fileName: string; assetId?: string }> = [];
+  const seenDataUrls = new Set<string>();
+
+  for (const asset of referencedAssets) {
+    if (asset?.url && asset.url.startsWith('data:image/') && !seenDataUrls.has(asset.url)) {
+      seenDataUrls.add(asset.url);
+      uploadTasks.push({
+        key: asset.id,
+        dataUrl: asset.url,
+        fileName: asset.name || `${asset.id}.jpg`,
+        assetId: asset.id,
+      });
+    }
+  }
+
+  const featImg = workingArticle.featured_image || '';
+  if (featImg.startsWith('data:image/') && !seenDataUrls.has(featImg)) {
+    seenDataUrls.add(featImg);
+    uploadTasks.push({
+      key: 'featured_image',
+      dataUrl: featImg,
+      fileName: `cover-${workingArticle.slug || workingArticle.id || Date.now()}.jpg`,
+    });
+  }
+
+  // Tải lên CDN theo lô 4 ảnh song song (tốc độ cao, tránh nghẽn kết nối)
+  if (uploadTasks.length > 0) {
+    const batchSize = 4;
+    for (let i = 0; i < uploadTasks.length; i += batchSize) {
+      const batch = uploadTasks.slice(i, i + batchSize);
+      const results = await Promise.all(
+        batch.map(async (task) => {
+          const res = await uploadImageDataUrlToCloud(task.dataUrl, task.fileName);
+          return { task, res };
+        })
+      );
+      for (const { task, res } of results) {
+        if (res.success && res.publicUrl) {
+          uploadedUrlByDataUrl.set(task.dataUrl, res.publicUrl);
+          if (task.assetId) {
+            uploadedUrlByAssetId.set(task.assetId, res.publicUrl);
+          }
+        }
+      }
+    }
+  }
+
+  const upgradedAssets: MediaAsset[] = referencedAssets.map((asset) => {
+    if (!asset) return asset;
+    const cdnUrl =
+      uploadedUrlByAssetId.get(asset.id) ||
+      (asset.url ? uploadedUrlByDataUrl.get(asset.url) : undefined);
+    return cdnUrl ? { ...asset, url: cdnUrl } : asset;
+  });
+
+  let upgradedFeaturedImage = workingArticle.featured_image || '';
+  if (upgradedFeaturedImage.startsWith('data:image/')) {
+    const cdnCover = uploadedUrlByDataUrl.get(upgradedFeaturedImage);
+    if (cdnCover) {
+      upgradedFeaturedImage = cdnCover;
+    }
+  }
+
+  // Cập nhật kho media cục bộ sang đường dẫn CDN nhẹ nếu có ảnh vừa được nâng cấp
+  if (uploadedUrlByDataUrl.size > 0) {
+    try {
+      const currentMedia = getStoredMedia();
+      let changed = false;
+      const updatedMedia = currentMedia.map((m) => {
+        const cdnUrl =
+          uploadedUrlByAssetId.get(m.id) ||
+          (m.url ? uploadedUrlByDataUrl.get(m.url) : undefined);
+        if (cdnUrl && cdnUrl !== m.url) {
+          changed = true;
+          return { ...m, url: cdnUrl };
+        }
+        return m;
+      });
+      if (changed) {
+        saveStoredMedia(updatedMedia);
+      }
+    } catch {}
+  }
+
+  const { cloud_sync_pending: _p, cloud_sync_error: _e, ...cleanFields } = workingArticle;
+
+  const finalArticle: ArticleData = {
+    ...cleanFields,
+    featured_image: upgradedFeaturedImage,
+    media_assets: upgradedAssets,
+  };
+
+  return { article: finalArticle, assets: upgradedAssets };
+}
+
 export async function saveArticleToCloud(article: ArticleData): Promise<{
   success: boolean;
   article?: ArticleData;
   error?: string;
 }> {
-  // Trích xuất và đính kèm mọi MediaAsset liên quan để đồng bộ đa thiết bị
-  const referencedAssets = extractMediaAssetsForArticle(article);
-
-  // Bảo toàn nguyên vẹn tệp PDF do người dùng tải lên, không tự ý thay thế bằng tệp khác
-  const payloadArticle: ArticleData = {
-    ...article,
-    media_assets: referencedAssets,
-  };
-
-  // Đồng thời đồng bộ các asset này lên kho media trung tâm ở chế độ nền
-  if (referencedAssets.length > 0) {
-    saveMediaBatchToCloud(referencedAssets).catch((e) => console.warn('[syncMediaAssets background error]', e));
-  }
-
   // Đánh dấu đang tải bài lên Cloud để ngăn đồng bộ nền ghi đè mất bài
   const trackKey = article.id || article.slug;
   if (trackKey) inflightSaveArticleIds.add(trackKey);
 
-  // 1. Kênh 1: Gọi Serverless API chuyên dụng (/api/cms/articles) với timeout an toàn
   try {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 25000);
+    // 1. Nâng cấp tự động mọi ảnh Base64 -> Supabase Storage CDN URL gọn nhẹ (~90 bytes/ảnh)
+    const { article: cdnArticle, assets: upgradedAssets } = await offloadArticleImagesToCdn(article);
 
-    const res = await fetch('/api/cms/articles', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ article: payloadArticle }),
-      signal: controller.signal,
-    });
-    clearTimeout(timeoutId);
-
-    if (res.ok) {
-      const json = await res.json();
-      if (json.success && json.article) {
-        return { success: true, article: json.article };
+    // 2. Bảo vệ kích thước JSON gửi lên /api/cms/articles (tránh hoàn toàn timeout/413 nếu CDN tạm gián đoạn)
+    let payloadArticle: ArticleData = cdnArticle;
+    let bodyStr = JSON.stringify({ article: payloadArticle });
+    if (bodyStr.length > 350000 && Array.isArray(payloadArticle.media_assets)) {
+      const heavyAssets = payloadArticle.media_assets.filter(
+        (m) => m?.url && m.url.startsWith('data:') && m.url.length > 15000
+      );
+      if (heavyAssets.length > 0) {
+        // Đẩy riêng từng ảnh nặng lên kho media để bài viết vẫn gửi lên Cloud tức thì
+        for (const ha of heavyAssets) {
+          saveMediaToCloud(ha).catch(() => {});
+        }
+        payloadArticle = {
+          ...payloadArticle,
+          media_assets: payloadArticle.media_assets.filter(
+            (m) => !(m?.url && m.url.startsWith('data:') && m.url.length > 15000)
+          ),
+        };
+        bodyStr = JSON.stringify({ article: payloadArticle });
       }
-      return { success: false, error: json.error || 'Máy chủ Cloud phản hồi không thành công.' };
-    } else {
-      let errDetail = `Lỗi máy chủ (HTTP ${res.status})`;
-      try {
-        const errJson = await res.json();
-        if (errJson?.error) errDetail = errJson.error;
-      } catch {}
-      console.warn('[saveArticleToCloud API error]', errDetail);
-      return { success: false, error: errDetail };
     }
-  } catch (apiErr: any) {
-    const msg = apiErr?.name === 'AbortError' ? 'Hết thời gian chờ phản hồi từ Cloud (Timeout 25s)' : (apiErr?.message || 'Lỗi kết nối mạng đến Cloud Database');
-    console.warn('[saveArticleToCloud API exception]', msg);
-    return { success: false, error: msg };
+
+    // 3. Gửi lên Serverless API (/api/cms/articles) với cơ chế tự động thử lại 1 lần nếu nghẽn mạng
+    let lastError = 'Lỗi kết nối mạng đến Cloud Database';
+    for (let attempt = 0; attempt < 2; attempt++) {
+      try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 35000);
+
+        const res = await fetch('/api/cms/articles', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: bodyStr,
+          signal: controller.signal,
+        });
+        clearTimeout(timeoutId);
+
+        if (res.ok) {
+          const json = await res.json();
+          if (json.success && json.article) {
+            const savedArticle: ArticleData = {
+              ...payloadArticle,
+              ...json.article,
+              featured_image: payloadArticle.featured_image || json.article.featured_image,
+              media_assets: payloadArticle.media_assets || json.article.media_assets,
+              cloud_sync_pending: false,
+              cloud_sync_error: undefined,
+            };
+            markKnownCloudArticleIds([savedArticle.id, savedArticle.slug, article.id, article.slug]);
+
+            // Chỉ đồng bộ metadata ảnh CDN nhẹ lên kho media ở nền SAU KHI bài viết đã lưu xong
+            const lightweightCdnAssets = upgradedAssets.filter(
+              (a) => a?.url && !a.url.startsWith('data:')
+            );
+            if (lightweightCdnAssets.length > 0) {
+              saveMediaBatchToCloud(lightweightCdnAssets).catch(() => {});
+            }
+
+            return { success: true, article: savedArticle };
+          }
+          lastError = json.error || 'Máy chủ Cloud phản hồi không thành công.';
+          break;
+        } else {
+          let errDetail = `Lỗi máy chủ (HTTP ${res.status})`;
+          try {
+            const errJson = await res.json();
+            if (errJson?.error) errDetail = errJson.error;
+          } catch {}
+          lastError = errDetail;
+          if (res.status >= 400 && res.status < 500 && res.status !== 408 && res.status !== 429) {
+            break;
+          }
+        }
+      } catch (apiErr: any) {
+        lastError =
+          apiErr?.name === 'AbortError'
+            ? 'Hết thời gian chờ phản hồi từ Cloud (Timeout 35s)'
+            : apiErr?.message || 'Lỗi kết nối mạng đến Cloud Database';
+      }
+
+      if (attempt === 0) {
+        await new Promise((r) => setTimeout(r, 1200));
+      }
+    }
+
+    console.warn('[saveArticleToCloud API error]', lastError);
+    return { success: false, error: lastError };
   } finally {
     if (trackKey) inflightSaveArticleIds.delete(trackKey);
   }
+}
+
+/**
+ * Tự động đẩy lại toàn bộ các bài viết chờ duyệt / bản nháp cục bộ chưa đồng bộ được lên Cloud
+ */
+export async function retrySyncPendingArticlesToCloud(): Promise<{
+  attempted: number;
+  synced: number;
+  failed: number;
+}> {
+  const localArticles = getStoredArticles();
+  const knownCloudIds = getKnownCloudArticleIds();
+
+  const targets = localArticles.filter((a) => {
+    if (isTestOrDeletedArticle(a)) return false;
+    if (a.cloud_sync_pending) return true;
+    const isKnown = Boolean(
+      (a.id && knownCloudIds.has(a.id)) || (a.slug && knownCloudIds.has(a.slug))
+    );
+    return !isKnown && (a.status === 'pending' || a.status === 'rejected');
+  });
+
+  if (targets.length === 0) {
+    return { attempted: 0, synced: 0, failed: 0 };
+  }
+
+  let synced = 0;
+  let failed = 0;
+  let currentList = [...localArticles];
+
+  for (const target of targets) {
+    const res = await saveArticleToCloud(target);
+    if (res.success && res.article) {
+      synced++;
+      currentList = currentList.map((item) =>
+        (target.id && item.id === target.id) || (target.slug && item.slug === target.slug)
+          ? { ...res.article!, cloud_sync_pending: false, cloud_sync_error: undefined }
+          : item
+      );
+      saveStoredArticles(currentList);
+    } else {
+      failed++;
+      currentList = currentList.map((item) =>
+        (target.id && item.id === target.id) || (target.slug && item.slug === target.slug)
+          ? { ...item, cloud_sync_pending: true, cloud_sync_error: res.error || 'Chưa đồng bộ được' }
+          : item
+      );
+      saveStoredArticles(currentList);
+    }
+  }
+
+  return { attempted: targets.length, synced, failed };
 }
 
 export async function fetchArticlesFromSupabase(): Promise<{
@@ -1277,6 +1529,10 @@ async function _executeFetchArticlesFromSupabase(): Promise<{
 
   if (cloudArticles && cloudArticles.length > 0) {
     const validCloud = cloudArticles.filter((a) => !isTestOrDeletedArticle(a));
+    const knownCloudIdsBefore = getKnownCloudArticleIds();
+
+    // Ghi nhận tất cả bài đã hiện diện thực tế trên Cloud
+    markKnownCloudArticleIds(validCloud.flatMap((ca) => [ca.id, ca.slug]));
 
     // Đồng bộ vào localStorage thiết bị hiện tại để bảo toàn hiển thị và truy cập nhanh
     const currentLocal = getStoredArticles();
@@ -1292,6 +1548,7 @@ async function _executeFetchArticlesFromSupabase(): Promise<{
     };
 
     const mergedMap = new Map<string, ArticleData>();
+    const unsyncedLocalToPush: ArticleData[] = [];
 
     // 1. Phân giải thông minh giữa Cloud và Local
     for (const ca of validCloud) {
@@ -1302,7 +1559,7 @@ async function _executeFetchArticlesFromSupabase(): Promise<{
 
       if (!la) {
         // Chưa có bản cục bộ, chấp nhận bài Cloud trực tiếp
-        mergedMap.set(key, ca);
+        mergedMap.set(key, { ...ca, cloud_sync_pending: false, cloud_sync_error: undefined });
         continue;
       }
 
@@ -1320,28 +1577,32 @@ async function _executeFetchArticlesFromSupabase(): Promise<{
       }
 
       // QUY TẮC 2: So sánh timestamp thực tế chuẩn xác (TUYỆT ĐỐI không để cache 'published' cũ đè mất bài 'pending' mới sửa từ thiết bị khác!)
-      // - Nếu bản cục bộ mới hơn Cloud rõ rệt (> 1.5 giây): giữ bản cục bộ và đẩy đồng bộ lên Cloud
+      // - Nếu bản cục bộ mới hơn Cloud rõ rệt (> 1.5 giây): giữ bản cục bộ và tự động đẩy đồng bộ lên Cloud
       // - Ngược lại (Cloud mới hơn hoặc ngang bằng): CLOUD LUÔN CHIẾN THẮNG (bao gồm cả trường hợp GV vừa sửa bài 'published' -> 'pending' để đưa vào Hàng đợi 4 mắt)
       if (laTime > caTime + 1500) {
-        mergedMap.set(key, la);
-        saveArticleToCloud(la).catch(() => {});
+        const markedPendingSync: ArticleData = { ...la, cloud_sync_pending: true };
+        mergedMap.set(key, markedPendingSync);
+        unsyncedLocalToPush.push(markedPendingSync);
       } else {
         const mergedCloud: ArticleData = {
           ...ca,
           pdf_attachment: ca.pdf_attachment || la.pdf_attachment,
           quote_id: ca.quote_id !== undefined ? ca.quote_id : la.quote_id,
           custom_quote: ca.custom_quote || la.custom_quote,
+          cloud_sync_pending: false,
+          cloud_sync_error: undefined,
         };
         mergedMap.set(key, mergedCloud);
       }
     }
 
-    // 2. Xử lý các bài viết có trong Local nhưng KHÔNG có trên Cloud:
+    // 2. Xử lý các bài viết có trong Local nhưng CHƯA CÓ trên Cloud:
     // - Nếu chỉ tải được từ Kênh dự phòng Anon Key (!fetchedFromFullCmsApi), RLS chỉ trả về bài 'published',
     //   nên TUYỆT ĐỐI giữ nguyên các bài 'pending', 'draft', 'rejected' cục bộ!
     // - Nếu đã tải đầy đủ từ Full CMS API (fetchedFromFullCmsApi === true):
-    //   Giữ lại bản nháp ('draft'), bài đang trong tiến trình lưu lên Cloud (inflightSaveArticleIds),
-    //   hoặc bài 'pending' mới gửi trong vòng 60 giây gần nhất để không bao giờ chớp lên rồi biến mất.
+    //   + Nếu bài viết CHƯA TỪNG có trên Cloud (do lần nộp duyệt trước bị nghẽn mạng/timeout),
+    //     TUYỆT ĐỐI KHÔNG XÓA mà giữ lại + gắn cờ cloud_sync_pending và TỰ ĐỘNG ĐẨY LÊN CLOUD NGAY!
+    //   + Chỉ loại bỏ bài cục bộ nếu bài đó ĐÃ TỪNG ở trên Cloud trước đó và nay đã bị Admin xóa trên Cloud.
     for (const [key, la] of localMap.entries()) {
       if (isTestOrDeletedArticle(la)) continue;
 
@@ -1355,14 +1616,27 @@ async function _executeFetchArticlesFromSupabase(): Promise<{
             mergedMap.set(key, la);
           }
         } else {
-          const laTime = parseTime(la.updated_at || la.created_at);
-          const isInflightOrBrandNew =
+          const isInflight = Boolean(
             (la.id && inflightSaveArticleIds.has(la.id)) ||
-            (la.slug && inflightSaveArticleIds.has(la.slug)) ||
-            (la.status === 'pending' && laTime > 0 && Date.now() - laTime < 60000);
+            (la.slug && inflightSaveArticleIds.has(la.slug))
+          );
+          const wasEverOnCloud = Boolean(
+            (la.id && knownCloudIdsBefore.has(la.id)) ||
+            (la.slug && knownCloudIdsBefore.has(la.slug))
+          );
 
-          if (la.status === 'draft' || isInflightOrBrandNew) {
+          if (isInflight) {
             mergedMap.set(key, la);
+          } else if (la.status === 'draft') {
+            mergedMap.set(key, wasEverOnCloud ? la : { ...la, cloud_sync_pending: true });
+          } else if ((la.status === 'pending' || la.status === 'rejected') && (!wasEverOnCloud || la.cloud_sync_pending)) {
+            const pendingPush: ArticleData = {
+              ...la,
+              cloud_sync_pending: true,
+              cloud_sync_error: la.cloud_sync_error || 'Đang tự động đồng bộ bài viết lên Cloud cho Ban Giám Hiệu...',
+            };
+            mergedMap.set(key, pendingPush);
+            unsyncedLocalToPush.push(pendingPush);
           }
         }
       }
@@ -1370,6 +1644,24 @@ async function _executeFetchArticlesFromSupabase(): Promise<{
 
     const mergedList = Array.from(mergedMap.values()).filter((a) => !isTestOrDeletedArticle(a));
     saveStoredArticles(mergedList);
+
+    // 3. Tự động đẩy nền các bài cục bộ chưa lên được Cloud (tự nén & chuyển ảnh sang CDN để thành công 100%)
+    if (unsyncedLocalToPush.length > 0) {
+      (async () => {
+        for (const pendingArt of unsyncedLocalToPush) {
+          const res = await saveArticleToCloud(pendingArt);
+          if (res.success && res.article) {
+            const latest = getStoredArticles();
+            const updated = latest.map((item) =>
+              (pendingArt.id && item.id === pendingArt.id) || (pendingArt.slug && item.slug === pendingArt.slug)
+                ? { ...res.article!, cloud_sync_pending: false, cloud_sync_error: undefined }
+                : item
+            );
+            saveStoredArticles(updated);
+          }
+        }
+      })().catch(() => {});
+    }
 
     // Tự động giải nén và đồng bộ tất cả hình ảnh media_assets kèm theo bài viết vào kho media của thiết bị
     try {
@@ -1379,7 +1671,7 @@ async function _executeFetchArticlesFromSupabase(): Promise<{
       for (const ca of validCloud) {
         if (Array.isArray(ca.media_assets)) {
           for (const asset of ca.media_assets) {
-            if (asset && asset.id && !mediaMap.has(asset.id)) {
+            if (asset && asset.id && asset.url && !mediaMap.has(asset.id)) {
               mediaMap.set(asset.id, asset);
               mediaChanged = true;
             }

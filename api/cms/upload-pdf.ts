@@ -38,7 +38,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       });
     }
 
-    // 2. Xác định loại tệp: PDF hoặc Băng ghi âm (Audio)
+    // 2. Xác định loại tệp: Hình ảnh (Image), Băng ghi âm (Audio) hoặc Sách PDF
     const rawFileName = (req.query?.fileName as string) || (req.body?.fileName as string) || `tai-lieu-${Date.now()}.pdf`;
     
     // Chuẩn hóa tên file an toàn (giữ nguyên tên gốc nhưng loại bỏ dấu tiếng Việt và ký tự đặc biệt)
@@ -47,14 +47,22 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       .replace(/[\u0300-\u036f]/g, '')
       .replace(/[^a-zA-Z0-9._-]/g, '_');
 
-    const isAudio = Boolean(
+    const isImage = Boolean(
+      sanitizedFileName.match(/\.(jpg|jpeg|png|webp|gif)$/i) ||
+      req.query?.type === 'image' ||
+      req.body?.type === 'image'
+    );
+
+    const isAudio = !isImage && Boolean(
       sanitizedFileName.match(/\.(mp3|wav|m4a|ogg|aac)$/i) || 
       req.query?.type === 'audio' || 
       req.body?.type === 'audio'
     );
 
-    const uniquePrefix = Date.now().toString(36);
-    const filePath = isAudio
+    const uniquePrefix = `${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 6)}`;
+    const filePath = isImage
+      ? `images/${uniquePrefix}_${sanitizedFileName}`
+      : isAudio
       ? `audio/${uniquePrefix}_${sanitizedFileName}`
       : `uploads/${uniquePrefix}_${sanitizedFileName}`;
 
@@ -79,7 +87,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       signedUploadUrl: signedData.signedUrl,
       publicUrl: publicData.publicUrl,
       fileName: rawFileName,
-      isAudio
+      isAudio,
+      isImage
     });
   } catch (err: any) {
     console.error('[Upload API Exception]', err);

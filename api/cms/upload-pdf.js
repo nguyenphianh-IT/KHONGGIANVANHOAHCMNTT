@@ -54,11 +54,14 @@ async function handler(req, res) {
     }
     const rawFileName = req.query?.fileName || req.body?.fileName || `tai-lieu-${Date.now()}.pdf`;
     const sanitizedFileName = rawFileName.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-zA-Z0-9._-]/g, "_");
-    const isAudio = Boolean(
+    const isImage = Boolean(
+      sanitizedFileName.match(/\.(jpg|jpeg|png|webp|gif)$/i) || req.query?.type === "image" || req.body?.type === "image"
+    );
+    const isAudio = !isImage && Boolean(
       sanitizedFileName.match(/\.(mp3|wav|m4a|ogg|aac)$/i) || req.query?.type === "audio" || req.body?.type === "audio"
     );
-    const uniquePrefix = Date.now().toString(36);
-    const filePath = isAudio ? `audio/${uniquePrefix}_${sanitizedFileName}` : `uploads/${uniquePrefix}_${sanitizedFileName}`;
+    const uniquePrefix = `${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 6)}`;
+    const filePath = isImage ? `images/${uniquePrefix}_${sanitizedFileName}` : isAudio ? `audio/${uniquePrefix}_${sanitizedFileName}` : `uploads/${uniquePrefix}_${sanitizedFileName}`;
     const { data: signedData, error: signErr } = await admin.storage.from("documents").createSignedUploadUrl(filePath);
     if (signErr || !signedData?.signedUrl) {
       return res.status(500).json({
@@ -73,7 +76,8 @@ async function handler(req, res) {
       signedUploadUrl: signedData.signedUrl,
       publicUrl: publicData.publicUrl,
       fileName: rawFileName,
-      isAudio
+      isAudio,
+      isImage
     });
   } catch (err) {
     console.error("[Upload API Exception]", err);

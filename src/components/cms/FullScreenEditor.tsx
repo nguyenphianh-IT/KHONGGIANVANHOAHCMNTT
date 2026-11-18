@@ -20,6 +20,7 @@ import {
   ArticleData
 } from '../../lib/cmsStore';
 import { optimizeImageFile } from '../../lib/imageOptimizer';
+import { uploadImageDataUrlToCloud } from '../../lib/imageUploader';
 import { UNCLE_HO_QUOTES } from '../../data/quotesData';
 import { parsePdfFile, extractPdfCoverImage, loadPdfFromUrl } from '../../lib/pdfHelper';
 import { uploadPdfToCloud } from '../../lib/pdfUploader';
@@ -284,10 +285,13 @@ export const FullScreenEditor: React.FC<FullScreenEditorProps> = ({
               for (let j = 0; j < 64; j++) {
                 randomSha += hexChars[Math.floor(Math.random() * hexChars.length)];
               }
+              const fileName = `anh-tu-lieu-${new Date().toISOString().slice(0, 10)}.jpg`;
+              const cdnUpload = await uploadImageDataUrlToCloud(optimized.dataUrl, fileName);
+              const finalUrl = cdnUpload.success && cdnUpload.publicUrl ? cdnUpload.publicUrl : optimized.dataUrl;
               const newAsset: MediaAsset = {
                 id: `med-${Date.now()}`,
-                name: `anh-tu-lieu-${new Date().toISOString().slice(0, 10)}.jpg`,
-                url: optimized.dataUrl,
+                name: fileName,
+                url: finalUrl,
                 size_bytes: optimized.sizeBytes,
                 mime_type: 'image/jpeg',
                 sha256_hash: randomSha,

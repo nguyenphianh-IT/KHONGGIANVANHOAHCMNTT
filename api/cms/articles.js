@@ -217,7 +217,8 @@ async function handleSaveCmsArticle(article) {
     const rawId = article.id || `art-${Date.now()}`;
     let itemId = toValidUuid(rawId);
     const trimmedSlug = (article.slug || "").trim();
-    const safeSlug = trimmedSlug.length > 2 ? trimmedSlug : generateSlug(article.title);
+    const safeSlug = (trimmedSlug.length > 2 ? trimmedSlug : generateSlug(article.title)).slice(0, 200);
+    const safeTitle = (article.title || "B\xE0i vi\u1EBFt").trim().slice(0, 255);
     const nowIso = (/* @__PURE__ */ new Date()).toISOString();
     if (!article.id && safeSlug.length > 2) {
       const { data: itemBySlug } = await db.from("content_items").select("id, is_deleted").eq("slug", safeSlug).eq("is_deleted", false).limit(1);
@@ -236,7 +237,8 @@ async function handleSaveCmsArticle(article) {
     const { error: itemErr } = await db.from("content_items").upsert(itemPayload, { onConflict: "id" });
     if (itemErr) {
       if (itemErr.message?.includes("duplicate key") || itemErr.message?.includes("unique constraint") || itemErr.code === "23505") {
-        itemPayload.slug = `${safeSlug}-${Math.floor(Math.random() * 1e3)}`;
+        const suffix = `${Date.now().toString(36).slice(-4)}${Math.floor(Math.random() * 100)}`;
+        itemPayload.slug = `${safeSlug.slice(0, 185)}-${suffix}`;
         await db.from("content_items").upsert(itemPayload, { onConflict: "id" });
       } else {
         console.warn("[handleSaveCmsArticle itemUpsert Warning]", itemErr.message);
@@ -255,7 +257,7 @@ async function handleSaveCmsArticle(article) {
       id: revId,
       item_id: itemId,
       version_number: nextVersion,
-      title: article.title || existingRev?.title || "B\xE0i vi\u1EBFt",
+      title: safeTitle || existingRev?.title || "B\xE0i vi\u1EBFt",
       summary: safeSummary,
       status: article.status || existingRev?.status || "draft",
       author_id: SYSTEM_AUTHOR_ID,

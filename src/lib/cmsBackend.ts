@@ -224,7 +224,8 @@ export async function handleSaveCmsArticle(article: ArticleData): Promise<{
     const rawId = article.id || `art-${Date.now()}`;
     let itemId = toValidUuid(rawId);
     const trimmedSlug = (article.slug || '').trim();
-    const safeSlug = trimmedSlug.length > 2 ? trimmedSlug : generateSlug(article.title);
+    const safeSlug = (trimmedSlug.length > 2 ? trimmedSlug : generateSlug(article.title)).slice(0, 200);
+    const safeTitle = (article.title || 'Bài viết').trim().slice(0, 255);
     const nowIso = new Date().toISOString();
 
     // Chỉ tra cứu theo slug nếu bài viết KHÔNG có id (tránh trường hợp slug ngắn/trùng ghi đè bài khác)
@@ -257,7 +258,8 @@ export async function handleSaveCmsArticle(article: ArticleData): Promise<{
     if (itemErr) {
       // If slug collision on a different item, adjust slug
       if (itemErr.message?.includes('duplicate key') || itemErr.message?.includes('unique constraint') || itemErr.code === '23505') {
-        itemPayload.slug = `${safeSlug}-${Math.floor(Math.random() * 1000)}`;
+        const suffix = `${Date.now().toString(36).slice(-4)}${Math.floor(Math.random() * 100)}`;
+        itemPayload.slug = `${safeSlug.slice(0, 185)}-${suffix}`;
         await db.from('content_items').upsert(itemPayload, { onConflict: 'id' });
       } else {
         console.warn('[handleSaveCmsArticle itemUpsert Warning]', itemErr.message);
@@ -296,7 +298,7 @@ export async function handleSaveCmsArticle(article: ArticleData): Promise<{
       id: revId,
       item_id: itemId,
       version_number: nextVersion,
-      title: article.title || existingRev?.title || 'Bài viết',
+      title: safeTitle || existingRev?.title || 'Bài viết',
       summary: safeSummary,
       status: article.status || existingRev?.status || 'draft',
       author_id: SYSTEM_AUTHOR_ID,

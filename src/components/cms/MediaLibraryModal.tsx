@@ -11,6 +11,7 @@ import {
   deleteMediaFromCloud,
 } from '../../lib/cmsStore';
 import { optimizeImageFile } from '../../lib/imageOptimizer';
+import { uploadImageDataUrlToCloud } from '../../lib/imageUploader';
 
 interface MediaLibraryModalProps {
   isOpen: boolean;
@@ -75,20 +76,23 @@ export const MediaLibraryModal: React.FC<MediaLibraryModalProps> = ({
       return;
     }
 
-    // 2. Tự động nén và tối ưu hóa ảnh an toàn chống tràn bộ nhớ
+    // 2. Tự động nén và tải thẳng lên Cloud Storage CDN (payload cực nhẹ, đồng bộ tức thời mọi thiết bị)
     setIsUploading(true);
     optimizeImageFile(file)
-      .then((optimized) => {
+      .then(async (optimized) => {
         const hexChars = '0123456789ABCDEF';
         let randomSha = '';
         for (let i = 0; i < 64; i++) {
           randomSha += hexChars[Math.floor(Math.random() * hexChars.length)];
         }
 
+        const cdnUpload = await uploadImageDataUrlToCloud(optimized.dataUrl, file.name);
+        const finalUrl = cdnUpload.success && cdnUpload.publicUrl ? cdnUpload.publicUrl : optimized.dataUrl;
+
         const newAsset: MediaAsset = {
           id: `med-${Date.now()}`,
           name: file.name,
-          url: optimized.dataUrl,
+          url: finalUrl,
           size_bytes: optimized.sizeBytes,
           mime_type: 'image/jpeg',
           sha256_hash: randomSha,
@@ -103,7 +107,11 @@ export const MediaLibraryModal: React.FC<MediaLibraryModalProps> = ({
         // Đồng bộ tức thời lên Cloud Media Repository
         saveMediaToCloud(newAsset).catch((err) => console.warn('Lỗi lưu media lên cloud:', err));
         setIsUploading(false);
-        setUploadSuccess(`Tải lên thành công tệp ${file.name} (Đã nén tối ưu ${(optimized.sizeBytes / 1024).toFixed(1)} KB)!`);
+        setUploadSuccess(
+          cdnUpload.success
+            ? `Tải lên Cloud CDN thành công tệp ${file.name} (${(optimized.sizeBytes / 1024).toFixed(1)} KB)!`
+            : `Tải lên thành công tệp ${file.name} (Đã nén tối ưu ${(optimized.sizeBytes / 1024).toFixed(1)} KB)!`
+        );
       })
       .catch((err) => {
         setIsUploading(false);

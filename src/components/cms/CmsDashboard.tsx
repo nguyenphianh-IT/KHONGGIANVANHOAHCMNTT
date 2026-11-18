@@ -16,6 +16,7 @@ import { RagKnowledgeManager } from '../rag/RagKnowledgeManager';
 import { PasswordManager } from './PasswordManager';
 import { getStoredContestQuestions, getContestSubmissions, EVENT_CONTEST_DATA_CHANGED } from '../../data/contestData';
 import { optimizeImageFile } from '../../lib/imageOptimizer';
+import { uploadImageDataUrlToCloud } from '../../lib/imageUploader';
 import {
   ArticleData, MediaAsset, AuditLogItem,
   getStoredArticles, saveStoredArticles,
@@ -24,7 +25,7 @@ import {
   EVENT_ARTICLES_CHANGED, EVENT_MEDIA_CHANGED,
   CMS_CATEGORIES, getCategoryLabel, normalizeCategoryToHomepage,
   saveArticleToCloud, fetchArticlesFromSupabase, unpublishArticleInCloud, deleteArticleInCloud,
-  saveMediaBatchToCloud, fetchMediaFromCloud
+  saveMediaToCloud, fetchMediaFromCloud, retrySyncPendingArticlesToCloud
 } from '../../lib/cmsStore';
 import {
   getAllViewCounts,
@@ -128,13 +129,8 @@ export const CmsDashboard: React.FC<CmsDashboardProps> = ({ isOpen, onClose }) =
       }
     });
 
-    // 2. Kéo kho media Cloud và đẩy bất kỳ media cục bộ chưa đồng bộ lên Cloud
-    fetchMediaFromCloud().then(() => {
-      const localMedia = getStoredMedia();
-      if (localMedia.length > 0) {
-        saveMediaBatchToCloud(localMedia).catch(() => {});
-      }
-    }).catch(() => {});
+    // 2. Kéo kho media mới nhất từ Cloud (không đẩy lại toàn bộ media cũ 3MB gây nghẽn băng thông)
+    fetchMediaFromCloud().catch(() => {});
 
     return () => {
       isMounted = false;
@@ -158,23 +154,26 @@ export const CmsDashboard: React.FC<CmsDashboardProps> = ({ isOpen, onClose }) =
     }
   }, [isOpen, activeNav]);
 
-  // Thao tác đồng bộ thủ công từ Cloud Database
+  // Thao tác đồng bộ thủ công từ Cloud Database (tự đẩy các bài cục bộ chưa lên Cloud trước khi kéo mới nhất)
   const handleManualCloudSync = async () => {
     setIsSyncing(true);
     try {
+      const pushSummary = await retrySyncPendingArticlesToCloud();
       const res = await fetchArticlesFromSupabase();
       await fetchMediaFromCloud();
-      const localMedia = getStoredMedia();
-      if (localMedia.length > 0) {
-        await saveMediaBatchToCloud(localMedia);
-      }
 
       if (res.success && res.articles) {
         setArticles(res.articles);
-        setIsCloudSynced(true);
+        setIsCloudSynced(pushSummary.failed === 0);
+        const pushNote =
+          pushSummary.synced > 0
+            ? ` Đã tự động đẩy thành công ${pushSummary.synced} bài viết chờ duyệt lên Cloud!`
+            : pushSummary.failed > 0
+            ? ` Lưu ý: còn ${pushSummary.failed} bài chưa đẩy lên Cloud được, vui lòng bấm "Đẩy lên Cloud" tại dòng bài viết.`
+            : '';
         setToastMsg({
-          type: 'success',
-          text: `Đồng bộ Cloud thành công! Đã nạp ${res.articles.length} bài viết và toàn bộ kho media từ cơ sở dữ liệu mọi thiết bị.`,
+          type: pushSummary.failed > 0 ? 'error' : 'success',
+          text: `Đồng bộ Cloud hoàn tất (${res.articles.length} bài viết).${pushNote}`,
         });
       } else {
         setToastMsg({
@@ -189,6 +188,56 @@ export const CmsDashboard: React.FC<CmsDashboardProps> = ({ isOpen, onClose }) =
       });
     } finally {
       setIsSyncing(false);
+    }
+  };
+
+  // Thao tác đẩy riêng 1 bài viết bị gián đoạn mạng lên Cloud ngay lập tức
+  const [retryingArticleId, setRetryingArticleId] = useState<string | null>(null);
+  const handleRetrySyncArticle = async (article: ArticleData) => {
+    const key = article.id || article.slug;
+    setRetryingArticleId(key);
+    setToastMsg({
+      type: 'info',
+      text: `Đang tối ưu hóa hình ảnh lên CDN và đồng bộ "${article.title}" lên Cloud...`,
+    });
+    try {
+      const cloudRes = await saveArticleToCloud(article);
+      if (cloudRes.success && cloudRes.article) {
+        const syncedItem: ArticleData = {
+          ...article,
+          ...cloudRes.article,
+          cloud_sync_pending: false,
+          cloud_sync_error: undefined,
+        };
+        setArticles((prev) => {
+          const next = prev.map((a) =>
+            (article.id && a.id === article.id) || (article.slug && a.slug === article.slug) ? syncedItem : a
+          );
+          saveStoredArticles(next);
+          return next;
+        });
+        setIsCloudSynced(true);
+        setToastMsg({
+          type: 'success',
+          text: `Đã đồng bộ thành công bài viết "${article.title}" lên Cloud! Ban Giám Hiệu đã có thể nhìn thấy ngay trong Hàng đợi duyệt 4 mắt.`,
+        });
+      } else {
+        setArticles((prev) => {
+          const next = prev.map((a) =>
+            (article.id && a.id === article.id) || (article.slug && a.slug === article.slug)
+              ? { ...a, cloud_sync_pending: true, cloud_sync_error: cloudRes.error || 'Lỗi kết nối Cloud' }
+              : a
+          );
+          saveStoredArticles(next);
+          return next;
+        });
+        setToastMsg({
+          type: 'error',
+          text: `Chưa thể đồng bộ lên Cloud: ${cloudRes.error || 'Lỗi mạng'}. Vui lòng thử lại sau vài giây.`,
+        });
+      }
+    } finally {
+      setRetryingArticleId(null);
     }
   };
 
@@ -246,10 +295,10 @@ export const CmsDashboard: React.FC<CmsDashboardProps> = ({ isOpen, onClose }) =
     };
   }, []);
 
-  // Auto clear toast
+  // Auto clear toast (giữ thông báo lỗi lâu hơn để GV dễ nhận biết)
   useEffect(() => {
     if (toastMsg) {
-      const timer = setTimeout(() => setToastMsg(null), 4000);
+      const timer = setTimeout(() => setToastMsg(null), toastMsg.type === 'error' ? 9000 : 4500);
       return () => clearTimeout(timer);
     }
   }, [toastMsg]);
@@ -349,11 +398,23 @@ export const CmsDashboard: React.FC<CmsDashboardProps> = ({ isOpen, onClose }) =
     const cloudRes = await saveArticleToCloud(targetArticle);
     setIsCloudSynced(cloudRes.success);
 
+    setArticles((prev) => {
+      const next = prev.map((a) =>
+        a.id === targetArticle.id
+          ? cloudRes.success && cloudRes.article
+            ? { ...targetArticle, ...cloudRes.article, cloud_sync_pending: false, cloud_sync_error: undefined }
+            : { ...targetArticle, cloud_sync_pending: true, cloud_sync_error: cloudRes.error || 'Chưa đồng bộ được' }
+          : a
+      );
+      saveStoredArticles(next);
+      return next;
+    });
+
     setToastMsg({
       type: cloudRes.success ? 'success' : 'error',
       text: cloudRes.success
         ? `Đã lưu bản nháp "${article.title}" và đồng bộ lên Database Cloud thành công!`
-        : `Lỗi đồng bộ bản nháp lên Cloud: ${cloudRes.error || 'Vui lòng kiểm tra dung lượng ảnh hoặc kết nối mạng.'}`,
+        : `Lỗi đồng bộ bản nháp lên Cloud: ${cloudRes.error || 'Vui lòng kiểm tra kết nối mạng và bấm "Đẩy lên Cloud".'}`,
     });
   };
 
@@ -410,26 +471,37 @@ export const CmsDashboard: React.FC<CmsDashboardProps> = ({ isOpen, onClose }) =
     setIsEditing(false);
 
     if (cloudRes.success) {
-      if (cloudRes.article?.updated_at) {
-        const syncedItem: ArticleData = {
-          ...updated,
-          slug: cloudRes.article.slug || updated.slug,
-          updated_at: cloudRes.article.updated_at,
-        };
-        setArticles((prev) => {
-          const next = prev.map((a) => (a.id === syncedItem.id ? syncedItem : a));
-          saveStoredArticles(next);
-          return next;
-        });
-      }
+      const syncedItem: ArticleData = {
+        ...updated,
+        ...(cloudRes.article || {}),
+        slug: cloudRes.article?.slug || updated.slug,
+        updated_at: cloudRes.article?.updated_at || updated.updated_at,
+        cloud_sync_pending: false,
+        cloud_sync_error: undefined,
+      };
+      setArticles((prev) => {
+        const next = prev.map((a) => (a.id === syncedItem.id ? syncedItem : a));
+        saveStoredArticles(next);
+        return next;
+      });
       setToastMsg({
         type: 'success',
         text: `Đã chuyển bài viết "${updated.title}" sang Hàng Đợi Kiểm Duyệt 4 Mắt và đồng bộ Cloud thành công!`,
       });
     } else {
+      const failedItem: ArticleData = {
+        ...updated,
+        cloud_sync_pending: true,
+        cloud_sync_error: cloudRes.error || 'Chưa đồng bộ được lên Cloud',
+      };
+      setArticles((prev) => {
+        const next = prev.map((a) => (a.id === failedItem.id ? failedItem : a));
+        saveStoredArticles(next);
+        return next;
+      });
       setToastMsg({
         type: 'error',
-        text: `Bài viết đã lưu cục bộ nhưng chưa thể đồng bộ lên Cloud: ${cloudRes.error || 'Lỗi mạng'}. Vui lòng kiểm tra dung lượng ảnh hoặc bấm "Đồng bộ Cloud".`,
+        text: `Bài viết đã lưu tạm trên máy nhưng CHƯA lên được Cloud cho Ban Giám Hiệu (${cloudRes.error || 'Lỗi mạng'}). Vui lòng bấm nút "Đẩy lên Cloud" màu cam ở dòng bài viết!`,
       });
     }
   };
@@ -702,17 +774,20 @@ export const CmsDashboard: React.FC<CmsDashboardProps> = ({ isOpen, onClose }) =
 
     setIsUploadingMedia(true);
     optimizeImageFile(file)
-      .then((optimized) => {
+      .then(async (optimized) => {
         const hexChars = '0123456789ABCDEF';
         let randomSha = '';
         for (let i = 0; i < 64; i++) {
           randomSha += hexChars[Math.floor(Math.random() * hexChars.length)];
         }
 
+        const cdnUpload = await uploadImageDataUrlToCloud(optimized.dataUrl, file.name);
+        const finalUrl = cdnUpload.success && cdnUpload.publicUrl ? cdnUpload.publicUrl : optimized.dataUrl;
+
         const newAsset: MediaAsset = {
           id: `med-${Date.now()}`,
           name: file.name,
-          url: optimized.dataUrl,
+          url: finalUrl,
           size_bytes: optimized.sizeBytes,
           mime_type: 'image/jpeg',
           sha256_hash: randomSha,
@@ -724,8 +799,13 @@ export const CmsDashboard: React.FC<CmsDashboardProps> = ({ isOpen, onClose }) =
         const updated = [newAsset, ...mediaAssets];
         setMediaAssets(updated);
         saveStoredMedia(updated);
+        saveMediaToCloud(newAsset).catch(() => {});
         setIsUploadingMedia(false);
-        setMediaUploadSuccess(`Tải lên thành công tệp ${file.name} (Đã nén tối ưu ${(optimized.sizeBytes / 1024).toFixed(1)} KB)!`);
+        setMediaUploadSuccess(
+          cdnUpload.success
+            ? `Tải lên Cloud CDN thành công tệp ${file.name} (${(optimized.sizeBytes / 1024).toFixed(1)} KB)!`
+            : `Tải lên thành công tệp ${file.name} (Đã nén tối ưu ${(optimized.sizeBytes / 1024).toFixed(1)} KB)!`
+        );
       })
       .catch((err) => {
         setIsUploadingMedia(false);
@@ -1489,6 +1569,18 @@ export const CmsDashboard: React.FC<CmsDashboardProps> = ({ isOpen, onClose }) =
                   )}
                 </div>
 
+                {/* Warning banner if any article is local-only and not yet synced to Cloud */}
+                {filteredArticles.some((a) => a.cloud_sync_pending) && (
+                  <div className="p-3.5 bg-amber-50 border border-amber-300 rounded-xl text-xs text-amber-950 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 shadow-sm">
+                    <div className="flex items-start space-x-2">
+                      <AlertCircle className="w-4 h-4 text-amber-600 flex-shrink-0 mt-0.5" />
+                      <span>
+                        <strong>Lưu ý đồng bộ Cloud:</strong> Có bài viết đang lưu tạm trên thiết bị này và chưa lên được máy chủ Cloud cho Ban Giám Hiệu kiểm duyệt. Bấm <strong>"Đẩy lên Cloud"</strong> ở dòng bài viết (hoặc nút <strong>Đồng bộ Cloud</strong> phía trên) để hoàn tất ngay.
+                      </span>
+                    </div>
+                  </div>
+                )}
+
                 {/* Main Data Table */}
                 <div className="bg-white rounded-2xl border border-heritage-gold-300/60 shadow-sm overflow-hidden">
                   <div className="overflow-x-auto">
@@ -1546,27 +1638,38 @@ export const CmsDashboard: React.FC<CmsDashboardProps> = ({ isOpen, onClose }) =
                               </td>
 
                               <td className="py-3 px-3 whitespace-nowrap">
-                                <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider inline-block ${
-                                  art.status === 'published'
-                                    ? 'bg-emerald-100 text-emerald-800 border border-emerald-300'
-                                    : art.status === 'pending'
-                                    ? 'bg-purple-100 text-purple-800 border border-purple-300 animate-pulse'
-                                    : art.status === 'approved'
-                                    ? 'bg-blue-100 text-blue-800 border border-blue-300'
-                                    : art.status === 'rejected'
-                                    ? 'bg-red-100 text-red-800 border border-red-300'
-                                    : 'bg-amber-100 text-amber-800 border border-amber-300'
-                                }`}>
-                                  {art.status === 'published'
-                                    ? 'Đã xuất bản'
-                                    : art.status === 'pending'
-                                    ? 'Chờ duyệt 4 mắt'
-                                    : art.status === 'approved'
-                                    ? 'Đã duyệt'
-                                    : art.status === 'rejected'
-                                    ? 'Yêu cầu sửa'
-                                    : 'Bản nháp'}
-                                </span>
+                                <div className="flex flex-col items-start gap-1">
+                                  <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider inline-block ${
+                                    art.status === 'published'
+                                      ? 'bg-emerald-100 text-emerald-800 border border-emerald-300'
+                                      : art.status === 'pending'
+                                      ? 'bg-purple-100 text-purple-800 border border-purple-300 animate-pulse'
+                                      : art.status === 'approved'
+                                      ? 'bg-blue-100 text-blue-800 border border-blue-300'
+                                      : art.status === 'rejected'
+                                      ? 'bg-red-100 text-red-800 border border-red-300'
+                                      : 'bg-amber-100 text-amber-800 border border-amber-300'
+                                  }`}>
+                                    {art.status === 'published'
+                                      ? 'Đã xuất bản'
+                                      : art.status === 'pending'
+                                      ? 'Chờ duyệt 4 mắt'
+                                      : art.status === 'approved'
+                                      ? 'Đã duyệt'
+                                      : art.status === 'rejected'
+                                      ? 'Yêu cầu sửa'
+                                      : 'Bản nháp'}
+                                  </span>
+                                  {art.cloud_sync_pending && (
+                                    <span
+                                      className="px-2 py-0.5 rounded-full text-[9px] font-bold uppercase bg-orange-100 text-orange-800 border border-orange-300 inline-flex items-center space-x-1"
+                                      title={art.cloud_sync_error || 'Bài viết chưa lên được Cloud cho Ban Giám Hiệu'}
+                                    >
+                                      <AlertCircle className="w-2.5 h-2.5" />
+                                      <span>Chưa lên Cloud</span>
+                                    </span>
+                                  )}
+                                </div>
                               </td>
 
                               <td className="py-3 px-3 text-center whitespace-nowrap">
@@ -1581,6 +1684,18 @@ export const CmsDashboard: React.FC<CmsDashboardProps> = ({ isOpen, onClose }) =
                               </td>
 
                               <td className="py-3 px-4 text-right whitespace-nowrap space-x-1.5">
+                                {art.cloud_sync_pending && (
+                                  <button
+                                    onClick={() => handleRetrySyncArticle(art)}
+                                    disabled={retryingArticleId === (art.id || art.slug)}
+                                    className="px-2.5 py-1 bg-orange-600 hover:bg-orange-700 disabled:opacity-60 text-white rounded-lg text-xs font-bold transition inline-flex items-center space-x-1 shadow-sm"
+                                    title="Tối ưu hóa ảnh lên CDN và đồng bộ ngay bài viết này lên Cloud cho Ban Giám Hiệu"
+                                  >
+                                    <Cloud className="w-3.5 h-3.5" />
+                                    <span>{retryingArticleId === (art.id || art.slug) ? 'Đang đẩy...' : 'Đẩy lên Cloud'}</span>
+                                  </button>
+                                )}
+
                                 {art.status === 'pending' && (
                                   <button
                                     onClick={() => {
