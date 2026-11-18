@@ -2,7 +2,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import {
   ChevronLeft, Save, Send, Eye, Sliders, Maximize2, Minimize2,
   Bold, Italic, Underline, Heading1, Heading2, Heading3, Quote,
-  List, ListOrdered, Image as ImageIcon, Video, Volume2, Upload, Music,
+  List, ListOrdered, AlignLeft, AlignCenter, AlignRight, AlignJustify,
+  Image as ImageIcon, Video, Volume2, Upload, Music,
   CheckCircle2, Trash2, Sparkles, BookOpen, FileText
 } from 'lucide-react';
 import { MediaLibraryModal } from './MediaLibraryModal';
@@ -365,6 +366,63 @@ export const FullScreenEditor: React.FC<FullScreenEditorProps> = ({
     }, 50);
   };
 
+  // Canh lề thông minh (trái / giữa / phải / đều 2 bên):
+  // - Nếu đang bôi đen: bọc đoạn được chọn (hoặc đổi thẻ canh lề cũ sang thẻ mới, tránh lồng thẻ)
+  // - Nếu không bôi đen: tự động canh lề cả dòng hiện tại tại vị trí con trỏ
+  const applyAlignment = (align: 'left' | 'center' | 'right' | 'justify') => {
+    const textarea = textareaRef.current;
+    if (!textarea) return;
+
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const openTag = `[${align}]`;
+    const closeTag = `[/${align}]`;
+    const alignWrapRegex = /^\[(left|center|right|justify)\]([\s\S]*?)\[\/\1\]$/i;
+
+    let replaceStart = start;
+    let replaceEnd = end;
+    let targetText = content.substring(start, end);
+
+    if (start === end) {
+      // Mở rộng ra toàn bộ dòng hiện tại
+      const prevNewline = content.lastIndexOf('\n', start - 1);
+      const nextNewline = content.indexOf('\n', start);
+      replaceStart = prevNewline === -1 ? 0 : prevNewline + 1;
+      replaceEnd = nextNewline === -1 ? content.length : nextNewline;
+      targetText = content.substring(replaceStart, replaceEnd);
+    }
+
+    const trimmedTarget = targetText.trim();
+    let replacement: string;
+    let selStart: number;
+    let selEnd: number;
+
+    if (!trimmedTarget) {
+      const placeholder = 'nội dung';
+      replacement = `${openTag}${placeholder}${closeTag}`;
+      selStart = replaceStart + openTag.length;
+      selEnd = selStart + placeholder.length;
+    } else {
+      const existingMatch = trimmedTarget.match(alignWrapRegex);
+      if (existingMatch) {
+        const inner = existingMatch[2];
+        replacement = `${openTag}${inner}${closeTag}`;
+      } else {
+        replacement = `${openTag}${targetText}${closeTag}`;
+      }
+      selStart = replaceStart;
+      selEnd = replaceStart + replacement.length;
+    }
+
+    const newContent = content.substring(0, replaceStart) + replacement + content.substring(replaceEnd);
+    setContent(newContent);
+
+    setTimeout(() => {
+      textarea.focus();
+      textarea.setSelectionRange(selStart, selEnd);
+    }, 50);
+  };
+
   const resolveFinalSlug = (rawSlug: string, rawTitle: string) => {
     const trimmed = (rawSlug || '').trim();
     if (trimmed.length > 2) return trimmed;
@@ -703,6 +761,42 @@ export const FullScreenEditor: React.FC<FullScreenEditorProps> = ({
             title="Danh sách đánh số"
           >
             <ListOrdered className="w-4 h-4" />
+          </button>
+
+          <div className="h-4 w-px bg-heritage-gold-300 mx-1" />
+
+          {/* Nhóm nút Canh lề văn bản (Trái / Giữa / Phải / Đều 2 bên) */}
+          <button
+            type="button"
+            onClick={() => applyAlignment('left')}
+            className="p-1.5 hover:bg-white text-heritage-ink-700 hover:text-heritage-red-700 rounded transition"
+            title="Canh trái đoạn văn bản ([left]...[/left])"
+          >
+            <AlignLeft className="w-4 h-4" />
+          </button>
+          <button
+            type="button"
+            onClick={() => applyAlignment('center')}
+            className="p-1.5 hover:bg-white text-heritage-ink-700 hover:text-heritage-red-700 rounded transition"
+            title="Canh giữa đoạn văn bản ([center]...[/center])"
+          >
+            <AlignCenter className="w-4 h-4" />
+          </button>
+          <button
+            type="button"
+            onClick={() => applyAlignment('right')}
+            className="p-1.5 hover:bg-white text-heritage-ink-700 hover:text-heritage-red-700 rounded transition"
+            title="Canh phải đoạn văn bản ([right]...[/right])"
+          >
+            <AlignRight className="w-4 h-4" />
+          </button>
+          <button
+            type="button"
+            onClick={() => applyAlignment('justify')}
+            className="p-1.5 hover:bg-white text-heritage-ink-700 hover:text-heritage-red-700 rounded transition"
+            title="Canh đều hai bên ([justify]...[/justify])"
+          >
+            <AlignJustify className="w-4 h-4" />
           </button>
 
           <div className="h-4 w-px bg-heritage-gold-300 mx-1" />

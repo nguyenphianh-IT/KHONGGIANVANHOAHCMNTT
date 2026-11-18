@@ -113,6 +113,69 @@ export const ResolvedImage: React.FC<ResolvedImageProps> = ({
   );
 };
 
+type TextAlign = 'left' | 'center' | 'right' | 'justify';
+
+interface ParsedBlock {
+  text: string;
+  align?: TextAlign;
+}
+
+const ALIGN_CLASS_MAP: Record<TextAlign, string> = {
+  left: 'text-left',
+  center: 'text-center',
+  right: 'text-right',
+  justify: 'text-justify',
+};
+
+/**
+ * Tách nội dung thành các khối đoạn văn có hỗ trợ thẻ canh lề
+ * [left]...[/left], [center]...[/center], [right]...[/right], [justify]...[/justify]
+ * (hỗ trợ cả khối chứa nhiều đoạn con cách nhau bằng dòng trống).
+ */
+function parseBlocksWithAlignment(raw: string): ParsedBlock[] {
+  const result: ParsedBlock[] = [];
+  const blockTagRegex = /\[(left|center|right|justify)\]([\s\S]*?)\[\/\1\]/gi;
+
+  let lastIndex = 0;
+  let match: RegExpExecArray | null;
+
+  const pushPlainChunk = (chunk: string) => {
+    const subBlocks = chunk.split(/\n\s*\n/);
+    for (const sb of subBlocks) {
+      const t = sb.trim();
+      if (t) result.push({ text: t });
+    }
+  };
+
+  while ((match = blockTagRegex.exec(raw)) !== null) {
+    // Kiểm tra xem thẻ canh lề có nằm trên dòng/khối riêng hay nằm chen giữa câu
+    const before = raw.slice(lastIndex, match.index);
+    const align = match[1].toLowerCase() as TextAlign;
+    const inner = match[2];
+
+    if (before.trim()) {
+      pushPlainChunk(before);
+    }
+
+    const innerSubBlocks = inner.split(/\n\s*\n/);
+    for (const sb of innerSubBlocks) {
+      const t = sb.trim();
+      if (t) {
+        result.push({ text: t, align });
+      }
+    }
+
+    lastIndex = match.index + match[0].length;
+  }
+
+  const tail = raw.slice(lastIndex);
+  if (tail.trim()) {
+    pushPlainChunk(tail);
+  }
+
+  return result;
+}
+
 export const ContentRenderer: React.FC<ContentRendererProps> = ({
   content,
   className = '',
@@ -124,8 +187,8 @@ export const ContentRenderer: React.FC<ContentRendererProps> = ({
   // Tự động thu gọn và chuyển đổi bất kỳ chuỗi Base64 thô nào (chỉ hiển thị, không ghi đĩa khi render)
   const { cleanedText } = cleanBase64FromContent(content, 'Hệ thống Không gian văn hóa', { persistMedia: false });
 
-  // Split into block paragraphs by double newline
-  const blocks = cleanedText.split(/\n\s*\n/);
+  // Tách khối kèm thuộc tính canh lề (trái / giữa / phải / đều)
+  const blocks = parseBlocksWithAlignment(cleanedText);
 
   const bodyTextClass = fontSize === 'large'
     ? 'text-base sm:text-lg leading-relaxed'
@@ -133,8 +196,10 @@ export const ContentRenderer: React.FC<ContentRendererProps> = ({
 
   return (
     <div className={`space-y-5 font-serif text-heritage-ink-800 ${className}`}>
-      {blocks.map((block, index) => {
-        const trimmed = block.trim();
+      {blocks.map((blockObj, index) => {
+        const trimmed = blockObj.text.trim();
+        const align = blockObj.align;
+        const alignClass = align ? ALIGN_CLASS_MAP[align] : '';
         if (!trimmed) return null;
 
         // 1. YouTube Video Embed Tag: [VIDEO: url]
@@ -164,8 +229,10 @@ export const ContentRenderer: React.FC<ContentRendererProps> = ({
             const imgUrl = trimmed.substring(splitIdx + 2, endIdx).trim();
 
             if (imgUrl) {
+              const figureAlign =
+                align === 'left' ? 'mr-auto' : align === 'right' ? 'ml-auto' : 'mx-auto';
               return (
-                <figure key={index} className="my-6 rounded-2xl overflow-hidden border border-heritage-gold-300 shadow-md bg-white p-2.5 max-w-3xl mx-auto">
+                <figure key={index} className={`my-6 rounded-2xl overflow-hidden border border-heritage-gold-300 shadow-md bg-white p-2.5 max-w-3xl ${figureAlign}`}>
                   <ResolvedImage
                     src={imgUrl}
                     alt={altText}
@@ -173,7 +240,7 @@ export const ContentRenderer: React.FC<ContentRendererProps> = ({
                     mediaAssets={mediaAssets}
                   />
                   {altText && (
-                    <figcaption className="text-center text-xs font-sans italic text-heritage-ink-600 mt-2.5 py-1">
+                    <figcaption className={`${align ? alignClass : 'text-center'} text-xs font-sans italic text-heritage-ink-600 mt-2.5 py-1`}>
                       {altText}
                     </figcaption>
                   )}
@@ -204,10 +271,10 @@ export const ContentRenderer: React.FC<ContentRendererProps> = ({
         if (trimmed.startsWith('>')) {
           const quoteText = trimmed.replace(/^>\s*/gm, '');
           return (
-            <div key={index} className="my-6 relative bg-gradient-to-r from-heritage-gold-100/80 via-heritage-gold-50/50 to-transparent p-5 sm:p-6 rounded-2xl border-l-4 border-heritage-gold-500 shadow-sm">
+            <div key={index} className={`my-6 relative bg-gradient-to-r from-heritage-gold-100/80 via-heritage-gold-50/50 to-transparent p-5 sm:p-6 rounded-2xl border-l-4 border-heritage-gold-500 shadow-sm ${alignClass}`}>
               <span className="font-serif text-3xl sm:text-4xl text-heritage-gold-600 select-none opacity-60 leading-none mr-2">“</span>
               <blockquote className="inline italic font-serif text-sm sm:text-base md:text-lg text-heritage-red-950 font-medium leading-relaxed">
-                {quoteText}
+                {renderInlineFormattedText(quoteText)}
               </blockquote>
               <span className="font-serif text-3xl sm:text-4xl text-heritage-gold-600 select-none opacity-60 leading-none ml-2">”</span>
             </div>
@@ -217,8 +284,8 @@ export const ContentRenderer: React.FC<ContentRendererProps> = ({
         // 4. Heading 1: # Title
         if (trimmed.startsWith('# ')) {
           return (
-            <h2 key={index} className="font-serif font-black text-xl sm:text-2xl md:text-3xl text-heritage-red-950 mt-7 mb-3 border-b border-heritage-gold-300/40 pb-2">
-              {trimmed.substring(2)}
+            <h2 key={index} className={`font-serif font-black text-xl sm:text-2xl md:text-3xl text-heritage-red-950 mt-7 mb-3 border-b border-heritage-gold-300/40 pb-2 ${alignClass}`}>
+              {renderInlineFormattedText(trimmed.substring(2))}
             </h2>
           );
         }
@@ -226,8 +293,8 @@ export const ContentRenderer: React.FC<ContentRendererProps> = ({
         // 5. Heading 2: ## Title
         if (trimmed.startsWith('## ')) {
           return (
-            <h3 key={index} className="font-serif font-bold text-lg sm:text-xl text-heritage-red-900 mt-6 mb-2">
-              {trimmed.substring(3)}
+            <h3 key={index} className={`font-serif font-bold text-lg sm:text-xl text-heritage-red-900 mt-6 mb-2 ${alignClass}`}>
+              {renderInlineFormattedText(trimmed.substring(3))}
             </h3>
           );
         }
@@ -235,8 +302,8 @@ export const ContentRenderer: React.FC<ContentRendererProps> = ({
         // 6. Heading 3: ### Title
         if (trimmed.startsWith('### ')) {
           return (
-            <h4 key={index} className="font-serif font-bold text-base text-heritage-red-800 mt-5 mb-1.5">
-              {trimmed.substring(4)}
+            <h4 key={index} className={`font-serif font-bold text-base text-heritage-red-800 mt-5 mb-1.5 ${alignClass}`}>
+              {renderInlineFormattedText(trimmed.substring(4))}
             </h4>
           );
         }
@@ -247,7 +314,7 @@ export const ContentRenderer: React.FC<ContentRendererProps> = ({
         const isNumberedList = lines.length > 1 && lines.every((l) => /^\d+[\.\)]\s+/.test(l.trim()));
         if (isNumberedList) {
           return (
-            <ol key={index} className="my-5 space-y-3 bg-heritage-gold-50/50 p-4 sm:p-6 rounded-2xl border border-heritage-gold-300/70 shadow-sm">
+            <ol key={index} className={`my-5 space-y-3 bg-heritage-gold-50/50 p-4 sm:p-6 rounded-2xl border border-heritage-gold-300/70 shadow-sm ${alignClass}`}>
               {lines.map((l, lIdx) => {
                 const cleanText = l.trim().replace(/^\d+[\.\)]\s+/, '');
                 return (
@@ -269,7 +336,7 @@ export const ContentRenderer: React.FC<ContentRendererProps> = ({
         const isBulletList = lines.length > 1 && lines.every((l) => /^[-*•]\s+/.test(l.trim()));
         if (isBulletList) {
           return (
-            <ul key={index} className="my-4 space-y-2.5 pl-3">
+            <ul key={index} className={`my-4 space-y-2.5 pl-3 ${alignClass}`}>
               {lines.map((l, lIdx) => {
                 const cleanText = l.trim().replace(/^[-*•]\s+/, '');
                 return (
@@ -283,9 +350,10 @@ export const ContentRenderer: React.FC<ContentRendererProps> = ({
           );
         }
 
-        // 9. Regular paragraph with safe inline formatting
+        // 9. Regular paragraph with safe inline formatting & alignment
+        const paragraphAlignClass = align ? ALIGN_CLASS_MAP[align] : 'text-justify';
         return (
-          <p key={index} className={`${bodyTextClass} text-justify leading-relaxed text-heritage-ink-900`}>
+          <p key={index} className={`${bodyTextClass} ${paragraphAlignClass} leading-relaxed text-heritage-ink-900`}>
             {lines.map((line, lIdx) => (
               <React.Fragment key={lIdx}>
                 {lIdx > 0 && <br />}
@@ -315,13 +383,16 @@ function renderInlineFormattedText(text: string) {
   if (text.length > 2000) {
     return text.substring(0, 100) + '...';
   }
-  const parts = text.split(/(\*\*.*?\*\*|\*.*?\*)/g);
+  const parts = text.split(/(\*\*[^\s*](?:[^*]*?[^\s*])?\*\*|\*[^\s*](?:[^*]*?[^\s*])?\*|<u>.*?<\/u>)/g);
   return parts.map((part, i) => {
-    if (part.startsWith('**') && part.endsWith('**')) {
+    if (part.startsWith('**') && part.endsWith('**') && part.length > 4) {
       return <strong key={i} className="font-bold text-heritage-red-950">{part.slice(2, -2)}</strong>;
     }
-    if (part.startsWith('*') && part.endsWith('*')) {
+    if (part.startsWith('*') && part.endsWith('*') && part.length > 2) {
       return <em key={i} className="italic">{part.slice(1, -1)}</em>;
+    }
+    if (part.startsWith('<u>') && part.endsWith('</u>')) {
+      return <u key={i} className="underline underline-offset-2">{part.slice(3, -4)}</u>;
     }
     return part;
   });
