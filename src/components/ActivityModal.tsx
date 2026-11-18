@@ -153,29 +153,41 @@ export const ActivityModal: React.FC<ActivityModalProps> = ({ activity, onClose 
         {/* 2. SCROLLABLE EDITORIAL ARTICLE BODY                                      */}
         {/* ========================================================================= */}
         <div className="flex-grow overflow-y-auto">
-          {/* HERO COVER IMAGE (Nếu có ảnh đại diện) */}
+          {/* HERO COVER IMAGE (Khung trưng bày toàn vẹn tỷ lệ, tuyệt đối không cắt xén ảnh hoạt động/chân dung) */}
           {activity.imageUrl && (
-            <div className="relative w-full h-64 sm:h-80 md:h-96 bg-heritage-ink-950 overflow-hidden">
+            <div className="relative w-full bg-heritage-ink-950 overflow-hidden flex items-center justify-center px-4 sm:px-8 pt-5 pb-16 sm:pt-7 sm:pb-16 min-h-[260px] sm:min-h-[360px]">
+              {/* Nền mờ nghệ thuật đồng tông màu ảnh */}
               <img
                 src={activity.imageUrl}
-                alt={activity.title}
-                className="w-full h-full object-cover opacity-90 hover:scale-105 transition-transform duration-700"
+                alt=""
+                aria-hidden="true"
+                className="absolute inset-0 w-full h-full object-cover scale-110 blur-2xl opacity-45 brightness-75 pointer-events-none select-none"
                 onError={(e) => {
                   (e.target as HTMLImageElement).src = '/images/ho-chi-minh-tp-hcm.png';
                 }}
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-heritage-ivory-50 via-heritage-ink-950/40 to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-b from-heritage-ink-950/40 via-heritage-ink-950/20 to-heritage-ivory-50 pointer-events-none" />
 
-              {/* Floating Badges on Cover */}
-              <div className="absolute bottom-4 left-4 sm:left-10 right-4 flex flex-wrap items-center gap-2">
+              {/* Ảnh chính giữ trọn vẹn tỷ lệ gốc */}
+              <img
+                src={activity.imageUrl}
+                alt={activity.title}
+                className="relative z-10 w-auto max-w-full max-h-[340px] sm:max-h-[460px] md:max-h-[540px] object-contain rounded-xl shadow-2xl border border-heritage-gold-300/40 transition-transform duration-500 hover:scale-[1.01]"
+                onError={(e) => {
+                  (e.target as HTMLImageElement).src = '/images/ho-chi-minh-tp-hcm.png';
+                }}
+              />
+
+              {/* Floating Badges cleanly positioned below image frame */}
+              <div className="absolute bottom-3 left-4 sm:left-10 right-4 z-20 flex flex-wrap items-center gap-2">
                 <span className="px-3.5 py-1.5 bg-heritage-red-700 text-white font-bold text-xs sm:text-sm rounded-full shadow-md backdrop-blur-sm">
                   {activity.categoryLabel || 'Hoạt Động & Phong Trào'}
                 </span>
-                <span className="px-3.5 py-1.5 bg-black/60 text-white text-xs sm:text-sm rounded-full backdrop-blur-sm font-sans font-medium flex items-center space-x-1 border border-white/10" title="Thời gian đọc ước tính">
+                <span className="px-3.5 py-1.5 bg-black/70 text-white text-xs sm:text-sm rounded-full backdrop-blur-sm font-sans font-medium flex items-center space-x-1 border border-white/10" title="Thời gian đọc ước tính">
                   <Sparkles className="w-3.5 h-3.5 text-heritage-gold-300" />
                   <span>~{readingTime} phút đọc</span>
                 </span>
-                <span className="px-3.5 py-1.5 bg-black/60 text-white text-xs sm:text-sm rounded-full backdrop-blur-sm font-sans font-medium flex items-center space-x-1.5 border border-white/10" title="Số lượt đọc thực tế đã được kiểm duyệt chống view ảo">
+                <span className="px-3.5 py-1.5 bg-black/70 text-white text-xs sm:text-sm rounded-full backdrop-blur-sm font-sans font-medium flex items-center space-x-1.5 border border-white/10" title="Số lượt đọc thực tế đã được kiểm duyệt chống view ảo">
                   <Eye className="w-3.5 h-3.5 text-heritage-gold-300" />
                   <span>{currentViews.toLocaleString('vi-VN')} lượt đọc</span>
                 </span>

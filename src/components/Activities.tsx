@@ -157,11 +157,11 @@ export const Activities: React.FC = () => {
               >
                 <div>
                   {/* Image */}
-                  <div className="relative h-48 sm:h-52 overflow-hidden bg-heritage-ivory-200">
+                  <div className="relative h-52 sm:h-56 overflow-hidden bg-heritage-ivory-200">
                     <img
                       src={activity.imageUrl}
                       alt=""
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      className="w-full h-full object-cover object-[50%_20%] group-hover:scale-105 transition-transform duration-500"
                       loading="lazy"
                       onError={(e) => {
                         (e.target as HTMLImageElement).src = '/images/ho-chi-minh-tp-hcm.png';

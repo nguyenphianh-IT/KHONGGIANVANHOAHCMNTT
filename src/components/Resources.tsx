@@ -265,11 +265,11 @@ export const Resources: React.FC = () => {
                 >
                   <div>
                     {/* Card Thumbnail */}
-                    <div className="relative h-48 sm:h-52 overflow-hidden bg-heritage-ivory-200">
+                    <div className="relative h-52 sm:h-56 overflow-hidden bg-heritage-ivory-200">
                       <img
                         src={item.thumbnail}
                         alt={item.title}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        className="w-full h-full object-cover object-[50%_20%] group-hover:scale-105 transition-transform duration-500"
                         loading="lazy"
                       />
                       <div className="absolute top-2.5 left-2.5 flex items-center gap-1.5">

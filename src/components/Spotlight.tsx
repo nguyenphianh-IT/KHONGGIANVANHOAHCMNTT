@@ -258,12 +258,12 @@ export const Spotlight: React.FC = () => {
                 onClick={() => setActiveModalItem(featuredHero)}
                 className="group cursor-pointer bg-white rounded-2xl sm:rounded-3xl overflow-hidden border-2 border-heritage-gold-300/80 hover:border-heritage-gold-500 shadow-heritage hover:shadow-heritage-hover hover:-translate-y-1 transition-all duration-300 flex flex-col"
               >
-                {/* Hero Image with high-definition aspect ratio */}
-                <div className="relative h-64 sm:h-72 lg:h-[18.5rem] w-full overflow-hidden bg-black/10">
+                {/* Hero Image with portrait-safe framing */}
+                <div className="relative h-72 sm:h-80 lg:h-[22rem] w-full overflow-hidden bg-heritage-ink-950">
                   <img
                     src={featuredHero.thumbnail}
                     alt={featuredHero.title}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                    className="w-full h-full object-cover object-[50%_20%] group-hover:scale-105 transition-transform duration-700"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/35 to-transparent" />
 
@@ -352,11 +352,11 @@ export const Spotlight: React.FC = () => {
                   className="group cursor-pointer bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-5 border-2 border-heritage-gold-300/80 hover:border-heritage-gold-500 shadow-heritage hover:shadow-heritage-hover hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between"
                 >
                   <div>
-                    <div className="relative h-40 w-full rounded-xl overflow-hidden mb-3.5 bg-black/5 border border-heritage-gold-200/60 shadow-inner">
+                    <div className="relative h-44 sm:h-48 w-full rounded-xl overflow-hidden mb-3.5 bg-black/5 border border-heritage-gold-200/60 shadow-inner">
                       <img
                         src={subItem.thumbnail}
                         alt={subItem.title}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        className="w-full h-full object-cover object-[50%_20%] group-hover:scale-105 transition-transform duration-500"
                       />
                       <span className="absolute top-2.5 left-2.5 px-2.5 py-1 rounded-full text-[11px] font-bold bg-heritage-red-900/90 text-heritage-gold-200 backdrop-blur-md border border-heritage-gold-400/40 shadow-sm">
                         {subItem.categoryLabel}
