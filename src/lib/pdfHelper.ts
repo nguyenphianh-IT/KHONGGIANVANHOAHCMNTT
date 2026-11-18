@@ -83,12 +83,15 @@ export async function extractPdfCoverImage(fileOrDoc: File | any, maxWidth = 900
   return canvas.toDataURL('image/jpeg', 0.88);
 }
 
+// Theo dõi tác vụ render đang chạy trên mỗi canvas để hủy sạch khi lật trang nhanh
+const activeRenderTasks = new WeakMap<HTMLCanvasElement, any>();
+
 /**
  * Nạp tài liệu PDF từ URL (Supabase Storage, server path hoặc Data URL)
- * Hỗ trợ HTTP Range Requests để tải từng phần (stream on-demand) khi tệp nằm trên CDN
+ * Hỗ trợ HTTP Range Requests để tải từng phần (stream on-demand) và tự động dự phòng nếu mạng di động chặn Range
  */
 export async function loadPdfFromUrl(url: string): Promise<any> {
-  const docParams: any = {
+  const baseParams: any = {
     cMapUrl: 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/cmaps/',
     cMapPacked: true,
   };
@@ -102,45 +105,94 @@ export async function loadPdfFromUrl(url: string): Promise<any> {
     for (let i = 0; i < len; i++) {
       bytes[i] = binaryStr.charCodeAt(i);
     }
-    docParams.data = bytes;
-  } else {
-    docParams.url = url;
-    // Kích hoạt HTTP 206 Byte-Range streaming: tải trang theo nhu cầu lật trang
-    docParams.rangeChunkSize = 65536; // 64KB chunks
-    docParams.disableAutoFetch = true;
-    docParams.disableStream = false;
+    const loadingTask = pdfjsLib.getDocument({ ...baseParams, data: bytes });
+    return await loadingTask.promise;
   }
 
-  const loadingTask = pdfjsLib.getDocument(docParams);
-  return await loadingTask.promise;
+  // Kênh 1: HTTP 206 Byte-Range streaming (tải từng phần mượt mà)
+  try {
+    const loadingTask = pdfjsLib.getDocument({
+      ...baseParams,
+      url,
+      rangeChunkSize: 65536,
+      disableAutoFetch: true,
+      disableStream: false,
+    });
+    return await loadingTask.promise;
+  } catch (rangeErr) {
+    console.warn('[loadPdfFromUrl] Range streaming lỗi, chuyển sang tải trọn gói dự phòng:', rangeErr);
+    // Kênh 2: Dự phòng tải trực tiếp ArrayBuffer qua fetch (tương thích 100% iOS Safari / mạng di động)
+    const res = await fetch(url);
+    if (!res.ok) throw new Error(`HTTP ${res.status} khi tải tệp PDF`);
+    const buf = await res.arrayBuffer();
+    const fallbackTask = pdfjsLib.getDocument({
+      ...baseParams,
+      data: new Uint8Array(buf),
+    });
+    return await fallbackTask.promise;
+  }
 }
 
 /**
- * Render một trang cụ thể của PDF lên thẻ <canvas> với độ phân giải sắc nét
+ * Render một trang cụ thể của PDF lên thẻ <canvas> với độ phân giải sắc nét,
+ * tự động vừa khít cả chiều rộng lẫn chiều cao khung nhìn và bảo vệ giới hạn bộ nhớ Canvas trên iOS/Mobile.
  */
 export async function renderPdfPageToCanvas(
   pdfDoc: any,
   pageNumber: number,
   canvas: HTMLCanvasElement,
-  targetWidth?: number
+  maxWidth?: number,
+  maxHeight?: number
 ): Promise<{ width: number; height: number }> {
   if (pageNumber < 1 || pageNumber > pdfDoc.numPages) {
     throw new Error(`Trang ${pageNumber} vượt quá giới hạn (1 - ${pdfDoc.numPages})`);
   }
 
+  // Hủy tác vụ render cũ trên cùng canvas nếu người dùng lật trang liên tục
+  const existingTask = activeRenderTasks.get(canvas);
+  if (existingTask) {
+    try {
+      existingTask.cancel();
+    } catch {}
+    activeRenderTasks.delete(canvas);
+  }
+
   const page = await pdfDoc.getPage(pageNumber);
   const baseViewport = page.getViewport({ scale: 1.0 });
 
-  const dpr = typeof window !== 'undefined' ? (window.devicePixelRatio || 1) : 1;
-  const scale = targetWidth ? (targetWidth / baseViewport.width) * dpr : dpr;
-  const viewport = page.getViewport({ scale });
+  // Tính kích thước hiển thị CSS vừa khít cả maxWidth lẫn maxHeight (bảo toàn tỷ lệ trang gốc)
+  let cssWidth = baseViewport.width;
+  let cssHeight = baseViewport.height;
 
-  canvas.width = viewport.width;
-  canvas.height = viewport.height;
+  if (maxWidth && maxHeight) {
+    const scaleByW = maxWidth / baseViewport.width;
+    const scaleByH = maxHeight / baseViewport.height;
+    const fitScale = Math.min(scaleByW, scaleByH);
+    cssWidth = Math.max(120, Math.floor(baseViewport.width * fitScale));
+    cssHeight = Math.max(160, Math.floor(baseViewport.height * fitScale));
+  } else if (maxWidth) {
+    const scaleByW = maxWidth / baseViewport.width;
+    cssWidth = Math.max(120, Math.floor(baseViewport.width * scaleByW));
+    cssHeight = Math.max(160, Math.floor(baseViewport.height * scaleByW));
+  }
 
-  // CSS style width/height (hiển thị thực tế)
-  canvas.style.width = targetWidth ? `${targetWidth}px` : `${baseViewport.width}px`;
-  canvas.style.height = targetWidth ? `${(targetWidth / baseViewport.width) * baseViewport.height}px` : `${baseViewport.height}px`;
+  // Giới hạn DPR tối đa 2 và kích thước pixel tối đa 3200px để tránh tràn bộ nhớ Canvas trên iOS Safari / Android
+  const rawDpr = typeof window !== 'undefined' ? (window.devicePixelRatio || 1) : 1;
+  let effectiveDpr = Math.min(rawDpr, 2);
+  const maxPixelSide = 3200;
+  if (cssWidth * effectiveDpr > maxPixelSide || cssHeight * effectiveDpr > maxPixelSide) {
+    effectiveDpr = Math.min(effectiveDpr, maxPixelSide / Math.max(cssWidth, cssHeight));
+  }
+
+  const renderScale = (cssWidth / baseViewport.width) * effectiveDpr;
+  const viewport = page.getViewport({ scale: renderScale });
+
+  canvas.width = Math.floor(viewport.width);
+  canvas.height = Math.floor(viewport.height);
+
+  // CSS style width/height (hiển thị thực tế sắc nét)
+  canvas.style.width = `${cssWidth}px`;
+  canvas.style.height = `${cssHeight}px`;
 
   const context = canvas.getContext('2d');
   if (!context) {
@@ -149,13 +201,28 @@ export async function renderPdfPageToCanvas(
 
   context.clearRect(0, 0, canvas.width, canvas.height);
 
-  await page.render({
+  const renderTask = page.render({
     canvasContext: context,
     viewport,
-  }).promise;
+  });
+  activeRenderTasks.set(canvas, renderTask);
+
+  try {
+    await renderTask.promise;
+  } catch (err: any) {
+    // Bỏ qua lỗi RenderingCancelledException bình thường khi lật trang nhanh
+    if (err?.name === 'RenderingCancelledException') {
+      return { width: cssWidth, height: cssHeight };
+    }
+    throw err;
+  } finally {
+    if (activeRenderTasks.get(canvas) === renderTask) {
+      activeRenderTasks.delete(canvas);
+    }
+  }
 
   return {
-    width: viewport.width / dpr,
-    height: viewport.height / dpr,
+    width: cssWidth,
+    height: cssHeight,
   };
 }

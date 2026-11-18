@@ -52,11 +52,11 @@ export const ResourceModal: React.FC<ResourceModalProps> = ({ item, onClose }) =
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
+      if (e.key === 'Escape' && !isFlipbookOpen) onClose();
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [onClose]);
+  }, [onClose, isFlipbookOpen]);
 
   if (!item) return null;
 
@@ -70,6 +70,7 @@ export const ResourceModal: React.FC<ResourceModalProps> = ({ item, onClose }) =
   const activeQuote = item.quote || resolveArticleQuote(item.quoteId, undefined, 1);
 
   return (
+    <>
     <div
       className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 md:p-6 bg-heritage-ink-950/85 backdrop-blur-md animate-fadeIn select-text"
       onClick={onClose}
@@ -401,16 +402,17 @@ export const ResourceModal: React.FC<ResourceModalProps> = ({ item, onClose }) =
           </div>
         </footer>
       </div>
-
-      {/* Trình đọc Sách Lật Trang 3D (Interactive Flipbook) */}
-      {item.pdfAttachment && (
-        <BookFlipbookModal
-          isOpen={isFlipbookOpen}
-          onClose={() => setIsFlipbookOpen(false)}
-          item={item}
-        />
-      )}
     </div>
+
+    {/* Trình đọc Sách Lật Trang 3D (Nằm ngoài lớp backdrop để bấm chuyển trang không bao giờ bị văng) */}
+    {item.pdfAttachment && (
+      <BookFlipbookModal
+        isOpen={isFlipbookOpen}
+        onClose={() => setIsFlipbookOpen(false)}
+        item={item}
+      />
+    )}
+    </>
   );
 };
 
