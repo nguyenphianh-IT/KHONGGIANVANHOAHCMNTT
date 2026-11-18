@@ -782,18 +782,20 @@ export const FullScreenEditor: React.FC<FullScreenEditorProps> = ({
                 </div>
 
                 {featuredImage && (
-                  <div className="relative rounded-xl overflow-hidden shadow-sm border border-heritage-gold-200 bg-heritage-ink-950 flex items-center justify-center p-4 sm:p-6">
+                  <div className="relative h-[250px] sm:h-[360px] md:h-[420px] rounded-xl overflow-hidden shadow-sm border border-heritage-gold-200 bg-heritage-ink-950 flex items-center justify-center p-4 sm:p-6">
                     <img
                       src={featuredImage}
                       alt=""
                       aria-hidden="true"
                       className="absolute inset-0 w-full h-full object-cover scale-110 blur-2xl opacity-40 brightness-75 pointer-events-none select-none"
                     />
-                    <img
-                      src={featuredImage}
-                      alt={title}
-                      className="relative z-10 w-auto max-w-full max-h-[460px] object-contain rounded-lg shadow-xl border border-heritage-gold-300/35"
-                    />
+                    <div className="relative z-10 w-full h-[210px] sm:h-[310px] md:h-[370px] flex items-center justify-center">
+                      <img
+                        src={featuredImage}
+                        alt={title}
+                        className="h-full w-auto max-w-full object-contain rounded-lg drop-shadow-[0_14px_30px_rgba(0,0,0,0.55)]"
+                      />
+                    </div>
                   </div>
                 )}
 

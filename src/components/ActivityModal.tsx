@@ -153,9 +153,9 @@ export const ActivityModal: React.FC<ActivityModalProps> = ({ activity, onClose 
         {/* 2. SCROLLABLE EDITORIAL ARTICLE BODY                                      */}
         {/* ========================================================================= */}
         <div className="flex-grow overflow-y-auto">
-          {/* HERO COVER IMAGE (Khung trưng bày toàn vẹn tỷ lệ, tuyệt đối không cắt xén ảnh hoạt động/chân dung) */}
+          {/* HERO COVER IMAGE (Kích thước khung chuẩn đồng nhất cho mọi bài hoạt động, tự co giãn đều cả ảnh nhỏ lẫn ảnh lớn) */}
           {activity.imageUrl && (
-            <div className="relative w-full bg-heritage-ink-950 overflow-hidden flex items-center justify-center px-4 sm:px-8 pt-5 pb-16 sm:pt-7 sm:pb-16 min-h-[260px] sm:min-h-[360px]">
+            <div className="relative w-full h-[295px] sm:h-[410px] md:h-[470px] bg-heritage-ink-950 overflow-hidden flex items-center justify-center px-4 sm:px-8 pt-5 pb-16 sm:pt-6 sm:pb-16">
               {/* Nền mờ nghệ thuật đồng tông màu ảnh */}
               <img
                 src={activity.imageUrl}
@@ -168,15 +168,17 @@ export const ActivityModal: React.FC<ActivityModalProps> = ({ activity, onClose 
               />
               <div className="absolute inset-0 bg-gradient-to-b from-heritage-ink-950/40 via-heritage-ink-950/20 to-heritage-ivory-50 pointer-events-none" />
 
-              {/* Ảnh chính giữ trọn vẹn tỷ lệ gốc */}
-              <img
-                src={activity.imageUrl}
-                alt={activity.title}
-                className="relative z-10 w-auto max-w-full max-h-[340px] sm:max-h-[460px] md:max-h-[540px] object-contain rounded-xl shadow-2xl border border-heritage-gold-300/40 transition-transform duration-500 hover:scale-[1.01]"
-                onError={(e) => {
-                  (e.target as HTMLImageElement).src = '/images/ho-chi-minh-tp-hcm.png';
-                }}
-              />
+              {/* Khung ảnh cố định chiều cao đồng nhất (210px mobile / 320px tablet / 380px desktop) */}
+              <div className="relative z-10 w-full max-w-4xl h-[210px] sm:h-[320px] md:h-[380px] flex items-center justify-center">
+                <img
+                  src={activity.imageUrl}
+                  alt={activity.title}
+                  className="h-full w-auto max-w-full object-contain rounded-xl drop-shadow-[0_14px_30px_rgba(0,0,0,0.55)] transition-transform duration-500 hover:scale-[1.01]"
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).src = '/images/ho-chi-minh-tp-hcm.png';
+                  }}
+                />
+              </div>
 
               {/* Floating Badges cleanly positioned below image frame */}
               <div className="absolute bottom-3 left-4 sm:left-10 right-4 z-20 flex flex-wrap items-center gap-2">
