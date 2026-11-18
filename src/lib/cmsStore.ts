@@ -454,6 +454,7 @@ const KEY_MEDIA = 'hcm_cultural_media_v4';
 const KEY_AUDIT = 'hcm_cultural_audit_v4';
 const KEY_DELETED_ARTICLES = 'hcm_cultural_deleted_articles_v4';
 const KEY_KNOWN_CLOUD_IDS = 'hcm_cultural_known_cloud_ids_v1';
+const KEY_UNSYNCED_BACKUP = 'hcm_cultural_unsynced_backup_v1';
 
 export function getKnownCloudArticleIds(): Set<string> {
   try {
@@ -703,7 +704,30 @@ export function getStoredArticles(): ArticleData[] {
     });
 
     // Lọc bỏ triệt để mọi bài viết sinh ra lúc test để trả lại không gian sạch sẽ 100%
-    const sanitizedArticles = cleanedArticles.filter((art) => !isTestOrDeletedArticle(art));
+    let sanitizedArticles = cleanedArticles.filter((art) => !isTestOrDeletedArticle(art));
+
+    // Khôi phục tự động mọi bài nháp / chờ duyệt dự phòng nếu trước đó localStorage bị tràn hạn mức
+    try {
+      const backupRaw = localStorage.getItem(KEY_UNSYNCED_BACKUP);
+      if (backupRaw) {
+        const backupArr = JSON.parse(backupRaw);
+        if (Array.isArray(backupArr) && backupArr.length > 0) {
+          const existingKeys = new Set(sanitizedArticles.flatMap((a) => [a.id, a.slug].filter(Boolean)));
+          const missingBackups = backupArr.filter(
+            (b: ArticleData) =>
+              b &&
+              !isTestOrDeletedArticle(b) &&
+              !(b.id && existingKeys.has(b.id)) &&
+              !(b.slug && existingKeys.has(b.slug))
+          );
+          if (missingBackups.length > 0) {
+            sanitizedArticles = [...missingBackups, ...sanitizedArticles];
+            modified = true;
+          }
+        }
+      }
+    } catch {}
+
     if (sanitizedArticles.length !== articles.length) {
       modified = true;
     }
@@ -719,6 +743,28 @@ export function getStoredArticles(): ArticleData[] {
     return sanitizedArticles;
   } catch {
     return DEFAULT_ARTICLES.filter((art) => !isTestOrDeletedArticle(art));
+  }
+}
+
+function persistLightweightMediaToLocalStorage(assets: MediaAsset[]) {
+  try {
+    // Chỉ lưu các đường dẫn nhẹ (HTTPS CDN, đường dẫn tĩnh /images/..., hoặc ảnh < 25KB) để không chiếm hết 5MB localStorage
+    const lightAssets: MediaAsset[] = [];
+    let approxBytes = 0;
+    for (const a of assets) {
+      if (!a || !a.id) continue;
+      const urlLen = (a.url || '').length;
+      const isHeavyBase64 = typeof a.url === 'string' && a.url.startsWith('data:') && urlLen > 25000;
+      if (isHeavyBase64) continue;
+      if (approxBytes + urlLen + 300 > 450000) break;
+      lightAssets.push(a);
+      approxBytes += urlLen + 300;
+    }
+    localStorage.setItem(KEY_MEDIA, JSON.stringify(lightAssets));
+  } catch {
+    try {
+      localStorage.removeItem(KEY_MEDIA);
+    } catch {}
   }
 }
 
@@ -741,15 +787,48 @@ export function saveStoredArticles(articles: ArticleData[]) {
   // 1. Luôn cập nhật bộ nhớ RAM trước tiên để trạng thái UI không bao giờ bị giật/mất bài
   memoryArticlesCache = cleanedArticles;
 
-  // 2. Lưu vào localStorage (có cơ chế tự động rút gọn media base64 nặng nếu tràn hạn mức 5MB)
+  // 2. Luôn sao lưu riêng toàn bộ bài nháp / chờ duyệt / chưa lên Cloud vào khóa siêu nhẹ (chống mất khi F5)
   try {
-    localStorage.setItem(KEY_ARTICLES, JSON.stringify(cleanedArticles));
-  } catch (err) {
-    console.warn('[saveStoredArticles] localStorage đầy hạn mức, tự động nén bản cache cục bộ:', err);
+    const unsyncedBackups = cleanedArticles
+      .filter((a) => a.status === 'draft' || a.status === 'pending' || a.status === 'rejected' || a.cloud_sync_pending)
+      .map((a) => ({
+        ...a,
+        featured_image:
+          typeof a.featured_image === 'string' && a.featured_image.startsWith('data:') && a.featured_image.length > 150000
+            ? ''
+            : a.featured_image,
+        media_assets: Array.isArray(a.media_assets)
+          ? a.media_assets.filter((m) => m && (!m.url?.startsWith('data:') || m.url.length <= 25000))
+          : undefined,
+      }));
+    if (unsyncedBackups.length > 0) {
+      localStorage.setItem(KEY_UNSYNCED_BACKUP, JSON.stringify(unsyncedBackups));
+    } else {
+      localStorage.removeItem(KEY_UNSYNCED_BACKUP);
+    }
+  } catch {
+    // Nếu vẫn tràn, dọn kho media base64 nặng trước rồi thử ghi lại khóa dự phòng
+    if (memoryMediaCache) persistLightweightMediaToLocalStorage(memoryMediaCache);
     try {
-      const slimArticles = cleanedArticles.map((art) => ({
+      const tinyBackups = cleanedArticles
+        .filter((a) => a.status === 'draft' || a.status === 'pending' || a.status === 'rejected' || a.cloud_sync_pending)
+        .map((a) => ({ ...a, featured_image: a.featured_image?.startsWith('data:') ? '' : a.featured_image, media_assets: undefined }));
+      if (tinyBackups.length > 0) {
+        localStorage.setItem(KEY_UNSYNCED_BACKUP, JSON.stringify(tinyBackups));
+      }
+    } catch {}
+  }
+
+  // 3. Lưu danh sách bài viết vào localStorage (tự giải phóng media base64 nếu tràn hạn mức 5MB)
+  const buildSlimArticles = (stripFeaturedBase64: boolean) =>
+    cleanedArticles.map((art) => {
+      const isPublished = art.status === 'published' && !art.cloud_sync_pending;
+      return {
         ...art,
-        // Loại bỏ bản sao base64 nặng trong media_assets khi lưu cache localStorage (bản đầy đủ vẫn nằm ở RAM & Cloud)
+        featured_image:
+          stripFeaturedBase64 && isPublished && typeof art.featured_image === 'string' && art.featured_image.startsWith('data:')
+            ? ''
+            : art.featured_image,
         media_assets: Array.isArray(art.media_assets)
           ? art.media_assets.map((m) =>
               m && typeof m.url === 'string' && m.url.startsWith('data:') && m.url.length > 10000
@@ -757,14 +836,27 @@ export function saveStoredArticles(articles: ArticleData[]) {
                 : m
             )
           : undefined,
-      }));
-      localStorage.setItem(KEY_ARTICLES, JSON.stringify(slimArticles));
-    } catch (err2) {
-      console.warn('[saveStoredArticles] Vẫn vượt hạn mức localStorage, giữ dữ liệu trên RAM & Cloud:', err2);
+      };
+    });
+
+  try {
+    localStorage.setItem(KEY_ARTICLES, JSON.stringify(cleanedArticles));
+  } catch (err) {
+    console.warn('[saveStoredArticles] localStorage đầy hạn mức, tự động dọn cache Base64 nặng:', err);
+    // Dọn bớt Base64 nặng trong KEY_MEDIA trước (dữ liệu đầy đủ vẫn còn nguyên trong RAM & Cloud)
+    persistLightweightMediaToLocalStorage(memoryMediaCache || []);
+    try {
+      localStorage.setItem(KEY_ARTICLES, JSON.stringify(buildSlimArticles(false)));
+    } catch {
+      try {
+        localStorage.setItem(KEY_ARTICLES, JSON.stringify(buildSlimArticles(true)));
+      } catch (err2) {
+        console.warn('[saveStoredArticles] Vẫn vượt hạn mức localStorage, giữ dữ liệu trên RAM & khóa dự phòng:', err2);
+      }
     }
   }
 
-  // 3. Luôn phát sự kiện đồng bộ kèm dữ liệu mới nhất
+  // 4. Luôn phát sự kiện đồng bộ kèm dữ liệu mới nhất
   window.dispatchEvent(new CustomEvent(EVENT_ARTICLES_CHANGED, { detail: cleanedArticles }));
 }
 
@@ -799,11 +891,8 @@ export function getStoredMedia(): MediaAsset[] {
 
 export function saveStoredMedia(assets: MediaAsset[]) {
   memoryMediaCache = assets;
-  try {
-    localStorage.setItem(KEY_MEDIA, JSON.stringify(assets));
-  } catch (err) {
-    console.warn('[saveStoredMedia] localStorage đầy hạn mức, lưu bản cache media trên RAM:', err);
-  }
+  // Luôn ghi bản nhẹ vào localStorage (không ghi 3.3MB ảnh Base64 gây tràn hạn mức 5MB làm mất bài viết!)
+  persistLightweightMediaToLocalStorage(assets);
   window.dispatchEvent(new CustomEvent(EVENT_MEDIA_CHANGED, { detail: assets }));
 }
 
