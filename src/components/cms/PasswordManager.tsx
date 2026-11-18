@@ -4,7 +4,7 @@ import {
   KeyRound, Lock, Eye, EyeOff, CheckCircle2, AlertCircle,
   RefreshCw, Mail, Copy, Check, ShieldCheck,
   Sparkles, Info, ShieldAlert, Key, Pencil, Trash2,
-  Users, UserPlus, X
+  Users, UserPlus, X, Building2, Plus
 } from 'lucide-react';
 import { supabase, isSupabaseConfigured } from '../../lib/supabase';
 import { useAuth } from '../../context/AuthContext';
@@ -21,12 +21,34 @@ export interface StaffUserItem {
   created_at?: string;
 }
 
+export interface DepartmentItem {
+  id: string;
+  name: string;
+  code?: string;
+  description?: string;
+  head_name?: string;
+  created_at?: string;
+}
+
+const DEFAULT_DEPARTMENTS_LIST: DepartmentItem[] = [
+  { id: 'dept-bgh', name: 'Ban Giám Hiệu', code: 'BGH', description: 'Ban Giám Hiệu nhà trường & Hội đồng kiểm duyệt 4 mắt' },
+  { id: 'dept-lsdl', name: 'Tổ Lịch sử - Địa lý', code: 'LSDL', description: 'Tổ chuyên môn Lịch sử, Địa lý & Tư liệu truyền thống' },
+  { id: 'dept-nvgdcd', name: 'Tổ Ngữ văn - GDCD', code: 'NVGDCD', description: 'Tổ chuyên môn Ngữ văn, Giáo dục công dân & Đạo đức Hồ Chí Minh' },
+  { id: 'dept-toantin', name: 'Tổ Toán - Tin học', code: 'TOANTIN', description: 'Tổ chuyên môn Toán, Tin học & Chuyển đổi số học đường' },
+  { id: 'dept-khtn', name: 'Tổ Khoa học tự nhiên', code: 'KHTN', description: 'Tổ chuyên môn Khoa học tự nhiên (Lý - Hóa - Sinh)' },
+  { id: 'dept-ngoaingu', name: 'Tổ Ngoại ngữ', code: 'NN', description: 'Tổ chuyên môn Tiếng Anh & Hội nhập quốc tế' },
+  { id: 'dept-doandoi', name: 'Đoàn - Đội - Hoạt động trải nghiệm', code: 'DOANDOI', description: 'Chi đoàn, Liên đội TNTP Hồ Chí Minh & Phong trào học sinh' },
+  { id: 'dept-vanphong', name: 'Tổ Văn phòng', code: 'VP', description: 'Hành chính, Thư viện, Thiết bị & Truyền thông nhà trường' },
+];
+
+const KEY_DEPARTMENTS_LOCAL = 'hcm_cms_departments_v1';
+
 export const PasswordManager: React.FC = () => {
   const { user, profile, roles, hasRole } = useAuth();
   const isAdmin = Boolean(hasRole('admin') || hasRole('super_admin'));
 
-  // Tab State: 'personal' | 'staff' | 'policy'
-  const [activeTab, setActiveTab] = useState<'personal' | 'staff' | 'policy'>('personal');
+  // Tab State: 'personal' | 'staff' | 'departments' | 'policy'
+  const [activeTab, setActiveTab] = useState<'personal' | 'staff' | 'departments' | 'policy'>('personal');
 
   // =========================================================================
   // 1. STATE ĐỔI MẬT KHẨU CÁ NHÂN (Bắt buộc xác thực mật khẩu cũ)
@@ -48,6 +70,7 @@ export const PasswordManager: React.FC = () => {
   const [isLoadingStaff, setIsLoadingStaff] = useState(false);
   const [staffSearchQuery, setStaffSearchQuery] = useState('');
   const [roleFilter, setRoleFilter] = useState<string>('all');
+  const [departmentFilter, setDepartmentFilter] = useState<string>('all');
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [actionSuccessMsg, setActionSuccessMsg] = useState<string | null>(null);
   const [actionErrorMsg, setActionErrorMsg] = useState<string | null>(null);
@@ -62,13 +85,16 @@ export const PasswordManager: React.FC = () => {
   const [showAddPassword, setShowAddPassword] = useState(false);
   const [isSubmittingAdd, setIsSubmittingAdd] = useState(false);
 
-  // Modal: Chỉnh Sửa Thông Tin & Vai Trò Cán Bộ
+  // Modal: Chỉnh Sửa Thông Tin & Vai Trò Cán Bộ / Giáo Viên
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editingStaff, setEditingStaff] = useState<StaffUserItem | null>(null);
   const [editFullName, setEditFullName] = useState('');
+  const [editEmail, setEditEmail] = useState('');
   const [editDepartment, setEditDepartment] = useState('');
   const [editRole, setEditRole] = useState<'editor' | 'viewer' | 'admin'>('editor');
   const [editStatus, setEditStatus] = useState<'active' | 'suspended' | 'inactive'>('active');
+  const [editNewPassword, setEditNewPassword] = useState('');
+  const [showEditPassword, setShowEditPassword] = useState(false);
   const [isSubmittingEdit, setIsSubmittingEdit] = useState(false);
 
   // Modal: Xóa Tài Khoản Cán Bộ
@@ -80,6 +106,31 @@ export const PasswordManager: React.FC = () => {
   const [targetStaff, setTargetStaff] = useState<StaffUserItem | null>(null);
   const [manualNewPass, setManualNewPass] = useState('');
   const [isSubmittingManualPass, setIsSubmittingManualPass] = useState(false);
+
+  // =========================================================================
+  // 3. STATE QUẢN LÝ & KHAI BÁO TỔ CHUYÊN MÔN (CRUD ĐỒNG BỘ CLOUD)
+  // =========================================================================
+  const [departments, setDepartments] = useState<DepartmentItem[]>(() => {
+    try {
+      const raw = localStorage.getItem(KEY_DEPARTMENTS_LOCAL);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      }
+    } catch {}
+    return DEFAULT_DEPARTMENTS_LIST;
+  });
+  const [isLoadingDepartments, setIsLoadingDepartments] = useState(false);
+  const [deptSearchQuery, setDeptSearchQuery] = useState('');
+  const [deptSuccessMsg, setDeptSuccessMsg] = useState<string | null>(null);
+  const [deptErrorMsg, setDeptErrorMsg] = useState<string | null>(null);
+  const [isDeptModalOpen, setIsDeptModalOpen] = useState(false);
+  const [editingDepartment, setEditingDepartment] = useState<DepartmentItem | null>(null);
+  const [deptName, setDeptName] = useState('');
+  const [deptCode, setDeptCode] = useState('');
+  const [deptHeadName, setDeptHeadName] = useState('');
+  const [deptDescription, setDeptDescription] = useState('');
+  const [isSavingDept, setIsSavingDept] = useState(false);
 
   // Tính toán độ mạnh mật khẩu (Password Strength: 0 - 4)
   const calculateStrength = (pass: string) => {
@@ -113,7 +164,42 @@ export const PasswordManager: React.FC = () => {
     return res;
   };
 
-  // Tải danh sách tài khoản nhân sự từ Supabase hoặc mock chuẩn
+  // Lấy Access Token thực tế từ Supabase Session để xác thực quyền Admin với API máy chủ
+  const getAuthBearerToken = async (): Promise<string | null> => {
+    if (!isSupabaseConfigured) return null;
+    try {
+      const { data } = await supabase.auth.getSession();
+      return data?.session?.access_token || null;
+    } catch {
+      return null;
+    }
+  };
+
+  // Tải danh mục Tổ chuyên môn từ Supabase Cloud
+  const loadDepartments = async () => {
+    setIsLoadingDepartments(true);
+    try {
+      const res = await fetch(`/api/cms/media?resource=departments&_t=${Date.now()}`, {
+        cache: 'no-store',
+      });
+      if (res.ok) {
+        const json = await res.json();
+        if (json.success && Array.isArray(json.departments) && json.departments.length > 0) {
+          setDepartments(json.departments);
+          try {
+            localStorage.setItem(KEY_DEPARTMENTS_LOCAL, JSON.stringify(json.departments));
+          } catch {}
+          setIsLoadingDepartments(false);
+          return;
+        }
+      }
+    } catch (err) {
+      console.warn('[PasswordManager] Không thể tải danh mục tổ chuyên môn từ API:', err);
+    }
+    setIsLoadingDepartments(false);
+  };
+
+  // Tải danh sách tài khoản nhân sự từ API Admin Cloud (Auth + Profiles + Roles) hoặc RPC/fallback
   const loadStaffList = async () => {
     setIsLoadingStaff(true);
     setActionErrorMsg(null);
@@ -126,7 +212,33 @@ export const PasswordManager: React.FC = () => {
     } catch {}
 
     if (isSupabaseConfigured) {
-      // 1. Ưu tiên gọi hàm RPC admin_list_staff_users để lấy đầy đủ email từ auth.users và vai trò
+      // 0. Ưu tiên tuyệt đối: Gọi Serverless Admin API (?resource=staff) để lấy đầy đủ dữ liệu chuẩn xác từ auth.users + profiles + user_roles
+      try {
+        const token = await getAuthBearerToken();
+        if (token) {
+          const apiRes = await fetch(`/api/cms/media?resource=staff&_t=${Date.now()}`, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+            cache: 'no-store',
+          });
+          if (apiRes.ok) {
+            const apiJson = await apiRes.json();
+            if (apiJson.success && Array.isArray(apiJson.staff)) {
+              setStaffList(apiJson.staff);
+              try {
+                localStorage.setItem('hcm_cms_staff_accounts', JSON.stringify(apiJson.staff));
+              } catch {}
+              setIsLoadingStaff(false);
+              return;
+            }
+          }
+        }
+      } catch (apiErr) {
+        console.warn('[PasswordManager] API admin staff fallback:', apiErr);
+      }
+
+      // 1. Kênh 2: Gọi hàm RPC admin_list_staff_users để lấy đầy đủ email từ auth.users và vai trò
       try {
         const { data: rpcStaff, error: rpcErr } = await supabase.rpc('admin_list_staff_users');
         if (!rpcErr && Array.isArray(rpcStaff) && rpcStaff.length > 0) {
@@ -261,8 +373,13 @@ export const PasswordManager: React.FC = () => {
   };
 
   useEffect(() => {
-    if (activeTab === 'staff') {
+    loadDepartments();
+  }, []);
+
+  useEffect(() => {
+    if (activeTab === 'staff' || activeTab === 'departments') {
       loadStaffList();
+      loadDepartments();
     }
   }, [activeTab]);
 
@@ -351,7 +468,7 @@ export const PasswordManager: React.FC = () => {
   const handleOpenAddModal = () => {
     setAddFullName('');
     setAddEmail('');
-    setAddDepartment('Tổ Lịch sử - Địa lý');
+    setAddDepartment(departments[0]?.name || 'Tổ Lịch sử - Địa lý');
     setAddRole('editor');
     setAddPassword(generateStrongPassword());
     setShowAddPassword(true);
@@ -512,14 +629,18 @@ export const PasswordManager: React.FC = () => {
   };
 
   // =========================================================================
-  // XỬ LÝ 3: CHỈNH SỬA THÔNG TIN & VAI TRÒ CÁN BỘ
+  // XỬ LÝ 3: CHỈNH SỬA ĐẦY ĐỦ THÔNG TIN TÀI KHOẢN GIÁO VIÊN / CÁN BỘ (ADMIN)
   // =========================================================================
   const handleOpenEditModal = (staff: StaffUserItem) => {
     setEditingStaff(staff);
     setEditFullName(staff.full_name);
+    setEditEmail(staff.email);
     setEditDepartment(staff.department);
     setEditRole(staff.role);
     setEditStatus(staff.status);
+    setEditNewPassword('');
+    setShowEditPassword(false);
+    setActionErrorMsg(null);
     setIsEditModalOpen(true);
   };
 
@@ -527,13 +648,29 @@ export const PasswordManager: React.FC = () => {
     e.preventDefault();
     if (!editingStaff) return;
 
-    if (!editFullName.trim()) {
-      setActionErrorMsg('Họ và tên không được để trống!');
+    const cleanName = editFullName.trim();
+    const cleanEmail = editEmail.trim().toLowerCase();
+    const cleanDept = editDepartment.trim() || 'Trường THCS Nguyễn Trung Trực';
+    const cleanPass = editNewPassword.trim();
+
+    if (!cleanName) {
+      setActionErrorMsg('Họ và tên giáo viên / cán bộ không được để trống!');
+      return;
+    }
+
+    if (!cleanEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cleanEmail)) {
+      setActionErrorMsg('Địa chỉ email tài khoản không hợp lệ!');
+      return;
+    }
+
+    if (cleanPass && cleanPass.length < 8) {
+      setActionErrorMsg('Mật khẩu mới (nếu đặt lại) phải có tối thiểu 8 ký tự!');
       return;
     }
 
     setIsSubmittingEdit(true);
     setActionErrorMsg(null);
+    setActionSuccessMsg(null);
 
     const roleLabels = {
       admin: 'Quản trị viên (Admin)',
@@ -542,32 +679,68 @@ export const PasswordManager: React.FC = () => {
     };
 
     try {
+      let cloudUpdated = false;
       if (isSupabaseConfigured) {
-        // 1. Cập nhật profiles
-        await supabase
-          .from('profiles')
-          .update({
-            full_name: editFullName.trim(),
-            department: editDepartment,
-            status: editStatus,
-          })
-          .eq('id', editingStaff.id);
+        // 1. Ưu tiên tuyệt đối: Gọi Admin Serverless API (Service Role Key + xác thực JWT Admin)
+        // Cập nhật đồng bộ auth.users (email, mật khẩu mới nếu có, khóa/mở khóa), profiles và user_roles
+        const token = await getAuthBearerToken();
+        if (token) {
+          const apiRes = await fetch('/api/cms/media?resource=staff', {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({
+              staff: {
+                id: editingStaff.id,
+                full_name: cleanName,
+                email: cleanEmail,
+                department: cleanDept,
+                role: editRole,
+                status: editStatus,
+                new_password: cleanPass || undefined,
+              },
+            }),
+          });
 
-        // 2. Cập nhật vai trò nếu thay đổi
-        if (editRole !== editingStaff.role) {
-          const { data: roleData } = await supabase
-            .from('roles')
-            .select('id')
-            .eq('code', editRole)
-            .single();
+          const apiJson = await apiRes.json().catch(() => ({}));
+          if (!apiRes.ok || !apiJson.success) {
+            throw new Error(apiJson.error || `Không thể cập nhật tài khoản lên máy chủ (HTTP ${apiRes.status})`);
+          }
+          cloudUpdated = true;
+        }
 
-          if (roleData?.id) {
-            await supabase.from('user_roles').delete().eq('user_id', editingStaff.id);
-            await supabase.from('user_roles').insert({
-              user_id: editingStaff.id,
-              role_id: roleData.id,
-              assigned_by: user?.id,
-            });
+        // 2. Dự phòng nếu chưa có phiên JWT (chế độ local/sandbox)
+        if (!cloudUpdated) {
+          const { error: profErr } = await supabase
+            .from('profiles')
+            .update({
+              full_name: cleanName,
+              email: cleanEmail,
+              department: cleanDept,
+              status: editStatus,
+            })
+            .eq('id', editingStaff.id);
+          if (profErr) {
+            throw new Error(`Không thể cập nhật profiles: ${profErr.message}`);
+          }
+
+          if (editRole !== editingStaff.role) {
+            const { data: roleData } = await supabase
+              .from('roles')
+              .select('id')
+              .eq('code', editRole)
+              .single();
+
+            if (roleData?.id) {
+              await supabase.from('user_roles').delete().eq('user_id', editingStaff.id);
+              await supabase.from('user_roles').insert({
+                user_id: editingStaff.id,
+                role_id: roleData.id,
+                assigned_by: user?.id,
+              });
+            }
           }
         }
       }
@@ -577,8 +750,9 @@ export const PasswordManager: React.FC = () => {
         if (s.id === editingStaff.id) {
           return {
             ...s,
-            full_name: editFullName.trim(),
-            department: editDepartment,
+            full_name: cleanName,
+            email: cleanEmail,
+            department: cleanDept,
             role: editRole,
             role_name: roleLabels[editRole],
             status: editStatus,
@@ -595,22 +769,231 @@ export const PasswordManager: React.FC = () => {
       // 4. Ghi nhật ký kiểm toán
       addStoredAuditLog({
         id: `audit-${Date.now()}`,
-        action: 'Cập nhật tài khoản cán bộ',
-        article_title: `${editFullName} (${editingStaff.email})`,
+        action: 'Cập nhật tài khoản giáo viên / cán bộ',
+        article_title: `${cleanName} (${cleanEmail})`,
         actor: profile?.full_name || 'Admin',
         role: 'Admin',
-        decision: 'Thành công',
-        feedback: `Điều chỉnh thông tin: Tổ ${editDepartment}, Vai trò: ${roleLabels[editRole]}, Trạng thái: ${editStatus}`,
+        decision: cloudUpdated ? 'Thành công (Đã lưu Cloud)' : 'Thành công',
+        feedback: `Điều chỉnh hồ sơ: Email ${cleanEmail}, Tổ ${cleanDept}, Vai trò: ${roleLabels[editRole]}, Trạng thái: ${editStatus}${cleanPass ? ' (Có đặt lại mật khẩu mới)' : ''}`,
         timestamp: new Date().toISOString(),
       });
 
-      setActionSuccessMsg(`Đã cập nhật thông tin cán bộ ${editFullName} thành công!`);
+      setActionSuccessMsg(
+        `Đã cập nhật thành công tài khoản ${cleanName} (${cleanEmail}) – Tổ: ${cleanDept}${cleanPass ? ' và thiết lập mật khẩu mới' : ''}!`
+      );
       setIsEditModalOpen(false);
       setEditingStaff(null);
+      setEditNewPassword('');
+
+      setTimeout(() => {
+        loadStaffList();
+      }, 400);
     } catch (err: any) {
-      setActionErrorMsg(err.message || 'Cập nhật cán bộ thất bại.');
+      setActionErrorMsg(err.message || 'Cập nhật tài khoản giáo viên thất bại.');
     } finally {
       setIsSubmittingEdit(false);
+    }
+  };
+
+  // =========================================================================
+  // XỬ LÝ 3b: KHAI BÁO & QUẢN LÝ TỔ CHUYÊN MÔN (CRUD ĐỒNG BỘ SUPABASE CLOUD)
+  // =========================================================================
+  const handleOpenAddDeptModal = () => {
+    setEditingDepartment(null);
+    setDeptName('');
+    setDeptCode('');
+    setDeptHeadName('');
+    setDeptDescription('');
+    setDeptErrorMsg(null);
+    setIsDeptModalOpen(true);
+  };
+
+  const handleOpenEditDeptModal = (dept: DepartmentItem) => {
+    setEditingDepartment(dept);
+    setDeptName(dept.name);
+    setDeptCode(dept.code || '');
+    setDeptHeadName(dept.head_name || '');
+    setDeptDescription(dept.description || '');
+    setDeptErrorMsg(null);
+    setIsDeptModalOpen(true);
+  };
+
+  const persistDepartmentsToCloud = async (
+    nextDepartments: DepartmentItem[],
+    renameFrom?: string,
+    renameTo?: string
+  ) => {
+    if (isSupabaseConfigured) {
+      const token = await getAuthBearerToken();
+      if (token) {
+        const res = await fetch('/api/cms/media?resource=departments', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            departments: nextDepartments,
+            renameFrom,
+            renameTo,
+          }),
+        });
+        const json = await res.json().catch(() => ({}));
+        if (!res.ok || !json.success) {
+          throw new Error(json.error || `Không thể lưu tổ chuyên môn lên Cloud (HTTP ${res.status})`);
+        }
+        return (json.departments as DepartmentItem[]) || nextDepartments;
+      }
+    }
+    return nextDepartments;
+  };
+
+  const handleSaveDepartment = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const cleanName = deptName.trim();
+    if (!cleanName) {
+      setDeptErrorMsg('Tên Tổ chuyên môn / Phòng ban không được để trống!');
+      return;
+    }
+
+    const isDuplicate = departments.some(
+      (d) =>
+        d.name.toLowerCase() === cleanName.toLowerCase() &&
+        (!editingDepartment || d.id !== editingDepartment.id)
+    );
+    if (isDuplicate) {
+      setDeptErrorMsg(`Tổ chuyên môn "${cleanName}" đã tồn tại trong danh mục!`);
+      return;
+    }
+
+    setIsSavingDept(true);
+    setDeptErrorMsg(null);
+    setDeptSuccessMsg(null);
+
+    try {
+      const autoCode =
+        deptCode.trim().toUpperCase() ||
+        cleanName
+          .normalize('NFD')
+          .replace(/[\u0300-\u036f]/g, '')
+          .replace(/[đĐ]/g, 'D')
+          .split(/\s+/)
+          .map((w) => w.charAt(0))
+          .join('')
+          .toUpperCase()
+          .slice(0, 8);
+
+      let nextList: DepartmentItem[];
+      let renameFrom: string | undefined;
+      let renameTo: string | undefined;
+
+      if (editingDepartment) {
+        if (editingDepartment.name !== cleanName) {
+          renameFrom = editingDepartment.name;
+          renameTo = cleanName;
+        }
+        nextList = departments.map((d) =>
+          d.id === editingDepartment.id
+            ? {
+                ...d,
+                name: cleanName,
+                code: autoCode,
+                head_name: deptHeadName.trim(),
+                description: deptDescription.trim(),
+              }
+            : d
+        );
+      } else {
+        const newDept: DepartmentItem = {
+          id: `dept-${Date.now()}`,
+          name: cleanName,
+          code: autoCode,
+          head_name: deptHeadName.trim(),
+          description: deptDescription.trim(),
+          created_at: new Date().toISOString(),
+        };
+        nextList = [...departments, newDept];
+      }
+
+      const savedList = await persistDepartmentsToCloud(nextList, renameFrom, renameTo);
+      setDepartments(savedList);
+      try {
+        localStorage.setItem(KEY_DEPARTMENTS_LOCAL, JSON.stringify(savedList));
+      } catch {}
+
+      // Nếu đổi tên tổ, đồng bộ ngay danh sách nhân sự trên UI
+      if (renameFrom && renameTo) {
+        setStaffList((prev) =>
+          prev.map((s) => (s.department === renameFrom ? { ...s, department: renameTo } : s))
+        );
+      }
+
+      addStoredAuditLog({
+        id: `audit-${Date.now()}`,
+        action: editingDepartment ? 'Cập nhật Tổ chuyên môn' : 'Khai báo Tổ chuyên môn mới',
+        article_title: `${cleanName} (${autoCode})`,
+        actor: profile?.full_name || 'Admin',
+        role: 'Admin',
+        decision: 'Đã lưu Cloud',
+        feedback: editingDepartment
+          ? `Cập nhật thông tin tổ chuyên môn${renameFrom ? ` (đổi tên từ "${renameFrom}" sang "${renameTo}")` : ''}.`
+          : `Khai báo tổ chuyên môn mới "${cleanName}" vào danh mục nhà trường.`,
+        timestamp: new Date().toISOString(),
+      });
+
+      setDeptSuccessMsg(
+        editingDepartment
+          ? `Đã cập nhật Tổ chuyên môn "${cleanName}" thành công!`
+          : `Đã khai báo Tổ chuyên môn mới "${cleanName}" thành công!`
+      );
+      // Nếu Admin đang mở form Thêm / Sửa GV và bấm "+ Khai báo tổ mới", tự động chọn tổ vừa tạo
+      if (!editingDepartment) {
+        if (isAddModalOpen) setAddDepartment(cleanName);
+        if (isEditModalOpen) setEditDepartment(cleanName);
+      }
+      setIsDeptModalOpen(false);
+      setEditingDepartment(null);
+    } catch (err: any) {
+      setDeptErrorMsg(err.message || 'Không thể lưu thông tin Tổ chuyên môn.');
+    } finally {
+      setIsSavingDept(false);
+    }
+  };
+
+  const handleDeleteDepartment = async (dept: DepartmentItem) => {
+    const memberCount = staffList.filter((s) => s.department === dept.name).length;
+    const confirmMsg =
+      memberCount > 0
+        ? `Tổ "${dept.name}" hiện đang có ${memberCount} giáo viên / cán bộ.\n\nBạn có chắc chắn muốn xóa tổ này khỏi danh mục khai báo? (Tài khoản giáo viên sẽ không bị xóa, nhưng bạn nên chuyển họ sang tổ khác.)`
+        : `Bạn có chắc chắn muốn xóa Tổ chuyên môn "${dept.name}" khỏi danh mục?`;
+
+    if (!window.confirm(confirmMsg)) return;
+
+    setDeptErrorMsg(null);
+    setDeptSuccessMsg(null);
+
+    try {
+      const nextList = departments.filter((d) => d.id !== dept.id);
+      const savedList = await persistDepartmentsToCloud(nextList);
+      setDepartments(savedList);
+      try {
+        localStorage.setItem(KEY_DEPARTMENTS_LOCAL, JSON.stringify(savedList));
+      } catch {}
+
+      addStoredAuditLog({
+        id: `audit-${Date.now()}`,
+        action: 'Xóa Tổ chuyên môn',
+        article_title: dept.name,
+        actor: profile?.full_name || 'Admin',
+        role: 'Admin',
+        decision: 'Đã xóa',
+        feedback: `Đã xóa Tổ chuyên môn "${dept.name}" khỏi danh mục khai báo.`,
+        timestamp: new Date().toISOString(),
+      });
+
+      setDeptSuccessMsg(`Đã xóa Tổ chuyên môn "${dept.name}" khỏi danh mục.`);
+    } catch (err: any) {
+      setDeptErrorMsg(err.message || 'Không thể xóa Tổ chuyên môn.');
     }
   };
 
@@ -776,12 +1159,25 @@ export const PasswordManager: React.FC = () => {
     setTimeout(() => setCopiedId(null), 2000);
   };
 
-  // Lọc danh sách nhân sự theo tìm kiếm và vai trò
+  // Lọc danh sách nhân sự theo tìm kiếm, vai trò và tổ chuyên môn
   const filteredStaff = staffList.filter((s) => {
     const q = staffSearchQuery.toLowerCase();
     const matchSearch = s.full_name.toLowerCase().includes(q) || s.email.toLowerCase().includes(q) || s.department.toLowerCase().includes(q);
     const matchRole = roleFilter === 'all' || s.role === roleFilter;
-    return matchSearch && matchRole;
+    const matchDept = departmentFilter === 'all' || s.department === departmentFilter;
+    return matchSearch && matchRole && matchDept;
+  });
+
+  // Lọc danh sách tổ chuyên môn
+  const filteredDepartments = departments.filter((d) => {
+    const q = deptSearchQuery.toLowerCase().trim();
+    if (!q) return true;
+    return (
+      d.name.toLowerCase().includes(q) ||
+      (d.code || '').toLowerCase().includes(q) ||
+      (d.head_name || '').toLowerCase().includes(q) ||
+      (d.description || '').toLowerCase().includes(q)
+    );
   });
 
   return (
@@ -793,13 +1189,13 @@ export const PasswordManager: React.FC = () => {
           <div className="space-y-2">
             <div className="inline-flex items-center space-x-2 px-3 py-1 bg-heritage-gold-400/20 border border-heritage-gold-400/40 rounded-full text-xs text-heritage-gold-200 font-medium">
               <KeyRound className="w-3.5 h-3.5 text-heritage-gold-300" />
-              <span>Trung Tâm An Ninh & Quản Trị Xác Thực Học Đường</span>
+              <span>Trung Tâm An Ninh & Quản Trị Tài Khoản Học Đường</span>
             </div>
             <h2 className="text-xl sm:text-2xl font-serif font-bold tracking-wide">
-              Quản Trị Mật Khẩu & Tài Khoản Cán Bộ
+              Quản Trị Tài Khoản GV, Tổ Chuyên Môn & Mật Khẩu
             </h2>
             <p className="text-xs sm:text-sm text-heritage-gold-100/90 max-w-2xl leading-relaxed">
-              Thiết lập mật khẩu an toàn theo tiêu chuẩn học đường, quản lý hồ sơ biên tập viên (Thêm, Sửa, Xóa), cấp phát và kiểm soát quyền truy cập chặt chẽ cho Trường THCS Nguyễn Trung Trực.
+              Thiết lập mật khẩu an toàn, chỉnh sửa đầy đủ thông tin tài khoản giáo viên (Họ tên, Email, Tổ chuyên môn, Vai trò, Mật khẩu) và khai báo danh mục Tổ chuyên môn của Trường THCS Nguyễn Trung Trực.
             </p>
           </div>
 
@@ -844,7 +1240,26 @@ export const PasswordManager: React.FC = () => {
               }`}
             >
               <Users className="w-4 h-4" />
-              <span>Quản Trị Biên Tập Viên & Cán Bộ</span>
+              <span>Quản Trị Tài Khoản GV & Cán Bộ</span>
+            </button>
+          )}
+
+          {isAdmin && (
+            <button
+              onClick={() => setActiveTab('departments')}
+              className={`px-4 py-2 rounded-xl transition-all flex items-center space-x-2 flex-shrink-0 ${
+                activeTab === 'departments'
+                  ? 'bg-heritage-gold-400 text-heritage-red-950 shadow-md font-bold'
+                  : 'text-heritage-gold-200 hover:bg-white/10'
+              }`}
+            >
+              <Building2 className="w-4 h-4" />
+              <span>Khai Báo Tổ Chuyên Môn</span>
+              <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-bold ${
+                activeTab === 'departments' ? 'bg-heritage-red-900/20 text-heritage-red-950' : 'bg-white/15 text-heritage-gold-200'
+              }`}>
+                {departments.length}
+              </span>
             </button>
           )}
 
@@ -1109,7 +1524,22 @@ export const PasswordManager: React.FC = () => {
               </p>
             </div>
 
-            <div className="flex flex-wrap items-center gap-3">
+            <div className="flex flex-wrap items-center gap-2.5">
+              {/* Lọc theo Tổ chuyên môn */}
+              <select
+                value={departmentFilter}
+                onChange={(e) => setDepartmentFilter(e.target.value)}
+                className="px-3 py-1.5 bg-heritage-ivory-100 border border-heritage-ivory-300 rounded-xl text-xs text-heritage-ink-800 focus:outline-none focus:ring-2 focus:ring-heritage-red-600 max-w-[180px]"
+                title="Lọc theo Tổ chuyên môn"
+              >
+                <option value="all">Tất cả tổ chuyên môn</option>
+                {departments.map((d) => (
+                  <option key={d.id} value={d.name}>
+                    {d.name}
+                  </option>
+                ))}
+              </select>
+
               {/* Lọc theo vai trò */}
               <select
                 value={roleFilter}
@@ -1128,7 +1558,7 @@ export const PasswordManager: React.FC = () => {
                 placeholder="Tìm theo tên, email, tổ..."
                 value={staffSearchQuery}
                 onChange={(e) => setStaffSearchQuery(e.target.value)}
-                className="pl-3 pr-3 py-1.5 bg-heritage-ivory-100 border border-heritage-ivory-300 rounded-xl text-xs text-heritage-ink-900 focus:outline-none focus:ring-2 focus:ring-heritage-red-600 w-48 sm:w-60"
+                className="pl-3 pr-3 py-1.5 bg-heritage-ivory-100 border border-heritage-ivory-300 rounded-xl text-xs text-heritage-ink-900 focus:outline-none focus:ring-2 focus:ring-heritage-red-600 w-44 sm:w-52"
               />
 
               <button
@@ -1140,13 +1570,23 @@ export const PasswordManager: React.FC = () => {
                 <RefreshCw className={`w-4 h-4 ${isLoadingStaff ? 'animate-spin text-heritage-red-700' : ''}`} />
               </button>
 
+              {/* Lối tắt sang tab Khai báo Tổ chuyên môn */}
+              <button
+                onClick={() => setActiveTab('departments')}
+                className="px-3 py-1.5 bg-heritage-gold-100 hover:bg-heritage-gold-200 text-heritage-red-900 border border-heritage-gold-300 rounded-xl text-xs font-bold transition flex items-center space-x-1.5"
+                title="Khai báo & quản lý các Tổ chuyên môn"
+              >
+                <Building2 className="w-3.5 h-3.5 text-heritage-red-800" />
+                <span>Tổ chuyên môn</span>
+              </button>
+
               {/* Nút Thêm Mới Biên Tập Viên */}
               <button
                 onClick={handleOpenAddModal}
                 className="px-3.5 py-1.5 bg-heritage-red-800 hover:bg-heritage-red-700 text-white rounded-xl text-xs font-bold transition flex items-center space-x-1.5 shadow-sm"
               >
                 <UserPlus className="w-4 h-4 text-heritage-gold-300" />
-                <span>+ Thêm Biên Tập Viên</span>
+                <span>+ Thêm Giáo Viên</span>
               </button>
             </div>
           </div>
@@ -1248,13 +1688,14 @@ export const PasswordManager: React.FC = () => {
 
                       <td className="py-3.5 px-4 text-right">
                         <div className="flex items-center justify-end space-x-1.5">
-                          {/* Nút Sửa Thông Tin */}
+                          {/* Nút Sửa Thông Tin Tài Khoản GV */}
                           <button
                             onClick={() => handleOpenEditModal(staff)}
-                            className="p-1.5 bg-heritage-ivory-100 hover:bg-heritage-gold-100 text-heritage-ink-700 hover:text-heritage-red-800 border border-heritage-ivory-300 rounded-lg text-xs transition"
-                            title="Sửa thông tin cán bộ"
+                            className="px-2.5 py-1.5 bg-heritage-gold-100 hover:bg-heritage-gold-200 text-heritage-red-900 border border-heritage-gold-300 rounded-lg text-[11px] font-bold transition inline-flex items-center space-x-1"
+                            title="Sửa thông tin tài khoản giáo viên (Tên, Email, Tổ chuyên môn, Vai trò, Mật khẩu)"
                           >
                             <Pencil className="w-3.5 h-3.5" />
+                            <span>Sửa</span>
                           </button>
 
                           {/* Nút Cấp Mật Khẩu Mới */}
@@ -1300,7 +1741,156 @@ export const PasswordManager: React.FC = () => {
       )}
 
       {/* ========================================================================= */}
-      {/* TAB 3: CHÍNH SÁCH BẢO MẬT & THÔNG TIN HỆ THỐNG                            */}
+      {/* TAB 3: KHAI BÁO & QUẢN LÝ DANH MỤC TỔ CHUYÊN MÔN (ADMIN ONLY)             */}
+      {/* ========================================================================= */}
+      {activeTab === 'departments' && isAdmin && (
+        <div className="bg-white border border-heritage-ivory-300 rounded-2xl shadow-sm p-6 space-y-6">
+          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-4 border-b border-heritage-ivory-200">
+            <div>
+              <h3 className="font-serif font-bold text-base text-heritage-ink-900 flex items-center space-x-2">
+                <Building2 className="w-5 h-5 text-heritage-red-800" />
+                <span>Danh Mục Tổ Chuyên Môn & Phòng Ban Nhà Trường</span>
+                <span className="text-xs px-2 py-0.5 bg-heritage-gold-100 text-heritage-red-800 font-sans font-semibold rounded-full border border-heritage-gold-300">
+                  {departments.length} tổ / phòng ban
+                </span>
+              </h3>
+              <p className="text-xs text-heritage-ink-500 mt-0.5">
+                Khai báo, chỉnh sửa hoặc xóa các Tổ chuyên môn. Danh mục này được đồng bộ tự động vào form thêm/sửa tài khoản giáo viên trên toàn hệ thống.
+              </p>
+            </div>
+
+            <div className="flex flex-wrap items-center gap-2.5">
+              <input
+                type="text"
+                placeholder="Tìm tên tổ, mã tổ, tổ trưởng..."
+                value={deptSearchQuery}
+                onChange={(e) => setDeptSearchQuery(e.target.value)}
+                className="pl-3 pr-3 py-1.5 bg-heritage-ivory-100 border border-heritage-ivory-300 rounded-xl text-xs text-heritage-ink-900 focus:outline-none focus:ring-2 focus:ring-heritage-red-600 w-52"
+              />
+
+              <button
+                onClick={loadDepartments}
+                disabled={isLoadingDepartments}
+                className="p-2 border border-heritage-ivory-300 hover:bg-heritage-ivory-100 rounded-xl text-heritage-ink-600 transition"
+                title="Đồng bộ danh mục tổ từ Cloud"
+              >
+                <RefreshCw className={`w-4 h-4 ${isLoadingDepartments ? 'animate-spin text-heritage-red-700' : ''}`} />
+              </button>
+
+              <button
+                onClick={handleOpenAddDeptModal}
+                className="px-3.5 py-1.5 bg-heritage-red-800 hover:bg-heritage-red-700 text-white rounded-xl text-xs font-bold transition flex items-center space-x-1.5 shadow-sm"
+              >
+                <Plus className="w-4 h-4 text-heritage-gold-300" />
+                <span>Khai Báo Tổ Chuyên Môn</span>
+              </button>
+            </div>
+          </div>
+
+          {deptSuccessMsg && (
+            <div className="p-3 bg-emerald-50 border border-emerald-300 text-emerald-900 rounded-xl text-xs flex items-center space-x-2 animate-fadeIn">
+              <CheckCircle2 className="w-4 h-4 text-emerald-600 flex-shrink-0" />
+              <span>{deptSuccessMsg}</span>
+            </div>
+          )}
+
+          {deptErrorMsg && (
+            <div className="p-3 bg-red-50 border border-red-300 text-red-900 rounded-xl text-xs flex items-center space-x-2 animate-fadeIn">
+              <AlertCircle className="w-4 h-4 text-red-600 flex-shrink-0" />
+              <span>{deptErrorMsg}</span>
+            </div>
+          )}
+
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-xs border-collapse">
+              <thead>
+                <tr className="bg-heritage-ivory-200/80 text-heritage-ink-700 font-bold border-b border-heritage-ivory-300">
+                  <th className="py-3 px-4 rounded-l-xl">Tên Tổ chuyên môn / Phòng ban</th>
+                  <th className="py-3 px-4">Mã tổ</th>
+                  <th className="py-3 px-4">Tổ trưởng / Phụ trách</th>
+                  <th className="py-3 px-4">Số lượng GV</th>
+                  <th className="py-3 px-4 text-right rounded-r-xl">Hành động</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-heritage-ivory-200">
+                {filteredDepartments.length === 0 ? (
+                  <tr>
+                    <td colSpan={5} className="py-8 text-center text-heritage-ink-500">
+                      Không tìm thấy tổ chuyên môn phù hợp. Bấm <strong>"Khai Báo Tổ Chuyên Môn"</strong> để thêm mới.
+                    </td>
+                  </tr>
+                ) : (
+                  filteredDepartments.map((dept) => {
+                    const memberCount = staffList.filter((s) => s.department === dept.name).length;
+                    return (
+                      <tr key={dept.id} className="hover:bg-heritage-ivory-50/80 transition-colors">
+                        <td className="py-3.5 px-4">
+                          <div className="font-bold text-heritage-ink-900">{dept.name}</div>
+                          {dept.description && (
+                            <div className="text-[11px] text-heritage-ink-500 mt-0.5 max-w-md">
+                              {dept.description}
+                            </div>
+                          )}
+                        </td>
+
+                        <td className="py-3.5 px-4">
+                          <span className="inline-flex items-center px-2 py-0.5 rounded-md bg-heritage-ivory-200 text-heritage-red-900 font-mono font-bold text-[11px] border border-heritage-ivory-300">
+                            {dept.code || 'TCM'}
+                          </span>
+                        </td>
+
+                        <td className="py-3.5 px-4 text-heritage-ink-700">
+                          {dept.head_name || <span className="text-heritage-ink-400 italic">Chưa khai báo</span>}
+                        </td>
+
+                        <td className="py-3.5 px-4">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setDepartmentFilter(dept.name);
+                              setActiveTab('staff');
+                            }}
+                            className="inline-flex items-center space-x-1 px-2.5 py-1 rounded-full bg-blue-50 hover:bg-blue-100 text-blue-800 border border-blue-200 font-semibold text-[11px] transition"
+                            title="Bấm để xem danh sách giáo viên thuộc tổ này"
+                          >
+                            <Users className="w-3 h-3" />
+                            <span>{memberCount} GV / Cán bộ</span>
+                          </button>
+                        </td>
+
+                        <td className="py-3.5 px-4 text-right">
+                          <div className="flex items-center justify-end space-x-1.5">
+                            <button
+                              type="button"
+                              onClick={() => handleOpenEditDeptModal(dept)}
+                              className="px-2.5 py-1.5 bg-heritage-gold-100 hover:bg-heritage-gold-200 text-heritage-red-900 border border-heritage-gold-300 rounded-lg text-[11px] font-bold transition inline-flex items-center space-x-1"
+                              title="Sửa thông tin tổ chuyên môn"
+                            >
+                              <Pencil className="w-3.5 h-3.5" />
+                              <span>Sửa</span>
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => handleDeleteDepartment(dept)}
+                              className="p-1.5 bg-heritage-ivory-100 hover:bg-rose-100 text-rose-600 hover:text-rose-800 border border-heritage-ivory-300 hover:border-rose-300 rounded-lg text-xs transition"
+                              title="Xóa tổ chuyên môn"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
+      {/* ========================================================================= */}
+      {/* TAB 4: CHÍNH SÁCH BẢO MẬT & THÔNG TIN HỆ THỐNG                            */}
       {/* ========================================================================= */}
       {activeTab === 'policy' && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -1390,20 +1980,29 @@ export const PasswordManager: React.FC = () => {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="block font-semibold text-heritage-ink-800 mb-1">
-                    Tổ chuyên môn / Phòng ban
+                  <label className="block font-semibold text-heritage-ink-800 mb-1 flex items-center justify-between">
+                    <span>Tổ chuyên môn / Phòng ban</span>
+                    <button
+                      type="button"
+                      onClick={handleOpenAddDeptModal}
+                      className="text-[11px] font-bold text-heritage-red-800 hover:underline"
+                    >
+                      + Khai báo tổ mới
+                    </button>
                   </label>
                   <select
                     value={addDepartment}
                     onChange={(e) => setAddDepartment(e.target.value)}
                     className="w-full px-3 py-2 bg-heritage-ivory-50 border border-heritage-ivory-400 rounded-xl text-xs text-heritage-ink-900 focus:outline-none focus:ring-2 focus:ring-heritage-red-600"
                   >
-                    <option value="Tổ Lịch sử - Địa lý">Tổ Lịch sử - Địa lý</option>
-                    <option value="Tổ Ngữ văn - GDCD">Tổ Ngữ văn - GDCD</option>
-                    <option value="Tổ Toán - Tin học">Tổ Toán - Tin học</option>
-                    <option value="Tổ Khoa học tự nhiên">Tổ Khoa học tự nhiên</option>
-                    <option value="Ban Giám Hiệu">Ban Giám Hiệu</option>
-                    <option value="Đoàn - Đội - Hoạt động trải nghiệm">Đoàn - Đội - Hoạt động trải nghiệm</option>
+                    {departments.map((d) => (
+                      <option key={d.id} value={d.name}>
+                        {d.name}
+                      </option>
+                    ))}
+                    {addDepartment && !departments.some((d) => d.name === addDepartment) && (
+                      <option value={addDepartment}>{addDepartment}</option>
+                    )}
                   </select>
                 </div>
 
@@ -1482,15 +2081,15 @@ export const PasswordManager: React.FC = () => {
       )}
 
       {/* ========================================================================= */}
-      {/* MODAL 2: CHỈNH SỬA THÔNG TIN & VAI TRÒ CÁN BỘ                             */}
+      {/* MODAL 2: CHỈNH SỬA ĐẦY ĐỦ THÔNG TIN TÀI KHOẢN GIÁO VIÊN / CÁN BỘ          */}
       {/* ========================================================================= */}
       {isEditModalOpen && editingStaff && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fadeIn">
-          <div className="w-full max-w-md bg-white border border-heritage-gold-300 rounded-2xl shadow-2xl overflow-hidden">
-            <div className="bg-gradient-to-r from-heritage-red-800 to-heritage-red-900 px-6 py-4 text-white flex items-center justify-between">
+          <div className="w-full max-w-lg bg-white border border-heritage-gold-300 rounded-2xl shadow-2xl overflow-hidden max-h-[92vh] flex flex-col">
+            <div className="bg-gradient-to-r from-heritage-red-800 to-heritage-red-900 px-6 py-4 text-white flex items-center justify-between flex-shrink-0">
               <div className="flex items-center space-x-2.5">
                 <Pencil className="w-4 h-4 text-heritage-gold-300" />
-                <h4 className="font-serif font-bold text-base">Chỉnh Sửa Hồ Sơ Cán Bộ</h4>
+                <h4 className="font-serif font-bold text-base">Chỉnh Sửa Tài Khoản Giáo Viên / Cán Bộ</h4>
               </div>
               <button
                 onClick={() => setIsEditModalOpen(false)}
@@ -1500,42 +2099,62 @@ export const PasswordManager: React.FC = () => {
               </button>
             </div>
 
-            <form onSubmit={handleUpdateStaff} className="p-6 space-y-4 text-xs">
-              <div>
-                <span className="text-heritage-ink-500">Tài khoản:</span>
-                <div className="font-bold text-heritage-ink-900 font-mono mt-0.5">
-                  {editingStaff.email}
-                </div>
-              </div>
-
+            <form onSubmit={handleUpdateStaff} className="p-6 space-y-4 text-xs overflow-y-auto">
               <div>
                 <label className="block font-semibold text-heritage-ink-800 mb-1">
-                  Họ và tên cán bộ <span className="text-red-500">*</span>
+                  Họ và tên giáo viên / cán bộ <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
                   required
                   value={editFullName}
                   onChange={(e) => setEditFullName(e.target.value)}
+                  placeholder="Ví dụ: Cô Nguyễn Thị Minh"
                   className="w-full px-3 py-2 bg-heritage-ivory-50 border border-heritage-ivory-400 rounded-xl text-xs text-heritage-ink-900 focus:outline-none focus:ring-2 focus:ring-heritage-red-600"
                 />
               </div>
 
               <div>
                 <label className="block font-semibold text-heritage-ink-800 mb-1">
-                  Tổ chuyên môn / Phòng ban
+                  Email đăng nhập tài khoản <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="email"
+                  required
+                  value={editEmail}
+                  onChange={(e) => setEditEmail(e.target.value)}
+                  placeholder="name@thcsnguyentrungtruc.edu.vn"
+                  className="w-full px-3 py-2 bg-heritage-ivory-50 border border-heritage-ivory-400 rounded-xl text-xs text-heritage-ink-900 font-mono focus:outline-none focus:ring-2 focus:ring-heritage-red-600"
+                />
+                <p className="text-[11px] text-heritage-ink-500 mt-1">
+                  Cập nhật đồng bộ địa chỉ email đăng nhập trên Supabase Auth và hồ sơ giáo viên.
+                </p>
+              </div>
+
+              <div>
+                <label className="block font-semibold text-heritage-ink-800 mb-1 flex items-center justify-between">
+                  <span>Tổ chuyên môn / Phòng ban</span>
+                  <button
+                    type="button"
+                    onClick={handleOpenAddDeptModal}
+                    className="text-[11px] font-bold text-heritage-red-800 hover:underline"
+                  >
+                    + Khai báo tổ mới
+                  </button>
                 </label>
                 <select
                   value={editDepartment}
                   onChange={(e) => setEditDepartment(e.target.value)}
                   className="w-full px-3 py-2 bg-heritage-ivory-50 border border-heritage-ivory-400 rounded-xl text-xs text-heritage-ink-900 focus:outline-none focus:ring-2 focus:ring-heritage-red-600"
                 >
-                  <option value="Tổ Lịch sử - Địa lý">Tổ Lịch sử - Địa lý</option>
-                  <option value="Tổ Ngữ văn - GDCD">Tổ Ngữ văn - GDCD</option>
-                  <option value="Tổ Toán - Tin học">Tổ Toán - Tin học</option>
-                  <option value="Tổ Khoa học tự nhiên">Tổ Khoa học tự nhiên</option>
-                  <option value="Ban Giám Hiệu">Ban Giám Hiệu</option>
-                  <option value="Đoàn - Đội - Hoạt động trải nghiệm">Đoàn - Đội - Hoạt động trải nghiệm</option>
+                  {departments.map((d) => (
+                    <option key={d.id} value={d.name}>
+                      {d.name}
+                    </option>
+                  ))}
+                  {editDepartment && !departments.some((d) => d.name === editDepartment) && (
+                    <option value={editDepartment}>{editDepartment}</option>
+                  )}
                 </select>
               </div>
 
@@ -1549,9 +2168,9 @@ export const PasswordManager: React.FC = () => {
                     onChange={(e) => setEditRole(e.target.value as any)}
                     className="w-full px-3 py-2 bg-heritage-ivory-50 border border-heritage-ivory-400 rounded-xl text-xs text-heritage-ink-900 focus:outline-none focus:ring-2 focus:ring-heritage-red-600"
                   >
-                    <option value="editor">Biên tập viên</option>
+                    <option value="editor">Biên tập viên (Giáo viên)</option>
                     <option value="viewer">Cố vấn / Xem</option>
-                    <option value="admin">Quản trị viên</option>
+                    <option value="admin">Quản trị viên (Admin)</option>
                   </select>
                 </div>
 
@@ -1565,10 +2184,50 @@ export const PasswordManager: React.FC = () => {
                     className="w-full px-3 py-2 bg-heritage-ivory-50 border border-heritage-ivory-400 rounded-xl text-xs text-heritage-ink-900 focus:outline-none focus:ring-2 focus:ring-heritage-red-600"
                   >
                     <option value="active">Đang hoạt động</option>
-                    <option value="suspended">Tạm đình chỉ</option>
+                    <option value="suspended">Tạm đình chỉ (Khóa đăng nhập)</option>
                   </select>
                 </div>
               </div>
+
+              {/* Tùy chọn đặt lại mật khẩu mới ngay trong form chỉnh sửa */}
+              <div className="pt-2 border-t border-heritage-ivory-200">
+                <label className="block font-semibold text-heritage-ink-800 mb-1 flex items-center justify-between">
+                  <span>Đặt mật khẩu mới (Để trống nếu giữ nguyên)</span>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setEditNewPassword(generateStrongPassword());
+                      setShowEditPassword(true);
+                    }}
+                    className="text-heritage-red-800 hover:underline text-[11px] font-bold"
+                  >
+                    Sinh ngẫu nhiên
+                  </button>
+                </label>
+                <div className="relative">
+                  <input
+                    type={showEditPassword ? 'text' : 'password'}
+                    value={editNewPassword}
+                    onChange={(e) => setEditNewPassword(e.target.value)}
+                    placeholder="Nhập tối thiểu 8 ký tự nếu muốn đổi mật khẩu..."
+                    className="w-full px-3 py-2 bg-heritage-ivory-50 border border-heritage-ivory-400 rounded-xl text-xs text-heritage-ink-900 font-mono pr-10 focus:outline-none focus:ring-2 focus:ring-heritage-red-600"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowEditPassword(!showEditPassword)}
+                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-heritage-ink-400"
+                  >
+                    {showEditPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
+                </div>
+              </div>
+
+              {actionErrorMsg && (
+                <div className="p-2.5 bg-red-50 border border-red-300 text-red-900 rounded-xl text-[11px] flex items-center space-x-2">
+                  <AlertCircle className="w-4 h-4 text-red-600 flex-shrink-0" />
+                  <span>{actionErrorMsg}</span>
+                </div>
+              )}
 
               <div className="pt-3 flex items-center justify-end space-x-2 border-t border-heritage-ivory-200">
                 <button
@@ -1580,7 +2239,7 @@ export const PasswordManager: React.FC = () => {
                 </button>
                 <button
                   type="submit"
-                  disabled={isSubmittingEdit || !editFullName}
+                  disabled={isSubmittingEdit || !editFullName || !editEmail}
                   className="px-5 py-2 bg-heritage-red-800 hover:bg-heritage-red-700 text-white rounded-xl font-bold flex items-center space-x-1.5 shadow-sm"
                 >
                   {isSubmittingEdit ? (
@@ -1726,6 +2385,123 @@ export const PasswordManager: React.FC = () => {
                 >
                   <CheckCircle2 className="w-4 h-4 text-heritage-gold-300" />
                   <span>Xác Nhận Cấp Mật Khẩu</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* ========================================================================= */}
+      {/* MODAL 5: KHAI BÁO / CHỈNH SỬA TỔ CHUYÊN MÔN (z-[60] đè trên Modal 1/2)    */}
+      {/* ========================================================================= */}
+      {isDeptModalOpen && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/65 backdrop-blur-sm animate-fadeIn">
+          <div className="w-full max-w-md bg-white border border-heritage-gold-300 rounded-2xl shadow-2xl overflow-hidden">
+            <div className="bg-gradient-to-r from-heritage-red-800 to-heritage-red-900 px-6 py-4 text-white flex items-center justify-between">
+              <div className="flex items-center space-x-2.5">
+                <Building2 className="w-5 h-5 text-heritage-gold-300" />
+                <h4 className="font-serif font-bold text-base">
+                  {editingDepartment ? 'Chỉnh Sửa Tổ Chuyên Môn' : 'Khai Báo Tổ Chuyên Môn Mới'}
+                </h4>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsDeptModalOpen(false)}
+                className="p-1 rounded text-white/80 hover:text-white"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <form onSubmit={handleSaveDepartment} className="p-6 space-y-4 text-xs">
+              <div>
+                <label className="block font-semibold text-heritage-ink-800 mb-1">
+                  Tên Tổ chuyên môn / Phòng ban <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={deptName}
+                  onChange={(e) => setDeptName(e.target.value)}
+                  placeholder="Ví dụ: Tổ Nghệ thuật - GDTC, Tổ Khoa học Xã hội..."
+                  className="w-full px-3 py-2 bg-heritage-ivory-50 border border-heritage-ivory-400 rounded-xl text-xs text-heritage-ink-900 focus:outline-none focus:ring-2 focus:ring-heritage-red-600"
+                />
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="block font-semibold text-heritage-ink-800 mb-1">
+                    Mã viết tắt (Tùy chọn)
+                  </label>
+                  <input
+                    type="text"
+                    value={deptCode}
+                    onChange={(e) => setDeptCode(e.target.value.toUpperCase())}
+                    placeholder="VD: KHXH, NT-GDTC..."
+                    className="w-full px-3 py-2 bg-heritage-ivory-50 border border-heritage-ivory-400 rounded-xl text-xs text-heritage-ink-900 font-mono uppercase focus:outline-none focus:ring-2 focus:ring-heritage-red-600"
+                  />
+                </div>
+
+                <div>
+                  <label className="block font-semibold text-heritage-ink-800 mb-1">
+                    Tổ trưởng / Phụ trách
+                  </label>
+                  <input
+                    type="text"
+                    value={deptHeadName}
+                    onChange={(e) => setDeptHeadName(e.target.value)}
+                    placeholder="VD: Thầy Nguyễn Văn A"
+                    className="w-full px-3 py-2 bg-heritage-ivory-50 border border-heritage-ivory-400 rounded-xl text-xs text-heritage-ink-900 focus:outline-none focus:ring-2 focus:ring-heritage-red-600"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block font-semibold text-heritage-ink-800 mb-1">
+                  Mô tả chức năng / Nhiệm vụ chuyên môn
+                </label>
+                <textarea
+                  rows={3}
+                  value={deptDescription}
+                  onChange={(e) => setDeptDescription(e.target.value)}
+                  placeholder="Mô tả ngắn về phạm vi chuyên môn hoặc nội dung phụ trách trong Không gian Văn hóa Hồ Chí Minh..."
+                  className="w-full px-3 py-2 bg-heritage-ivory-50 border border-heritage-ivory-400 rounded-xl text-xs text-heritage-ink-900 focus:outline-none focus:ring-2 focus:ring-heritage-red-600 resize-none"
+                />
+              </div>
+
+              {editingDepartment && (
+                <div className="p-2.5 bg-amber-50 border border-amber-200 text-amber-900 rounded-xl text-[11px] leading-relaxed">
+                  💡 Nếu bạn đổi tên tổ chuyên môn, hệ thống sẽ tự động cập nhật đồng bộ tên tổ mới cho toàn bộ giáo viên đang thuộc tổ <strong>"{editingDepartment.name}"</strong> trên Cloud.
+                </div>
+              )}
+
+              {deptErrorMsg && (
+                <div className="p-2.5 bg-red-50 border border-red-300 text-red-900 rounded-xl text-[11px] flex items-center space-x-2">
+                  <AlertCircle className="w-4 h-4 text-red-600 flex-shrink-0" />
+                  <span>{deptErrorMsg}</span>
+                </div>
+              )}
+
+              <div className="pt-3 flex items-center justify-end space-x-2 border-t border-heritage-ivory-200">
+                <button
+                  type="button"
+                  onClick={() => setIsDeptModalOpen(false)}
+                  className="px-4 py-2 border border-heritage-ivory-300 rounded-xl hover:bg-heritage-ivory-100 text-heritage-ink-700 font-semibold"
+                >
+                  Hủy bỏ
+                </button>
+                <button
+                  type="submit"
+                  disabled={isSavingDept || !deptName.trim()}
+                  className="px-5 py-2 bg-heritage-red-800 hover:bg-heritage-red-700 text-white rounded-xl font-bold flex items-center space-x-1.5 shadow-sm"
+                >
+                  {isSavingDept ? (
+                    <RefreshCw className="w-4 h-4 animate-spin text-heritage-gold-300" />
+                  ) : (
+                    <Check className="w-4 h-4 text-heritage-gold-300" />
+                  )}
+                  <span>{editingDepartment ? 'Lưu Cập Nhật Tổ' : 'Xác Nhận Khai Báo'}</span>
                 </button>
               </div>
             </form>

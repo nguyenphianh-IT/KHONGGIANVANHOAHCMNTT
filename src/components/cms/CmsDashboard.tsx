@@ -1007,7 +1007,7 @@ export const CmsDashboard: React.FC<CmsDashboardProps> = ({ isOpen, onClose }) =
               >
                 <div className="flex items-center space-x-3 min-w-0 pr-2">
                   <KeyRound className={`w-4 h-4 flex-shrink-0 ${activeNav === 'password-manager' ? 'text-heritage-gold-300' : 'text-heritage-gold-600/80 group-hover:text-heritage-red-700'}`} />
-                  <span className="truncate">9. Quản Trị Mật Khẩu</span>
+                  <span className="truncate">9. Tài Khoản & Tổ CM</span>
                 </div>
                 <span className={`shrink-0 text-[10px] font-bold px-2 py-0.5 rounded-md whitespace-nowrap transition-colors ${
                   activeNav === 'password-manager' ? 'bg-white/20 text-white' : 'bg-amber-100 text-amber-900 border border-amber-300/80'

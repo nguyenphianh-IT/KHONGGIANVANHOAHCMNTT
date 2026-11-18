@@ -77,6 +77,7 @@ var SYSTEM_AUTHOR_ID = "c4821ce7-7c41-45d2-bb9d-ebf7b2228004";
 var RESERVED_CONTEST_ID = "a0000000-0000-0000-0000-000000000001";
 var RESERVED_RESOURCES_ID = "a0000000-0000-0000-0000-000000000002";
 var RESERVED_MEDIA_LIBRARY_ID = "a0000000-0000-0000-0000-000000000003";
+var RESERVED_DEPARTMENTS_ID = "a0000000-0000-0000-0000-000000000004";
 function toValidUuid(id) {
   if (!id) return "f" + "0".repeat(31);
   const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -143,11 +144,11 @@ async function handleGetCmsArticles() {
       "d0000000-0000-0000-0000-000000000003"
     ]);
     const filteredRevs = revsData.filter((r) => {
-      if (r.item_id === RESERVED_CONTEST_ID || r.item_id === RESERVED_RESOURCES_ID || r.item_id === RESERVED_MEDIA_LIBRARY_ID) return false;
+      if (r.item_id === RESERVED_CONTEST_ID || r.item_id === RESERVED_RESOURCES_ID || r.item_id === RESERVED_MEDIA_LIBRARY_ID || r.item_id === RESERVED_DEPARTMENTS_ID) return false;
       if (deletedItemIds.has(r.item_id) || deletedItemIds.has(r.id)) return false;
       if (r.status === "archived") return false;
       const title = (r.title || "").trim();
-      if (title.includes("H\u1ED3 S\u01A1 H\u1ED9i Thi") || title.includes("Kho T\u01B0 Li\u1EC7u S\u1ED1 H\xF3a") || title.includes("Kho Media")) return false;
+      if (title.includes("H\u1ED3 S\u01A1 H\u1ED9i Thi") || title.includes("Kho T\u01B0 Li\u1EC7u S\u1ED1 H\xF3a") || title.includes("Kho Media") || title.includes("Danh M\u1EE5c T\u1ED5 Chuy\xEAn M\xF4n")) return false;
       if (title === "Test" || title === "B\u1EA3n th\u1EA3o nghi\xEAn c\u1EE9u Di ch\xFAc B\xE1c H\u1ED3" || title === "L\u1EDDi k\xEAu g\u1ECDi to\xE0n qu\u1ED1c kh\xE1ng chi\u1EBFn n\u0103m 1946" && r.status === "rejected") {
         return false;
       }
