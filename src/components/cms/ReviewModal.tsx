@@ -10,6 +10,7 @@ interface ReviewModalProps {
   article: ArticleData | null;
   currentUserId?: string;
   currentUserName: string;
+  isAdminRole?: boolean;
   onApprove: (articleId: string, feedback: string) => Promise<void>;
   onReject: (articleId: string, feedback: string) => Promise<void>;
   onSwitchPersona?: (role: string) => void;
@@ -21,6 +22,7 @@ export const ReviewModal: React.FC<ReviewModalProps> = ({
   article,
   currentUserId,
   currentUserName,
+  isAdminRole = false,
   onApprove,
   onReject,
   onSwitchPersona,
@@ -31,14 +33,16 @@ export const ReviewModal: React.FC<ReviewModalProps> = ({
 
   if (!isOpen || !article) return null;
 
-  // Check Four-Eyes violation: Author cannot approve own article!
-  const isSelfApproval = 
+  // Check Four-Eyes violation: Biên tập viên thường không được tự duyệt bài của chính mình.
+  // Quản trị viên / Ban Giám Hiệu (isAdminRole) được phép xác nhận phê duyệt bài chỉnh sửa để tránh bị kẹt hàng đợi.
+  const isSameAuthor =
     (article.author_id && currentUserId && article.author_id === currentUserId) ||
     (article.author_name && currentUserName && article.author_name.toLowerCase().trim() === currentUserName.toLowerCase().trim());
+  const isBlockedSelfApproval = Boolean(isSameAuthor && !isAdminRole);
 
   const handleApprove = async () => {
-    if (isSelfApproval) {
-      alert('VI PHẠM QUY TẮC 4 MẮT: Bạn không thể tự phê duyệt bài viết của chính mình!');
+    if (isBlockedSelfApproval) {
+      alert('VI PHẠM QUY TẮC 4 MẮT: Biên tập viên không thể tự phê duyệt bài viết của chính mình!');
       return;
     }
     const targetKey = article.id || article.slug;
@@ -102,13 +106,13 @@ export const ReviewModal: React.FC<ReviewModalProps> = ({
 
         {/* Four-Eyes Safety Banner */}
         <div className="p-4 border-b border-heritage-gold-300/40 flex-shrink-0 bg-white">
-          {isSelfApproval ? (
+          {isBlockedSelfApproval ? (
             <div className="p-3 bg-red-50 border border-red-300 rounded-xl flex items-start space-x-3 text-red-900">
               <AlertTriangle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
               <div className="text-xs">
                 <p className="font-bold">CẢNH BÁO VI PHẠM QUY TẮC AN TOÀN 4 MẮT (FOUR-EYES ENFORCEMENT):</p>
                 <p className="mt-0.5 text-red-700">
-                  Bạn đang đăng nhập với tư cách tác giả của bài viết này (<strong>{currentUserName}</strong>). Theo quy chế quản trị, <strong>tác giả tuyệt đối không được phép tự phê duyệt bài viết do chính mình biên soạn</strong>. Vui lòng chuyển sang vai trò Cán bộ Quản trị Trưởng (Ban Giám Hiệu) để duyệt bài!
+                  Bạn đang đăng nhập với tư cách biên tập viên tác giả của bài viết này (<strong>{currentUserName}</strong>). Theo quy chế quản trị, <strong>biên tập viên không được phép tự phê duyệt bài viết do chính mình biên soạn</strong>. Vui lòng chuyển sang vai trò Cán bộ Quản trị Trưởng (Ban Giám Hiệu) để duyệt bài!
                 </p>
                 {onSwitchPersona && (
                   <button
@@ -120,6 +124,16 @@ export const ReviewModal: React.FC<ReviewModalProps> = ({
                     <span>Chuyển sang vai trò Ban Giám Hiệu (Để thẩm định & duyệt ngay)</span>
                   </button>
                 )}
+              </div>
+            </div>
+          ) : isSameAuthor && isAdminRole ? (
+            <div className="p-3 bg-amber-50 border border-amber-300 rounded-xl flex items-center space-x-3 text-amber-950">
+              <ShieldCheck className="w-5 h-5 text-amber-700 flex-shrink-0" />
+              <div className="text-xs">
+                <p className="font-bold">QUYỀN PHÊ DUYỆT QUẢN TRỊ VIÊN / BAN GIÁM HIỆU:</p>
+                <p className="text-amber-800 mt-0.5">
+                  Bạn đang thẩm định bản chỉnh sửa bài viết do tài khoản Quản trị (<strong>{currentUserName}</strong>) biên tập. Bạn có thể bấm <strong>Phê duyệt &amp; Xuất bản</strong> trực tiếp để cập nhật ngay lên trang chủ.
+                </p>
               </div>
             </div>
           ) : (
@@ -235,9 +249,9 @@ export const ReviewModal: React.FC<ReviewModalProps> = ({
 
             <button
               onClick={handleApprove}
-              disabled={isSelfApproval || isSubmitting}
+              disabled={isBlockedSelfApproval || isSubmitting}
               className={`px-5 py-2 rounded-lg text-xs font-bold flex items-center space-x-1.5 transition shadow-sm ${
-                isSelfApproval
+                isBlockedSelfApproval
                   ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
                   : 'bg-emerald-700 hover:bg-emerald-800 text-white shadow-emerald-800/20'
               }`}

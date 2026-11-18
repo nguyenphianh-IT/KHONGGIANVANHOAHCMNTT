@@ -141,6 +141,23 @@ export const CmsDashboard: React.FC<CmsDashboardProps> = ({ isOpen, onClose }) =
     };
   }, [isOpen]);
 
+  // Tự động đồng bộ bài viết mới nhất từ Cloud mỗi khi chuyển sang Hàng Đợi Duyệt 4 Mắt hoặc Quản Lý Bài Viết
+  useEffect(() => {
+    if (!isOpen) return;
+    if (activeNav === 'pending' || activeNav === 'articles' || activeNav === 'published' || activeNav === 'overview') {
+      let active = true;
+      fetchArticlesFromSupabase().then((res) => {
+        if (active && res.success && res.articles) {
+          setArticles(res.articles);
+          setIsCloudSynced(true);
+        }
+      });
+      return () => {
+        active = false;
+      };
+    }
+  }, [isOpen, activeNav]);
+
   // Thao tác đồng bộ thủ công từ Cloud Database
   const handleManualCloudSync = async () => {
     setIsSyncing(true);
@@ -247,16 +264,34 @@ export const CmsDashboard: React.FC<CmsDashboardProps> = ({ isOpen, onClose }) =
   const totalRealViews = Object.values(viewsMap).reduce((sum, val) => sum + (typeof val === 'number' ? val : 0), 0);
 
 
-  // Switch active persona for testing Four-Eyes governance
+  const isRealAdmin =
+    roles.some((r) => r.code === 'admin' || r.code === 'super_admin') ||
+    currentPersona.role === 'admin';
+
+  // Switch active persona for Four-Eyes governance (tự động tránh trùng tác giả bài đang duyệt)
   const handleSwitchPersona = (role: string) => {
     if (role === 'admin') {
-      setCurrentPersona({
-        id: 'usr-bgh-reviewer',
-        name: 'Ban Giám Hiệu (Thẩm Định Trưởng)',
-        role: 'admin',
-        roleLabel: 'Ban Giám Hiệu (Quản Trị)',
-        avatar: '🏛️',
-      });
+      const conflictWithDefaultBgh =
+        reviewingArticle?.author_id === 'usr-bgh-reviewer' ||
+        reviewingArticle?.author_name === 'Ban Giám Hiệu (Thẩm Định Trưởng)';
+
+      setCurrentPersona(
+        conflictWithDefaultBgh
+          ? {
+              id: 'usr-bgh-reviewer-2',
+              name: 'Hội Đồng Kiểm Duyệt 4 Mắt (BGH)',
+              role: 'admin',
+              roleLabel: 'Ban Giám Hiệu (Quản Trị)',
+              avatar: '🏛️',
+            }
+          : {
+              id: 'usr-bgh-reviewer',
+              name: 'Ban Giám Hiệu (Thẩm Định Trưởng)',
+              role: 'admin',
+              roleLabel: 'Ban Giám Hiệu (Quản Trị)',
+              avatar: '🏛️',
+            }
+      );
       setToastMsg({
         type: 'success',
         text: 'Đã chuyển vai trò sang Ban Giám Hiệu (Đủ điều kiện thẩm định & phê duyệt 4 mắt).',
@@ -288,8 +323,8 @@ export const CmsDashboard: React.FC<CmsDashboardProps> = ({ isOpen, onClose }) =
       targetArticle = {
         ...article,
         status: 'draft',
-        author_id: currentPersona.id,
-        author_name: currentPersona.name,
+        author_id: article.author_id || currentPersona.id,
+        author_name: article.author_name || currentPersona.name,
         updated_at: nowIso,
       };
       updatedList = articles.map((a) => (a.id === targetId ? targetArticle : a));
@@ -315,10 +350,10 @@ export const CmsDashboard: React.FC<CmsDashboardProps> = ({ isOpen, onClose }) =
     setIsCloudSynced(cloudRes.success);
 
     setToastMsg({
-      type: 'success',
+      type: cloudRes.success ? 'success' : 'error',
       text: cloudRes.success
         ? `Đã lưu bản nháp "${article.title}" và đồng bộ lên Database Cloud thành công!`
-        : `Đã lưu bản nháp "${article.title}" cục bộ.`,
+        : `Lỗi đồng bộ bản nháp lên Cloud: ${cloudRes.error || 'Vui lòng kiểm tra dung lượng ảnh hoặc kết nối mạng.'}`,
     });
   };
 
@@ -330,9 +365,9 @@ export const CmsDashboard: React.FC<CmsDashboardProps> = ({ isOpen, onClose }) =
       ...article,
       id: article.id || `art-${Date.now()}`,
       status: 'pending',
-      // Ghi nhận đúng người chỉnh sửa/nộp duyệt lần cuối để áp dụng chuẩn xác quy tắc kiểm duyệt 4 mắt
-      author_id: currentPersona.id,
-      author_name: currentPersona.name,
+      // Giữ nguyên tác giả gốc nếu Admin đang thao tác trên bài của GV; nếu GV tự soạn/sửa thì ghi nhận tác giả hiện tại
+      author_id: article.author_id || currentPersona.id,
+      author_name: article.author_name || currentPersona.name,
       updated_at: nowIso,
     };
 
@@ -342,11 +377,6 @@ export const CmsDashboard: React.FC<CmsDashboardProps> = ({ isOpen, onClose }) =
 
     setArticles(updatedList);
     saveStoredArticles(updatedList);
-
-    // Tự động chuyển ngay sang tab "Hàng Đợi Duyệt 4 Mắt" để người dùng thấy bài lập tức
-    setActiveNav('pending');
-    setStatusFilter('all');
-    setIsEditing(false);
 
     // Add Audit Log
     const newLog: AuditLogItem = {
@@ -364,45 +394,44 @@ export const CmsDashboard: React.FC<CmsDashboardProps> = ({ isOpen, onClose }) =
     addStoredAuditLog(newLog);
     setAuditLogs((prev) => [newLog, ...prev]);
 
-    // Đồng bộ lên Database Cloud để Ban Giám Hiệu trên thiết bị khác thấy ngay
+    // Đồng bộ lên Database Cloud và ĐỢI xác nhận thực tế trước khi hoàn tất
     setIsCloudSynced(false);
     setToastMsg({
       type: 'info',
       text: `Đang lưu và đồng bộ bài viết "${updated.title}" lên Cloud Database cho Ban Giám Hiệu...`,
     });
 
-    saveArticleToCloud(updated).then((cloudRes) => {
-      setIsCloudSynced(cloudRes.success);
-      if (cloudRes.success) {
-        if (cloudRes.article?.updated_at) {
-          const syncedItem: ArticleData = {
-            ...updated,
-            slug: cloudRes.article.slug || updated.slug,
-            updated_at: cloudRes.article.updated_at,
-          };
-          setArticles((prev) => {
-            const next = prev.map((a) => (a.id === syncedItem.id ? syncedItem : a));
-            saveStoredArticles(next);
-            return next;
-          });
-        }
-        setToastMsg({
-          type: 'success',
-          text: `Đã chuyển bài viết "${updated.title}" sang Hàng Đợi Kiểm Duyệt 4 Mắt và đồng bộ Cloud thành công! Ban Giám Hiệu trên mọi thiết bị có thể thẩm định ngay.`,
-        });
-      } else {
-        setToastMsg({
-          type: 'error',
-          text: `Bài viết đã lưu cục bộ nhưng chưa thể đồng bộ lên Cloud: ${cloudRes.error || 'Lỗi mạng'}. Vui lòng bấm "Đồng bộ Cloud" để thử lại.`,
+    const cloudRes = await saveArticleToCloud(updated);
+    setIsCloudSynced(cloudRes.success);
+
+    // Tự động chuyển sang tab "Hàng Đợi Duyệt 4 Mắt"
+    setActiveNav('pending');
+    setStatusFilter('all');
+    setIsEditing(false);
+
+    if (cloudRes.success) {
+      if (cloudRes.article?.updated_at) {
+        const syncedItem: ArticleData = {
+          ...updated,
+          slug: cloudRes.article.slug || updated.slug,
+          updated_at: cloudRes.article.updated_at,
+        };
+        setArticles((prev) => {
+          const next = prev.map((a) => (a.id === syncedItem.id ? syncedItem : a));
+          saveStoredArticles(next);
+          return next;
         });
       }
-    }).catch((err) => {
-      setIsCloudSynced(false);
+      setToastMsg({
+        type: 'success',
+        text: `Đã chuyển bài viết "${updated.title}" sang Hàng Đợi Kiểm Duyệt 4 Mắt và đồng bộ Cloud thành công!`,
+      });
+    } else {
       setToastMsg({
         type: 'error',
-        text: `Lỗi kết nối Cloud: ${err?.message || 'Không thể đồng bộ'}.`,
+        text: `Bài viết đã lưu cục bộ nhưng chưa thể đồng bộ lên Cloud: ${cloudRes.error || 'Lỗi mạng'}. Vui lòng kiểm tra dung lượng ảnh hoặc bấm "Đồng bộ Cloud".`,
       });
-    });
+    }
   };
 
   // 3. Action: Four-Eyes Approve
@@ -410,22 +439,25 @@ export const CmsDashboard: React.FC<CmsDashboardProps> = ({ isOpen, onClose }) =
     const target = articles.find((a) => a.id === articleId || a.slug === articleId);
     if (!target) return;
 
-    // Four-Eyes Rule Check!
-    if (target.author_id === currentPersona.id || target.author_name === currentPersona.name) {
+    // Quy tắc 4 mắt: Biên tập viên thường tuyệt đối không được tự duyệt bài của mình.
+    // Quản trị viên / Ban Giám Hiệu (isRealAdmin) được phép phê duyệt xác nhận bài đã chỉnh sửa để không bao giờ bị khóa kẹt (deadlock).
+    const isSelfAuthor =
+      target.author_id === currentPersona.id ||
+      (target.author_name && currentPersona.name && target.author_name.toLowerCase().trim() === currentPersona.name.toLowerCase().trim());
+
+    if (isSelfAuthor && !isRealAdmin) {
       setToastMsg({
         type: 'error',
-        text: 'VI PHẠM QUY TẮC 4 MẮT: Bạn không thể tự phê duyệt bài viết của chính mình!',
+        text: 'VI PHẠM QUY TẮC 4 MẮT: Biên tập viên không thể tự phê duyệt bài viết của chính mình!',
       });
       return;
     }
 
     const nowIso = new Date().toISOString();
-    // Atomic Approve & Publish LOCALLY first (Phản hồi tức thì không chờ mạng)
     const approvedItem: ArticleData = { ...target, status: 'published' as const, updated_at: nowIso };
     const targetId = approvedItem.id;
-    const targetSlug = approvedItem.slug;
     const updatedList = articles.map((a) =>
-      (targetId && a.id === targetId) || (targetSlug && a.slug === targetSlug) ? approvedItem : a
+      targetId ? (a.id === targetId ? approvedItem : a) : (a.slug === approvedItem.slug ? approvedItem : a)
     );
     setArticles(updatedList);
     saveStoredArticles(updatedList);
@@ -444,51 +476,52 @@ export const CmsDashboard: React.FC<CmsDashboardProps> = ({ isOpen, onClose }) =
     addStoredAuditLog(newLog);
     setAuditLogs((prev) => [newLog, ...prev]);
 
-    setToastMsg({
-      type: 'success',
-      text: `Phê duyệt 4 mắt thành công! Bài viết "${target.title}" đã được duyệt xuất bản.`,
-    });
-
-    // Đồng bộ xuất bản lên Database Cloud ở chế độ nền
+    // Đợi đồng bộ xuất bản lên Database Cloud thành công thực tế
     setIsCloudSynced(false);
-    saveArticleToCloud(approvedItem)
-      .then((cloudRes) => {
-        setIsCloudSynced(cloudRes.success);
-        if (cloudRes.success) {
-          setToastMsg({
-            type: 'success',
-            text: `Đã đồng bộ xuất bản bài viết "${target.title}" lên Cloud Database cho mọi thiết bị!`,
-          });
-        }
-      })
-      .catch((cloudErr) => {
-        console.warn('[Cloud publish background error]', cloudErr);
-        setIsCloudSynced(false);
+    const cloudRes = await saveArticleToCloud(approvedItem);
+    setIsCloudSynced(cloudRes.success);
+
+    if (cloudRes.success) {
+      if (cloudRes.article?.updated_at) {
+        const syncedApproved: ArticleData = {
+          ...approvedItem,
+          slug: cloudRes.article.slug || approvedItem.slug,
+          updated_at: cloudRes.article.updated_at,
+        };
+        setArticles((prev) => {
+          const next = prev.map((a) => (a.id === syncedApproved.id ? syncedApproved : a));
+          saveStoredArticles(next);
+          return next;
+        });
+      }
+      setToastMsg({
+        type: 'success',
+        text: `Phê duyệt & Xuất bản thành công bài viết "${target.title}" lên Cloud Database cho mọi thiết bị!`,
       });
+    } else {
+      setToastMsg({
+        type: 'error',
+        text: `Lỗi đồng bộ phê duyệt lên Cloud: ${cloudRes.error || 'Lỗi mạng'}. Vui lòng thử lại!`,
+      });
+      throw new Error(cloudRes.error || 'Không thể đồng bộ phê duyệt lên Cloud');
+    }
   };
 
   // 4. Action: Direct Approve from FullScreenEditor
   const handleDirectEditorApprove = async (article: ArticleData) => {
     const nowIso = new Date().toISOString();
+    const isExisting = Boolean(article.id && articles.some((a) => a.id === article.id));
     const approvedItem: ArticleData = {
       ...article,
       id: article.id || `art-${Date.now()}`,
       status: 'published' as const,
+      author_id: article.author_id || currentPersona.id,
+      author_name: article.author_name || currentPersona.name,
       updated_at: nowIso,
     };
 
-    const targetId = approvedItem.id;
-    const targetSlug = approvedItem.slug;
-    const exists = articles.some(
-      (a) => (targetId && a.id === targetId) || (targetSlug && a.slug === targetSlug)
-    );
-
-    const updatedList = exists
-      ? articles.map((a) =>
-          (targetId && a.id === targetId) || (targetSlug && a.slug === targetSlug)
-            ? approvedItem
-            : a
-        )
+    const updatedList = isExisting
+      ? articles.map((a) => (a.id === approvedItem.id ? approvedItem : a))
       : [approvedItem, ...articles];
 
     setArticles(updatedList);
@@ -502,24 +535,40 @@ export const CmsDashboard: React.FC<CmsDashboardProps> = ({ isOpen, onClose }) =
       actor: currentPersona.name,
       role: currentPersona.roleLabel,
       decision: 'approved',
-      feedback: 'Phê duyệt 4 mắt trực tiếp từ trình soạn thảo toàn màn hình.',
+      feedback: 'Phê duyệt 4 mắt & xuất bản trực tiếp từ trình soạn thảo.',
       timestamp: nowIso.replace('T', ' ').substring(0, 19),
     };
     addStoredAuditLog(newLog);
     setAuditLogs((prev) => [newLog, ...prev]);
 
-    setToastMsg({
-      type: 'success',
-      text: `Phê duyệt và xuất bản thành công bài viết "${approvedItem.title}"!`,
-    });
-
-    // Đồng bộ lên Cloud
+    // Đợi đồng bộ lên Cloud thành công thực tế
     setIsCloudSynced(false);
-    saveArticleToCloud(approvedItem)
-      .then((cloudRes) => {
-        setIsCloudSynced(cloudRes.success);
-      })
-      .catch(() => setIsCloudSynced(false));
+    const cloudRes = await saveArticleToCloud(approvedItem);
+    setIsCloudSynced(cloudRes.success);
+
+    if (cloudRes.success) {
+      if (cloudRes.article?.updated_at) {
+        const syncedApproved: ArticleData = {
+          ...approvedItem,
+          slug: cloudRes.article.slug || approvedItem.slug,
+          updated_at: cloudRes.article.updated_at,
+        };
+        setArticles((prev) => {
+          const next = prev.map((a) => (a.id === syncedApproved.id ? syncedApproved : a));
+          saveStoredArticles(next);
+          return next;
+        });
+      }
+      setToastMsg({
+        type: 'success',
+        text: `Phê duyệt và xuất bản thành công bài viết "${approvedItem.title}" lên Cloud!`,
+      });
+    } else {
+      setToastMsg({
+        type: 'error',
+        text: `Lỗi đồng bộ xuất bản lên Cloud: ${cloudRes.error || 'Lỗi mạng'}. Vui lòng thử lại!`,
+      });
+    }
   };
 
   // 5. Action: Reject Article
@@ -1906,6 +1955,7 @@ export const CmsDashboard: React.FC<CmsDashboardProps> = ({ isOpen, onClose }) =
           article={reviewingArticle}
           currentUserId={currentPersona.id}
           currentUserName={currentPersona.name}
+          isAdminRole={isRealAdmin}
           onApprove={handleApproveArticle}
           onReject={handleRejectArticle}
           onSwitchPersona={handleSwitchPersona}

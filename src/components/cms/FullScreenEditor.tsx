@@ -389,7 +389,7 @@ export const FullScreenEditor: React.FC<FullScreenEditorProps> = ({
         pdf_attachment: pdfAttachment,
         // Lưu nháp luôn chuyển sang 'draft' để mọi điều chỉnh bài đã đăng đều phải qua kiểm duyệt 4 mắt
         status: 'draft',
-        author_name: currentUserName || initialArticle?.author_name,
+        author_name: initialArticle?.author_name || currentUserName,
         updated_at: nowIso,
       };
       await onSaveDraft(article);
@@ -436,7 +436,7 @@ export const FullScreenEditor: React.FC<FullScreenEditorProps> = ({
         quote_id: selectedQuoteId,
         pdf_attachment: pdfAttachment,
         status: 'pending',
-        author_name: currentUserName || initialArticle?.author_name,
+        author_name: initialArticle?.author_name || currentUserName,
         updated_at: nowIso,
       };
       await onSubmitReview(article);
