@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { SchoolActivity } from '../types';
 import {
-  X, Calendar, Users, Award, BookOpen, Printer,
+  X, Calendar, Users, BookOpen, Printer,
   Sparkles, CheckCircle2, ShieldCheck, Quote, Eye, User
 } from 'lucide-react';
 import { ContentRenderer } from './cms/ContentRenderer';
@@ -261,24 +261,6 @@ export const ActivityModal: React.FC<ActivityModalProps> = ({ activity, onClose 
                 mediaAssets={activity.mediaAssets}
               />
             </div>
-
-            {/* Highlights (Điểm nhấn nổi bật) */}
-            {activity.highlights && activity.highlights.length > 0 && (
-              <div className="p-5 sm:p-6 bg-gradient-to-br from-heritage-gold-50/80 via-heritage-ivory-100 to-heritage-gold-100/50 rounded-2xl border border-heritage-gold-300 shadow-sm space-y-3">
-                <h3 className="font-serif font-bold text-base sm:text-lg text-heritage-red-900 flex items-center space-x-2">
-                  <Award className="w-5 h-5 text-heritage-gold-600" />
-                  <span>Điểm nhấn nổi bật của hoạt động</span>
-                </h3>
-                <ul className="space-y-2.5 text-sm sm:text-base text-heritage-ink-800">
-                  {activity.highlights.map((h, idx) => (
-                    <li key={idx} className="flex items-start space-x-2.5">
-                      <span className="text-heritage-gold-600 font-bold text-lg leading-none mt-0.5">•</span>
-                      <span className="leading-relaxed">{h}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
 
             {/* Quote of President Ho Chi Minh (Linh hoạt theo danh ngôn được chọn) */}
             <div className="my-8 p-6 sm:p-7 bg-gradient-to-br from-heritage-red-900 via-heritage-red-850 to-heritage-red-950 text-white rounded-3xl shadow-xl border border-heritage-gold-400/50 relative overflow-hidden">

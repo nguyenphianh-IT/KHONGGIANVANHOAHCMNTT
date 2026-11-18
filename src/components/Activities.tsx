@@ -47,11 +47,7 @@ const mapArticleToActivity = (art: ArticleData): SchoolActivity => {
     isSampleData: false,
     categoryLabel: 'Hoạt Động & Phong Trào',
     badgeText: '',
-    highlights: [
-      'Tin bài hoạt động chính thức từ Không gian văn hóa Hồ Chí Minh',
-      'Đã qua quy trình thẩm định 4 mắt của Ban Giám Hiệu nhà trường',
-      art.references ? `Xuất xứ tư liệu: ${art.references}` : 'Hoạt động phong trào giáo dục truyền thống học đường'
-    ],
+    highlights: [],
     mediaAssets: art.media_assets,
     tags: art.topic ? [art.topic] : ['Hoạt động học đường', 'Nguyễn Trung Trực'],
     quoteId: art.quote_id,
