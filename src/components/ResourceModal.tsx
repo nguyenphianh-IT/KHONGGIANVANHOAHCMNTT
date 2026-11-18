@@ -243,7 +243,7 @@ export const ResourceModal: React.FC<ResourceModalProps> = ({ item, onClose }) =
                     <User className="w-4 h-4" />
                   </div>
                   <div>
-                    <span className="text-heritage-ink-500 text-[11px] block font-sans">Biên soạn & Giảng dạy:</span>
+                    <span className="text-heritage-ink-500 text-[11px] block font-sans">Biên soạn:</span>
                     <strong className="text-heritage-ink-900 font-serif">{item.authorOrSource}</strong>
                   </div>
                 </div>
