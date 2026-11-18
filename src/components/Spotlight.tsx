@@ -142,7 +142,7 @@ export const Spotlight: React.FC = () => {
       if (!isCmsA && isCmsB) return 1;
       return 0;
     });
-    return sorted.slice(0, 4);
+    return sorted.slice(0, 5);
   }, [allResources]);
 
   // 3. TƯ LIỆU ĐỌC NHIỀU NHẤT (Top 3 tác phẩm theo số lượt đọc THỰC TẾ, không view ảo)
@@ -247,11 +247,11 @@ export const Spotlight: React.FC = () => {
         {/* ========================================================================= */}
         {/* MAIN BENTO / NEWSPAPER SHOWCASE GRID                                      */}
         {/* ========================================================================= */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start lg:items-stretch">
           {/* ----------------------------------------------------------------------- */}
           {/* LEFT COLUMN: TƯ LIỆU TIÊU ĐIỂM (Cột 7 / 12)                             */}
           {/* ----------------------------------------------------------------------- */}
-          <div className={`lg:col-span-7 space-y-6 ${mobileTab !== 'featured' ? 'hidden lg:block' : ''}`}>
+          <div className={`lg:col-span-7 flex flex-col gap-6 ${mobileTab !== 'featured' ? 'hidden lg:flex' : ''}`}>
             {/* GRAND FEATURE HERO CARD */}
             {featuredHero && (
               <div
@@ -344,7 +344,7 @@ export const Spotlight: React.FC = () => {
             )}
 
             {/* 2 SUB-FEATURED CARDS IN A COMPACT ROW */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 flex-1">
               {subFeatured.map((subItem) => (
                 <div
                   key={subItem.id}
@@ -411,9 +411,9 @@ export const Spotlight: React.FC = () => {
           {/* ----------------------------------------------------------------------- */}
           {/* RIGHT COLUMN: TƯ LIỆU MỚI & TƯ LIỆU ĐỌC NHIỀU (Cột 5 / 12)             */}
           {/* ----------------------------------------------------------------------- */}
-          <div className={`lg:col-span-5 space-y-6 ${mobileTab === 'featured' ? 'hidden lg:block' : ''}`}>
+          <div className={`lg:col-span-5 flex flex-col gap-6 ${mobileTab === 'featured' ? 'hidden lg:flex' : ''}`}>
             {/* 1. TƯ LIỆU MỚI CẬP NHẬT */}
-            <div className={`bg-white rounded-2xl sm:rounded-3xl p-5 sm:p-6 border-2 border-heritage-gold-300/80 hover:border-heritage-gold-500 shadow-heritage hover:shadow-heritage-hover hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between ${mobileTab === 'most_read' ? 'hidden lg:block' : ''}`}>
+            <div className={`bg-white rounded-2xl sm:rounded-3xl p-5 sm:p-6 border-2 border-heritage-gold-300/80 hover:border-heritage-gold-500 shadow-heritage hover:shadow-heritage-hover hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between flex-1 ${mobileTab === 'most_read' ? 'hidden lg:flex' : ''}`}>
               <div>
                 <div className="flex items-center justify-between pb-3.5 mb-3.5 border-b border-heritage-gold-200/60">
                   <div className="flex items-center space-x-2.5">
@@ -433,7 +433,7 @@ export const Spotlight: React.FC = () => {
                   </span>
                 </div>
 
-                {/* Items List (4 Items - Cân đối chiều cao hai cột) */}
+                {/* Items List (5 Items - Cân đối chiều cao hai cột) */}
                 <div className="divide-y divide-heritage-gold-100/70">
                   {latestResources.map((item) => (
                     <div
@@ -445,7 +445,7 @@ export const Spotlight: React.FC = () => {
                         <img
                           src={item.thumbnail}
                           alt={item.title}
-                          className="w-full h-full object-cover"
+                          className="w-full h-full object-cover object-[50%_20%]"
                         />
                         {item.pdfAttachment && (
                           <span className="absolute bottom-0.5 right-0.5 px-1 py-0.2 bg-emerald-800/95 text-emerald-100 text-[9px] font-bold rounded shadow">
