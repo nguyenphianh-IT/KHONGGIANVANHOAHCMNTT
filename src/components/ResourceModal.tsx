@@ -396,9 +396,12 @@ export const ResourceModal: React.FC<ResourceModalProps> = ({ item, onClose }) =
         {/* 3. FOOTER ACTIONS                                                         */}
         {/* ========================================================================= */}
         <footer className="bg-heritage-ivory-100 px-6 py-4 border-t border-heritage-gold-300/50 flex items-center justify-between flex-shrink-0 text-xs z-10">
-          <div className="flex items-center space-x-2 text-heritage-ink-500 font-medium hidden sm:flex">
+          <div
+            className="hidden sm:inline-flex items-center justify-center w-8 h-8 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-600"
+            title="Đã thẩm định nội dung chính thống"
+            aria-label="Đã thẩm định nội dung chính thống"
+          >
             <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-            <span>Đã thẩm định chuẩn mực chính trị & di sản tư tưởng Bác Hồ</span>
           </div>
 
           <div className="flex items-center space-x-3 ml-auto">
