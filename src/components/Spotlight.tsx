@@ -21,6 +21,8 @@ import {
   fetchCloudViewCounts
 } from '../lib/viewsStore';
 import { ResourceModal } from './ResourceModal';
+import { BookFlipbookModal } from './BookFlipbookModal';
+import { resolveArticleQuote } from '../data/quotesData';
 
 const mapArticleToResource = (art: ArticleData): ResourceItem => {
   const normCat = normalizeCategoryToHomepage(art.category);
@@ -36,16 +38,22 @@ const mapArticleToResource = (art: ArticleData): ResourceItem => {
     authorOrSource: art.author_name || 'Trường THCS Nguyễn Trung Trực',
     dateOrEra: art.updated_at || art.created_at || 'Mới xuất bản',
     thumbnail: resolveMediaUrl(art.featured_image, art.media_assets) || (normCat === 'video' ? '/images/timeline-ngoi-sao.png' : '/images/ho-chi-minh-tp-hcm.png'),
+    audioUrl: art.audio_url || undefined,
+    audioDuration: art.audio_duration || undefined,
+    pdfAttachment: art.pdf_attachment || undefined,
     badgeText: art.topic ? `⭐ ${art.topic}` : '⭐ Đã duyệt 4 Mắt (CMS)',
     isMockData: false,
     tags: [normCat, '4-eyes-approved', 'chinh-thuc', art.topic || '', art.category],
     mediaAssets: art.media_assets,
+    quoteId: art.quote_id,
+    quote: resolveArticleQuote(art.quote_id, art.custom_quote, 1),
   };
 };
 
 export const Spotlight: React.FC = () => {
   const [mobileTab, setMobileTab] = useState<'featured' | 'latest' | 'most_read'>('featured');
   const [activeModalItem, setActiveModalItem] = useState<ResourceItem | null>(null);
+  const [activeFlipbookItem, setActiveFlipbookItem] = useState<ResourceItem | null>(null);
   const [allResources, setAllResources] = useState<ResourceItem[]>([]);
   const [viewsMap, setViewsMap] = useState<Record<string, number>>(() => getAllViewCounts());
 
@@ -268,6 +276,12 @@ export const Spotlight: React.FC = () => {
                     <span className="px-3 py-1 bg-black/60 backdrop-blur-md text-white text-xs font-semibold rounded-full border border-white/20">
                       {featuredHero.categoryLabel}
                     </span>
+                    {featuredHero.pdfAttachment && (
+                      <span className="px-3 py-1 bg-emerald-950/90 backdrop-blur-md text-emerald-200 text-xs font-mono font-bold rounded-full border border-emerald-400/50 shadow flex items-center space-x-1">
+                        <BookOpen className="w-3.5 h-3.5 text-emerald-300" />
+                        <span>{featuredHero.pdfAttachment.totalPages} trang PDF</span>
+                      </span>
+                    )}
                   </div>
 
                   {/* Meta bottom inside photo */}
@@ -292,22 +306,38 @@ export const Spotlight: React.FC = () => {
                     {featuredHero.description}
                   </p>
 
-                  <div className="flex items-center justify-between pt-4 border-t border-heritage-gold-200/60">
+                  <div className="flex items-center justify-between gap-2 pt-4 border-t border-heritage-gold-200/60 flex-wrap">
                     <span className="text-xs font-semibold text-heritage-red-800 flex items-center space-x-1.5">
                       <ShieldCheck className="w-4 h-4 text-heritage-gold-600" />
                       <span>Đã thẩm định 4 mắt • Ban Giám Hiệu</span>
                     </span>
 
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setActiveModalItem(featuredHero);
-                      }}
-                      className="px-4 sm:px-5 py-2.5 bg-gradient-to-r from-heritage-red-800 to-heritage-red-900 hover:from-heritage-red-700 hover:to-heritage-red-800 text-white rounded-xl text-xs sm:text-sm font-bold flex items-center space-x-2 shadow-sm hover:shadow-md transition-all group-hover:bg-heritage-red-900"
-                    >
-                      <span>Đọc toàn văn tư liệu</span>
-                      <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                    </button>
+                    {featuredHero.pdfAttachment ? (
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setActiveFlipbookItem(featuredHero);
+                        }}
+                        className="px-4 sm:px-5 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-xs sm:text-sm font-bold flex items-center space-x-2 shadow-sm hover:shadow-md transition-all"
+                      >
+                        <BookOpen className="w-4 h-4" />
+                        <span>Đọc sách lật trang</span>
+                        <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                      </button>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setActiveModalItem(featuredHero);
+                        }}
+                        className="px-4 sm:px-5 py-2.5 bg-gradient-to-r from-heritage-red-800 to-heritage-red-900 hover:from-heritage-red-700 hover:to-heritage-red-800 text-white rounded-xl text-xs sm:text-sm font-bold flex items-center space-x-2 shadow-sm hover:shadow-md transition-all group-hover:bg-heritage-red-900"
+                      >
+                        <span>Đọc toàn văn tư liệu</span>
+                        <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                      </button>
+                    )}
                   </div>
                 </div>
               </div>
@@ -331,6 +361,12 @@ export const Spotlight: React.FC = () => {
                       <span className="absolute top-2.5 left-2.5 px-2.5 py-1 rounded-full text-[11px] font-bold bg-heritage-red-900/90 text-heritage-gold-200 backdrop-blur-md border border-heritage-gold-400/40 shadow-sm">
                         {subItem.categoryLabel}
                       </span>
+                      {subItem.pdfAttachment && (
+                        <span className="absolute top-2.5 right-2.5 px-2 py-0.5 rounded-md text-[10px] font-mono font-bold bg-emerald-950/90 text-emerald-200 backdrop-blur-md border border-emerald-400/50 shadow flex items-center space-x-1">
+                          <BookOpen className="w-3 h-3 text-emerald-300" />
+                          <span>{subItem.pdfAttachment.totalPages} trang</span>
+                        </span>
+                      )}
                     </div>
                     <div className="flex items-center space-x-2 text-[11px] text-heritage-ink-500 mb-1.5">
                       <Calendar className="w-3.5 h-3.5 text-heritage-red-700" />
@@ -344,14 +380,28 @@ export const Spotlight: React.FC = () => {
                     </p>
                   </div>
 
-                  <div className="mt-4 pt-3 border-t border-heritage-gold-200/60 flex items-center justify-between text-xs">
+                  <div className="mt-4 pt-3 border-t border-heritage-gold-200/60 flex items-center justify-between text-xs gap-2">
                     <span className="text-[11px] text-heritage-gold-600 font-semibold truncate max-w-[130px]">
                       {subItem.authorOrSource}
                     </span>
-                    <span className="text-heritage-red-800 font-bold flex items-center space-x-1 group-hover:translate-x-1 transition-all">
-                      <span>Xem</span>
-                      <ChevronRight className="w-3.5 h-3.5 text-heritage-red-800" />
-                    </span>
+                    {subItem.pdfAttachment ? (
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setActiveFlipbookItem(subItem);
+                        }}
+                        className="px-2.5 py-1 bg-emerald-700 hover:bg-emerald-800 text-white rounded-lg text-[11px] font-bold flex items-center space-x-1 shadow-xs transition-all flex-shrink-0"
+                      >
+                        <span>📖 Đọc lật trang</span>
+                        <span>→</span>
+                      </button>
+                    ) : (
+                      <span className="text-heritage-red-800 font-bold flex items-center space-x-1 group-hover:translate-x-1 transition-all">
+                        <span>Xem</span>
+                        <ChevronRight className="w-3.5 h-3.5 text-heritage-red-800" />
+                      </span>
+                    )}
                   </div>
                 </div>
               ))}
@@ -388,7 +438,7 @@ export const Spotlight: React.FC = () => {
                   {latestResources.map((item) => (
                     <div
                       key={item.id}
-                      onClick={() => setActiveModalItem(item)}
+                      onClick={() => (item.pdfAttachment ? setActiveFlipbookItem(item) : setActiveModalItem(item))}
                       className="group cursor-pointer py-2.5 first:pt-0 last:pb-0 flex items-start space-x-3.5 p-2 rounded-xl hover:bg-gradient-to-r hover:from-heritage-gold-50/70 hover:to-transparent border border-transparent hover:border-heritage-gold-200/60 transition-all duration-200"
                     >
                       <div className="relative w-14 h-14 sm:w-16 sm:h-16 rounded-xl overflow-hidden flex-shrink-0 border border-heritage-gold-200/80 shadow-xs group-hover:scale-105 group-hover:border-heritage-gold-400 transition-all duration-300">
@@ -397,12 +447,20 @@ export const Spotlight: React.FC = () => {
                           alt={item.title}
                           className="w-full h-full object-cover"
                         />
+                        {item.pdfAttachment && (
+                          <span className="absolute bottom-0.5 right-0.5 px-1 py-0.2 bg-emerald-800/95 text-emerald-100 text-[9px] font-bold rounded shadow">
+                            PDF
+                          </span>
+                        )}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <div className="flex items-center space-x-2 text-[11px] text-heritage-ink-500 mb-0.5">
+                        <div className="flex items-center space-x-2 text-[11px] text-heritage-ink-500 mb-0.5 flex-wrap">
                           <span className="text-heritage-red-800 font-bold">{item.categoryLabel}</span>
-                          <span>•</span>
-                          <span>{item.dateOrEra}</span>
+                          {item.pdfAttachment && (
+                            <span className="px-1.5 py-0.2 bg-emerald-50 text-emerald-800 border border-emerald-200 rounded text-[10px] font-bold">
+                              📖 Đọc lật trang ({item.pdfAttachment.totalPages} tr)
+                            </span>
+                          )}
                         </div>
                         <h4 className="font-serif font-bold text-xs sm:text-sm text-heritage-ink-900 group-hover:text-heritage-red-800 transition-colors line-clamp-2 leading-snug">
                           {item.title}
@@ -444,7 +502,7 @@ export const Spotlight: React.FC = () => {
                   return (
                     <div
                       key={item.id}
-                      onClick={() => setActiveModalItem(item)}
+                      onClick={() => (item.pdfAttachment ? setActiveFlipbookItem(item) : setActiveModalItem(item))}
                       className="group cursor-pointer p-2.5 sm:p-3 rounded-xl sm:rounded-2xl border border-heritage-gold-200/80 bg-white hover:bg-heritage-gold-50/50 hover:border-heritage-gold-400 shadow-xs hover:shadow-sm hover:translate-x-0.5 transition-all duration-200 flex items-center space-x-3"
                     >
                       {/* Rank Medal Number */}
@@ -473,7 +531,7 @@ export const Spotlight: React.FC = () => {
                             <span>{item.viewCount.toLocaleString('vi-VN')} lượt đọc</span>
                           </span>
                           <span>•</span>
-                          <span className="truncate">{item.categoryLabel}</span>
+                          <span className="truncate">{item.pdfAttachment ? `📖 Sách PDF (${item.pdfAttachment.totalPages} tr)` : item.categoryLabel}</span>
                         </div>
                       </div>
 
@@ -502,6 +560,15 @@ export const Spotlight: React.FC = () => {
         item={activeModalItem}
         onClose={() => setActiveModalItem(null)}
       />
+
+      {/* Direct Interactive 3D Flipbook Reader cho tài liệu PDF trên Tiêu điểm */}
+      {activeFlipbookItem && (
+        <BookFlipbookModal
+          isOpen={!!activeFlipbookItem}
+          onClose={() => setActiveFlipbookItem(null)}
+          item={activeFlipbookItem}
+        />
+      )}
     </section>
   );
 };
