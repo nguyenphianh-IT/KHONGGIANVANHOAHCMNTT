@@ -1308,56 +1308,31 @@ async function _executeFetchArticlesFromSupabase(): Promise<{
 
       const laTime = parseTime(la.updated_at || la.created_at);
       const caTime = parseTime(ca.updated_at || ca.created_at);
+      const isInflightLocalSave = Boolean(
+        (la.id && inflightSaveArticleIds.has(la.id)) ||
+        (la.slug && inflightSaveArticleIds.has(la.slug))
+      );
 
-      // QUY TẮC VÀNG 1: Nếu Cloud đã duyệt và xuất bản ('published'):
-      // - Nếu cục bộ biên tập viên vừa hiệu chỉnh và nộp duyệt lại ('pending' hoặc 'draft') SAU thời điểm xuất bản Cloud (laTime > caTime + 1000):
-      //   Bảo toàn bản hiệu chỉnh 'pending'/'draft' của tác giả và đồng bộ lên Cloud!
-      // - Ngược lại (nếu Cloud được duyệt sau hoặc cùng lúc), Cloud 'published' LUÔN CHIẾN THẮNG để bài đã duyệt lập tức rời khỏi hàng đợi chờ duyệt trên mọi thiết bị!
-      if (ca.status === 'published') {
-        if ((la.status === 'pending' || la.status === 'draft') && laTime > caTime + 1000) {
-          mergedMap.set(key, la);
-          saveArticleToCloud(la).catch(() => {});
-        } else {
-          // Bảo toàn pdf_attachment, quote_id, custom_quote nếu cục bộ có mà cloud bị rỗng/thiếu
-          const mergedPublished: ArticleData = {
-            ...ca,
-            pdf_attachment: ca.pdf_attachment || la.pdf_attachment,
-            quote_id: ca.quote_id !== undefined ? ca.quote_id : la.quote_id,
-            custom_quote: ca.custom_quote || la.custom_quote,
-          };
-          mergedMap.set(key, mergedPublished);
-        }
+      // QUY TẮC 1: Nếu thiết bị hiện tại ĐANG trong tiến trình đẩy bản lưu/nộp duyệt lên Cloud, giữ nguyên bản cục bộ
+      if (isInflightLocalSave) {
+        mergedMap.set(key, la);
         continue;
       }
 
-      // QUY TẮC VÀNG 2: Nếu Local vừa được duyệt ('published') cục bộ bởi Ban Giám Hiệu, giữ 'published' và đồng bộ lên Cloud
-      if (la.status === 'published') {
-        const isRecentLocalApproval = Date.now() - laTime < 3600000 || laTime >= caTime;
-        if (isRecentLocalApproval) {
-          mergedMap.set(key, { ...ca, status: 'published', updated_at: la.updated_at });
-          // Tự động đẩy ngược lên Cloud ở chế độ nền để đồng bộ trạng thái đã duyệt
-          saveArticleToCloud({ ...ca, status: 'published', updated_at: la.updated_at }).catch(() => {});
-          continue;
-        }
-      }
-
-      // QUY TẮC VÀNG 3: Nếu Local vừa nộp duyệt ('pending') sau khi bị từ chối ('rejected') hoặc từ bản nháp ('draft'):
-      // Bảo vệ không để Cloud 'draft' hoặc 'rejected' cũ ghi đè
-      if (la.status === 'pending' && (ca.status === 'draft' || ca.status === 'rejected')) {
-        const isRecentSubmission = Date.now() - laTime < 3600000 || laTime >= caTime;
-        if (isRecentSubmission) {
-          mergedMap.set(key, { ...ca, ...la, status: 'pending', updated_at: la.updated_at });
-          saveArticleToCloud({ ...ca, ...la, status: 'pending', updated_at: la.updated_at }).catch(() => {});
-          continue;
-        }
-      }
-
-      // Quy tắc so sánh thời gian chuẩn: Nếu cục bộ có chỉnh sửa mới hơn Cloud > 1s, giữ cục bộ
-      if (laTime > caTime + 1000) {
+      // QUY TẮC 2: So sánh timestamp thực tế chuẩn xác (TUYỆT ĐỐI không để cache 'published' cũ đè mất bài 'pending' mới sửa từ thiết bị khác!)
+      // - Nếu bản cục bộ mới hơn Cloud rõ rệt (> 1.5 giây): giữ bản cục bộ và đẩy đồng bộ lên Cloud
+      // - Ngược lại (Cloud mới hơn hoặc ngang bằng): CLOUD LUÔN CHIẾN THẮNG (bao gồm cả trường hợp GV vừa sửa bài 'published' -> 'pending' để đưa vào Hàng đợi 4 mắt)
+      if (laTime > caTime + 1500) {
         mergedMap.set(key, la);
         saveArticleToCloud(la).catch(() => {});
       } else {
-        mergedMap.set(key, ca);
+        const mergedCloud: ArticleData = {
+          ...ca,
+          pdf_attachment: ca.pdf_attachment || la.pdf_attachment,
+          quote_id: ca.quote_id !== undefined ? ca.quote_id : la.quote_id,
+          custom_quote: ca.custom_quote || la.custom_quote,
+        };
+        mergedMap.set(key, mergedCloud);
       }
     }
 

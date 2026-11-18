@@ -387,8 +387,9 @@ export const FullScreenEditor: React.FC<FullScreenEditorProps> = ({
         audio_duration: audioDuration,
         quote_id: selectedQuoteId,
         pdf_attachment: pdfAttachment,
-        status: initialArticle?.status || 'draft',
-        author_name: initialArticle?.author_name || currentUserName,
+        // Lưu nháp luôn chuyển sang 'draft' để mọi điều chỉnh bài đã đăng đều phải qua kiểm duyệt 4 mắt
+        status: 'draft',
+        author_name: currentUserName || initialArticle?.author_name,
         updated_at: nowIso,
       };
       await onSaveDraft(article);
@@ -435,7 +436,7 @@ export const FullScreenEditor: React.FC<FullScreenEditorProps> = ({
         quote_id: selectedQuoteId,
         pdf_attachment: pdfAttachment,
         status: 'pending',
-        author_name: initialArticle?.author_name || currentUserName,
+        author_name: currentUserName || initialArticle?.author_name,
         updated_at: nowIso,
       };
       await onSubmitReview(article);
@@ -532,8 +533,24 @@ export const FullScreenEditor: React.FC<FullScreenEditorProps> = ({
             <span className="font-serif font-bold text-xs sm:text-sm text-heritage-red-900 truncate max-w-[200px] sm:max-w-md">
               {title || 'Tạo bài viết mới...'}
             </span>
-            <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-amber-100 text-amber-800 border border-amber-200 flex-shrink-0">
-              {initialArticle?.status === 'approved' ? 'Đã duyệt' : initialArticle?.status === 'pending' ? 'Chờ duyệt' : 'Bản nháp (Draft)'}
+            <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider border flex-shrink-0 ${
+              initialArticle?.status === 'published'
+                ? 'bg-emerald-100 text-emerald-800 border-emerald-200'
+                : initialArticle?.status === 'pending'
+                ? 'bg-purple-100 text-purple-800 border-purple-200'
+                : initialArticle?.status === 'rejected'
+                ? 'bg-rose-100 text-rose-800 border-rose-200'
+                : 'bg-amber-100 text-amber-800 border-amber-200'
+            }`}>
+              {initialArticle?.status === 'published'
+                ? 'Đã xuất bản (Sửa cần duyệt 4 mắt)'
+                : initialArticle?.status === 'approved'
+                ? 'Đã duyệt'
+                : initialArticle?.status === 'pending'
+                ? 'Chờ duyệt 4 mắt'
+                : initialArticle?.status === 'rejected'
+                ? 'Cần chỉnh sửa'
+                : 'Bản nháp (Draft)'}
             </span>
           </div>
         </div>
@@ -574,7 +591,7 @@ export const FullScreenEditor: React.FC<FullScreenEditorProps> = ({
             title="Nộp duyệt bài viết sang Hàng đợi Kiểm duyệt 4 mắt"
           >
             <Send className="w-3.5 h-3.5 text-heritage-gold-300" />
-            <span>Gửi duyệt 4 mắt</span>
+            <span>{initialArticle?.id ? 'Gửi duyệt lại (4 mắt)' : 'Gửi duyệt 4 mắt'}</span>
           </button>
 
           {isReviewerRole && onDirectApprove && (

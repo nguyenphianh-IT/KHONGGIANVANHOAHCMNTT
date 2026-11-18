@@ -285,7 +285,13 @@ export const CmsDashboard: React.FC<CmsDashboardProps> = ({ isOpen, onClose }) =
     const exists = Boolean(targetId && articles.some((a) => a.id === targetId));
 
     if (exists) {
-      targetArticle = { ...article, updated_at: nowIso };
+      targetArticle = {
+        ...article,
+        status: 'draft',
+        author_id: currentPersona.id,
+        author_name: currentPersona.name,
+        updated_at: nowIso,
+      };
       updatedList = articles.map((a) => (a.id === targetId ? targetArticle : a));
     } else {
       targetArticle = {
@@ -324,8 +330,9 @@ export const CmsDashboard: React.FC<CmsDashboardProps> = ({ isOpen, onClose }) =
       ...article,
       id: article.id || `art-${Date.now()}`,
       status: 'pending',
-      author_id: article.author_id || currentPersona.id,
-      author_name: article.author_name || currentPersona.name,
+      // Ghi nhận đúng người chỉnh sửa/nộp duyệt lần cuối để áp dụng chuẩn xác quy tắc kiểm duyệt 4 mắt
+      author_id: currentPersona.id,
+      author_name: currentPersona.name,
       updated_at: nowIso,
     };
 
@@ -349,7 +356,9 @@ export const CmsDashboard: React.FC<CmsDashboardProps> = ({ isOpen, onClose }) =
       actor: currentPersona.name,
       role: currentPersona.roleLabel,
       decision: 'pending',
-      feedback: 'Nộp duyệt bài 4 mắt lên Ban Giám Hiệu.',
+      feedback: isExistingArticle
+        ? 'Chỉnh sửa nội dung và nộp duyệt lại 4 mắt lên Ban Giám Hiệu.'
+        : 'Nộp duyệt bài 4 mắt lên Ban Giám Hiệu.',
       timestamp: nowIso.replace('T', ' ').substring(0, 19),
     };
     addStoredAuditLog(newLog);
@@ -365,6 +374,18 @@ export const CmsDashboard: React.FC<CmsDashboardProps> = ({ isOpen, onClose }) =
     saveArticleToCloud(updated).then((cloudRes) => {
       setIsCloudSynced(cloudRes.success);
       if (cloudRes.success) {
+        if (cloudRes.article?.updated_at) {
+          const syncedItem: ArticleData = {
+            ...updated,
+            slug: cloudRes.article.slug || updated.slug,
+            updated_at: cloudRes.article.updated_at,
+          };
+          setArticles((prev) => {
+            const next = prev.map((a) => (a.id === syncedItem.id ? syncedItem : a));
+            saveStoredArticles(next);
+            return next;
+          });
+        }
         setToastMsg({
           type: 'success',
           text: `Đã chuyển bài viết "${updated.title}" sang Hàng Đợi Kiểm Duyệt 4 Mắt và đồng bộ Cloud thành công! Ban Giám Hiệu trên mọi thiết bị có thể thẩm định ngay.`,
