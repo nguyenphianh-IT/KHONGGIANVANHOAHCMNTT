@@ -318,7 +318,7 @@ export const ActivityModal: React.FC<ActivityModalProps> = ({ activity, onClose 
                   Phong Trào Hoạt Động & Giáo Dục Truyền Thống Học Đường
                 </p>
                 <p>
-                  Hoạt động phong trào chính thức của Liên đội và Chi đoàn Giáo viên <strong>Trường THCS Nguyễn Trung Trực (Phường Thới An, Thành phố Hồ Chí Minh)</strong> nhằm giáo dục truyền thống cách mạng, bồi dưỡng lý tưởng sống và rèn luyện đạo đức theo tấm gương Bác Hồ vĩ đại.
+                  Hoạt động phong trào chính thức của <strong>Trường THCS Nguyễn Trung Trực (Phường Thới An, Thành phố Hồ Chí Minh)</strong> nhằm giáo dục truyền thống cách mạng, bồi dưỡng lý tưởng sống và rèn luyện đạo đức theo tấm gương Bác Hồ vĩ đại.
                 </p>
               </div>
             </div>
