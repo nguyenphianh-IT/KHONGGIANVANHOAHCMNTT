@@ -58,9 +58,6 @@ export const Timeline: React.FC = () => {
             Dòng thời gian lịch sử ghi lại những dấu mốc thiêng liêng trong cuộc đời Chủ tịch Hồ Chí Minh –
             Anh hùng giải phóng dân tộc, Nhà văn hóa kiệt xuất của Việt Nam.
           </p>
-          <p className="text-xs text-heritage-ink-500 italic mt-1">
-            * Toàn bộ dữ liệu được tổng hợp từ nguồn lịch sử chính thống đã kiểm chứng của Viện Lịch sử Đảng và Bảo tàng Hồ Chí Minh.
-          </p>
         </div>
 
         {/* Filter Pills */}
