@@ -220,6 +220,8 @@ export const ContestManagerModal: React.FC<ContestManagerModalProps> = ({
     summaryNote: '',
     questionBankMode: 'combined',
     selectedBankIds: ['bank-cuoc-doi', 'bank-tu-tuong', 'bank-5-dieu-bac-day', 'bank-thoi-an-truyen-thong'],
+    shuffleQuestions: true,
+    shuffleOptions: true,
   });
 
   // 5. Archive Contest Modal State
@@ -612,6 +614,8 @@ export const ContestManagerModal: React.FC<ContestManagerModalProps> = ({
       summaryNote: '',
       questionBankMode: 'combined',
       selectedBankIds: ['bank-cuoc-doi', 'bank-tu-tuong', 'bank-5-dieu-bac-day', 'bank-thoi-an-truyen-thong'],
+      shuffleQuestions: true,
+      shuffleOptions: true,
     });
     setIsContestFormOpen(true);
   };
@@ -633,6 +637,8 @@ export const ContestManagerModal: React.FC<ContestManagerModalProps> = ({
       summaryNote: c.summaryNote || '',
       questionBankMode: c.questionBankMode || 'combined',
       selectedBankIds: c.selectedBankIds || ['bank-cuoc-doi', 'bank-tu-tuong', 'bank-5-dieu-bac-day', 'bank-thoi-an-truyen-thong'],
+      shuffleQuestions: c.shuffleQuestions !== false,
+      shuffleOptions: c.shuffleOptions !== false,
     });
     setIsContestFormOpen(true);
   };
@@ -1376,6 +1382,26 @@ export const ContestManagerModal: React.FC<ContestManagerModalProps> = ({
                             </div>
                           );
                         })()}
+
+                        {/* Cấu hình đảo câu & đảo đáp án */}
+                        <div className="flex flex-wrap items-center gap-1.5 pt-0.5 text-[10px]">
+                          <span className={`inline-flex items-center space-x-1 px-2 py-0.5 rounded-md font-semibold border ${
+                            c.shuffleQuestions !== false
+                              ? 'bg-emerald-50 text-emerald-800 border-emerald-200'
+                              : 'bg-slate-100 text-slate-600 border-slate-200'
+                          }`}>
+                            <span>🔀 Đảo câu hỏi:</span>
+                            <strong>{c.shuffleQuestions !== false ? 'BẬT' : 'TẮT'}</strong>
+                          </span>
+                          <span className={`inline-flex items-center space-x-1 px-2 py-0.5 rounded-md font-semibold border ${
+                            c.shuffleOptions !== false
+                              ? 'bg-emerald-50 text-emerald-800 border-emerald-200'
+                              : 'bg-slate-100 text-slate-600 border-slate-200'
+                          }`}>
+                            <span>🎲 Đảo đáp án (A-D):</span>
+                            <strong>{c.shuffleOptions !== false ? 'BẬT' : 'TẮT'}</strong>
+                          </span>
+                        </div>
 
                         {/* Archived Summary Note (If present) */}
                         {c.status === 'archived' && c.summaryNote && (
@@ -2762,6 +2788,67 @@ export const ContestManagerModal: React.FC<ContestManagerModalProps> = ({
                   className="w-full px-3.5 py-2 bg-heritage-ivory-50 border border-heritage-ivory-300 rounded-xl focus:outline-none focus:border-heritage-red-700"
                   required
                 />
+              </div>
+
+              {/* CẤU HÌNH XÁO TRỘN ĐỀ THI & ĐÁP ÁN (CHỐNG GIAN LẬN HỌC ĐƯỜNG) */}
+              <div className="p-4 bg-emerald-50/70 border border-emerald-200 rounded-2xl space-y-3">
+                <div className="flex items-center space-x-2 text-xs font-bold text-emerald-950 uppercase tracking-wider">
+                  <Sparkles className="w-4 h-4 text-emerald-700" />
+                  <span>Cấu hình Bảo mật Đề thi & Trộn Ngẫu Nhiên</span>
+                </div>
+                <p className="text-xs text-emerald-900 leading-relaxed">
+                  Thiết lập tự động xáo trộn nhằm chống nhìn bài nhau trong phòng máy tính. Thầy/Cô có thể linh hoạt bật hoặc tắt tùy mục đích thi đua hoặc ôn tập.
+                </p>
+
+                <div className="space-y-2.5 pt-1">
+                  <label className="flex items-start space-x-3 p-2.5 bg-white rounded-xl border border-emerald-200/80 cursor-pointer hover:bg-emerald-50/50 transition">
+                    <input
+                      type="checkbox"
+                      checked={contestFormData.shuffleQuestions !== false}
+                      onChange={(e) =>
+                        setContestFormData({ ...contestFormData, shuffleQuestions: e.target.checked })
+                      }
+                      className="mt-0.5 w-4 h-4 text-emerald-700 rounded border-emerald-300 focus:ring-emerald-500"
+                    />
+                    <div className="flex-1 text-xs">
+                      <div className="font-bold text-heritage-ink-900 flex items-center space-x-1.5">
+                        <span>🔀 Trộn ngẫu nhiên thứ tự câu hỏi</span>
+                        <span className="text-[10px] bg-emerald-100 text-emerald-800 px-1.5 py-0.2 rounded font-semibold">
+                          Khuyên dùng
+                        </span>
+                      </div>
+                      <p className="text-heritage-ink-600 mt-0.5 leading-snug">
+                        Mỗi học sinh vào thi sẽ nhận thứ tự câu hỏi khác nhau (Câu 1 của em này là Câu 5 của em khác).
+                      </p>
+                    </div>
+                  </label>
+
+                  <label className="flex items-start space-x-3 p-2.5 bg-white rounded-xl border border-emerald-200/80 cursor-pointer hover:bg-emerald-50/50 transition">
+                    <input
+                      type="checkbox"
+                      checked={contestFormData.shuffleOptions !== false}
+                      onChange={(e) =>
+                        setContestFormData({ ...contestFormData, shuffleOptions: e.target.checked })
+                      }
+                      className="mt-0.5 w-4 h-4 text-emerald-700 rounded border-emerald-300 focus:ring-emerald-500"
+                    />
+                    <div className="flex-1 text-xs">
+                      <div className="font-bold text-heritage-ink-900 flex items-center space-x-1.5">
+                        <span>🎲 Trộn ngẫu nhiên đáp án A, B, C, D</span>
+                        <span className="text-[10px] bg-emerald-100 text-emerald-800 px-1.5 py-0.2 rounded font-semibold">
+                          Mới
+                        </span>
+                      </div>
+                      <p className="text-heritage-ink-600 mt-0.5 leading-snug">
+                        Các phương án A, B, C, D sẽ được đảo vị trí ngẫu nhiên. Hệ thống tự động bảo toàn đáp án đúng và chấm điểm chuẩn xác 100%.
+                      </p>
+                    </div>
+                  </label>
+                </div>
+
+                <div className="text-[11px] text-emerald-800/90 italic flex items-center space-x-1">
+                  <span>💡 Lưu ý: Khi bật trộn đáp án, hạn chế soạn câu có chữ "Cả A và B đều đúng" hoặc "Tất cả các đáp án trên".</span>
+                </div>
               </div>
 
               <div className="flex items-center justify-end space-x-2 pt-3 border-t border-heritage-ivory-200">

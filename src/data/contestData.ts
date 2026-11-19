@@ -66,6 +66,8 @@ export interface ContestInfo {
   // Cấu hình ngân hàng đề thi: 'dedicated' (Ngân hàng riêng của hội thi), 'combined' (Kết hợp nhiều ngân hàng), 'all' (Toàn bộ)
   questionBankMode?: 'dedicated' | 'combined' | 'all';
   selectedBankIds?: string[]; // Danh sách các ID ngân hàng câu hỏi được chọn để rút đề
+  shuffleQuestions?: boolean; // Tự động xáo trộn ngẫu nhiên thứ tự câu hỏi khi thí sinh làm bài
+  shuffleOptions?: boolean;   // Tự động xáo trộn ngẫu nhiên các đáp án A, B, C, D khi thí sinh làm bài
 }
 
 export interface ContestSubmission {
@@ -152,6 +154,8 @@ export const DEFAULT_CONTESTS_LIST: ContestInfo[] = [
     createdAt: '2025-10-15',
     questionBankMode: 'combined',
     selectedBankIds: ['bank-cuoc-doi', 'bank-tu-tuong', 'bank-thoi-an-truyen-thong'],
+    shuffleQuestions: true,
+    shuffleOptions: true,
   },
   {
     id: 'hoi-thi-2024-5-dieu-bac-day',
@@ -171,6 +175,8 @@ export const DEFAULT_CONTESTS_LIST: ContestInfo[] = [
     createdAt: '2025-10-20',
     questionBankMode: 'combined',
     selectedBankIds: ['bank-5-dieu-bac-day', 'bank-thoi-an-truyen-thong'],
+    shuffleQuestions: true,
+    shuffleOptions: true,
   },
   {
     id: 'hoi-thi-2025-hanh-trinh-theo-dau-chan-bac',
@@ -189,6 +195,8 @@ export const DEFAULT_CONTESTS_LIST: ContestInfo[] = [
     createdAt: '2025-11-01',
     questionBankMode: 'combined',
     selectedBankIds: ['bank-cuoc-doi', 'bank-tu-tuong'],
+    shuffleQuestions: true,
+    shuffleOptions: true,
   },
 ];
 
@@ -678,6 +686,18 @@ export function getStoredContestsList(): ContestInfo[] {
               'bank-5-dieu-bac-day',
               'bank-thoi-an-truyen-thong',
             ],
+          shuffleQuestions:
+            item.shuffleQuestions !== undefined
+              ? item.shuffleQuestions
+              : def?.shuffleQuestions !== undefined
+              ? def.shuffleQuestions
+              : true,
+          shuffleOptions:
+            item.shuffleOptions !== undefined
+              ? item.shuffleOptions
+              : def?.shuffleOptions !== undefined
+              ? def.shuffleOptions
+              : true,
         };
       });
 
@@ -1166,6 +1186,88 @@ export function resetContestSubmissions(): ContestSubmission[] {
   } catch {
     return DEFAULT_SUBMISSIONS;
   }
+}
+
+// ==============================================================================
+// TIỆN ÍCH XÁO TRỘN ĐỀ THI & ĐÁP ÁN (NGĂN CHẶN NHÌN BÀI NHAU PHÒNG MÁY TÍNH)
+// ==============================================================================
+
+/**
+ * Thuật toán xáo trộn Fisher-Yates (Knuth) không thiên vị cho mảng
+ */
+export function shuffleArray<T>(array: T[]): T[] {
+  const result = [...array];
+  for (let i = result.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [result[i], result[j]] = [result[j], result[i]];
+  }
+  return result;
+}
+
+/**
+ * Xáo trộn ngẫu nhiên các phương án đáp án (options) của 1 câu hỏi,
+ * đồng thời tính toán và cập nhật lại vị trí đáp án đúng (correctIndex) mới tương ứng.
+ */
+export function shuffleQuestionOptions(q: ContestQuestion): ContestQuestion {
+  if (!q.options || q.options.length <= 1) {
+    return { ...q, options: [...(q.options || [])] };
+  }
+
+  // Tạo mảng đối tượng lưu trữ nội dung và đánh dấu đáp án đúng ban đầu
+  const indexedOptions = q.options.map((opt, idx) => ({
+    text: opt,
+    isCorrect: idx === q.correctIndex,
+  }));
+
+  // Xáo trộn mảng bằng thuật toán Fisher-Yates
+  const shuffled = shuffleArray(indexedOptions);
+
+  // Tìm vị trí mới của đáp án đúng
+  const newCorrectIndex = shuffled.findIndex((item) => item.isCorrect);
+
+  return {
+    ...q,
+    options: shuffled.map((item) => item.text),
+    correctIndex: newCorrectIndex !== -1 ? newCorrectIndex : q.correctIndex,
+  };
+}
+
+/**
+ * Chuẩn bị bộ đề thi ngẫu nhiên cho một thí sinh:
+ * 1. Rút đủ số lượng câu hỏi theo cấu hình
+ * 2. Xáo trộn thứ tự các câu hỏi (nếu bật shuffleQuestions)
+ * 3. Xáo trộn thứ tự các đáp án A, B, C, D trong từng câu (nếu bật shuffleOptions)
+ */
+export function prepareExamQuestionsForCandidate(
+  eligibleQuestions: ContestQuestion[],
+  totalQuestionsCount: number,
+  shuffleQuestions: boolean = true,
+  shuffleOptions: boolean = true
+): ContestQuestion[] {
+  if (!eligibleQuestions || eligibleQuestions.length === 0) {
+    return [];
+  }
+
+  const count =
+    totalQuestionsCount > 0
+      ? Math.min(totalQuestionsCount, eligibleQuestions.length)
+      : eligibleQuestions.length;
+
+  let selected: ContestQuestion[] = [];
+  if (shuffleQuestions) {
+    // Trộn ngẫu nhiên toàn bộ câu hỏi từ ngân hàng rồi rút số lượng yêu cầu
+    const shuffledBank = shuffleArray(eligibleQuestions);
+    selected = shuffledBank.slice(0, count);
+  } else {
+    selected = eligibleQuestions.slice(0, count);
+  }
+
+  // Xáo trộn các phương án A, B, C, D của từng câu nếu bật shuffleOptions
+  if (shuffleOptions) {
+    return selected.map((q) => shuffleQuestionOptions(q));
+  }
+
+  return selected.map((q) => ({ ...q, options: [...q.options] }));
 }
 
 // Format giây sang mm:ss

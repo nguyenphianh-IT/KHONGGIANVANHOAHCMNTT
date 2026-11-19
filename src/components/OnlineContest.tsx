@@ -25,6 +25,7 @@ import {
   fetchSupabaseQuestions,
   submitContestExamToSupabase,
   getContestAdmissionStatus,
+  prepareExamQuestionsForCandidate,
 } from '../data/contestData';
 import {
   Trophy, Award, Clock, CheckCircle2, AlertTriangle, AlertOctagon, ChevronRight,
@@ -399,14 +400,17 @@ export const OnlineContest: React.FC = () => {
       ? Math.min(contestInfo.totalQuestions, eligibleQuestions.length)
       : eligibleQuestions.length;
 
-    let selectedExamQuestions: ContestQuestion[] = [];
-    if (eligibleQuestions.length <= count) {
-      selectedExamQuestions = [...eligibleQuestions];
-    } else {
-      // Xáo trộn ngẫu nhiên bộ câu hỏi từ ngân hàng để chống nhìn bài nhau
-      const shuffled = [...eligibleQuestions].sort(() => 0.5 - Math.random());
-      selectedExamQuestions = shuffled.slice(0, count);
-    }
+    // Xáo trộn thứ tự câu hỏi và thứ tự đáp án A, B, C, D theo cấu hình của hội thi (mặc định: bật)
+    const shouldShuffleQuestions = contestInfo.shuffleQuestions !== false;
+    const shouldShuffleOptions = contestInfo.shuffleOptions !== false;
+
+    const selectedExamQuestions = prepareExamQuestionsForCandidate(
+      eligibleQuestions,
+      count,
+      shouldShuffleQuestions,
+      shouldShuffleOptions
+    );
+
     setExamQuestions(selectedExamQuestions);
 
     // Reset thông số bài thi
