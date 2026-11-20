@@ -605,11 +605,11 @@ export const FullScreenEditor: React.FC<FullScreenEditorProps> = ({
                 : 'bg-amber-100 text-amber-800 border-amber-200'
             }`}>
               {initialArticle?.status === 'published'
-                ? 'Đã xuất bản (Sửa cần duyệt 4 mắt)'
+                ? 'Đã xuất bản (Sửa cần duyệt lại)'
                 : initialArticle?.status === 'approved'
                 ? 'Đã duyệt'
                 : initialArticle?.status === 'pending'
-                ? 'Chờ duyệt 4 mắt'
+                ? 'Chờ duyệt'
                 : initialArticle?.status === 'rejected'
                 ? 'Cần chỉnh sửa'
                 : 'Bản nháp (Draft)'}
@@ -650,10 +650,10 @@ export const FullScreenEditor: React.FC<FullScreenEditorProps> = ({
             onClick={handleSubmit}
             disabled={isSaving}
             className="px-4 py-1.5 bg-gradient-to-r from-heritage-red-700 to-heritage-red-800 hover:from-heritage-red-800 hover:to-heritage-red-900 text-white font-bold text-xs rounded-lg shadow-sm flex items-center space-x-1.5 transition border border-heritage-gold-400/40 disabled:opacity-50"
-            title="Nộp duyệt bài viết sang Hàng đợi Kiểm duyệt 4 mắt"
+            title="Nộp duyệt bài viết sang Hàng đợi duyệt"
           >
             <Send className="w-3.5 h-3.5 text-heritage-gold-300" />
-            <span>{initialArticle?.id ? 'Gửi duyệt lại (4 mắt)' : 'Gửi duyệt 4 mắt'}</span>
+            <span>{initialArticle?.id ? 'Gửi duyệt lại' : 'Gửi duyệt'}</span>
           </button>
 
           {isReviewerRole && onDirectApprove && (

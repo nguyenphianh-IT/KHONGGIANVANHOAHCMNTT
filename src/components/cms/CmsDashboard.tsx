@@ -1051,7 +1051,7 @@ export const CmsDashboard: React.FC<CmsDashboardProps> = ({ isOpen, onClose }) =
                 <span className="w-10 h-px bg-heritage-gold-300/60" />
               </div>
 
-              {/* 4. Hàng đợi duyệt 4 mắt */}
+              {/* 4. Hàng đợi duyệt */}
               <button
                 onClick={() => setActiveNav('pending')}
                 className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all text-left group ${
@@ -1062,7 +1062,7 @@ export const CmsDashboard: React.FC<CmsDashboardProps> = ({ isOpen, onClose }) =
               >
                 <div className="flex items-center space-x-3 min-w-0 pr-2">
                   <Clock className={`w-4 h-4 flex-shrink-0 ${activeNav === 'pending' ? 'text-heritage-gold-300' : 'text-heritage-gold-600/80 group-hover:text-heritage-red-700'}`} />
-                  <span className="truncate">4. Hàng Đợi Duyệt 4 Mắt</span>
+                  <span className="truncate">4. Hàng Đợi Duyệt</span>
                 </div>
                 {pendingCount > 0 ? (
                   <span className="shrink-0 text-[10px] font-extrabold px-2 py-0.5 rounded-md whitespace-nowrap bg-purple-600 text-white animate-pulse shadow-sm">
@@ -1311,11 +1311,11 @@ export const CmsDashboard: React.FC<CmsDashboardProps> = ({ isOpen, onClose }) =
                   <div
                     onClick={() => { setActiveNav('pending'); setStatusFilter('all'); }}
                     className="bg-white p-4 sm:p-5 rounded-2xl border border-purple-200 shadow-sm flex items-center justify-between cursor-pointer hover:border-purple-600 hover:shadow-md transition"
-                    title="Bấm để mở hàng đợi kiểm duyệt 4 mắt"
+                    title="Bấm để mở hàng đợi duyệt"
                   >
                     <div>
                       <p className="text-[11px] font-bold uppercase tracking-wider text-purple-700">
-                        Chờ Duyệt 4 Mắt
+                        Chờ Duyệt
                       </p>
                       <p className="text-2xl sm:text-3xl font-serif font-black text-purple-700 mt-1">
                         {pendingCount}
@@ -1438,7 +1438,7 @@ export const CmsDashboard: React.FC<CmsDashboardProps> = ({ isOpen, onClose }) =
                                 ? 'bg-blue-100 text-blue-800 border border-blue-200'
                                 : 'bg-amber-100 text-amber-800 border border-amber-200'
                             }`}>
-                              {art.status === 'published' ? 'Đã xuất bản' : art.status === 'pending' ? 'Chờ duyệt 4 mắt' : art.status === 'approved' ? 'Đã duyệt' : 'Bản nháp'}
+                              {art.status === 'published' ? 'Đã xuất bản' : art.status === 'pending' ? 'Chờ duyệt' : art.status === 'approved' ? 'Đã duyệt' : 'Bản nháp'}
                             </span>
                             <span className="text-[11px] text-heritage-ink-500 font-mono">
                               /{art.slug}
@@ -1503,7 +1503,7 @@ export const CmsDashboard: React.FC<CmsDashboardProps> = ({ isOpen, onClose }) =
                   <div>
                     <h2 className="font-serif font-black text-xl text-heritage-red-900">
                       {activeNav === 'pending'
-                        ? 'Hàng Đợi Kiểm Duyệt 4 Mắt (Review Queue)'
+                        ? 'Hàng Đợi Duyệt (Review Queue)'
                         : activeNav === 'published'
                         ? 'Danh Mục Bài Viết Đang Xuất Bản Live'
                         : 'Quản Lý Danh Sách Bài Viết & Tư Liệu'}
@@ -1653,7 +1653,7 @@ export const CmsDashboard: React.FC<CmsDashboardProps> = ({ isOpen, onClose }) =
                                     {art.status === 'published'
                                       ? 'Đã xuất bản'
                                       : art.status === 'pending'
-                                      ? 'Chờ duyệt 4 mắt'
+                                      ? 'Chờ duyệt'
                                       : art.status === 'approved'
                                       ? 'Đã duyệt'
                                       : art.status === 'rejected'
