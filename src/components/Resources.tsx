@@ -5,7 +5,7 @@ import { ResourceModal } from './ResourceModal';
 import { BookFlipbookModal } from './BookFlipbookModal';
 import { 
   Search, Filter, BookOpen, FileText, Image as ImageIcon, Video, Book, 
-  X, AlertCircle, Volume2, Headphones, ChevronLeft, ChevronRight, Eye 
+  X, AlertCircle, Volume2, Headphones, ChevronLeft, ChevronRight, Eye, Calendar 
 } from 'lucide-react';
 import {
   getPublishedArticles,
@@ -23,6 +23,7 @@ import {
   fetchCloudViewCounts
 } from '../lib/viewsStore';
 import { resolveArticleQuote } from '../data/quotesData';
+import { formatActivityDate } from './Activities';
 
 const mapArticleToResource = (art: ArticleData): ResourceItem => {
   const normCat = normalizeCategoryToHomepage(art.category);
@@ -36,7 +37,7 @@ const mapArticleToResource = (art: ArticleData): ResourceItem => {
     description: art.summary,
     fullContent: `${art.content}${art.references ? `\n\n---\n**Nguồn trích dẫn & Tham khảo:** ${art.references}` : ''}`,
     authorOrSource: art.author_name || 'Trường THCS Nguyễn Trung Trực',
-    dateOrEra: art.updated_at || art.created_at || 'Mới xuất bản',
+    dateOrEra: formatActivityDate(art.updated_at || art.created_at),
     thumbnail: resolveMediaUrl(art.featured_image, art.media_assets) || (normCat === 'video' ? '/images/timeline-ngoi-sao.png' : '/images/ho-chi-minh-tp-hcm.png'),
     audioUrl: art.audio_url || undefined,
     audioDuration: art.audio_duration || undefined,
@@ -272,29 +273,6 @@ export const Resources: React.FC = () => {
                         className="w-full h-full object-cover object-[50%_20%] group-hover:scale-105 transition-transform duration-500"
                         loading="lazy"
                       />
-                      <div className="absolute top-2.5 left-2.5 flex items-center gap-1.5">
-                        <span className="px-2.5 py-1 bg-heritage-red-700/95 text-white font-semibold text-xs rounded backdrop-blur-sm shadow flex items-center space-x-1">
-                          {item.category === 'audio' && <Volume2 className="w-3 h-3 text-heritage-gold-300 mr-1" />}
-                          <span>{item.categoryLabel}</span>
-                        </span>
-                      </div>
-
-                      {item.audioDuration && (
-                        <div className="absolute top-2.5 right-2.5">
-                          <span className="px-2 py-0.5 bg-black/75 text-heritage-gold-300 text-[11px] font-mono font-bold rounded backdrop-blur-sm border border-white/20 shadow">
-                            ⏱️ {item.audioDuration}
-                          </span>
-                        </div>
-                      )}
-
-                      {item.pdfAttachment && (
-                        <div className="absolute top-2.5 right-2.5">
-                          <span className="px-2 py-0.5 bg-emerald-950/90 text-emerald-200 text-[11px] font-mono font-bold rounded backdrop-blur-sm border border-emerald-400/50 shadow flex items-center space-x-1">
-                            <BookOpen className="w-3 h-3 text-emerald-300" />
-                            <span>{item.pdfAttachment.totalPages} trang</span>
-                          </span>
-                        </div>
-                      )}
 
                       {item.category === 'audio' && (
                         <div className="absolute inset-0 bg-black/25 flex items-center justify-center group-hover:bg-black/10 transition-colors">
@@ -315,9 +293,32 @@ export const Resources: React.FC = () => {
 
                     {/* Card Content */}
                     <div className="p-4 sm:p-5">
-                      <div className="text-xs font-semibold text-heritage-gold-600 mb-1.5 flex items-center justify-between">
-                        <span>{item.dateOrEra}</span>
-                        <span className="text-heritage-ink-500 font-normal">{item.badgeText}</span>
+                      {/* Phân loại tài liệu, số trang & ngày tháng đặt dưới hình để không che bìa sách */}
+                      <div className="flex items-center justify-between gap-2 mb-2.5 flex-wrap">
+                        <div className="flex items-center gap-1.5 flex-wrap">
+                          <span className="px-2.5 py-0.5 bg-heritage-red-800 text-white font-semibold text-xs rounded shadow-xs flex items-center space-x-1">
+                            {item.category === 'audio' && <Volume2 className="w-3 h-3 text-heritage-gold-300 mr-1" />}
+                            <span>{item.categoryLabel}</span>
+                          </span>
+
+                          {item.pdfAttachment && (
+                            <span className="px-2 py-0.5 bg-emerald-50 text-emerald-800 border border-emerald-300/80 text-[11px] font-mono font-bold rounded flex items-center space-x-1">
+                              <BookOpen className="w-3 h-3 text-emerald-600" />
+                              <span>{item.pdfAttachment.totalPages} trang</span>
+                            </span>
+                          )}
+
+                          {item.audioDuration && (
+                            <span className="px-2 py-0.5 bg-amber-50 text-amber-900 border border-amber-300 text-[11px] font-mono font-bold rounded">
+                              ⏱️ {item.audioDuration}
+                            </span>
+                          )}
+                        </div>
+
+                        <div className="flex items-center space-x-1 text-xs text-heritage-ink-500 font-medium">
+                          <Calendar className="w-3.5 h-3.5 text-heritage-red-700" />
+                          <span>{item.dateOrEra}</span>
+                        </div>
                       </div>
 
                       <h3 className="font-serif text-base sm:text-lg font-bold text-heritage-ink-900 group-hover:text-heritage-red-700 transition-colors line-clamp-2 mb-2 leading-snug">

@@ -393,19 +393,23 @@ export const Spotlight: React.FC = () => {
                         alt={subItem.title}
                         className="w-full h-full object-cover object-[50%_20%] group-hover:scale-105 transition-transform duration-500"
                       />
-                      <span className="absolute top-2.5 left-2.5 px-2.5 py-1 rounded-full text-[11px] font-bold bg-heritage-red-900/90 text-heritage-gold-200 backdrop-blur-md border border-heritage-gold-400/40 shadow-sm">
-                        {subItem.categoryLabel}
-                      </span>
-                      {subItem.pdfAttachment && (
-                        <span className="absolute top-2.5 right-2.5 px-2 py-0.5 rounded-md text-[10px] font-mono font-bold bg-emerald-950/90 text-emerald-200 backdrop-blur-md border border-emerald-400/50 shadow flex items-center space-x-1">
-                          <BookOpen className="w-3 h-3 text-emerald-300" />
-                          <span>{subItem.pdfAttachment.totalPages} trang</span>
-                        </span>
-                      )}
                     </div>
-                    <div className="flex items-center space-x-2 text-[11px] text-heritage-ink-500 mb-1.5">
-                      <Calendar className="w-3.5 h-3.5 text-heritage-red-700" />
-                      <span>{subItem.dateOrEra}</span>
+                    <div className="flex items-center justify-between gap-1.5 mb-2 flex-wrap">
+                      <div className="flex items-center gap-1.5 flex-wrap">
+                        <span className="px-2 py-0.5 rounded text-[11px] font-bold bg-heritage-red-800 text-white shadow-xs">
+                          {subItem.categoryLabel}
+                        </span>
+                        {subItem.pdfAttachment && (
+                          <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-emerald-50 text-emerald-800 border border-emerald-300 flex items-center space-x-1">
+                            <BookOpen className="w-3 h-3 text-emerald-600" />
+                            <span>{subItem.pdfAttachment.totalPages} trang</span>
+                          </span>
+                        )}
+                      </div>
+                      <div className="flex items-center space-x-1 text-[11px] text-heritage-ink-500 font-medium">
+                        <Calendar className="w-3.5 h-3.5 text-heritage-red-700" />
+                        <span>{subItem.dateOrEra}</span>
+                      </div>
                     </div>
                     <h4 className="font-serif font-bold text-sm sm:text-base text-heritage-ink-900 group-hover:text-heritage-red-800 transition-colors line-clamp-2 leading-snug">
                       {subItem.title}
