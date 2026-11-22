@@ -10,7 +10,11 @@ import {
   isActivityArticle,
   fetchArticlesFromSupabase 
 } from '../lib/cmsStore';
-import { getViewCount } from '../lib/viewsStore';
+import { 
+  getAllViewCounts, 
+  fetchCloudViewCounts, 
+  EVENT_VIEWS_CHANGED 
+} from '../lib/viewsStore';
 import { resolveArticleQuote } from '../data/quotesData';
 
 export const formatActivityDate = (rawDate?: string): string => {
@@ -58,6 +62,7 @@ const mapArticleToActivity = (art: ArticleData): SchoolActivity => {
 export const Activities: React.FC = () => {
   const [selectedActivity, setSelectedActivity] = useState<SchoolActivity | null>(null);
   const [activitiesList, setActivitiesList] = useState<SchoolActivity[]>([]);
+  const [viewsMap, setViewsMap] = useState<Record<string, number>>({});
 
   useEffect(() => {
     const loadActivities = () => {
@@ -70,7 +75,12 @@ export const Activities: React.FC = () => {
       setActivitiesList(mappedFromCms);
     };
 
+    const handleViewsUpdate = () => {
+      setViewsMap(getAllViewCounts());
+    };
+
     loadActivities();
+    handleViewsUpdate();
 
     // Tự động đồng bộ các bài viết từ Cloud Database
     fetchArticlesFromSupabase()
@@ -79,12 +89,23 @@ export const Activities: React.FC = () => {
       })
       .catch(() => {});
 
+    // Đồng bộ số lượt đọc từ Supabase Cloud
+    fetchCloudViewCounts().then((cloudCounts) => {
+      if (cloudCounts && Object.keys(cloudCounts).length > 0) {
+        setViewsMap(cloudCounts);
+      }
+    });
+
     window.addEventListener(EVENT_ARTICLES_CHANGED, loadActivities);
+    window.addEventListener(EVENT_VIEWS_CHANGED, handleViewsUpdate);
     window.addEventListener('storage', loadActivities);
+    window.addEventListener('storage', handleViewsUpdate);
 
     return () => {
       window.removeEventListener(EVENT_ARTICLES_CHANGED, loadActivities);
+      window.removeEventListener(EVENT_VIEWS_CHANGED, handleViewsUpdate);
       window.removeEventListener('storage', loadActivities);
+      window.removeEventListener('storage', handleViewsUpdate);
     };
   }, []);
 
@@ -178,7 +199,7 @@ export const Activities: React.FC = () => {
                     </div>
                     <div className="flex items-center space-x-1 text-heritage-gold-700 font-bold" title="Lượt đọc thực tế">
                       <Eye className="w-3.5 h-3.5 text-heritage-gold-600" />
-                      <span>{getViewCount(activity.id)} lượt</span>
+                      <span>{(viewsMap[activity.id] || 0).toLocaleString('vi-VN')} lượt</span>
                     </div>
                   </div>
 
