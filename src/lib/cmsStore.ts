@@ -29,6 +29,7 @@ export interface ArticleData {
   author_name?: string;
   created_at?: string;
   updated_at?: string;
+  is_featured_hero?: boolean;
   cloud_sync_pending?: boolean;
   cloud_sync_error?: string;
 }
@@ -631,6 +632,59 @@ try {
 
 export const EVENT_ARTICLES_CHANGED = 'hcm:articles:changed';
 export const EVENT_MEDIA_CHANGED = 'hcm:media:changed';
+export const KEY_FEATURED_HERO = 'hcm_spotlight_featured_hero_id_v1';
+export const EVENT_FEATURED_HERO_CHANGED = 'hcm:featured_hero:changed';
+
+/**
+ * Lấy ID của bài viết được Admin ghim làm Tiêu Điểm Chủ Đạo trên trang chủ
+ */
+export function getFeaturedHeroArticleId(): string | null {
+  if (typeof window === 'undefined' || !window.localStorage) return null;
+  const directId = localStorage.getItem(KEY_FEATURED_HERO);
+  if (directId && directId.trim()) return directId.trim();
+
+  // Kiểm tra nếu có bài nào trong danh sách được đánh dấu is_featured_hero
+  const articles = getStoredArticles();
+  const marked = articles.find((a) => a.is_featured_hero && a.status === 'published');
+  if (marked) return marked.id || marked.slug;
+
+  return null;
+}
+
+/**
+ * Cài đặt bài viết làm Tiêu Điểm Chủ Đạo trên trang chủ (Admin Action)
+ */
+export function setFeaturedHeroArticleId(articleId: string | null): void {
+  if (typeof window === 'undefined' || !window.localStorage) return;
+  const targetId = (articleId || '').trim();
+
+  if (!targetId) {
+    localStorage.removeItem(KEY_FEATURED_HERO);
+  } else {
+    localStorage.setItem(KEY_FEATURED_HERO, targetId);
+  }
+
+  // Đồng bộ cờ is_featured_hero vào danh sách bài viết cục bộ
+  const articles = getStoredArticles();
+  let changed = false;
+  const updated = articles.map((a) => {
+    const isThis = Boolean(targetId && (a.id === targetId || a.slug === targetId));
+    if (!!a.is_featured_hero !== isThis) {
+      changed = true;
+      return { ...a, is_featured_hero: isThis };
+    }
+    return a;
+  });
+
+  if (changed) {
+    saveStoredArticles(updated);
+  }
+
+  window.dispatchEvent(
+    new CustomEvent(EVENT_FEATURED_HERO_CHANGED, { detail: { articleId: targetId || null } })
+  );
+  window.dispatchEvent(new CustomEvent(EVENT_ARTICLES_CHANGED));
+}
 
 // ------------------------------------------------------------------------------
 // IN-MEMORY CACHE & CONCURRENCY GUARDS (Chống QuotaExceededError & Race Condition)
@@ -1610,6 +1664,7 @@ async function _executeFetchArticlesFromSupabase(): Promise<{
             author_name: revData.author_name || 'Ban Biên Tập THCS Nguyễn Trung Trực',
             created_at: rev.created_at || '',
             updated_at: rev.updated_at || rev.created_at || '',
+            is_featured_hero: !!revData.is_featured_hero,
           };
         });
       }
@@ -1678,6 +1733,7 @@ async function _executeFetchArticlesFromSupabase(): Promise<{
           pdf_attachment: ca.pdf_attachment || la.pdf_attachment,
           quote_id: ca.quote_id !== undefined ? ca.quote_id : la.quote_id,
           custom_quote: ca.custom_quote || la.custom_quote,
+          is_featured_hero: ca.is_featured_hero !== undefined ? ca.is_featured_hero : la.is_featured_hero,
           cloud_sync_pending: false,
           cloud_sync_error: undefined,
         };
@@ -1733,6 +1789,13 @@ async function _executeFetchArticlesFromSupabase(): Promise<{
 
     const mergedList = Array.from(mergedMap.values()).filter((a) => !isTestOrDeletedArticle(a));
     saveStoredArticles(mergedList);
+
+    // Đồng bộ bài viết Tiêu Điểm Chủ Đạo từ Cloud nếu có
+    const cloudHero = mergedList.find((a) => a.is_featured_hero && a.status === 'published');
+    if (cloudHero && typeof window !== 'undefined' && !localStorage.getItem(KEY_FEATURED_HERO)) {
+      localStorage.setItem(KEY_FEATURED_HERO, cloudHero.id || cloudHero.slug);
+      window.dispatchEvent(new CustomEvent(EVENT_FEATURED_HERO_CHANGED, { detail: { articleId: cloudHero.id || cloudHero.slug } }));
+    }
 
     // 3. Tự động đẩy nền các bài cục bộ chưa lên được Cloud (tự nén & chuyển ảnh sang CDN để thành công 100%)
     if (unsyncedLocalToPush.length > 0) {

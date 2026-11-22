@@ -188,6 +188,7 @@ export async function handleGetCmsArticles(): Promise<{
         author_name: rData.author_name || 'Ban Biên Tập THCS Nguyễn Trung Trực',
         created_at: rev.created_at || '',
         updated_at: rev.updated_at || rev.created_at || '',
+        is_featured_hero: !!rData.is_featured_hero,
       });
     }
 
@@ -320,6 +321,7 @@ export async function handleSaveCmsArticle(article: ArticleData): Promise<{
         slug: itemPayload.slug,
         legacy_id: rawId,
         tags: [article.category || existingData.category, article.topic || existingData.topic || ''].filter(Boolean),
+        is_featured_hero: article.is_featured_hero !== undefined ? !!article.is_featured_hero : (existingData.is_featured_hero || false),
         synced_at: nowIso,
       },
       updated_at: nowIso,

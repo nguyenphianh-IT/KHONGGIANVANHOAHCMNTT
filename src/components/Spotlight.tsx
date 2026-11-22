@@ -13,7 +13,9 @@ import {
   normalizeCategoryToHomepage,
   getCategoryLabel,
   fetchArticlesFromSupabase,
-  resolveMediaUrl
+  resolveMediaUrl,
+  getFeaturedHeroArticleId,
+  EVENT_FEATURED_HERO_CHANGED
 } from '../lib/cmsStore';
 import {
   getAllViewCounts,
@@ -23,6 +25,7 @@ import {
 import { ResourceModal } from './ResourceModal';
 import { BookFlipbookModal } from './BookFlipbookModal';
 import { resolveArticleQuote } from '../data/quotesData';
+import { formatActivityDate } from './Activities';
 
 const mapArticleToResource = (art: ArticleData): ResourceItem => {
   const normCat = normalizeCategoryToHomepage(art.category);
@@ -36,7 +39,7 @@ const mapArticleToResource = (art: ArticleData): ResourceItem => {
     description: art.summary,
     fullContent: `${art.content}${art.references ? `\n\n---\n**Nguồn trích dẫn & Tham khảo:** ${art.references}` : ''}`,
     authorOrSource: art.author_name || 'Trường THCS Nguyễn Trung Trực',
-    dateOrEra: art.updated_at || art.created_at || 'Mới xuất bản',
+    dateOrEra: formatActivityDate(art.updated_at || art.created_at),
     thumbnail: resolveMediaUrl(art.featured_image, art.media_assets) || (normCat === 'video' ? '/images/timeline-ngoi-sao.png' : '/images/ho-chi-minh-tp-hcm.png'),
     audioUrl: art.audio_url || undefined,
     audioDuration: art.audio_duration || undefined,
@@ -47,6 +50,7 @@ const mapArticleToResource = (art: ArticleData): ResourceItem => {
     mediaAssets: art.media_assets,
     quoteId: art.quote_id,
     quote: resolveArticleQuote(art.quote_id, art.custom_quote, 1),
+    isFeaturedHero: Boolean(art.is_featured_hero),
   };
 };
 
@@ -56,6 +60,7 @@ export const Spotlight: React.FC = () => {
   const [activeFlipbookItem, setActiveFlipbookItem] = useState<ResourceItem | null>(null);
   const [allResources, setAllResources] = useState<ResourceItem[]>([]);
   const [viewsMap, setViewsMap] = useState<Record<string, number>>(() => getAllViewCounts());
+  const [featuredHeroId, setFeaturedHeroId] = useState<string | null>(() => getFeaturedHeroArticleId());
 
   // Tải dữ liệu kết hợp thời gian thực từ CMS Store và kho tư liệu
   useEffect(() => {
@@ -74,10 +79,16 @@ export const Spotlight: React.FC = () => {
         }
       });
       setAllResources(Array.from(uniqueMap.values()));
+      setFeaturedHeroId(getFeaturedHeroArticleId());
     };
 
     const handleViewsUpdate = () => {
       setViewsMap(getAllViewCounts());
+    };
+
+    const handleHeroChanged = () => {
+      setFeaturedHeroId(getFeaturedHeroArticleId());
+      loadResources();
     };
 
     loadResources();
@@ -99,26 +110,47 @@ export const Spotlight: React.FC = () => {
 
     window.addEventListener(EVENT_ARTICLES_CHANGED, loadResources);
     window.addEventListener(EVENT_VIEWS_CHANGED, handleViewsUpdate);
+    window.addEventListener(EVENT_FEATURED_HERO_CHANGED, handleHeroChanged);
     window.addEventListener('storage', loadResources);
     window.addEventListener('storage', handleViewsUpdate);
+    window.addEventListener('storage', handleHeroChanged);
 
     return () => {
       window.removeEventListener(EVENT_ARTICLES_CHANGED, loadResources);
       window.removeEventListener(EVENT_VIEWS_CHANGED, handleViewsUpdate);
+      window.removeEventListener(EVENT_FEATURED_HERO_CHANGED, handleHeroChanged);
       window.removeEventListener('storage', loadResources);
       window.removeEventListener('storage', handleViewsUpdate);
+      window.removeEventListener('storage', handleHeroChanged);
     };
   }, []);
 
   // 1. TƯ LIỆU TIÊU ĐIỂM (Featured Story & 2 Sub-features)
-  // Ưu tiên bài về Không gian văn hóa THCS Nguyễn Trung Trực hoặc bài có chủ đề đặc biệt
+  // Ưu tiên bài được Admin ghim trong CMS -> bài có cờ isFeaturedHero -> bài trường Nguyễn Trung Trực
   const featuredHero = useMemo(() => {
     if (allResources.length === 0) return null;
+
+    // 1.1. Ưu tiên tuyệt đối: Bài viết được Admin chỉ định ghim làm Tiêu Điểm Chủ Đạo
+    if (featuredHeroId) {
+      const adminTarget = allResources.find(
+        (r) =>
+          r.id === featuredHeroId ||
+          r.id === `art-${featuredHeroId}` ||
+          r.id.replace(/^art-/, '') === featuredHeroId.replace(/^art-/, '')
+      );
+      if (adminTarget) return adminTarget;
+    }
+
+    // 1.2. Ưu tiên bài có cờ isFeaturedHero
+    const markedHero = allResources.find((r) => r.isFeaturedHero);
+    if (markedHero) return markedHero;
+
+    // 1.3. Dự phòng mặc định: bài về Không gian văn hóa THCS Nguyễn Trung Trực hoặc bài đầu tiên
     return (
       allResources.find((r) => r.id === 'art-004' || r.title.includes('Nguyễn Trung Trực')) ||
       allResources[0]
     );
-  }, [allResources]);
+  }, [allResources, featuredHeroId]);
 
   const subFeatured = useMemo(() => {
     if (!featuredHero) return [];

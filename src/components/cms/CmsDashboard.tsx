@@ -5,7 +5,7 @@ import {
   CheckCircle2, AlertCircle, Send,
   ExternalLink, Sparkles, ArrowRight,
   Upload, Copy, Check, Trash2, Trophy, GraduationCap, LogOut, Cloud, Database,
-  KeyRound, Eye, Archive, RefreshCw
+  KeyRound, Eye, Archive, RefreshCw, Star
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { FullScreenEditor } from './FullScreenEditor';
@@ -25,7 +25,8 @@ import {
   EVENT_ARTICLES_CHANGED, EVENT_MEDIA_CHANGED,
   CMS_CATEGORIES, getCategoryLabel, normalizeCategoryToHomepage,
   saveArticleToCloud, fetchArticlesFromSupabase, unpublishArticleInCloud, deleteArticleInCloud,
-  saveMediaToCloud, fetchMediaFromCloud, retrySyncPendingArticlesToCloud
+  saveMediaToCloud, fetchMediaFromCloud, retrySyncPendingArticlesToCloud,
+  getFeaturedHeroArticleId, setFeaturedHeroArticleId, EVENT_FEATURED_HERO_CHANGED
 } from '../../lib/cmsStore';
 import {
   getAllViewCounts,
@@ -49,6 +50,7 @@ export const CmsDashboard: React.FC<CmsDashboardProps> = ({ isOpen, onClose }) =
   const [contestQuestionsCount, setContestQuestionsCount] = useState<number>(() => getStoredContestQuestions().length);
   const [contestSubmissionsCount, setContestSubmissionsCount] = useState<number>(() => getContestSubmissions().length);
   const [viewsMap, setViewsMap] = useState<Record<string, number>>(() => getAllViewCounts());
+  const [featuredHeroId, setFeaturedHeroId] = useState<string | null>(() => getFeaturedHeroArticleId());
 
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
@@ -265,6 +267,7 @@ export const CmsDashboard: React.FC<CmsDashboardProps> = ({ isOpen, onClose }) =
       setContestSubmissionsCount(getContestSubmissions().length);
     };
     const syncViews = () => setViewsMap(getAllViewCounts());
+    const syncHero = () => setFeaturedHeroId(getFeaturedHeroArticleId());
 
     fetchCloudViewCounts().then((cloudCounts) => {
       if (cloudCounts && Object.keys(cloudCounts).length > 0) {
@@ -276,22 +279,26 @@ export const CmsDashboard: React.FC<CmsDashboardProps> = ({ isOpen, onClose }) =
     window.addEventListener(EVENT_MEDIA_CHANGED, syncMedia);
     window.addEventListener(EVENT_CONTEST_DATA_CHANGED, syncContest);
     window.addEventListener(EVENT_VIEWS_CHANGED, syncViews);
+    window.addEventListener(EVENT_FEATURED_HERO_CHANGED, syncHero);
     window.addEventListener('storage', syncArticles);
     window.addEventListener('storage', syncMedia);
     window.addEventListener('storage', syncAudit);
     window.addEventListener('storage', syncContest);
     window.addEventListener('storage', syncViews);
+    window.addEventListener('storage', syncHero);
 
     return () => {
       window.removeEventListener(EVENT_ARTICLES_CHANGED, syncArticles);
       window.removeEventListener(EVENT_MEDIA_CHANGED, syncMedia);
       window.removeEventListener(EVENT_CONTEST_DATA_CHANGED, syncContest);
       window.removeEventListener(EVENT_VIEWS_CHANGED, syncViews);
+      window.removeEventListener(EVENT_FEATURED_HERO_CHANGED, syncHero);
       window.removeEventListener('storage', syncArticles);
       window.removeEventListener('storage', syncMedia);
       window.removeEventListener('storage', syncAudit);
       window.removeEventListener('storage', syncContest);
       window.removeEventListener('storage', syncViews);
+      window.removeEventListener('storage', syncHero);
     };
   }, []);
 
@@ -716,6 +723,56 @@ export const CmsDashboard: React.FC<CmsDashboardProps> = ({ isOpen, onClose }) =
     });
   };
 
+  // 5c. Action: Set/Toggle Featured Hero Article (Tiêu Điểm Chủ Đạo Trang Chủ)
+  const handleSetFeaturedHero = async (articleId: string | null) => {
+    const targetId = (articleId || '').trim();
+    if (!targetId) {
+      setFeaturedHeroArticleId(null);
+      setFeaturedHeroId(null);
+      setToastMsg({
+        type: 'info',
+        text: 'Đã hủy ghim Tiêu Điểm Chủ Đạo. Trang chủ sẽ quay về hiển thị bài viết mặc định của trường.',
+      });
+      return;
+    }
+
+    const targetArticle = articles.find((a) => a.id === targetId || a.slug === targetId);
+    if (!targetArticle) return;
+
+    if (targetArticle.status !== 'published') {
+      setToastMsg({
+        type: 'error',
+        text: 'Chỉ bài viết đã duyệt xuất bản mới có thể chọn làm Tiêu Điểm Chủ Đạo trên trang chủ!',
+      });
+      return;
+    }
+
+    setFeaturedHeroArticleId(targetId);
+    setFeaturedHeroId(targetId);
+
+    // Lưu đồng bộ cờ is_featured_hero lên Cloud nếu có thể
+    saveArticleToCloud({ ...targetArticle, is_featured_hero: true }).catch(() => {});
+
+    // Ghi nhật ký audit
+    const newLog: AuditLogItem = {
+      id: `evt-${Date.now()}`,
+      action: 'article.publish',
+      article_title: targetArticle.title,
+      actor: currentPersona.name,
+      role: currentPersona.roleLabel,
+      decision: 'approved',
+      feedback: 'Ghim bài viết làm Tiêu Điểm Chủ Đạo trên trang chủ website.',
+      timestamp: new Date().toISOString().replace('T', ' ').substring(0, 19),
+    };
+    addStoredAuditLog(newLog);
+    setAuditLogs((prev) => [newLog, ...prev]);
+
+    setToastMsg({
+      type: 'success',
+      text: `Đã đặt "${targetArticle.title}" làm Tiêu Điểm Chủ Đạo trên trang chủ thành công!`,
+    });
+  };
+
   // 4c. Action: Delete Article permanently
   const handleDeleteArticle = async (article: ArticleData) => {
     if (!window.confirm(`CẢNH BÁO: HÀNH ĐỘNG KHÔNG THỂ HOÀN TÁC!\n\nBạn có chắc chắn muốn XÓA VĨNH VIỄN bài viết "${article.title}"?`)) {
@@ -852,6 +909,8 @@ export const CmsDashboard: React.FC<CmsDashboardProps> = ({ isOpen, onClose }) =
     if (activeNav === 'published') return a.status === 'published' && matchQuery;
     return matchQuery && matchStatus && matchCategory;
   });
+
+  const publishedArticlesList = articles.filter((a) => a.status === 'published');
 
   return (
     <>
@@ -1581,6 +1640,57 @@ export const CmsDashboard: React.FC<CmsDashboardProps> = ({ isOpen, onClose }) =
                   </div>
                 )}
 
+                {/* Banner Quản Lý Tiêu Điểm Chủ Đạo trên Trang Chủ */}
+                <div className="p-3 sm:p-4 bg-gradient-to-r from-amber-500/10 via-heritage-gold-500/10 to-transparent border border-heritage-gold-400/60 rounded-xl flex flex-col md:flex-row md:items-center justify-between gap-3 shadow-xs">
+                  <div className="flex items-center space-x-2.5">
+                    <span className="p-2 bg-gradient-to-r from-heritage-red-800 to-heritage-red-900 text-heritage-gold-300 rounded-lg shadow-xs flex-shrink-0">
+                      <Star className="w-4 h-4 fill-heritage-gold-400 text-heritage-gold-400" />
+                    </span>
+                    <div>
+                      <div className="text-xs font-bold uppercase tracking-wider text-heritage-red-950 font-serif flex items-center space-x-1.5">
+                        <span>Tiêu Điểm Chủ Đạo Trang Chủ</span>
+                        <span className="text-[10px] text-heritage-gold-700 font-sans font-normal">(Vị trí nổi bật nhất)</span>
+                      </div>
+                      <div className="text-xs text-heritage-ink-700 mt-0.5 line-clamp-1">
+                        {featuredHeroId && publishedArticlesList.some((a) => a.id === featuredHeroId || a.slug === featuredHeroId) ? (
+                          <span className="font-semibold text-heritage-red-900">
+                            ★ {publishedArticlesList.find((a) => a.id === featuredHeroId || a.slug === featuredHeroId)?.title}
+                          </span>
+                        ) : (
+                          <span className="italic text-heritage-ink-600">
+                            Đang ở chế độ mặc định (Ưu tiên bài giới thiệu THCS Nguyễn Trung Trực)
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center space-x-2 flex-shrink-0">
+                    <select
+                      value={featuredHeroId || ''}
+                      onChange={(e) => handleSetFeaturedHero(e.target.value || null)}
+                      className="px-3 py-1.5 bg-white border border-heritage-gold-400/80 rounded-lg text-xs font-semibold text-heritage-ink-900 outline-none max-w-xs truncate shadow-xs focus:ring-1 focus:ring-heritage-gold-500"
+                    >
+                      <option value="">-- Mặc định hệ thống --</option>
+                      {publishedArticlesList.map((art) => (
+                        <option key={art.id || art.slug} value={art.id || art.slug}>
+                          {art.title}
+                        </option>
+                      ))}
+                    </select>
+
+                    {featuredHeroId && (
+                      <button
+                        onClick={() => handleSetFeaturedHero(null)}
+                        className="px-2.5 py-1.5 bg-heritage-ivory-200 hover:bg-heritage-ivory-300 text-heritage-ink-800 rounded-lg text-xs font-bold transition shadow-xs whitespace-nowrap"
+                        title="Bỏ ghim để trang chủ tự động chọn mặc định"
+                      >
+                        Bỏ ghim
+                      </button>
+                    )}
+                  </div>
+                </div>
+
                 {/* Main Data Table */}
                 <div className="bg-white rounded-2xl border border-heritage-gold-300/60 shadow-sm overflow-hidden">
                   <div className="overflow-x-auto">
@@ -1607,8 +1717,16 @@ export const CmsDashboard: React.FC<CmsDashboardProps> = ({ isOpen, onClose }) =
                           filteredArticles.map((art) => (
                             <tr key={art.id} className="hover:bg-heritage-ivory-50 transition">
                               <td className="py-3 px-4 max-w-sm">
-                                <div className="font-serif font-bold text-sm text-heritage-red-900 leading-snug line-clamp-1">
-                                  {art.title}
+                                <div className="flex items-center flex-wrap gap-1.5 mb-0.5">
+                                  <span className="font-serif font-bold text-sm text-heritage-red-900 leading-snug line-clamp-1">
+                                    {art.title}
+                                  </span>
+                                  {(art.id === featuredHeroId || art.slug === featuredHeroId || art.is_featured_hero) && (
+                                    <span className="px-2 py-0.5 rounded-full text-[9px] font-bold bg-gradient-to-r from-heritage-red-800 to-heritage-red-900 text-heritage-gold-300 border border-heritage-gold-400 inline-flex items-center space-x-1 shadow-xs" title="Đang được ghim làm Tiêu Điểm Chủ Đạo trên trang chủ">
+                                      <Star className="w-2.5 h-2.5 fill-heritage-gold-400" />
+                                      <span>TIÊU ĐIỂM</span>
+                                    </span>
+                                  )}
                                 </div>
                                 <div className="text-[11px] text-heritage-ink-500 line-clamp-1 mt-0.5 font-sans">
                                   {art.summary}
@@ -1719,6 +1837,28 @@ export const CmsDashboard: React.FC<CmsDashboardProps> = ({ isOpen, onClose }) =
                                     <Send className="w-3.5 h-3.5" />
                                     <span>{art.status === 'rejected' ? 'Nộp duyệt lại' : 'Nộp duyệt'}</span>
                                   </button>
+                                )}
+
+                                {art.status === 'published' && (
+                                  (art.id === featuredHeroId || art.slug === featuredHeroId || art.is_featured_hero) ? (
+                                    <button
+                                      onClick={() => handleSetFeaturedHero(null)}
+                                      className="px-2.5 py-1 bg-gradient-to-r from-heritage-red-800 to-heritage-red-900 text-heritage-gold-300 border border-heritage-gold-400 rounded-lg text-xs font-bold transition inline-flex items-center space-x-1 shadow-xs"
+                                      title="Bấm để bỏ ghim bài này khỏi Tiêu Điểm Chủ Đạo trên trang chủ"
+                                    >
+                                      <Star className="w-3.5 h-3.5 fill-heritage-gold-400 text-heritage-gold-400" />
+                                      <span>Đang là Tiêu điểm</span>
+                                    </button>
+                                  ) : (
+                                    <button
+                                      onClick={() => handleSetFeaturedHero(art.id || art.slug)}
+                                      className="px-2.5 py-1 bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-300 rounded-lg text-xs font-bold transition inline-flex items-center space-x-1 shadow-xs"
+                                      title="Đặt bài viết này làm Tiêu Điểm Chủ Đạo trên trang chủ"
+                                    >
+                                      <Star className="w-3.5 h-3.5 text-amber-600" />
+                                      <span>Ghim Tiêu điểm</span>
+                                    </button>
+                                  )
                                 )}
 
                                 {art.status === 'published' && (

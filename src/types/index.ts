@@ -46,6 +46,7 @@ export interface ResourceItem {
   mediaAssets?: any[];
   quoteId?: number;
   quote?: any;
+  isFeaturedHero?: boolean;
 }
 
 export interface LearningTopic {
@@ -87,4 +88,5 @@ export interface SchoolActivity {
   viewCount?: number;
   quoteId?: number;
   quote?: any;
+  isFeaturedHero?: boolean;
 }
