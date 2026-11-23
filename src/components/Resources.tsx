@@ -175,7 +175,7 @@ export const Resources: React.FC = () => {
     <section id="resources" className="py-8 sm:py-10 md:py-12 bg-heritage-ivory-100 border-b border-heritage-ivory-300">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
-        <div className="text-center max-w-4xl lg:max-w-5xl mx-auto mb-6 sm:mb-8">
+        <div className="text-center max-w-5xl lg:max-w-6xl mx-auto mb-6 sm:mb-8">
           <div className="inline-flex items-center space-x-1.5 text-xs uppercase tracking-wider text-heritage-red-700 font-bold bg-heritage-red-50 px-3 py-1 rounded-full border border-heritage-red-200 mb-3">
             <BookOpen className="w-3.5 h-3.5 text-heritage-red-700" />
             <span>Kho Tri Thức Học Đường</span>
@@ -187,7 +187,7 @@ export const Resources: React.FC = () => {
         </div>
 
         {/* Search & Filter Controls */}
-        <div className="max-w-4xl lg:max-w-5xl mx-auto mb-6 sm:mb-8 space-y-4">
+        <div className="max-w-5xl lg:max-w-6xl mx-auto mb-6 sm:mb-8 space-y-4">
           {/* Search Box */}
           <div className="relative">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-heritage-ink-500 pointer-events-none" aria-hidden="true" />
@@ -211,8 +211,8 @@ export const Resources: React.FC = () => {
             )}
           </div>
 
-          {/* Category Filter Tabs (Sắp xếp toàn bộ trên 1 dòng duy nhất, không xuống dòng) */}
-          <div className="flex items-center overflow-x-auto no-scrollbar scrollbar-none py-1.5 gap-1.5 sm:gap-2 justify-start md:justify-center -mx-2 sm:mx-0 px-2 sm:px-0 select-none flex-nowrap w-full">
+          {/* Category Filter Tabs (Tự động thích ứng, căn giữa đẹp mắt, không bao giờ bị cắt chữ) */}
+          <div className="flex flex-wrap items-center justify-center py-1.5 gap-1.5 sm:gap-2 select-none w-full">
             {categories.map((cat) => {
               const Icon = cat.icon;
               const isActive = selectedCategory === cat.id;
@@ -220,7 +220,7 @@ export const Resources: React.FC = () => {
                 <button
                   key={cat.id}
                   onClick={() => setSelectedCategory(cat.id)}
-                  className={`flex items-center space-x-1.5 px-2.5 sm:px-3 lg:px-3.5 py-1.5 sm:py-2 rounded-xl text-xs sm:text-xs md:text-sm font-medium transition-all whitespace-nowrap flex-shrink-0 shadow-xs ${
+                  className={`flex items-center space-x-1.5 px-2.5 sm:px-3 lg:px-3.5 py-1.5 sm:py-2 rounded-xl text-xs sm:text-xs md:text-sm font-medium transition-all whitespace-nowrap shadow-xs ${
                     isActive
                       ? 'bg-heritage-red-700 text-white font-semibold shadow-sm ring-1 ring-heritage-gold-400'
                       : 'bg-white text-heritage-ink-700 border border-heritage-ivory-300 hover:bg-heritage-red-50 hover:text-heritage-red-700'
