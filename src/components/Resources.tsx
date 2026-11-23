@@ -4,7 +4,7 @@ import { ResourceCategory, ResourceItem } from '../types';
 import { ResourceModal } from './ResourceModal';
 import { BookFlipbookModal } from './BookFlipbookModal';
 import { 
-  Search, Filter, BookOpen, FileText, Image as ImageIcon, Video, Book, 
+  Search, Filter, BookOpen, FileText, Sparkles, Video, Book, 
   X, AlertCircle, Volume2, Headphones, ChevronLeft, ChevronRight, Eye, Calendar 
 } from 'lucide-react';
 import {
@@ -108,7 +108,7 @@ export const Resources: React.FC = () => {
     { id: 'all' as ResourceCategory, label: 'Tất cả tư liệu', icon: Filter },
     { id: 'article' as ResourceCategory, label: 'Văn kiện & Bài viết', icon: FileText },
     { id: 'book' as ResourceCategory, label: 'Sách & Tài liệu', icon: Book },
-    { id: 'image' as ResourceCategory, label: 'Hình ảnh lịch sử', icon: ImageIcon },
+    { id: 'image' as ResourceCategory, label: 'Tư tưởng, đạo đức, phong cách Hồ Chí Minh', icon: Sparkles },
     { id: 'video' as ResourceCategory, label: 'Phim tư liệu', icon: Video },
     { id: 'audio' as ResourceCategory, label: 'Băng ghi âm lời Bác', icon: Volume2 },
   ];

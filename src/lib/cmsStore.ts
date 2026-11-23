@@ -62,10 +62,10 @@ export const CMS_CATEGORIES: CmsCategory[] = [
   },
   {
     id: 'image',
-    name: 'Hình ảnh lịch sử',
-    icon: '🖼️',
+    name: 'Tư tưởng, đạo đức, phong cách Hồ Chí Minh',
+    icon: '✨',
     badgeClass: 'bg-amber-100 text-amber-900 border-amber-200',
-    desc: 'Bộ sưu tập ảnh tư liệu, khoảnh khắc lịch sử quý giá',
+    desc: 'Tư tưởng, tấm gương đạo đức, phong cách sống giản dị và nhân văn của Bác Hồ',
   },
   {
     id: 'video',
@@ -106,7 +106,7 @@ export function getCategoryLabel(catId: string): string {
   const map: Record<string, string> = {
     article: 'Văn kiện & Bài viết',
     book: 'Sách & Tài liệu',
-    image: 'Hình ảnh lịch sử',
+    image: 'Tư tưởng, đạo đức, phong cách Hồ Chí Minh',
     video: 'Phim tư liệu',
     audio: 'Băng ghi âm lời Bác',
     activity: 'Hoạt động & Phong trào',
@@ -114,7 +114,7 @@ export function getCategoryLabel(catId: string): string {
     'CAT-02-THIEUNHI': 'Văn kiện & Bài viết',
     'CAT-03-DISAN': 'Sách & Tài liệu',
     'CAT-04-NHATRUONG': 'Hoạt động & Phong trào',
-    'CAT-05-DIACHIDO': 'Hình ảnh lịch sử',
+    'CAT-05-DIACHIDO': 'Tư tưởng, đạo đức, phong cách Hồ Chí Minh',
   };
   return map[catId] || 'Văn kiện & Bài viết';
 }
