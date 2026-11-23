@@ -48,7 +48,7 @@ export interface CmsCategory {
 export const CMS_CATEGORIES: CmsCategory[] = [
   {
     id: 'article',
-    name: 'Văn kiện & Bài viết',
+    name: 'Bài viết',
     icon: '📄',
     badgeClass: 'bg-blue-100 text-blue-900 border-blue-200',
     desc: 'Bài viết số hóa, văn kiện lịch sử, nghiên cứu tư tưởng Bác',
@@ -104,19 +104,19 @@ export const THEMATIC_TOPICS = [
 
 export function getCategoryLabel(catId: string): string {
   const map: Record<string, string> = {
-    article: 'Văn kiện & Bài viết',
+    article: 'Bài viết',
     book: 'Sách & Tài liệu',
     image: 'Tư tưởng, đạo đức, phong cách Hồ Chí Minh',
     video: 'Phim tư liệu',
     audio: 'Băng ghi âm lời Bác',
     activity: 'Hoạt động & Phong trào',
-    'CAT-01-CUOCDOI': 'Văn kiện & Bài viết',
-    'CAT-02-THIEUNHI': 'Văn kiện & Bài viết',
+    'CAT-01-CUOCDOI': 'Bài viết',
+    'CAT-02-THIEUNHI': 'Bài viết',
     'CAT-03-DISAN': 'Sách & Tài liệu',
     'CAT-04-NHATRUONG': 'Hoạt động & Phong trào',
     'CAT-05-DIACHIDO': 'Tư tưởng, đạo đức, phong cách Hồ Chí Minh',
   };
-  return map[catId] || 'Văn kiện & Bài viết';
+  return map[catId] || 'Bài viết';
 }
 
 export function normalizeCategoryToHomepage(catId: string): 'article' | 'book' | 'image' | 'video' | 'audio' {

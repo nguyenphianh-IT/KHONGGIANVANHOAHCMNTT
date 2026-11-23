@@ -43,7 +43,7 @@ Website được thiết kế trang trọng, chuẩn mực, hiện đại và th
    - Bộ lọc thời kỳ: Thời niên thiếu (1890), Bôn ba cứu nước (1911 - 1920), Lãnh đạo cách mạng (1930 - 1954), Di chúc thiêng liêng (1969).
    - Modal xem chi tiết diễn biến, địa danh và ý nghĩa lịch sử của từng mốc.
 5. **Kho tư liệu số hóa (Resources):**
-   - Bộ lọc theo danh mục: Văn kiện & Bài viết, Sách & Tài liệu, Tư tưởng, đạo đức, phong cách Hồ Chí Minh, Phim tư liệu.
+   - Bộ lọc theo danh mục: Bài viết, Sách & Tài liệu, Tư tưởng, đạo đức, phong cách Hồ Chí Minh, Phim tư liệu.
    - Tìm kiếm thời gian thực (Realtime search) theo từ khóa.
    - Trạng thái Empty state thông minh khi không tìm thấy kết quả.
    - Modal xem toàn văn tư liệu và trích dẫn bản quyền học đường.

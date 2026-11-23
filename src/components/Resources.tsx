@@ -106,7 +106,7 @@ export const Resources: React.FC = () => {
 
   const categories = [
     { id: 'all' as ResourceCategory, label: 'Tất cả tư liệu', icon: Filter },
-    { id: 'article' as ResourceCategory, label: 'Văn kiện & Bài viết', icon: FileText },
+    { id: 'article' as ResourceCategory, label: 'Bài viết', icon: FileText },
     { id: 'book' as ResourceCategory, label: 'Sách & Tài liệu', icon: Book },
     { id: 'image' as ResourceCategory, label: 'Tư tưởng, đạo đức, phong cách Hồ Chí Minh', icon: Sparkles },
     { id: 'video' as ResourceCategory, label: 'Phim tư liệu', icon: Video },
