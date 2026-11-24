@@ -65,24 +65,43 @@ export const Footer: React.FC = () => {
             </ul>
           </div>
 
-          {/* Col 3: Official Contact Box (Ready for later update) */}
+          {/* Col 3: Official Contact Box */}
           <div className="lg:col-span-4 space-y-3">
             <h4 className="font-serif text-sm sm:text-base font-bold uppercase tracking-wider text-heritage-gold-400 flex items-center space-x-2">
               <Phone className="w-4 h-4 text-heritage-gold-400" />
               <span>Thông Tin Liên Hệ</span>
             </h4>
 
-            {/* Official notice box to be filled by School Admin */}
-            <div className="p-4 sm:p-5 rounded-xl bg-heritage-red-900/40 border border-heritage-red-700/60 text-sm leading-relaxed space-y-2.5">
-              <p className="text-heritage-ivory-100 font-semibold">
-                Đơn vị chủ quản: Trường THCS Nguyễn Trung Trực
-              </p>
-              <div className="flex items-start space-x-2 text-heritage-ivory-100/90 text-sm">
-                <MapPin className="w-4 h-4 text-heritage-gold-400 flex-shrink-0 mt-0.5" />
-                <span>Phường Thới An, Thành phố Hồ Chí Minh</span>
+            {/* Official contact box */}
+            <div className="p-4 sm:p-5 rounded-2xl bg-heritage-red-900/40 border border-heritage-gold-400/30 text-sm leading-relaxed space-y-3.5 shadow-sm">
+              <div className="flex items-start space-x-3">
+                <div className="w-8 h-8 rounded-lg bg-heritage-red-800/80 border border-heritage-gold-400/30 flex items-center justify-center flex-shrink-0 mt-0.5 shadow-xs">
+                  <Landmark className="w-4 h-4 text-heritage-gold-300" />
+                </div>
+                <div>
+                  <span className="text-[11px] uppercase tracking-wider text-heritage-gold-300 font-bold block">Đơn vị chủ quản</span>
+                  <span className="text-heritage-ivory-50 font-bold text-sm">Trường THCS Nguyễn Trung Trực</span>
+                </div>
               </div>
-              <div className="p-3 rounded-lg bg-black/40 border border-heritage-red-800 text-xs text-heritage-gold-200/90 italic leading-relaxed">
-                * Lưu ý: Các thông tin chi tiết về địa chỉ trụ sở, số điện thoại văn phòng và hòm thư điện tử chính thức sẽ được Ban Giám hiệu nhà trường phê duyệt và cập nhật bổ sung trong giai đoạn vận hành chính thức.
+
+              <div className="flex items-start space-x-3">
+                <div className="w-8 h-8 rounded-lg bg-heritage-red-800/80 border border-heritage-gold-400/30 flex items-center justify-center flex-shrink-0 mt-0.5 shadow-xs">
+                  <MapPin className="w-4 h-4 text-heritage-gold-300" />
+                </div>
+                <div>
+                  <span className="text-[11px] uppercase tracking-wider text-heritage-gold-300 font-bold block">Địa bàn</span>
+                  <span className="text-heritage-ivory-100/90 text-sm">Phường Thới An, Thành phố Hồ Chí Minh</span>
+                </div>
+              </div>
+
+              <div className="flex items-start space-x-3">
+                <div className="w-8 h-8 rounded-lg bg-heritage-red-800/80 border border-heritage-gold-400/30 flex items-center justify-center flex-shrink-0 mt-0.5 shadow-xs">
+                  <ShieldCheck className="w-4 h-4 text-heritage-gold-300" />
+                </div>
+                <div>
+                  <span className="text-[11px] uppercase tracking-wider text-heritage-gold-300 font-bold block">Công tác số hóa</span>
+                  <span className="text-heritage-ivory-100/90 text-sm">Ban Biên Tập Không Gian Văn Hóa HCM</span>
+                </div>
               </div>
             </div>
           </div>
