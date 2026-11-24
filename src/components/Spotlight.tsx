@@ -480,7 +480,7 @@ export const Spotlight: React.FC = () => {
                       onClick={() => (item.pdfAttachment ? setActiveFlipbookItem(item) : setActiveModalItem(item))}
                       className="group cursor-pointer py-2.5 first:pt-0 last:pb-0 flex items-start space-x-3.5 p-2 rounded-xl hover:bg-gradient-to-r hover:from-heritage-gold-50/70 hover:to-transparent border border-transparent hover:border-heritage-gold-200/60 transition-all duration-200"
                     >
-                      <div className="relative w-14 h-14 sm:w-16 sm:h-16 rounded-xl overflow-hidden flex-shrink-0 border border-heritage-gold-200/80 shadow-xs group-hover:scale-105 group-hover:border-heritage-gold-400 transition-all duration-300">
+                      <div className="relative w-24 sm:w-28 aspect-video rounded-xl overflow-hidden flex-shrink-0 border border-heritage-gold-200/80 shadow-xs group-hover:scale-105 group-hover:border-heritage-gold-400 transition-all duration-300">
                         <img
                           src={item.thumbnail}
                           alt={item.title}
