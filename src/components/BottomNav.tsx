@@ -9,10 +9,11 @@ export const BottomNav: React.FC<BottomNavProps> = ({ onNavClick }) => {
   const [activeSection, setActiveSection] = useState('hero');
 
   useEffect(() => {
-    const handleScroll = () => {
-      const sections = ['hero', 'spotlight', 'timeline', 'resources', 'activities'];
-      const scrollPosition = window.scrollY + 180;
+    let ticking = false;
+    const sections = ['hero', 'spotlight', 'timeline', 'resources', 'activities'];
 
+    const updateActive = () => {
+      const scrollPosition = window.scrollY + 180;
       for (let i = sections.length - 1; i >= 0; i--) {
         const id = sections[i];
         const el = document.getElementById(id);
@@ -21,10 +22,18 @@ export const BottomNav: React.FC<BottomNavProps> = ({ onNavClick }) => {
           break;
         }
       }
+      ticking = false;
+    };
+
+    const handleScroll = () => {
+      if (!ticking) {
+        ticking = true;
+        window.requestAnimationFrame(updateActive);
+      }
     };
 
     window.addEventListener('scroll', handleScroll, { passive: true });
-    handleScroll();
+    updateActive();
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 

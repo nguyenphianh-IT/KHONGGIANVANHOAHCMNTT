@@ -95,17 +95,12 @@ export const Timeline: React.FC = () => {
         </div>
 
         {/* Trục thước đo thời gian nằm ngang chính thức (Phương án 4) */}
-        <motion.div
-          initial={{ opacity: 0, y: 24 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, amount: 'some' }}
-          transition={{ duration: 0.55, ease: 'easeOut' }}
-        >
+        <div>
           <HorizontalTimelineRail
             events={filteredEvents}
             onOpenDetailModal={(ev) => setSelectedEvent(ev)}
           />
-        </motion.div>
+        </div>
       </div>
 
         {/* Selected Event Detail Modal (Wide Museum-Grade Canvas matching ResourceModal) */}

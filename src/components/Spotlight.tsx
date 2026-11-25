@@ -216,10 +216,10 @@ export const Spotlight: React.FC = () => {
         {/* SỨ MỆNH GIÁO DỤC CỦA NHÀ TRƯỜNG (Khung đỏ di sản theo chuẩn thiết kế)     */}
         {/* ========================================================================= */}
         <motion.div
-          initial={{ opacity: 0, y: 18 }}
+          initial={{ opacity: 0, y: 10 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 'some' }}
-          transition={{ duration: 0.45, ease: 'easeOut' }}
+          transition={{ duration: 0.3, ease: 'easeOut' }}
           className="mb-6 sm:mb-8 bg-gradient-to-r from-heritage-red-800 to-heritage-red-900 rounded-2xl sm:rounded-3xl p-6 sm:p-8 text-white shadow-heritage relative overflow-hidden border-2 border-heritage-gold-400/50"
         >
           <div className="relative z-10 max-w-4xl">

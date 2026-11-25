@@ -275,12 +275,12 @@ export const Resources: React.FC = () => {
               key={`${selectedCategory}-${currentPage}`}
               initial="hidden"
               whileInView="visible"
-              viewport={{ once: true, amount: 'some' }}
+              viewport={{ once: true, amount: 0.05 }}
               variants={{
                 hidden: {},
                 visible: {
                   transition: {
-                    staggerChildren: 0.06,
+                    staggerChildren: 0.04,
                   },
                 },
               }}
@@ -290,15 +290,15 @@ export const Resources: React.FC = () => {
                 <motion.div
                   key={item.id}
                   variants={{
-                    hidden: { opacity: 0, y: 20 },
+                    hidden: { opacity: 0, y: 12 },
                     visible: {
                       opacity: 1,
                       y: 0,
-                      transition: { duration: 0.35, ease: 'easeOut' },
+                      transition: { duration: 0.25, ease: 'easeOut' },
                     },
                   }}
                   onClick={() => setActiveModalItem(item)}
-                  className="group cursor-pointer bg-white rounded-xl border border-heritage-ivory-300 shadow-sm hover:shadow-heritage-hover hover:border-heritage-gold-400 transition-all duration-300 flex flex-col justify-between overflow-hidden"
+                  className="group cursor-pointer bg-white rounded-xl border border-heritage-ivory-300 shadow-sm hover:shadow-heritage-hover hover:border-heritage-gold-400 transition-[border-color,box-shadow] duration-300 flex flex-col justify-between overflow-hidden"
                 >
                   <div>
                     {/* Card Thumbnail */}

@@ -15,12 +15,14 @@ export const Header: React.FC<HeaderProps> = ({ onOpenChatbotPreview, onOpenAuth
   const [activeSection, setActiveSection] = useState('hero');
 
   useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 30);
+    let ticking = false;
+    const sections = ['hero', 'spotlight', 'timeline', 'resources', 'learning', 'activities', 'about', 'contact'];
 
-      const sections = ['hero', 'spotlight', 'timeline', 'resources', 'learning', 'activities', 'about', 'contact'];
-      const scrollPosition = window.scrollY + 120;
+    const updateScrollState = () => {
+      const y = window.scrollY;
+      setIsScrolled(y > 30);
 
+      const scrollPosition = y + 120;
       for (const sectionId of sections) {
         const el = document.getElementById(sectionId);
         if (el) {
@@ -31,6 +33,14 @@ export const Header: React.FC<HeaderProps> = ({ onOpenChatbotPreview, onOpenAuth
             break;
           }
         }
+      }
+      ticking = false;
+    };
+
+    const handleScroll = () => {
+      if (!ticking) {
+        ticking = true;
+        window.requestAnimationFrame(updateScrollState);
       }
     };
 
