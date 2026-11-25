@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
 import { ResourceItem } from '../types';
 import {
   X, Calendar, User, Tag, BookOpen, Printer,
@@ -71,12 +72,22 @@ export const ResourceModal: React.FC<ResourceModalProps> = ({ item, onClose }) =
 
   return (
     <>
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 md:p-6 bg-heritage-ink-950/85 backdrop-blur-md animate-fadeIn select-text"
+    <AnimatePresence>
+    <motion.div
+      key={item.id}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.2 }}
+      className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 md:p-6 bg-heritage-ink-950/85 backdrop-blur-md select-text"
       onClick={onClose}
     >
-      <div
-        className="bg-heritage-ivory-50 rounded-3xl max-w-5xl xl:max-w-6xl w-full shadow-2xl border-2 border-heritage-gold-400/80 max-h-[95vh] flex flex-col overflow-hidden animate-slideUp text-heritage-ink-900"
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95, y: 16 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        exit={{ opacity: 0, scale: 0.95, y: 12 }}
+        transition={{ type: 'spring', stiffness: 380, damping: 30 }}
+        className="bg-heritage-ivory-50 rounded-3xl max-w-5xl xl:max-w-6xl w-full shadow-2xl border-2 border-heritage-gold-400/80 max-h-[95vh] flex flex-col overflow-hidden text-heritage-ink-900"
         onClick={(e) => e.stopPropagation()}
         role="dialog"
         aria-modal="true"
@@ -421,8 +432,9 @@ export const ResourceModal: React.FC<ResourceModalProps> = ({ item, onClose }) =
             </button>
           </div>
         </footer>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
+    </AnimatePresence>
 
     {/* Trình đọc Sách Lật Trang 3D (Nằm ngoài lớp backdrop để bấm chuyển trang không bao giờ bị văng) */}
     {item.pdfAttachment && (

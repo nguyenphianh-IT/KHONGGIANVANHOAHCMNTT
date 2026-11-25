@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
 import { timelineData } from '../data/timelineData';
 import { TimelineEvent } from '../types';
 import {
@@ -45,7 +46,13 @@ export const Timeline: React.FC = () => {
     <section id="timeline" className="py-8 sm:py-10 md:py-12 bg-white border-b border-heritage-ivory-300 overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
-        <div className="text-center max-w-4xl lg:max-w-5xl mx-auto mb-6 sm:mb-8">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 'some' }}
+          transition={{ duration: 0.5, ease: 'easeOut' }}
+          className="text-center max-w-4xl lg:max-w-5xl mx-auto mb-6 sm:mb-8"
+        >
           <div className="inline-flex items-center space-x-1.5 text-xs uppercase tracking-wider text-heritage-red-700 font-bold bg-heritage-red-50 px-3 py-1 rounded-full border border-heritage-red-200 mb-3">
             <Sparkles className="w-3.5 h-3.5 text-heritage-red-700" />
             <span>Chủ Tịch Hồ Chí Minh</span>
@@ -58,42 +65,66 @@ export const Timeline: React.FC = () => {
             Dòng thời gian lịch sử ghi lại những dấu mốc thiêng liêng trong cuộc đời Chủ tịch Hồ Chí Minh –
             Anh hùng giải phóng dân tộc, Nhà văn hóa kiệt xuất của Việt Nam.
           </p>
-        </div>
+        </motion.div>
 
         {/* Filter Pills */}
         <div className="flex flex-wrap items-center justify-center gap-2 mb-6 sm:mb-8">
-          {filterOptions.map((opt) => (
-            <button
-              key={opt.id}
-              onClick={() => setFilter(opt.id)}
-              className={`px-3.5 py-1.5 rounded-full text-xs sm:text-sm font-medium transition-all ${
-                filter === opt.id
-                  ? 'bg-heritage-red-700 text-white shadow-sm font-semibold'
-                  : 'bg-heritage-ivory-200 text-heritage-ink-700 hover:bg-heritage-red-50 hover:text-heritage-red-700'
-              }`}
-            >
-              {opt.label}
-            </button>
-          ))}
+          {filterOptions.map((opt) => {
+            const isActive = filter === opt.id;
+            return (
+              <button
+                key={opt.id}
+                onClick={() => setFilter(opt.id)}
+                className={`relative px-3.5 py-1.5 rounded-full text-xs sm:text-sm font-medium transition-colors ${
+                  isActive
+                    ? 'text-white font-semibold'
+                    : 'bg-heritage-ivory-200 text-heritage-ink-700 hover:bg-heritage-red-50 hover:text-heritage-red-700'
+                }`}
+              >
+                {isActive && (
+                  <motion.span
+                    layoutId="activeTimelineFilterTab"
+                    className="absolute inset-0 bg-heritage-red-700 rounded-full shadow-sm z-0"
+                    transition={{ type: 'spring', stiffness: 450, damping: 35 }}
+                  />
+                )}
+                <span className="relative z-10">{opt.label}</span>
+              </button>
+            );
+          })}
         </div>
 
         {/* Trục thước đo thời gian nằm ngang chính thức (Phương án 4) */}
-        <div className="animate-fadeIn">
+        <motion.div
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 'some' }}
+          transition={{ duration: 0.55, ease: 'easeOut' }}
+        >
           <HorizontalTimelineRail
             events={filteredEvents}
             onOpenDetailModal={(ev) => setSelectedEvent(ev)}
           />
-        </div>
+        </motion.div>
       </div>
 
         {/* Selected Event Detail Modal (Wide Museum-Grade Canvas matching ResourceModal) */}
+        <AnimatePresence>
         {selectedEvent && (
-          <div
-            className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 md:p-6 bg-heritage-ink-950/85 backdrop-blur-md animate-fadeIn select-text"
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 md:p-6 bg-heritage-ink-950/85 backdrop-blur-md select-text"
             onClick={() => setSelectedEvent(null)}
           >
-            <div
-              className="bg-heritage-ivory-50 rounded-3xl max-w-5xl xl:max-w-6xl w-full shadow-2xl border-2 border-heritage-gold-400/80 max-h-[95vh] flex flex-col overflow-hidden animate-slideUp text-heritage-ink-900"
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 16 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 12 }}
+              transition={{ type: 'spring', stiffness: 380, damping: 30 }}
+              className="bg-heritage-ivory-50 rounded-3xl max-w-5xl xl:max-w-6xl w-full shadow-2xl border-2 border-heritage-gold-400/80 max-h-[95vh] flex flex-col overflow-hidden text-heritage-ink-900"
               onClick={(e) => e.stopPropagation()}
               role="dialog"
               aria-modal="true"
@@ -285,9 +316,10 @@ export const Timeline: React.FC = () => {
                   </button>
                 </div>
               </footer>
-            </div>
-          </div>
+            </motion.div>
+          </motion.div>
         )}
+        </AnimatePresence>
     </section>
   );
 };

@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
+import { motion } from 'motion/react';
 import {
   ClassInfo,
   getStoredClasses,
@@ -36,6 +37,7 @@ import { ContestManagerModal } from './cms/ContestManagerModal';
 import { useAuth } from '../context/AuthContext';
 import { AuthModal } from './cms/AuthModal';
 import { DongSonDrumWatermark } from './DongSonDrumWatermark';
+import { AnimatedCounter } from './AnimatedCounter';
 
 export const OnlineContest: React.FC = () => {
   // Xác thực Cán bộ Quản trị & Ban Giám Khảo (RBAC bảo vệ ngân hàng đề & bảng điểm)
@@ -1627,7 +1629,12 @@ export const OnlineContest: React.FC = () => {
 
       {/* 4. MÀN HÌNH KẾT QUẢ & XEM LẠI ĐÁP ÁN */}
       {screen === 'result' && latestSubmission && (
-        <div className="max-w-3xl mx-auto bg-heritage-ivory-100 rounded-2xl sm:rounded-3xl p-4 sm:p-8 md:p-10 border border-heritage-gold-400 shadow-2xl animate-fadeIn text-center">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.96, y: 16 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          transition={{ type: 'spring', stiffness: 360, damping: 28 }}
+          className="max-w-3xl mx-auto bg-heritage-ivory-100 rounded-2xl sm:rounded-3xl p-4 sm:p-8 md:p-10 border border-heritage-gold-400 shadow-2xl text-center"
+        >
           <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-gradient-to-br from-heritage-gold-300 to-heritage-gold-500 text-heritage-red-950 mx-auto flex items-center justify-center shadow-lg mb-3 sm:mb-4">
             <Trophy className="w-8 h-8 sm:w-10 sm:h-10" />
           </div>
@@ -1680,11 +1687,15 @@ export const OnlineContest: React.FC = () => {
             <div className="p-3 sm:p-3.5 bg-white rounded-xl sm:rounded-2xl border border-heritage-ivory-300 shadow-sm">
               <span className="text-[10px] sm:text-[11px] text-heritage-ink-500 font-bold uppercase tracking-wider block">Điểm thang 10</span>
               <span className="font-serif text-xl sm:text-3xl font-black text-heritage-red-700 block mt-0.5">
-                {getStandardizedScore10(latestSubmission)}
+                <AnimatedCounter
+                  value={getStandardizedScore10(latestSubmission)}
+                  decimals={Number.isInteger(getStandardizedScore10(latestSubmission)) ? 0 : 1}
+                  duration={1.1}
+                />
                 <span className="text-xs text-heritage-ink-400 font-normal ml-0.5">/ 10</span>
               </span>
               <span className="text-[10px] text-heritage-ink-500 font-medium">
-                {latestSubmission.score}/{latestSubmission.totalQuestions} câu đúng
+                <AnimatedCounter value={latestSubmission.score} duration={0.9} />/{latestSubmission.totalQuestions} câu đúng
               </span>
             </div>
 
@@ -1754,7 +1765,7 @@ export const OnlineContest: React.FC = () => {
               Thi lại
             </button>
           </div>
-        </div>
+        </motion.div>
       )}
 
       {/* 5. MÀN HÌNH BẢNG XẾP HẠNG & VINH DANH (LEADERBOARD) */}

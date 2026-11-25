@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { motion } from 'motion/react';
 import { 
   Play, 
   Pause, 
@@ -7,7 +8,6 @@ import {
   RotateCcw, 
   Radio, 
   ShieldCheck,
-  Disc3,
   Download,
   AlertCircle
 } from 'lucide-react';
@@ -141,9 +141,44 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
 
       {/* Header bar of the player */}
       <div className="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-white/15">
-        <div className="flex items-center space-x-2.5">
-          <div className="w-8 h-8 rounded-lg bg-heritage-red-800/80 border border-heritage-gold-400/50 text-heritage-gold-300 flex items-center justify-center shadow">
-            <Disc3 className={`w-4 h-4 ${isPlaying ? 'animate-spin' : ''}`} />
+        <div className="flex items-center space-x-3.5">
+          {/* Đĩa than cổ điển & Cần gạt kim đĩa (Classic Vinyl Turntable & Tonearm) */}
+          <div className="relative w-12 h-12 sm:w-14 sm:h-14 flex-shrink-0 flex items-center justify-center rounded-xl bg-black/50 border border-heritage-gold-400/40 shadow-inner">
+            {/* Vinyl Disc */}
+            <motion.div
+              animate={isPlaying ? { rotate: 360 } : { rotate: 0 }}
+              transition={
+                isPlaying
+                  ? { repeat: Infinity, duration: 3.6, ease: 'linear' }
+                  : { duration: 0.4, ease: 'easeOut' }
+              }
+              className="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-gradient-to-tr from-stone-950 via-stone-800 to-stone-900 border border-white/20 flex items-center justify-center shadow-md relative"
+            >
+              {/* Vinyl Grooves */}
+              <div className="absolute inset-1.5 rounded-full border border-white/10 pointer-events-none" />
+              <div className="absolute inset-3 rounded-full border border-white/10 pointer-events-none" />
+              {/* Center Heritage Label */}
+              <div className="w-4 h-4 rounded-full bg-heritage-red-700 border border-heritage-gold-400 flex items-center justify-center">
+                <div className="w-1 h-1 rounded-full bg-heritage-gold-200" />
+              </div>
+            </motion.div>
+
+            {/* Tonearm (Cần gạt kim đĩa) */}
+            <motion.div
+              aria-hidden="true"
+              initial={false}
+              animate={{ rotate: isPlaying ? 16 : -14 }}
+              transition={{ type: 'spring', stiffness: 220, damping: 20 }}
+              style={{ transformOrigin: 'top center' }}
+              className="absolute top-1 right-1.5 w-1 h-6 sm:h-7 pointer-events-none z-10 flex flex-col items-center"
+            >
+              {/* Pivot */}
+              <div className="w-2 h-2 rounded-full bg-heritage-gold-300 border border-stone-900 shadow-xs flex-shrink-0" />
+              {/* Arm shaft */}
+              <div className="w-0.5 flex-1 bg-gradient-to-b from-heritage-gold-200 to-heritage-gold-400 rounded-full" />
+              {/* Cartridge head */}
+              <div className="w-1.5 h-1.5 rounded-xs bg-heritage-gold-500 border border-black/50 flex-shrink-0" />
+            </motion.div>
           </div>
           <div>
             <div className="flex items-center space-x-1.5">
@@ -183,16 +218,35 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
             const baseHeights = [30, 45, 60, 80, 50, 70, 90, 40, 65, 85, 95, 60, 40, 75, 85, 55, 35, 65, 90, 75, 50, 80, 60, 40, 70, 85, 65, 45, 60, 80, 50, 30];
             const height = baseHeights[i % baseHeights.length];
             return (
-              <span
+              <motion.span
                 key={i}
-                className={`w-1 rounded-full transition-all duration-200 ${
+                className={`w-1 rounded-full ${
                   isActive 
                     ? 'bg-heritage-gold-400 shadow-[0_0_8px_rgba(212,175,55,0.8)]' 
                     : 'bg-white/20'
                 }`}
-                style={{
-                  height: isPlaying ? `${Math.max(20, (height * (0.6 + Math.sin(i + currentTime * 3) * 0.4)))}%` : `${height * 0.4}%`,
-                }}
+                animate={
+                  isPlaying
+                    ? {
+                        height: [
+                          `${Math.max(20, height * 0.45)}%`,
+                          `${Math.min(100, height)}%`,
+                          `${Math.max(25, height * 0.6)}%`,
+                        ],
+                      }
+                    : { height: `${height * 0.4}%` }
+                }
+                transition={
+                  isPlaying
+                    ? {
+                        repeat: Infinity,
+                        repeatType: 'reverse',
+                        duration: 0.45 + (i % 5) * 0.12,
+                        delay: (i % 7) * 0.05,
+                        ease: 'easeInOut',
+                      }
+                    : { duration: 0.25 }
+                }
               />
             );
           })}

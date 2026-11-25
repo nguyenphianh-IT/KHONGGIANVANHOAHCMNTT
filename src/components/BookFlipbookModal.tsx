@@ -6,6 +6,7 @@
  */
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { motion } from 'motion/react';
 import {
   X, ChevronLeft, ChevronRight, Maximize2, Minimize2, ZoomIn, ZoomOut,
   RotateCcw, Download, Volume2, VolumeX, BookOpen, FileText, Loader2, ExternalLink
@@ -332,11 +333,15 @@ export const BookFlipbookModal: React.FC<BookFlipbookModalProps> = ({
   const rightPageNumber = isTwoPageMode ? (currentPage === 1 ? 1 : (leftPageNumber ? leftPageNumber + 1 : currentPage)) : currentPage;
 
   return (
-    <div
+    <motion.div
       ref={containerRef}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.22 }}
       onClick={(e) => e.stopPropagation()}
       onMouseDown={(e) => e.stopPropagation()}
-      className="fixed inset-0 z-[70] h-[100dvh] w-screen flex flex-col bg-stone-950/95 backdrop-blur-md text-stone-100 select-none animate-fadeIn"
+      className="fixed inset-0 z-[70] h-[100dvh] w-screen flex flex-col bg-stone-950/95 backdrop-blur-md text-stone-100 select-none"
       role="dialog"
       aria-modal="true"
     >
@@ -541,10 +546,16 @@ export const BookFlipbookModal: React.FC<BookFlipbookModalProps> = ({
 
           {/* KHUNG CUỐN SÁCH 3D (BOOK CONTAINER) */}
           {!isLoadingPdf && !renderError && (
-            <div
-              className={`relative flex items-center justify-center transition-transform duration-200 m-auto ${
-                flipDirection === 'next' ? 'scale-[0.99]' : flipDirection === 'prev' ? 'scale-[0.99]' : 'scale-100'
-              }`}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.94, y: 12 }}
+              animate={{
+                opacity: 1,
+                scale: flipDirection ? 0.985 : 1,
+                rotateY: flipDirection === 'next' ? -4 : flipDirection === 'prev' ? 4 : 0,
+                y: 0,
+              }}
+              transition={{ type: 'spring', stiffness: 360, damping: 28 }}
+              className="relative flex items-center justify-center m-auto"
               style={{ perspective: '1600px' }}
             >
               {/* Chế độ 1 TRANG (Mobile, Tablet hoặc Single Page Mode) */}
@@ -596,7 +607,7 @@ export const BookFlipbookModal: React.FC<BookFlipbookModalProps> = ({
                   )}
                 </div>
               )}
-            </div>
+            </motion.div>
           )}
         </main>
       </div>
@@ -689,6 +700,6 @@ export const BookFlipbookModal: React.FC<BookFlipbookModalProps> = ({
           )}
         </div>
       </footer>
-    </div>
+    </motion.div>
   );
 };

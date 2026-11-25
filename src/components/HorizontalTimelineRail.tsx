@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
 import { TimelineEvent } from '../types';
 import {
   Calendar,
@@ -465,7 +466,15 @@ export const HorizontalTimelineRail: React.FC<HorizontalTimelineRailProps> = ({
         </div>
 
         {/* Main Showcase Body (2-Column Desktop Grid) */}
-        <div className="p-4 sm:p-6 lg:p-8 grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start">
+        <AnimatePresence mode="wait">
+        <motion.div
+          key={currentEvent.id}
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -8 }}
+          transition={{ duration: 0.25, ease: 'easeOut' }}
+          className="p-4 sm:p-6 lg:p-8 grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start"
+        >
           {/* Left Column: Authentic Historical Photo Canvas */}
           <div className="lg:col-span-5 flex flex-col space-y-2.5">
             <div
@@ -613,7 +622,8 @@ export const HorizontalTimelineRail: React.FC<HorizontalTimelineRailProps> = ({
               </button>
             </div>
           </div>
-        </div>
+        </motion.div>
+        </AnimatePresence>
       </div>
     </div>
   );

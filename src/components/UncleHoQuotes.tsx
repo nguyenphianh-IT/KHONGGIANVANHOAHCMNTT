@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
 import { 
   Quote, 
   Shuffle, 
@@ -120,6 +121,20 @@ export const UncleHoQuotes: React.FC<UncleHoQuotesProps> = ({
       {/* Subtle Glowing Radial Accent */}
       <div className="absolute top-0 right-1/4 w-72 h-72 bg-heritage-gold-500/10 rounded-full blur-3xl pointer-events-none" />
 
+      {/* Subtle Golden Shimmer Sweep every 5s */}
+      <motion.div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-y-0 w-1/3 bg-gradient-to-r from-transparent via-heritage-gold-300/10 to-transparent skew-x-[-20deg]"
+        initial={{ x: '-140%' }}
+        animate={{ x: '420%' }}
+        transition={{
+          repeat: Infinity,
+          repeatDelay: 5,
+          duration: 2.0,
+          ease: 'easeInOut',
+        }}
+      />
+
       {/* Main Content Container */}
       <div className="relative z-10 p-6 sm:p-9 md:p-11 flex flex-col justify-between min-h-[340px]">
         
@@ -158,11 +173,15 @@ export const UncleHoQuotes: React.FC<UncleHoQuotesProps> = ({
           </div>
         </div>
 
-        {/* Center: The Quote Body with Fade Animation */}
-        <div 
-          className={`py-6 sm:py-8 transition-all duration-300 ease-out ${
-            fadeAnim ? 'opacity-100 transform translate-y-0' : 'opacity-0 transform translate-y-2'
-          }`}
+        {/* Center: The Quote Body with Smooth Motion Fade/Slide */}
+        <AnimatePresence mode="wait">
+        <motion.div
+          key={currentIndex}
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -8 }}
+          transition={{ duration: 0.25, ease: 'easeOut' }}
+          className={`py-6 sm:py-8 ${fadeAnim ? '' : 'opacity-60'}`}
         >
           <div className="flex items-start gap-3">
             <Quote className="w-7 h-7 sm:w-9 sm:h-9 text-heritage-gold-400/80 flex-shrink-0 mt-1" />
@@ -194,7 +213,8 @@ export const UncleHoQuotes: React.FC<UncleHoQuotesProps> = ({
               </div>
             </div>
           </div>
-        </div>
+        </motion.div>
+        </AnimatePresence>
 
         {/* Bottom Interactive Toolbar */}
         <div className="pt-4 border-t border-white/10 flex flex-wrap items-center justify-between gap-3 text-xs sm:text-sm">

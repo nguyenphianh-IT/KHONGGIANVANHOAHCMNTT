@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import { motion } from 'motion/react';
 import {
   Clock, TrendingUp, BookOpen, ChevronRight,
   ArrowRight, Eye, Star, ShieldCheck, Calendar, Award,
@@ -24,6 +25,7 @@ import {
 } from '../lib/viewsStore';
 import { ResourceModal } from './ResourceModal';
 import { BookFlipbookModal } from './BookFlipbookModal';
+import { AnimatedCounter } from './AnimatedCounter';
 import { resolveArticleQuote } from '../data/quotesData';
 import { formatActivityDate } from './Activities';
 
@@ -213,7 +215,13 @@ export const Spotlight: React.FC = () => {
         {/* ========================================================================= */}
         {/* SỨ MỆNH GIÁO DỤC CỦA NHÀ TRƯỜNG (Khung đỏ di sản theo chuẩn thiết kế)     */}
         {/* ========================================================================= */}
-        <div className="mb-6 sm:mb-8 bg-gradient-to-r from-heritage-red-800 to-heritage-red-900 rounded-2xl sm:rounded-3xl p-6 sm:p-8 text-white shadow-heritage relative overflow-hidden border-2 border-heritage-gold-400/50">
+        <motion.div
+          initial={{ opacity: 0, y: 18 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 'some' }}
+          transition={{ duration: 0.45, ease: 'easeOut' }}
+          className="mb-6 sm:mb-8 bg-gradient-to-r from-heritage-red-800 to-heritage-red-900 rounded-2xl sm:rounded-3xl p-6 sm:p-8 text-white shadow-heritage relative overflow-hidden border-2 border-heritage-gold-400/50"
+        >
           <div className="relative z-10 max-w-4xl">
             <span className="text-xs font-bold uppercase tracking-wider text-heritage-gold-300 block mb-2 font-sans">
               Sứ mệnh giáo dục của nhà trường
@@ -238,42 +246,39 @@ export const Spotlight: React.FC = () => {
               </div>
             </div>
           </div>
-        </div>
+        </motion.div>
 
         {/* ========================================================================= */}
         {/* MOBILE SEGMENT PILL CONTROL (Thu gọn chiều dài cuộn trang trên điện thoại) */}
         {/* ========================================================================= */}
         <div className="lg:hidden flex items-center justify-between p-1 bg-heritage-ivory-200/90 rounded-2xl mb-6 border border-heritage-gold-300/60 shadow-inner select-none">
-          <button
-            onClick={() => setMobileTab('featured')}
-            className={`flex-1 py-2 px-1 rounded-xl text-xs font-bold transition-all text-center ${
-              mobileTab === 'featured'
-                ? 'bg-heritage-red-800 text-white shadow-sm ring-1 ring-heritage-gold-400'
-                : 'text-heritage-ink-700 hover:text-heritage-red-800'
-            }`}
-          >
-            ⭐ Tiêu điểm ({subFeatured.length + 1})
-          </button>
-          <button
-            onClick={() => setMobileTab('latest')}
-            className={`flex-1 py-2 px-1 rounded-xl text-xs font-bold transition-all text-center ${
-              mobileTab === 'latest'
-                ? 'bg-heritage-red-800 text-white shadow-sm ring-1 ring-heritage-gold-400'
-                : 'text-heritage-ink-700 hover:text-heritage-red-800'
-            }`}
-          >
-            🆕 Mới nhất ({latestResources.length})
-          </button>
-          <button
-            onClick={() => setMobileTab('most_read')}
-            className={`flex-1 py-2 px-1 rounded-xl text-xs font-bold transition-all text-center ${
-              mobileTab === 'most_read'
-                ? 'bg-heritage-red-800 text-white shadow-sm ring-1 ring-heritage-gold-400'
-                : 'text-heritage-ink-700 hover:text-heritage-red-800'
-            }`}
-          >
-            📈 Đọc nhiều (Top 3)
-          </button>
+          {[
+            { id: 'featured' as const, label: `⭐ Tiêu điểm (${subFeatured.length + 1})` },
+            { id: 'latest' as const, label: `🆕 Mới nhất (${latestResources.length})` },
+            { id: 'most_read' as const, label: '📈 Đọc nhiều (Top 3)' },
+          ].map((tab) => {
+            const isActive = mobileTab === tab.id;
+            return (
+              <button
+                key={tab.id}
+                onClick={() => setMobileTab(tab.id)}
+                className={`relative flex-1 py-2 px-1 rounded-xl text-xs font-bold transition-colors text-center ${
+                  isActive
+                    ? 'text-white'
+                    : 'text-heritage-ink-700 hover:text-heritage-red-800'
+                }`}
+              >
+                {isActive && (
+                  <motion.span
+                    layoutId="activeSpotlightMobileTab"
+                    className="absolute inset-0 bg-heritage-red-800 rounded-xl shadow-sm ring-1 ring-heritage-gold-400 z-0"
+                    transition={{ type: 'spring', stiffness: 450, damping: 35 }}
+                  />
+                )}
+                <span className="relative z-10">{tab.label}</span>
+              </button>
+            );
+          })}
         </div>
 
         {/* ========================================================================= */}
@@ -301,9 +306,21 @@ export const Spotlight: React.FC = () => {
 
                   {/* Badges on Hero Image */}
                   <div className="absolute top-4 left-4 flex flex-wrap gap-2">
-                    <span className="px-3 py-1 bg-gradient-to-r from-heritage-red-800 to-heritage-red-900 text-heritage-gold-300 font-serif font-black text-xs rounded-full border border-heritage-gold-400/80 shadow-md flex items-center space-x-1.5">
-                      <Star className="w-3.5 h-3.5 fill-heritage-gold-400" />
-                      <span>TIÊU ĐIỂM CHỦ ĐẠO</span>
+                    <span className="relative overflow-hidden px-3 py-1 bg-gradient-to-r from-heritage-red-800 to-heritage-red-900 text-heritage-gold-300 font-serif font-black text-xs rounded-full border border-heritage-gold-400/80 shadow-md flex items-center space-x-1.5">
+                      <motion.span
+                        aria-hidden="true"
+                        className="pointer-events-none absolute inset-y-0 w-1/2 bg-gradient-to-r from-transparent via-heritage-gold-200/45 to-transparent skew-x-[-20deg]"
+                        initial={{ x: '-140%' }}
+                        animate={{ x: '340%' }}
+                        transition={{
+                          repeat: Infinity,
+                          repeatDelay: 4.5,
+                          duration: 1.4,
+                          ease: 'easeInOut',
+                        }}
+                      />
+                      <Star className="relative z-10 w-3.5 h-3.5 fill-heritage-gold-400" />
+                      <span className="relative z-10">TIÊU ĐIỂM CHỦ ĐẠO</span>
                     </span>
                     <span className="px-3 py-1 bg-black/60 backdrop-blur-md text-white text-xs font-semibold rounded-full border border-white/20">
                       {featuredHero.categoryLabel}
@@ -567,7 +584,7 @@ export const Spotlight: React.FC = () => {
                         <div className="flex items-center space-x-2 text-[10px] text-heritage-ink-500 mt-0.5">
                           <span className="flex items-center space-x-1 text-heritage-gold-700 font-semibold" title="Lượt đọc thực tế">
                             <Eye className="w-3 h-3 text-heritage-gold-600" />
-                            <span>{item.viewCount.toLocaleString('vi-VN')} lượt đọc</span>
+                            <span><AnimatedCounter value={item.viewCount} /> lượt đọc</span>
                           </span>
                           <span>•</span>
                           <span className="truncate">{item.pdfAttachment ? `📖 Sách PDF (${item.pdfAttachment.totalPages} tr)` : item.categoryLabel}</span>

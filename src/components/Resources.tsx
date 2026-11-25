@@ -176,7 +176,13 @@ export const Resources: React.FC = () => {
     <section id="resources" className="py-8 sm:py-10 md:py-12 bg-heritage-ivory-100 border-b border-heritage-ivory-300">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
-        <div className="text-center max-w-5xl lg:max-w-6xl mx-auto mb-6 sm:mb-8">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 'some' }}
+          transition={{ duration: 0.45, ease: 'easeOut' }}
+          className="text-center max-w-5xl lg:max-w-6xl mx-auto mb-6 sm:mb-8"
+        >
           <div className="inline-flex items-center space-x-1.5 text-xs uppercase tracking-wider text-heritage-red-700 font-bold bg-heritage-red-50 px-3 py-1 rounded-full border border-heritage-red-200 mb-3">
             <BookOpen className="w-3.5 h-3.5 text-heritage-red-700" />
             <span>Kho Tri Thức Học Đường</span>
@@ -185,7 +191,7 @@ export const Resources: React.FC = () => {
             Kho Tư Liệu Số Hóa
           </h2>
           <div className="w-16 h-1 bg-heritage-gold-400 mx-auto mt-4 rounded-full" />
-        </div>
+        </motion.div>
 
         {/* Search & Filter Controls */}
         <div className="max-w-5xl lg:max-w-6xl mx-auto mb-6 sm:mb-8 space-y-4">
@@ -267,14 +273,30 @@ export const Resources: React.FC = () => {
           <div>
             <motion.div
               key={`${selectedCategory}-${currentPage}`}
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.25, ease: 'easeOut' }}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, amount: 'some' }}
+              variants={{
+                hidden: {},
+                visible: {
+                  transition: {
+                    staggerChildren: 0.06,
+                  },
+                },
+              }}
               className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-7"
             >
               {paginatedResources.map((item) => (
-                <div
+                <motion.div
                   key={item.id}
+                  variants={{
+                    hidden: { opacity: 0, y: 20 },
+                    visible: {
+                      opacity: 1,
+                      y: 0,
+                      transition: { duration: 0.35, ease: 'easeOut' },
+                    },
+                  }}
                   onClick={() => setActiveModalItem(item)}
                   className="group cursor-pointer bg-white rounded-xl border border-heritage-ivory-300 shadow-sm hover:shadow-heritage-hover hover:border-heritage-gold-400 transition-all duration-300 flex flex-col justify-between overflow-hidden"
                 >
@@ -374,7 +396,7 @@ export const Resources: React.FC = () => {
                       </span>
                     )}
                   </div>
-                </div>
+                </motion.div>
               ))}
             </motion.div>
 
