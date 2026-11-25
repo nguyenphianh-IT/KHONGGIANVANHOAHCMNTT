@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import { motion } from 'motion/react';
 import { resourcesData, MOCK_EXCLUDED_RESOURCE_IDS } from '../data/resourcesData';
 import { ResourceCategory, ResourceItem } from '../types';
 import { ResourceModal } from './ResourceModal';
@@ -211,7 +212,7 @@ export const Resources: React.FC = () => {
             )}
           </div>
 
-          {/* Category Filter Tabs (Tự động thích ứng, căn giữa đẹp mắt, không bao giờ bị cắt chữ) */}
+          {/* Category Filter Tabs (Trượt mượt mà bằng Motion layoutId, thích ứng đa màn hình) */}
           <div className="flex flex-wrap items-center justify-center py-1.5 gap-1.5 sm:gap-2 select-none w-full">
             {categories.map((cat) => {
               const Icon = cat.icon;
@@ -220,14 +221,21 @@ export const Resources: React.FC = () => {
                 <button
                   key={cat.id}
                   onClick={() => setSelectedCategory(cat.id)}
-                  className={`flex items-center space-x-1.5 px-2.5 sm:px-3 lg:px-3.5 py-1.5 sm:py-2 rounded-xl text-xs sm:text-xs md:text-sm font-medium transition-all whitespace-nowrap shadow-xs ${
+                  className={`relative flex items-center space-x-1.5 px-2.5 sm:px-3 lg:px-3.5 py-1.5 sm:py-2 rounded-xl text-xs sm:text-xs md:text-sm font-medium transition-colors whitespace-nowrap shadow-xs ${
                     isActive
-                      ? 'bg-heritage-red-700 text-white font-semibold shadow-sm ring-1 ring-heritage-gold-400'
+                      ? 'text-white font-semibold'
                       : 'bg-white text-heritage-ink-700 border border-heritage-ivory-300 hover:bg-heritage-red-50 hover:text-heritage-red-700'
                   }`}
                 >
-                  <Icon className={`w-3.5 h-3.5 flex-shrink-0 ${isActive ? 'text-heritage-gold-300' : 'text-heritage-red-700'}`} />
-                  <span>{cat.label}</span>
+                  {isActive && (
+                    <motion.div
+                      layoutId="activeResourceCategoryTab"
+                      className="absolute inset-0 bg-heritage-red-700 rounded-xl shadow-sm ring-1 ring-heritage-gold-400 z-0"
+                      transition={{ type: 'spring', stiffness: 450, damping: 35 }}
+                    />
+                  )}
+                  <Icon className={`relative z-10 w-3.5 h-3.5 flex-shrink-0 transition-colors ${isActive ? 'text-heritage-gold-300' : 'text-heritage-red-700'}`} />
+                  <span className="relative z-10">{cat.label}</span>
                 </button>
               );
             })}
@@ -257,7 +265,13 @@ export const Resources: React.FC = () => {
         {/* Resources Grid (3 cột x 3 dòng = 9 tư liệu / trang cân đối tuyệt đẹp) */}
         {filteredResources.length > 0 ? (
           <div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-7">
+            <motion.div
+              key={`${selectedCategory}-${currentPage}`}
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.25, ease: 'easeOut' }}
+              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-7"
+            >
               {paginatedResources.map((item) => (
                 <div
                   key={item.id}
@@ -362,7 +376,7 @@ export const Resources: React.FC = () => {
                   </div>
                 </div>
               ))}
-            </div>
+            </motion.div>
 
             {/* Thanh điều khiển phân trang (Pagination Controls) */}
             {totalPages > 1 && (
