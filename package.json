@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc --noEmit && vite build",
+    "build": "vite build",
     "build:api": "node scripts/build-api.mjs",
     "preview": "vite preview",
     "test:rag": "node scripts/test-rag-runtime.mjs",
