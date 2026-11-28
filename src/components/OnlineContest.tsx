@@ -736,7 +736,7 @@ export const OnlineContest: React.FC = () => {
               className="px-3.5 py-1.5 bg-heritage-gold-400 hover:bg-heritage-gold-300 text-heritage-red-950 font-black text-xs rounded-xl shadow-xs transition flex items-center space-x-1.5 border border-heritage-gold-500"
               title="Xem danh sách bài thi, chấm điểm và xuất file Excel CSV"
             >
-              <Printer className="w-3.5 h-3.5 text-heritage-red-900" />
+              <FileDown className="w-3.5 h-3.5 text-heritage-red-900" />
               <span>Bảng điểm & Xuất Excel</span>
             </button>
 
