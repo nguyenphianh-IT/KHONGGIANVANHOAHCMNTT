@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { timelineData } from '../data/timelineData';
 import { TimelineEvent } from '../types';
@@ -8,17 +8,37 @@ import {
   X,
   Star,
   BookOpen,
-  Printer,
+  FileDown,
+  Loader2,
   Calendar,
   MapPin,
   ShieldCheck
 } from 'lucide-react';
 import { HorizontalTimelineRail } from './HorizontalTimelineRail';
+import { exportElementToPdf } from '../lib/pdfExport';
 
 export const Timeline: React.FC = () => {
   const [filter, setFilter] = useState<string>('all');
   const [selectedEvent, setSelectedEvent] = useState<TimelineEvent | null>(null);
   const [fontSize, setFontSize] = useState<'normal' | 'large'>('normal');
+  const [isExportingPdf, setIsExportingPdf] = useState(false);
+  const exportRef = useRef<HTMLDivElement>(null);
+
+  const handleExportPdf = async () => {
+    if (!exportRef.current || !selectedEvent || isExportingPdf) return;
+    setIsExportingPdf(true);
+    try {
+      await exportElementToPdf({
+        element: exportRef.current,
+        filename: `${selectedEvent.year || 'moc-lich-su'}-${selectedEvent.title}`,
+        orientation: 'portrait',
+      });
+    } catch (err) {
+      console.error('[Export Timeline PDF Error]', err);
+    } finally {
+      setIsExportingPdf(false);
+    }
+  };
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -170,13 +190,14 @@ export const Timeline: React.FC = () => {
                     </button>
                   </div>
 
-                  {/* Print Button */}
+                  {/* Export PDF Button */}
                   <button
-                    onClick={() => window.print()}
-                    className="p-1.5 text-white/80 hover:text-white hover:bg-white/10 rounded-lg transition"
-                    title="In tư liệu hoặc Lưu PDF"
+                    onClick={handleExportPdf}
+                    disabled={isExportingPdf}
+                    className="p-1.5 text-white/80 hover:text-white hover:bg-white/10 rounded-lg transition disabled:opacity-50"
+                    title="Xuất tệp PDF"
                   >
-                    <Printer className="w-5 h-5" />
+                    {isExportingPdf ? <Loader2 className="w-5 h-5 animate-spin" /> : <FileDown className="w-5 h-5" />}
                   </button>
 
                   {/* Close Button */}
@@ -191,7 +212,8 @@ export const Timeline: React.FC = () => {
               </header>
 
               {/* Scrollable Body Content */}
-              <div className="flex-1 overflow-y-auto px-6 sm:px-10 md:px-12 py-7">
+              <div className="flex-1 overflow-y-auto">
+                <div ref={exportRef} className="bg-heritage-ivory-50 px-6 sm:px-10 md:px-12 py-7">
                 {/* Meta Badges */}
                 <div className="flex flex-wrap items-center gap-2 mb-3">
                   <span className="inline-flex items-center space-x-1.5 px-3 py-1 bg-heritage-red-800 text-white font-serif font-bold text-xs rounded-full shadow-sm">
@@ -287,6 +309,7 @@ export const Timeline: React.FC = () => {
                     </p>
                   </div>
                 </div>
+                </div>
               </div>
 
               {/* Bottom Sticky Footer */}
@@ -297,11 +320,12 @@ export const Timeline: React.FC = () => {
                 </div>
                 <div className="flex items-center space-x-3 ml-auto">
                   <button
-                    onClick={() => window.print()}
-                    className="px-4 py-2 bg-heritage-ivory-200 hover:bg-heritage-ivory-300 text-heritage-ink-800 rounded-xl font-medium text-xs sm:text-sm border border-heritage-ivory-300 flex items-center space-x-1.5 transition"
+                    onClick={handleExportPdf}
+                    disabled={isExportingPdf}
+                    className="px-4 py-2 bg-heritage-ivory-200 hover:bg-heritage-ivory-300 text-heritage-ink-800 rounded-xl font-medium text-xs sm:text-sm border border-heritage-ivory-300 flex items-center space-x-1.5 transition disabled:opacity-60"
                   >
-                    <Printer className="w-4 h-4" />
-                    <span>In tư liệu</span>
+                    {isExportingPdf ? <Loader2 className="w-4 h-4 animate-spin" /> : <FileDown className="w-4 h-4" />}
+                    <span>{isExportingPdf ? 'Đang xuất PDF...' : 'Xuất PDF'}</span>
                   </button>
                   <button
                     onClick={() => setSelectedEvent(null)}

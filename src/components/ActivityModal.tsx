@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { SchoolActivity } from '../types';
 import {
-  X, Calendar, Users, BookOpen, Printer,
+  X, Calendar, Users, BookOpen, FileDown, Loader2,
   Sparkles, CheckCircle2, ShieldCheck, Quote, Eye, User
 } from 'lucide-react';
+import { exportElementToPdf } from '../lib/pdfExport';
 import { ContentRenderer } from './cms/ContentRenderer';
 import {
   recordArticleView,
@@ -21,6 +22,8 @@ interface ActivityModalProps {
 export const ActivityModal: React.FC<ActivityModalProps> = ({ activity, onClose }) => {
   const [fontSize, setFontSize] = useState<'normal' | 'large'>('normal');
   const [currentViews, setCurrentViews] = useState<number>(() => activity ? getViewCount(activity.id) : 0);
+  const [isExportingPdf, setIsExportingPdf] = useState(false);
+  const exportRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!activity?.id) return;
@@ -56,8 +59,20 @@ export const ActivityModal: React.FC<ActivityModalProps> = ({ activity, onClose 
 
   if (!activity) return null;
 
-  const handlePrint = () => {
-    window.print();
+  const handleExportPdf = async () => {
+    if (!exportRef.current || isExportingPdf) return;
+    setIsExportingPdf(true);
+    try {
+      await exportElementToPdf({
+        element: exportRef.current,
+        filename: activity.title,
+        orientation: 'portrait',
+      });
+    } catch (err) {
+      console.error('[Export PDF Error]', err);
+    } finally {
+      setIsExportingPdf(false);
+    }
   };
 
   // Estimate reading time
@@ -126,13 +141,14 @@ export const ActivityModal: React.FC<ActivityModalProps> = ({ activity, onClose 
               </button>
             </div>
 
-            {/* Print Button */}
+            {/* Export PDF Button */}
             <button
-              onClick={handlePrint}
-              className="p-1.5 text-white/80 hover:text-white hover:bg-white/10 rounded-lg transition"
-              title="In bài viết hoặc Lưu PDF"
+              onClick={handleExportPdf}
+              disabled={isExportingPdf}
+              className="p-1.5 text-white/80 hover:text-white hover:bg-white/10 rounded-lg transition disabled:opacity-50"
+              title="Xuất tệp PDF"
             >
-              <Printer className="w-4 h-4" />
+              {isExportingPdf ? <Loader2 className="w-4 h-4 animate-spin" /> : <FileDown className="w-4 h-4" />}
             </button>
 
             <div className="h-4 w-px bg-white/20" />
@@ -153,6 +169,7 @@ export const ActivityModal: React.FC<ActivityModalProps> = ({ activity, onClose 
         {/* 2. SCROLLABLE EDITORIAL ARTICLE BODY                                      */}
         {/* ========================================================================= */}
         <div className="flex-grow overflow-y-auto">
+          <div ref={exportRef} className="bg-heritage-ivory-50">
           {/* HERO COVER IMAGE (Kích thước khung chuẩn đồng nhất cho mọi bài hoạt động, tự co giãn đều cả ảnh nhỏ lẫn ảnh lớn) */}
           {activity.imageUrl && (
             <div className="relative w-full h-[295px] sm:h-[410px] md:h-[470px] bg-heritage-ink-950 overflow-hidden flex items-center justify-center px-4 sm:px-8 pt-5 pb-16 sm:pt-6 sm:pb-16">
@@ -326,6 +343,7 @@ export const ActivityModal: React.FC<ActivityModalProps> = ({ activity, onClose 
               </div>
             </div>
           </article>
+          </div>
         </div>
 
         {/* ========================================================================= */}
@@ -342,11 +360,16 @@ export const ActivityModal: React.FC<ActivityModalProps> = ({ activity, onClose 
 
           <div className="flex items-center space-x-3 ml-auto">
             <button
-              onClick={handlePrint}
-              className="px-4 py-2 bg-white hover:bg-heritage-ivory-200 text-heritage-ink-800 border border-heritage-gold-300 rounded-xl text-xs font-semibold shadow-sm transition flex items-center space-x-1.5"
+              onClick={handleExportPdf}
+              disabled={isExportingPdf}
+              className="px-4 py-2 bg-white hover:bg-heritage-ivory-200 text-heritage-ink-800 border border-heritage-gold-300 rounded-xl text-xs font-semibold shadow-sm transition flex items-center space-x-1.5 disabled:opacity-60"
             >
-              <Printer className="w-3.5 h-3.5 text-heritage-red-700" />
-              <span>In bài viết</span>
+              {isExportingPdf ? (
+                <Loader2 className="w-3.5 h-3.5 text-heritage-red-700 animate-spin" />
+              ) : (
+                <FileDown className="w-3.5 h-3.5 text-heritage-red-700" />
+              )}
+              <span>{isExportingPdf ? 'Đang xuất PDF...' : 'Xuất PDF'}</span>
             </button>
 
             <button

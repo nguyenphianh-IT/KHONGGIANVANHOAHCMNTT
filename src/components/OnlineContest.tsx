@@ -30,9 +30,10 @@ import {
 } from '../data/contestData';
 import {
   Trophy, Award, Clock, CheckCircle2, AlertTriangle, AlertOctagon, ChevronRight,
-  User, Printer, Settings, BookOpen, Layers, FolderArchive, Cloud, Lock,
+  User, FileDown, Loader2, Settings, BookOpen, Layers, FolderArchive, Cloud, Lock,
   Users, Sparkles, Medal, Search, Filter, RefreshCw
 } from 'lucide-react';
+import { exportElementToPdf } from '../lib/pdfExport';
 import { ContestManagerModal } from './cms/ContestManagerModal';
 import { useAuth } from '../context/AuthContext';
 import { AuthModal } from './cms/AuthModal';
@@ -652,9 +653,24 @@ export const OnlineContest: React.FC = () => {
     });
   }, [activeLeaderboardSubmissions, classSortMode]);
 
-  // In / Tải giấy khen
-  const handlePrintCertificate = () => {
-    window.print();
+  const certificateRef = useRef<HTMLDivElement>(null);
+  const [isExportingCertificate, setIsExportingCertificate] = useState(false);
+
+  // Xuất Giấy chứng nhận điện tử thành tệp PDF
+  const handleExportCertificatePdf = async () => {
+    if (!certificateRef.current || !latestSubmission || isExportingCertificate) return;
+    setIsExportingCertificate(true);
+    try {
+      await exportElementToPdf({
+        element: certificateRef.current,
+        filename: `giay-chung-nhan-${latestSubmission.studentName}-${latestSubmission.studentClass}`,
+        orientation: 'landscape',
+      });
+    } catch (err) {
+      console.error('[Export Certificate PDF Error]', err);
+    } finally {
+      setIsExportingCertificate(false);
+    }
   };
 
   return (
@@ -2340,6 +2356,7 @@ export const OnlineContest: React.FC = () => {
           onClick={() => setShowCertificate(false)}
         >
           <div
+            ref={certificateRef}
             className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-8 md:p-10 max-w-2xl w-full border-4 border-heritage-gold-400 shadow-2xl relative text-center max-h-[92vh] overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
           >
@@ -2389,13 +2406,14 @@ export const OnlineContest: React.FC = () => {
             </div>
 
             {/* Nút hành động */}
-            <div className="mt-5 sm:mt-6 flex flex-col sm:flex-row items-center justify-center gap-2.5 sm:gap-3">
+            <div data-pdf-ignore="true" className="mt-5 sm:mt-6 flex flex-col sm:flex-row items-center justify-center gap-2.5 sm:gap-3">
               <button
-                onClick={handlePrintCertificate}
-                className="w-full sm:w-auto px-5 py-2.5 bg-heritage-red-700 hover:bg-heritage-red-800 text-white rounded-xl text-xs sm:text-sm font-bold shadow flex items-center justify-center space-x-1.5 touch-manipulation"
+                onClick={handleExportCertificatePdf}
+                disabled={isExportingCertificate}
+                className="w-full sm:w-auto px-5 py-2.5 bg-heritage-red-700 hover:bg-heritage-red-800 text-white rounded-xl text-xs sm:text-sm font-bold shadow flex items-center justify-center space-x-1.5 touch-manipulation disabled:opacity-60"
               >
-                <Printer className="w-4 h-4" />
-                <span>In Giấy Chứng Nhận</span>
+                {isExportingCertificate ? <Loader2 className="w-4 h-4 animate-spin" /> : <FileDown className="w-4 h-4" />}
+                <span>{isExportingCertificate ? 'Đang xuất PDF...' : 'Xuất PDF Giấy Chứng Nhận'}</span>
               </button>
               <button
                 onClick={() => setShowCertificate(false)}
